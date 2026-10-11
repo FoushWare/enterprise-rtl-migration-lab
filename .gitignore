@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.nx/
+test-results/
+playwright-report/
+storybook-static/
+
+.DS_Store
+*.log
