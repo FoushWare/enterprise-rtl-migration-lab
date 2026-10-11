@@ -1,3 +1,4 @@
+import { useLocale } from "@atlas/shared";
 import { Link } from "react-router-dom";
 import { Card, Button } from "@atlas/design-system";
 import { money, total, type Invoice } from "@atlas/shared";
@@ -8,6 +9,7 @@ import ScheduleOutlined from "@mui/icons-material/ScheduleOutlined";
 import ReceiptLongOutlined from "@mui/icons-material/ReceiptLongOutlined";
 import TrendingUp from "@mui/icons-material/TrendingUp";
 export function Dashboard({ invoices }: { invoices: Invoice[] }) {
+  const { t, demoHref, label: translateLabel } = useLocale();
   const paid = invoices.filter((i) => i.status === "Paid"),
     pending = invoices.filter((i) => i.status === "Pending"),
     overdue = invoices.filter((i) => i.status === "Overdue");
@@ -16,17 +18,15 @@ export function Dashboard({ invoices }: { invoices: Invoice[] }) {
   return (
     <>
       <Heading
-        title="Overview"
-        description="Welcome back, Alex. Here’s how your business is doing today."
+        title={t("Overview")}
+        description={t("Welcome back, Alex. Here’s how your business is doing today.")}
         action={
           <div className="heading-actions">
             <Button
               variant="outlined"
               sx={{ borderColor: "#e0e5ee", color: "#707a8e", bgcolor: "#fff" }}
               onClick={() => window.print()}
-            >
-              Print report
-            </Button>
+            >{t("Print report")}</Button>
             <CreateButton />
           </div>
         }
@@ -42,13 +42,13 @@ export function Dashboard({ invoices }: { invoices: Invoice[] }) {
           {
             label: "Outstanding (USD)",
             value: money(aggregate(pending)),
-            note: `${pending.length} invoices `,
+            note: t("{count} invoices ", { count: pending.length }),
             icon: ScheduleOutlined,
           },
           {
             label: "Overdue (USD)",
             value: money(aggregate(overdue)),
-            note: `${overdue.length} invoices `,
+            note: t("{count} invoices ", { count: overdue.length }),
             icon: ReceiptLongOutlined,
           },
           {
@@ -62,13 +62,13 @@ export function Dashboard({ invoices }: { invoices: Invoice[] }) {
             <div className="kpi-icon">
               <k.icon sx={{ fontSize: 18 }} />
             </div>
-            <div className="kpi-label">{k.label}</div>
+            <div className="kpi-label">{translateLabel(k.label)}</div>
             <div className="kpi-value">{k.value}</div>
             <div className="kpi-note">
               <b>↗ {k.note}</b>
               {k.label === "Total revenue (USD)" || k.label === "Total invoices"
-                ? "vs. previous month"
-                : "this month"}
+                ? t("vs. previous month")
+                : t("this month")}
             </div>
           </Card>
         ))}
@@ -77,19 +77,17 @@ export function Dashboard({ invoices }: { invoices: Invoice[] }) {
         <Card>
           <div className="section-title">
             <div>
-              <h2>Revenue overview</h2>
-              <p>Your revenue performance over time</p>
+              <h2>{t("Revenue overview")}</h2>
+              <p>{t("Your revenue performance over time")}</p>
             </div>
             <span className="chart-legend">
-              <i />
-              Revenue · USD
-            </span>
+              <i />{t("Revenue · USD")}</span>
           </div>
           <div className="chart-wrap">
             <svg
               viewBox="0 0 600 215"
               role="img"
-              aria-label="Revenue increased from May to October, from 24,000 to 61,000 US dollars"
+              aria-label={t("Revenue increased from May to October, from 24,000 to 61,000 US dollars")}
             >
               <defs>
                 <linearGradient id="revenue-fill" x1="0" y1="0" x2="0" y2="1">
@@ -133,7 +131,7 @@ export function Dashboard({ invoices }: { invoices: Invoice[] }) {
             </svg>
             <div className="chart-labels">
               {["May", "Jun", "Jul", "Aug", "Sep", "Oct"].map((m) => (
-                <span key={m}>{m}</span>
+                <span key={m}>{translateLabel(m)}</span>
               ))}
             </div>
           </div>
@@ -141,8 +139,8 @@ export function Dashboard({ invoices }: { invoices: Invoice[] }) {
         <Card>
           <div className="section-title">
             <div>
-              <h2>Payment status</h2>
-              <p>October 2026 · invoice count</p>
+              <h2>{t("Payment status")}</h2>
+              <p>{t("October 2026 · invoice count")}</p>
             </div>
             <span className="hint">•••</span>
           </div>
@@ -155,7 +153,7 @@ export function Dashboard({ invoices }: { invoices: Invoice[] }) {
             >
               <div className="donut-center">
                 <strong>{invoices.length}</strong>
-                <small>Total invoices</small>
+                <small>{t("Total invoices")}</small>
               </div>
             </div>
             {[
@@ -171,7 +169,7 @@ export function Dashboard({ invoices }: { invoices: Invoice[] }) {
               <div className="breakdown-row" key={label}>
                 <span>
                   <i style={{ background: String(color) }} />
-                  {label}
+                  {translateLabel(label)}
                 </span>
                 <strong>
                   {count}{" "}
@@ -193,17 +191,14 @@ export function Dashboard({ invoices }: { invoices: Invoice[] }) {
       <Card>
         <div className="section-title">
           <div>
-            <h2>Recent invoices</h2>
-            <p>A quick look at your latest billing activity</p>
+            <h2>{t("Recent invoices")}</h2>
+            <p>{t("A quick look at your latest billing activity")}</p>
           </div>
-          <Link to="/invoices">View all invoices →</Link>
+          <Link to={demoHref("/invoices")}>{t("View all invoices →")}</Link>
         </div>
         <InvoiceTable invoices={invoices.slice(0, 5)} />
       </Card>
-      <p className="hint" style={{ fontSize: 10, marginTop: 16 }}>
-        Revenue trend and comparisons are illustrative demo figures. Invoice
-        balances include USD invoices only; counts include all currencies.
-      </p>
+      <p className="hint" style={{ fontSize: 10, marginTop: 16 }}>{t("Revenue trend and comparisons are illustrative demo figures. Invoice balances include USD invoices only; counts include all currencies.")}</p>
     </>
   );
 }

@@ -156,3 +156,5 @@ export const purchaseOrders = Array.from({ length: 9 }, (_, i) => ({
     },
   ],
 }));
+
+export { LocaleProvider, DemoControls, useLocale } from "./i18n";

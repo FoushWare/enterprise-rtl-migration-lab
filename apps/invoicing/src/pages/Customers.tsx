@@ -1,20 +1,22 @@
+import { useLocale } from "@atlas/shared";
 import { useState } from "react";
 import { Avatar } from "@mui/material";
 import { Card, Button, FormField, Modal } from "@atlas/design-system";
 import { customers } from "@atlas/shared";
 import { Heading } from "../components/InvoiceUi";
 export function Customers() {
+  const { t } = useLocale();
   const [id, setId] = useState<string | null>(null),
     [search, setSearch] = useState("");
   const c = customers.find((c) => c.id === id);
   return (
     <>
       <Heading
-        title="Customers"
-        description="Good relationships are the foundation of good business."
+        title={t("Customers")}
+        description={t("Good relationships are the foundation of good business.")}
       />
       <FormField
-        label="Search customers"
+        label={t("Search customers")}
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         sx={{ maxWidth: 350, marginBottom: 3 }}
@@ -34,14 +36,12 @@ export function Customers() {
                 size="small"
                 variant="outlined"
                 onClick={() => setId(c.id)}
-              >
-                View customer
-              </Button>
+              >{t("View customer")}</Button>
             </Card>
           ))}
       </div>
       <Modal
-        title={c?.name || "Customer"}
+        title={c?.name || t("Customer")}
         open={!!c}
         onClose={() => setId(null)}
       >

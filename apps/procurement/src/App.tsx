@@ -1,3 +1,4 @@
+import { useLocale } from "@atlas/shared";
 import { useState } from "react";
 import { Routes, Route, Link, useParams, useLocation } from "react-router-dom";
 import { MenuItem } from "@mui/material";
@@ -11,14 +12,15 @@ import {
 } from "@atlas/design-system";
 import { purchaseOrders, money, total } from "@atlas/shared";
 function Orders() {
+  const { t, demoHref, label: translateLabel } = useLocale();
   const [status, setStatus] = useState("All statuses");
   return (
     <>
       <div className="page-heading">
         <div>
-          <div className="eyebrow">ATLAS PROCUREMENT</div>
-          <h1>Purchase orders</h1>
-          <p>Keep your suppliers, spending, and deliveries in sync.</p>
+          <div className="eyebrow">{t("ATLAS PROCUREMENT")}</div>
+          <h1>{t("Purchase orders")}</h1>
+          <p>{t("Keep your suppliers, spending, and deliveries in sync.")}</p>
         </div>
       </div>
       <div className="kpis">
@@ -32,7 +34,7 @@ function Orders() {
           ["Delivered", 3],
         ].map(([label, value]) => (
           <Card className="kpi" key={label}>
-            <div className="kpi-label">{label}</div>
+            <div className="kpi-label">{translateLabel(label)}</div>
             <div className="kpi-value">{value}</div>
           </Card>
         ))}
@@ -41,14 +43,14 @@ function Orders() {
         <div className="toolbar">
           <FormField
             select
-            label="Status"
+            label={t("Status")}
             value={status}
             onChange={(e) => setStatus(e.target.value)}
             sx={{ width: 200 }}
           >
             {["All statuses", "Pending", "Approved", "Delivered"].map((s) => (
               <MenuItem key={s} value={s}>
-                {s}
+                {translateLabel(s)}
               </MenuItem>
             ))}
           </FormField>
@@ -60,29 +62,29 @@ function Orders() {
           )}
           columns={[
             {
-              label: "ORDER",
+              label: t("ORDER"),
               render: (o) => (
-                <Link className="invoice-link" to={`/orders/${o.id}`}>
+                <Link className="invoice-link" to={demoHref(`/orders/${o.id}`)}>
                   {o.id}
                 </Link>
               ),
             },
             {
-              label: "SUPPLIER",
+              label: t("SUPPLIER"),
               render: (o) => (
                 <strong style={{ fontSize: 12 }}>{o.supplier}</strong>
               ),
             },
             {
-              label: "ORDER DATE",
+              label: t("ORDER DATE"),
               render: (o) => <span className="table-date">{o.date}</span>,
             },
             {
-              label: "AMOUNT",
+              label: t("AMOUNT"),
               render: (o) => <span className="amount">{money(total(o))}</span>,
             },
             {
-              label: "STATUS",
+              label: t("STATUS"),
               render: (o) => <StatusBadge status={o.status} />,
             },
           ]}
@@ -92,16 +94,17 @@ function Orders() {
   );
 }
 function Details() {
+  const { t } = useLocale();
   const { id } = useParams();
   const order = purchaseOrders.find((o) => o.id === id);
   return order ? (
     <>
       <div className="page-heading">
         <div>
-          <div className="eyebrow">PURCHASE ORDER</div>
+          <div className="eyebrow">{t("PURCHASE ORDER")}</div>
           <h1>{order.id}</h1>
           <p>
-            {order.supplier} · Ordered {order.date}
+            {order.supplier}{" "}{t("· Ordered")}{" "}{order.date}
           </p>
         </div>
         <StatusBadge status={order.status} />
@@ -112,29 +115,30 @@ function Details() {
           rows={order.items}
           rowKey={(i) => i.description}
           columns={[
-            { label: "DESCRIPTION", render: (i) => i.description },
-            { label: "QUANTITY", render: (i) => i.quantity },
-            { label: "AMOUNT", render: (i) => money(i.rate) },
+            { label: t("DESCRIPTION"), render: (i) => i.description },
+            { label: t("QUANTITY"), render: (i) => i.quantity },
+            { label: t("AMOUNT"), render: (i) => money(i.rate) },
           ]}
         />
         <div className="form-total">
-          <span>Order total</span>
+          <span>{t("Order total")}</span>
           <strong>{money(total(order))}</strong>
         </div>
       </Card>
     </>
   ) : (
     <EmptyState
-      title="Order not found"
-      description="Choose an order from the purchase order list."
+      title={t("Order not found")}
+      description={t("Choose an order from the purchase order list.")}
     />
   );
 }
 export default function App() {
+  const { t } = useLocale();
   const location = useLocation();
   return (
     <AppShell
-      title={location.pathname === "/settings" ? "Settings" : "Purchase orders"}
+      title={t(location.pathname === "/settings" ? "Settings" : "Purchase orders")}
       procurement
     >
       <Routes>
@@ -144,11 +148,9 @@ export default function App() {
           path="/settings"
           element={
             <Card className="card-pad">
-              <h1>Procurement settings</h1>
-              <p className="hint">
-                Atlas Company · USD · English · United States
-              </p>
-              <p>Approval is required for orders over $5,000.</p>
+              <h1>{t("Procurement settings")}</h1>
+              <p className="hint">{t("Atlas Company · USD · English · United States")}</p>
+              <p>{t("Approval is required for orders over $5,000.")}</p>
             </Card>
           }
         />
@@ -156,8 +158,8 @@ export default function App() {
           path="*"
           element={
             <EmptyState
-              title="Page not found"
-              description="Choose Purchase orders from the sidebar."
+              title={t("Page not found")}
+              description={t("Choose Purchase orders from the sidebar.")}
             />
           }
         />
