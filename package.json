@@ -11,7 +11,11 @@
     "test": "vitest run",
     "test:e2e": "playwright test",
     "test:visual": "playwright test --grep visual",
-    "storybook": "storybook dev -p 6006"
+    "storybook": "storybook dev -p 6006",
+    "rtl:scan": "node dist/tools/rtl-scanner/cli.js",
+    "rtl:scan:test": "vitest run --config tools/rtl-scanner/vitest.config.ts",
+    "rtl:scan:typecheck": "tsc -p tools/rtl-scanner/tsconfig.typecheck.json",
+    "rtl:scan:build": "tsc -p tools/rtl-scanner/tsconfig.json"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -35,6 +39,9 @@
     "eslint": "^9.0.0",
     "jsdom": "^26.0.0",
     "nx": "23.3.0",
+    "parse5": "7.3.0",
+    "postcss": "8.5.29",
+    "postcss-value-parser": "4.2.0",
     "storybook": "10.6.1",
     "typescript": "~5.9.0",
     "typescript-eslint": "^8.0.0",

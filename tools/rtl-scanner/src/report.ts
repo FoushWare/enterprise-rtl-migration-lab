@@ -1,0 +1,4 @@
+import type { Report } from './model.js';
+export const json = (r:Report)=>JSON.stringify(r,null,2)+'\n';
+const escape=(s:string)=>s.replace(/\|/g,'\\|').replace(/\r?\n/g,' ').replace(/`/g,'\\`');
+export function markdown(r:Report){return `# RTL scanner foundation inventory\n\nExtracted facts only; no RTL risk rules or confirmed findings.\n\nFiles: ${r.files.length}; declarations: ${r.evidence.length}; diagnostics: ${r.diagnostics.length}; complete: ${r.complete}.\n\n| Source | Mechanism | Context | Original declaration | Semantics |\n| --- | --- | --- | --- | --- |\n`+r.evidence.map(e=>`| ${escape(e.path)}:${e.range.start.line}:${e.range.start.column} | ${e.mechanism} | ${escape(e.context)} | ${escape(e.original)} | ${e.semantics} |`).join('\n')+'\n\n## Coverage diagnostics\n\n'+r.diagnostics.map(d=>`- ${d.path}:${d.range.start.line}:${d.range.start.column} ${d.code}: ${escape(d.message)}`).join('\n')+'\n';}
