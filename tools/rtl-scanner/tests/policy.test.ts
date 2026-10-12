@@ -72,17 +72,32 @@ it('historical Stage 3 reports retain independently pinned content and formattin
   expect(json(report)).toBe(await readFile('docs/phase-3-rtl-findings.json','utf8'));
   expect(markdown(report)).toBe(md);
 });
-it('live Atlas scan reflects only the approved logical margins and preserves all five exceptions', async () => {
+it('live Atlas scan reflects approved logical margins and theme relocation while preserving all five exceptions', async () => {
   const p = await loadPolicy(process.cwd()), historical = await historicalReport();
   expect(p.dynamicExceptions).toHaveLength(3); expect(p.exceptions).toHaveLength(2); expect(p.approvals).toEqual([]);
   expect(p.ownership.css).toBe('custom-css');
   const report = await scan(process.cwd()), repeated = await scan(process.cwd());
-  expect(report.complete).toBe(true); expect(report.evidence).toHaveLength(historical.evidence.length);
-  expect(report.diagnostics).toEqual(historical.diagnostics);
+  expect(report.complete).toBe(true);
+  const runtimePath='libs/design-system/src/runtime.tsx';
+  const oldTheme=historical.evidence.filter(e=>e.path==='libs/design-system/src/index.tsx'&&e.mechanism==='mui-theme'&&e.context.startsWith('theme/'));
+  expect(oldTheme).toHaveLength(8);
+  const factMeaning=(e: Report['evidence'][number])=>{const {id,range,...meaning}=e;expect(id).toBeTruthy();expect(range.start.offset).toBeLessThanOrEqual(range.end.offset);return meaning;};
+  const expectedFacts=historical.evidence.map(factMeaning).map(e=>{
+    if(e.path==='libs/design-system/src/index.tsx'&&e.mechanism==='mui-theme'&&e.context.startsWith('theme/'))return {...e,path:runtimePath};
+    if(e.path==='libs/design-system/src/styles.css'&&pilot.some(c=>c.context===e.context)&&e.property==='margin-right')return {...e,property:'margin-inline-end',original:`margin-inline-end: ${e.value};`};
+    return e;
+  });
+  const preparedFacts=oldTheme.map(factMeaning).map(e=>({...e,path:runtimePath,context:e.context.replace('theme/','rtlTheme/')}));
+  const ordered=<T,>(items:T[])=>items.map(e=>JSON.stringify(e)).sort();
+  expect(ordered(report.evidence.map(factMeaning))).toEqual(ordered([...expectedFacts,...preparedFacts]));
+  expect(report.evidence).toHaveLength(historical.evidence.length+preparedFacts.length);
+  const diagnosticMeaning=(d:Report['diagnostics'][number])=>{const {range,...meaning}=d;expect(range.start.offset).toBeLessThanOrEqual(range.end.offset);return meaning;};
+  expect(report.diagnostics.map(diagnosticMeaning)).toEqual(historical.diagnostics.map(diagnosticMeaning));
+  for(const [i,d] of report.diagnostics.entries()){const source=await readFile(d.path,'utf8');const span=source.slice(d.range.start.offset,d.range.end.offset);expect(span.length).toBeGreaterThan(0);if(d.path!=='libs/design-system/src/index.tsx')expect(d.range).toEqual(historical.diagnostics[i].range);else expect(span).toMatch(/^colors\[status\]\[[01]\]$/);}
   expect(report.diagnostics.every(d=>!d.blocking)).toBe(true);
   expect(report.diagnostics.some(d=>d.code.startsWith('POLICY'))).toBe(false);
-  expect(report.policyDigest).toBe(historical.policyDigest);
-  expect(report.files).toEqual(historical.files); expect(report.skipped).toEqual(historical.skipped);
+  expect(report.policyDigest).toBe('ee243f20caa61d9065addda896ea77362b3757af468456e313f0447234899347');
+  expect(report.files).toEqual([...historical.files,runtimePath].sort()); expect(report.skipped).toEqual(historical.skipped);
   expect(json(report)).toBe(json(repeated)); expect(markdown(report)).toBe(markdown(repeated));
   const stylesheet = 'libs/design-system/src/styles.css';
   for (const candidate of pilot) {
@@ -93,8 +108,10 @@ it('live Atlas scan reflects only the approved logical margins and preserves all
   }
   expect(report.evidence.find(e=>e.path===stylesheet&&e.context==='stylesheet/.kpi-note b'&&e.property==='margin-right')).toMatchObject({value:'5px'});
   const removed=new Set(pilot.map(c=>c.id));
-  expect(report.findings.map(f=>f.id)).toEqual(historical.findings.filter(f=>!removed.has(f.id)).map(f=>f.id));
-  expect(report.findings.map(findingMeaning)).toEqual(historical.findings.filter(f=>!removed.has(f.id)).map(findingMeaning));
+  const expectedFindings=historical.findings.filter(f=>!removed.has(f.id)).map(f=>f.id==='RTL.RUNTIME.MISMATCH:631220ab170fd844366645f4'
+    ? {...f,id:'RTL.RUNTIME.MISMATCH:9afa0fc2057956b3d8c3069e',path:runtimePath}:f);
+  expect([...report.findings.map(f=>f.id)].sort()).toEqual(expectedFindings.map(f=>f.id).sort());
+  expect(ordered(report.findings.map(findingMeaning))).toEqual(ordered(expectedFindings.map(findingMeaning)));
   expect(report.findings.some(f=>f.category==='AUTO_CANDIDATE')).toBe(false);
   const sources=new Map<string,string>();
   for (const path of report.files) sources.set(path,await readFile(path,'utf8'));

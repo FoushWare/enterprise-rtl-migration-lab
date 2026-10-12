@@ -80,19 +80,19 @@
     },
     {
       "ruleId": "RTL.RUNTIME.MISMATCH",
-      "path": "libs/design-system/src/index.tsx",
+      "path": "libs/design-system/src/runtime.tsx",
       "contextIncludes": "theme",
       "issueId": "RTL-04"
     },
     {
       "ruleId": "RTL.RUNTIME.MISMATCH",
-      "path": "libs/design-system/src/index.tsx",
+      "path": "libs/design-system/src/runtime.tsx",
       "contextIncludes": "theme",
       "issueId": "RTL-06"
     },
     {
       "ruleId": "RTL.RUNTIME.MISMATCH",
-      "path": "libs/design-system/src/index.tsx",
+      "path": "libs/design-system/src/runtime.tsx",
       "contextIncludes": "theme",
       "issueId": "RTL-07"
     },
@@ -205,7 +205,7 @@
       "property": "background",
       "valueDigest": "3c7f9c16a09ca1ac96b83240c6703118c78de201885e7d3f9bcd03c8434fab39",
       "reason": "Reviewed status-color dictionary contains literal color values only.",
-      "sourceDigest": "7c2fc659a5eadff7b3b4e93ae895ce8e9fc307110b6577cd8921fd44da7f78ac"
+      "sourceDigest": "9c403c88f291ff07cca6f03c7840acbd5d59dfd098fa0b4058684101eff48c0f"
     }
   ],
   "roles": [
