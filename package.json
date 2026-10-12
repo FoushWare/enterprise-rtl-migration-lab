@@ -18,13 +18,16 @@
     "rtl:scan:build": "tsc -p tools/rtl-scanner/tsconfig.json"
   },
   "dependencies": {
+    "@emotion/cache": "11.14.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^7.3.0",
     "@mui/material": "^7.3.0",
+    "@mui/stylis-plugin-rtl": "7.3.10",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-router-dom": "^7.6.0"
+    "react-router-dom": "^7.6.0",
+    "stylis": "4.2.0"
   },
   "devDependencies": {
     "@nx/vite": "23.3.0",
