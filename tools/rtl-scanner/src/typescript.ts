@@ -17,7 +17,7 @@ export function extractTypescript(path: string, text: string) {
   const diag=(n:ts.Node,code:string,message:string)=>diagnostics.push({path,code,message,range:range(text,n.getStart(sf),n.end)});
   const context=(n:ts.Node):string=> { let p:ts.Node|undefined=n; while(p){if(ts.isFunctionDeclaration(p)&&p.name)return p.name.text; if(ts.isVariableDeclaration(p)&&ts.isIdentifier(p.name))return p.name.text; p=p.parent;} return 'module'; };
   const aliases:Record<string,string>={ml:'marginLeft',mr:'marginRight',pl:'paddingLeft',pr:'paddingRight',mx:'marginHorizontalAxis',my:'marginVerticalAxis',px:'paddingHorizontalAxis',py:'paddingVerticalAxis',m:'margin',p:'padding'};
-  function object(n: ts.Expression, mechanism: Mechanism, ctx:string, seen=new Set<string>()) {
+  function object(n: ts.Expression, mechanism: Mechanism, ctx:string, seen=new Set<string>(), inheritedKey?:string) {
     if(ts.isParenthesizedExpression(n)||ts.isAsExpression(n)||ts.isSatisfiesExpression(n)){object(n.expression,mechanism,ctx,seen);return;}
     if(ts.isIdentifier(n)&&constants.has(n.text)&&!ambiguousConstants.has(n.text)&&!seen.has(n.text)){ object(constants.get(n.text)!,mechanism,`${ctx}/reference:${n.text}`,new Set([...seen,n.text]));return; }
     if(ts.isArrayLiteralExpression(n)){n.elements.forEach((e,i)=>object(e,mechanism,`${ctx}/array:${i}`,seen));return;}
@@ -27,10 +27,17 @@ export function extractTypescript(path: string, text: string) {
       if(!ts.isPropertyAssignment(p)||ts.isComputedPropertyName(p.name)){diag(p,'UNRESOLVED_PROPERTY','Spread, shorthand, method or computed style key not resolved.');continue;}
       const key=ts.isIdentifier(p.name)||ts.isStringLiteral(p.name)||ts.isNumericLiteral(p.name)?p.name.text:p.name.getText(sf);
       const v=p.initializer;
-      if(ts.isObjectLiteralExpression(v)||ts.isArrayLiteralExpression(v)){object(v,mechanism,`${ctx}/${key}`,seen);continue;}
+      const resolvedKey=inheritedKey??(mechanism==='mui-sx'?aliases[key]??key:key);
+      if(ts.isArrayLiteralExpression(v)&&mechanism==='mui-sx'&&key!=='sx'){
+        v.elements.forEach((item,i)=>{if(item.kind===ts.SyntaxKind.NullKeyword)return;const literal=ts.isStringLiteral(item)||ts.isNumericLiteral(item)||(ts.isPrefixUnaryExpression(item)&&ts.isNumericLiteral(item.operand));if(!literal)diag(item,'DYNAMIC_VALUE',`Value for ${resolvedKey} is dynamic; original retained.`);evidence.push(fact(path,text,mechanism,`${ctx}/${key}/responsive:${i}`,resolvedKey,item.getText(sf),item.getStart(sf),item.end,/^(margin|padding|gap)/.test(resolvedKey)?'mui-theme-spacing':'mui-system'));});continue;
+      }
+      if(ts.isObjectLiteralExpression(v)||ts.isArrayLiteralExpression(v)){
+        const responsive=mechanism==='mui-sx'&&ts.isObjectLiteralExpression(v)&&v.properties.length>0&&v.properties.every(x=>ts.isPropertyAssignment(x)&&/^(xs|sm|md|lg|xl)$/.test(x.name.getText(sf)));
+        object(v,mechanism,`${ctx}/${key}`,seen,responsive?resolvedKey:undefined);continue;
+      }
       const literal=ts.isStringLiteral(v)||ts.isNumericLiteral(v)||ts.isNoSubstitutionTemplateLiteral(v)||(ts.isPrefixUnaryExpression(v)&&ts.isNumericLiteral(v.operand));
       if(!literal){diag(v,'DYNAMIC_VALUE',`Value for ${key} is dynamic; original retained.`);}
-      const normalized=mechanism==='mui-sx'?aliases[key]??key:key;
+      const normalized=resolvedKey;
       const spacing=/^(margin|padding|gap|rowGap|columnGap)/.test(normalized)||/(margin|padding|gap)(?:\/|$)/i.test(ctx);
       evidence.push(fact(path,text,mechanism,ctx,normalized,v.getText(sf),p.getStart(sf),p.end,mechanism==='react-inline'?'react-css':mechanism==='mui-theme'?'emotion-css':spacing?'mui-theme-spacing':'mui-system'));
     }

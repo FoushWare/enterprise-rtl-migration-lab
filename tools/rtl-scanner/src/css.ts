@@ -6,7 +6,7 @@ export function extractCss(path: string, original: string, fragment = original, 
   try {
     const root = postcss.parse(fragment, { from: undefined });
     root.walkDecls(d => {
-      const start = base + d.source!.start!.offset!, end = base + d.source!.end!.offset! + 1;
+      const start = base + d.source!.start!.offset!, end = base + d.source!.end!.offset!;
       const parents: string[] = []; let p = d.parent;
       while (p && p.type !== "root") { parents.unshift(p.type === "rule" ? p.selector : p.type === "atrule" ? `@${p.name} ${p.params}` : 'container'); p = p.parent; }
       evidence.push(fact(path,original,mechanism,`${context}/${parents.join("/")}`,d.prop,d.value,start,end,"css",valueParser(d.value).nodes.map(n=>valueParser.stringify(n))));

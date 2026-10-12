@@ -1,35 +1,52 @@
-# Enterprise RTL Scanner Foundation
+# Enterprise RTL Scanner — Conservative Detection
 
-For **Migrating Enterprise React Apps to RTL Without Breaking LTR**. Stage 2 extracts source evidence only. `findings` is always empty: no RTL risk rules, classification, nine-issue coverage claim, codemods or dashboard are implemented.
-
-From the repository root:
+For **Migrating Enterprise React Apps to RTL Without Breaking LTR**. Foundation was committed separately at `406b7cd`; Stage 3 adds risk detection, not remediation. No fixes, codemods, RTL plugins, runtime changes or dashboard exist.
 
 ```sh
 npm run rtl:scan:typecheck
 npm run rtl:scan:test
 npm run rtl:scan:build
-npm run rtl:scan -- --format json > /tmp/atlas-evidence.json
-npm run rtl:scan -- --format markdown > /tmp/atlas-evidence.md
+node dist/tools/rtl-scanner/cli.js --format json > /tmp/atlas-rtl.json
+node dist/tools/rtl-scanner/cli.js --format markdown > /tmp/atlas-rtl.md
 ```
 
-For machine-consumable stdout, bypass npm's script banner:
+Build writes ignored `dist/tools/rtl-scanner`. Direct scanning is separate, uses only reads, and writes solely to stdout. `npm run rtl:scan -- --format json` also works but npm prints a script banner; use direct node for machine-readable stdout. Options: `--root repository`, `--format json|markdown`, optional `--fail-on-findings`.
 
-```sh
-node dist/tools/rtl-scanner/cli.js --format json > /tmp/atlas-evidence.json
-```
+Exit codes:
 
-The build writes ignored `dist/tools/rtl-scanner`; **scanning is separate and does not build or write caches**. CLI accepts `--root` and `--format json|markdown`. Exit 0 means extraction completed without coverage diagnostics, 2 means incomplete extraction or invalid input; dynamic diagnostics are expected in Atlas. Partial reports remain useful inventories. No `--fix`, output-file writer, subprocess, network or application execution exists in the scanner.
+- **0:** applicable supported analysis completed; risk entries do not fail scans by default. Documented nonblocking dynamic diagnostics remain in the report.
+- **1:** completed scan with actionable entries when the explicit `--fail-on-findings` gate is selected. INFORMATIONAL and INTENTIONAL_LTR entries do not count toward this gate.
+- **2:** blocking directional uncertainty, parser/source coverage failure, input/configuration errors detected by the loader or internal error. Coverage failures take precedence over a findings gate. Partial JSON/Markdown is emitted for diagnosed incomplete scans; malformed root/configuration errors use stderr.
 
-Discovery reads Nx `apps/*/project.json` and `libs/*/project.json` as data, scans their source roots and application index HTML, and excludes stories/dependencies/generated outputs. Symlinks in source trees are skipped; symlink source roots/HTML are rejected. Missing/invalid metadata fails explicitly. This foundation targets the current flat Nx application/library structure, not arbitrary nested project layouts.
+The actual Atlas scan currently completes with nine visible nonblocking diagnostics. A dynamic color does not block directional rules. Unknown left/right values, spreads, interpolated templates, dynamic runtime direction, unknown directional sx objects and parse failures remain blocking. The `k.icon` owner is unresolved but its full sx object is a literal non-directional fontSize. Three background exceptions in the data-only policy are tied to both expression and source-file SHA-256 fingerprints; changed source invalidates them.
 
-Adapters:
+Discovery reads flat Nx `apps/*/project.json` and `libs/*/project.json`, their source roots and application index HTML. It does not execute Nx/configuration/application modules, traverse symlinks, create caches or use network/subprocesses. Stories, dependencies and generated outputs are excluded. Skipped unsupported styling sources produce explicit coverage diagnostics.
 
-- PostCSS retains plain CSS declaration/selector/media context; value parser retains shorthand tokens/functions without proposing changes.
-- TypeScript syntax traversal recognizes imported Emotion styled templates, MUI sx and createTheme styleOverrides, and React inline styles. Local const references are bounded and repeated names are rejected conservatively. Nested objects, responsive branches, arrays and literal callback return objects are inventoried. No callback/interpolation is executed.
-- parse5 extracts initial HTML root lang/dir attributes with source spans; malformed HTML emits coverage diagnostics.
+Adapters preserve repository-relative paths, exact original snippets and one-based UTF-16 lines/columns with zero-based half-open offsets. PostCSS supplies declaration/selector/media context; tokens preserve functions/shorthands. TypeScript recognizes imported Emotion templates, MUI sx/aliases/responsive objects and arrays, theme overrides, inline styles and bounded local const objects. MUI sx spacing uses theme semantics; theme styleOverrides use raw Emotion CSS, while inline styles use React CSS semantics. HTML attributes describe initial markup, not client direction.
 
-Report v1 contains source inventory, content digest, stable fact IDs, exact repository-relative UTF-16 ranges (one-based lines/columns, half-open offsets), mechanism/context, raw declarations and semantic labels. MUI sx spacing is theme-based; theme styleOverrides use raw Emotion CSS semantics, and React inline styles have React CSS semantics. MUI mx/my/px/py are physical horizontal/vertical axes, not logical properties. Original source keys are retained in declaration snippets; normalized aliases are evidence, never transformation instructions. JSON and Markdown derive from the same model and omit time/machine paths.
+Report **schema v2** retains the foundation's 419 style facts separately from findings, adding policy digest, metrics, coverage impact/blocking status and stable rule-based finding IDs. Every finding has severity, confidence, source/range/original/mechanism, rationale, treatment, owner, related evidence/locations, limitations and reference-case IDs where a reviewed binding supports them. JSON and Markdown derive from one model and omit timestamps/absolute checkout paths. Semantic AST IDs omit trivia; declaration IDs use path/context/property/value rather than source lines. Changes to declarations/structural anchors or indistinguishable duplicates can change IDs.
 
-Limits: no cross-module symbol graph, full TypeScript type checker, runtime lifecycle/provider analysis, computed cascade, icon/bidi risk analysis or findings yet. Import-owned MUI components and the known shared FormField/Button wrappers are recognized; dynamic component `k.icon` is unresolved. Foreign sx owners are diagnosed. Dynamic values preserve their source text with diagnostics. Escaped templates are skipped explicitly; interpolated templates yield only independent semicolon-terminated declarations and incomplete-coverage diagnostics. CSS parsing retains source structure but does not validate every value grammar. A static theme override callback and conditional styles can remain unresolved. HTML attributes describe initial markup, not eventual document direction.
+Rules cover physical edges/spacing/borders/corners, asymmetric or unresolved shorthands, positioned/coupled shell geometry, transforms/order, runtime document/theme/cache correlation, icons/glyphs, separate SVG/flex-label flow, mixed-content sinks, reviewed brand roles and table/form policies. Static chart/collision hints do not prove actual rendered errors. Growth/external-link/close icons, symmetric spacing, vertical spacing, full-grid-span rules and explicit isolation are negative cases.
 
-Tests cover source ranges/Unicode/CRLF, CSS tokens, templates/interpolation/escapes, sx aliases/responsive arrays/callbacks, inline differences, theme overrides, malformed syntax, unresolved owners, shadowing and deterministic read-only temporary scans. No application styles or screenshots need changing to extend these fixtures.
+`rtl-scanner.config.json` is data-only:
+
+- mechanism ownership distinguishes custom CSS/inline, unresolved custom Emotion/sx handling and generated MUI styles;
+- exact semantic approvals require owner, source fingerprint, declaration identity, reason, reviewer and conditional logical equivalent; MUI sx remains manual because alias/unit processing of logical equivalents has not been verified;
+- **Atlas approvals are empty**, so no AUTO_CANDIDATE entries are authorized;
+- exact-original exceptions preserve approved default English roots without suppressing runtime mismatch findings;
+- reviewed role metadata identifies brand composition, and reference bindings connect evidence to Phase 2A cases. These links are not automatic visual diagnoses;
+- conflicting overrides are manual review, and unknown owners cannot qualify for automation.
+
+Coverage remains deliberately bounded: no complete type/import/route graph, computed cascade, generated vendor CSS evaluation, full CSS value grammar, native date/caret inspection or font-dependent collision proof. Re-exported providers, namespaces, unknown wrappers, escaped templates and interpolation can remain unsupported. Cache absence is explicitly scoped to analyzed imports/providers; global document RTL correctly reaches ordinary body-mounted portals, so no portal failure is invented. Custom-property values are not resolved across the cascade, and dynamic background positioning stays incomplete unless a source-pinned review exception establishes its non-directional role.
+
+See [actual findings](../../docs/phase-3-rtl-findings.md) and [detection review/matrix](../../docs/phase-3-detection-review.md). The nine reference cases have static risk evidence, not nine independently proved visual failures. Stop after Stage 3; human approval is required before Stage 4 integration or any transformation/runtime remediation.
+
+Application attribution is source-path based for app files. Shared findings carry an empty application list to indicate unresolved reachability, not an unaffected library; the reviewed reference-case matrix supplies known application context. Runtime cache presence with unresolved cache/plugin configuration remains blocking, rather than being accepted as proof of RTL support.
+
+## Stage 3 closure qualifications
+
+The [final adjudication](../../docs/phase-3-stage-3-final-adjudication.md) records all 46 candidates outside the nine positive calibration cases: 28 valid review risks, 18 requiring further evidence and zero established false positives. These are not 46 confirmed visual defects, a measured false-positive rate or evidence of perfect precision. The nine-family reference matrix is not a benchmark; repeated links to a shared theme finding do not create independent root causes. Phase 2A visual severities and scanner static priorities describe different evidence.
+
+Policy validation is partial. TypeScript interfaces do not validate JSON at runtime, and only loader-detected malformed configurations are guaranteed to exit 2. Unmatched/stale entries have no explicit diagnostic. Whole-file SHA-256 pins conservatively invalidate dynamic exceptions after unrelated edits too; exact matching is not general-purpose suppression. Strict runtime schema validation, stale-entry diagnostics and complete ownership/override validation are required before automated transformations or CI enforcement. These enhancements remain deferred.
+
+Shared `applications: []` means scanner reachability unresolved, not zero consumers. The final adjudication preserves reviewer-observed cross-app and application-specific consumer associations separately from scanner-computed reachability; there is no complete import/provider/selector graph. All nine coverage diagnostics and 18 unresolved candidates remain visible. Three proposed CSS spacing pilots remain unapproved and unchanged; AUTO_CANDIDATE stays zero. See the [closure audit](../../docs/phase-3-stage-3-closure.md) for final verification and commit scope. Stage 4 has not started.
