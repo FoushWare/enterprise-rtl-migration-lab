@@ -9,7 +9,7 @@ import { extractCss } from '../src/css.js';
 import { extractTypescript } from '../src/typescript.js';
 import { detect } from '../src/rules.js';
 import { classifyDiagnostics, exitCode } from '../src/coverage.js';
-import { hash, type Finding } from '../src/model.js';
+import { hash, type Finding, type Report } from '../src/model.js';
 import { scan } from '../src/scan.js';
 import { json, markdown } from '../src/report.js';
 const base = (): Policy => structuredClone({ ...emptyPolicy, generatedStyleOwner: 'mui-generated', ownership: { css: 'custom-css', 'react-inline': 'custom-inline', 'html-root': 'document-runtime' } });
@@ -36,12 +36,86 @@ async function temporary(p: Policy, callback: (root: string) => Promise<void>, s
     await callback(root);
   } finally { await rm(root, {recursive: true, force: true}); }
 }
-it('current Atlas configuration and all five exceptions retain exact archived reports', async () => {
-  const p = await loadPolicy(process.cwd()); expect(p.dynamicExceptions).toHaveLength(3); expect(p.exceptions).toHaveLength(2); expect(p.approvals).toEqual([]);
-  const report = await scan(process.cwd()); expect(report.evidence).toHaveLength(419); expect(report.findings).toHaveLength(58); expect(report.diagnostics).toHaveLength(9); expect(report.complete).toBe(true);
-  expect(json(report)).toBe(await readFile('docs/phase-3-rtl-findings.json', 'utf8'));
-  expect(markdown(report)).toBe(await readFile('docs/phase-3-rtl-findings.md', 'utf8'));
-  expect(report.findings.filter(f => f.exceptionReason).map(f => f.category)).toEqual(['INTENTIONAL_LTR', 'INTENTIONAL_LTR']);
+// Immutable artifact hashes verified during repair against approved Stage 3 commit
+// 0de6d609cbfb9aae662d1cb7c9589c38592bb21b. Normal tests require no Git/network.
+const historicalHashes = {
+  json: 'ba990cf34f1a3e44317549829ef90793a6dabafada36feeb5d19460e7dbd9737',
+  markdown: 'e22879500f08c9f73179a778dde7e68ab8b44b1f718cf75afb0e69163d52c2ac',
+};
+const pilot = [
+  {context:'stylesheet/.status-dot', value:'6px', id:'RTL.CSS.PHYSICAL:5c1ae10d9ddc0c6daf3c5945'},
+  {context:'stylesheet/.chart-legend i', value:'7px', id:'RTL.CSS.PHYSICAL:911c43329429945ea8519fad'},
+];
+async function historicalReport(): Promise<Report> {
+  const text = await readFile('docs/phase-3-rtl-findings.json', 'utf8');
+  expect(hash(text)).toBe(historicalHashes.json);
+  return JSON.parse(text) as Report;
+}
+// Source offsets can move after an approved spelling change. Preserve every
+// nonlocation field; validate live ranges separately against actual source.
+function findingMeaning(f: Finding) {
+  const {range: location, relatedLocations, ...meaning} = f;
+  expect(location.start.offset).toBeLessThanOrEqual(location.end.offset);
+  return {...meaning, relatedLocations:relatedLocations.map(l=>({path:l.path}))};
+}
+it('historical Stage 3 reports retain independently pinned content and formatting', async () => {
+  const report = await historicalReport();
+  const md = await readFile('docs/phase-3-rtl-findings.md', 'utf8');
+  expect(hash(md)).toBe(historicalHashes.markdown);
+  expect(report.schemaVersion).toBe(2); expect(report.kind).toBe('rtl-risk-report');
+  expect(report.complete).toBe(true); expect(report.evidence).toHaveLength(419);
+  expect(report.findings).toHaveLength(58); expect(report.diagnostics).toHaveLength(9);
+  expect(report.metrics.byCategory).toEqual({MANUAL_REVIEW:50,RUNTIME_CONFIG:5,INTENTIONAL_LTR:2,INFORMATIONAL:1});
+  expect(report.findings.filter(f=>!['INTENTIONAL_LTR','INFORMATIONAL'].includes(f.category))).toHaveLength(55);
+  expect(new Set(report.findings.map(f=>f.id)).size).toBe(report.findings.length);
+  for (const candidate of pilot) expect(report.findings.find(f=>f.id===candidate.id)).toMatchObject({category:'MANUAL_REVIEW', context:candidate.context, original:`margin-right: ${candidate.value};`});
+  expect(json(report)).toBe(await readFile('docs/phase-3-rtl-findings.json','utf8'));
+  expect(markdown(report)).toBe(md);
+});
+it('live Atlas scan reflects only the approved logical margins and preserves all five exceptions', async () => {
+  const p = await loadPolicy(process.cwd()), historical = await historicalReport();
+  expect(p.dynamicExceptions).toHaveLength(3); expect(p.exceptions).toHaveLength(2); expect(p.approvals).toEqual([]);
+  expect(p.ownership.css).toBe('custom-css');
+  const report = await scan(process.cwd()), repeated = await scan(process.cwd());
+  expect(report.complete).toBe(true); expect(report.evidence).toHaveLength(historical.evidence.length);
+  expect(report.diagnostics).toEqual(historical.diagnostics);
+  expect(report.diagnostics.every(d=>!d.blocking)).toBe(true);
+  expect(report.diagnostics.some(d=>d.code.startsWith('POLICY'))).toBe(false);
+  expect(report.policyDigest).toBe(historical.policyDigest);
+  expect(report.files).toEqual(historical.files); expect(report.skipped).toEqual(historical.skipped);
+  expect(json(report)).toBe(json(repeated)); expect(markdown(report)).toBe(markdown(repeated));
+  const stylesheet = 'libs/design-system/src/styles.css';
+  for (const candidate of pilot) {
+    const evidence=report.evidence.filter(e=>e.path===stylesheet&&e.context===candidate.context);
+    expect(evidence.filter(e=>e.property==='margin-inline-end')).toEqual([expect.objectContaining({value:candidate.value,original:`margin-inline-end: ${candidate.value};`,mechanism:'css'})]);
+    expect(evidence.some(e=>e.property==='margin-right')).toBe(false);
+    expect(report.findings.some(f=>f.id===candidate.id)).toBe(false);
+  }
+  expect(report.evidence.find(e=>e.path===stylesheet&&e.context==='stylesheet/.kpi-note b'&&e.property==='margin-right')).toMatchObject({value:'5px'});
+  const removed=new Set(pilot.map(c=>c.id));
+  expect(report.findings.map(f=>f.id)).toEqual(historical.findings.filter(f=>!removed.has(f.id)).map(f=>f.id));
+  expect(report.findings.map(findingMeaning)).toEqual(historical.findings.filter(f=>!removed.has(f.id)).map(findingMeaning));
+  expect(report.findings.some(f=>f.category==='AUTO_CANDIDATE')).toBe(false);
+  const sources=new Map<string,string>();
+  for (const path of report.files) sources.set(path,await readFile(path,'utf8'));
+  for (const e of report.evidence) {
+    const source=sources.get(e.path)!;
+    expect(source.slice(e.range.start.offset,e.range.end.offset)).toBe(e.original);
+  }
+  for (const f of report.findings.filter(f=>f.sourceMechanism==='css')) {
+    const source=sources.get(f.path)!;
+    expect(source.slice(f.range.start.offset,f.range.end.offset)).toBe(f.original);
+  }
+  for (const pin of p.dynamicExceptions) {
+    expect(hash(sources.get(pin.path)!)).toBe(pin.sourceDigest);
+    expect(report.evidence.some(e=>e.path===pin.path&&e.property===pin.property&&hash(e.value)===pin.valueDigest)).toBe(true);
+  }
+  for (const exception of p.exceptions) {
+    const matches=report.findings.filter(f=>f.ruleId===exception.ruleId&&f.path===exception.path&&f.context===exception.context&&hash(f.original)===exception.originalDigest);
+    expect(matches).toHaveLength(1);
+    expect(matches[0]).toMatchObject({category:'INTENTIONAL_LTR',exceptionReason:exception.reason});
+  }
+  expect(report.findings.filter(f=>f.exceptionReason).map(f=>f.category)).toEqual(['INTENTIONAL_LTR','INTENTIONAL_LTR']);
 });
 it('unsupported schema and unknown rule are explicitly unsupported', () => {
   expect(failure({...base(), schemaVersion: 2}).diagnostic.code).toBe('POLICY_UNSUPPORTED');
