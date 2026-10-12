@@ -46,11 +46,10 @@ it("creates private stable caches once with distinct keys and exact processor or
   expect(prepared[1].options.stylisPlugins).toEqual([prefixer, rtlPlugin]);
   expect(prepared[0].instance).not.toBe(prepared[1].instance);
   const again = await import("../libs/design-system/src/runtime");
-  expect(Object.keys(again).sort()).toEqual(["rtlTheme", "theme"]);
+  expect(Object.keys(again).sort()).toEqual(["Provider", "rtlTheme", "theme"]);
   expect(captured.calls.filter(c => c.options.stylisPlugins)).toEqual(prepared);
 });
-it("keeps the Provider using the public English theme without document synchronization", () => {
-  const initialDir = document.documentElement.dir;
+it("keeps the standalone Provider using the public English theme and synchronized document", () => {
   function Probe() {
     const active = useTheme();
     // MUI 7 adds vars:null and merges the theme into its engine context.
@@ -62,7 +61,8 @@ it("keeps the Provider using the public English theme without document synchroni
   }
   render(<Provider><Probe /></Provider>);
   expect(screen.getByTestId("theme")).toHaveTextContent("ltr");
-  expect(document.documentElement.dir).toBe(initialDir);
+  expect(document.documentElement.dir).toBe("ltr");
+  expect(document.documentElement.lang).toBe("en");
 });
 it("extracts the prepared module without unsupported or blocking configuration diagnostics", () => {
   const path = "libs/design-system/src/runtime.tsx", source = readFileSync(path, "utf8");
@@ -71,6 +71,6 @@ it("extracts the prepared module without unsupported or blocking configuration d
   const findings = detect(extracted.evidence, new Map([[path, source]]), emptyPolicy, diagnostics);
   expect(diagnostics.filter(d => d.blocking)).toEqual([]);
   expect(findings.some(f => f.ruleId === "RTL.RUNTIME.CACHE_UNVERIFIED")).toBe(false);
-  // No CacheProvider is mounted: extraction is not runtime pipeline certification.
-  expect(source).not.toContain("CacheProvider");
+  // Static acceptance is not proof of browser layout or cache lifecycle.
+  expect(source).toContain("<CacheProvider value={language === \"ar\" ? rtlCache : ltrCache}>");
 });

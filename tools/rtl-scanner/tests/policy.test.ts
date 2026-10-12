@@ -96,7 +96,7 @@ it('live Atlas scan reflects approved logical margins and theme relocation while
   for(const [i,d] of report.diagnostics.entries()){const source=await readFile(d.path,'utf8');const span=source.slice(d.range.start.offset,d.range.end.offset);expect(span.length).toBeGreaterThan(0);if(d.path!=='libs/design-system/src/index.tsx')expect(d.range).toEqual(historical.diagnostics[i].range);else expect(span).toMatch(/^colors\[status\]\[[01]\]$/);}
   expect(report.diagnostics.every(d=>!d.blocking)).toBe(true);
   expect(report.diagnostics.some(d=>d.code.startsWith('POLICY'))).toBe(false);
-  expect(report.policyDigest).toBe('ee243f20caa61d9065addda896ea77362b3757af468456e313f0447234899347');
+  expect(report.policyDigest).toBe('779f4c5dbdee63251cc3846f790ee0f772be105723315f731d930798a500e532');
   expect(report.files).toEqual([...historical.files,runtimePath].sort()); expect(report.skipped).toEqual(historical.skipped);
   expect(json(report)).toBe(json(repeated)); expect(markdown(report)).toBe(markdown(repeated));
   const stylesheet = 'libs/design-system/src/styles.css';
@@ -107,9 +107,9 @@ it('live Atlas scan reflects approved logical margins and theme relocation while
     expect(report.findings.some(f=>f.id===candidate.id)).toBe(false);
   }
   expect(report.evidence.find(e=>e.path===stylesheet&&e.context==='stylesheet/.kpi-note b'&&e.property==='margin-right')).toMatchObject({value:'5px'});
-  const removed=new Set(pilot.map(c=>c.id));
-  const expectedFindings=historical.findings.filter(f=>!removed.has(f.id)).map(f=>f.id==='RTL.RUNTIME.MISMATCH:631220ab170fd844366645f4'
-    ? {...f,id:'RTL.RUNTIME.MISMATCH:9afa0fc2057956b3d8c3069e',path:runtimePath}:f);
+  const removed=new Set([...pilot.map(c=>c.id),'RTL.RUNTIME.MISMATCH:631220ab170fd844366645f4','RTL.RUNTIME.CACHE:c6803b61cf2818cad26b1416']);
+  const expectedFindings=historical.findings.filter(f=>!removed.has(f.id)).map(f=>f.id==='RTL.DOCUMENT.RUNTIME:12875636fcbc0a9be9a7b6f4'
+    ? {...f,id:'RTL.DOCUMENT.RUNTIME:1f3bd0fab5211f473ef82db4',path:runtimePath,context:'Provider'}:f);
   expect([...report.findings.map(f=>f.id)].sort()).toEqual(expectedFindings.map(f=>f.id).sort());
   expect(ordered(report.findings.map(findingMeaning))).toEqual(ordered(expectedFindings.map(findingMeaning)));
   expect(report.findings.some(f=>f.category==='AUTO_CANDIDATE')).toBe(false);

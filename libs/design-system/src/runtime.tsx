@@ -1,4 +1,7 @@
-import { createTheme } from "@mui/material";
+import { useLayoutEffect, type ReactNode } from "react";
+import { useLocale } from "@atlas/shared";
+import { CacheProvider } from "@emotion/react";
+import { ThemeProvider, CssBaseline, createTheme } from "@mui/material";
 import createCache from "@emotion/cache";
 import { prefixer } from "stylis";
 import rtlPlugin from "@mui/stylis-plugin-rtl";
@@ -74,9 +77,17 @@ export const rtlTheme = createTheme({
   },
 });
 
-// Prepared once per module; neither cache is mounted in the active Provider.
 const ltrCache = createCache({ key: "css", stylisPlugins: [prefixer] });
 const rtlCache = createCache({ key: "atlas-rtl", stylisPlugins: [prefixer, rtlPlugin] });
-// Deliberately retain private instances for the separately approved runtime slice.
-void ltrCache;
-void rtlCache;
+export function Provider({ children }: { children: ReactNode }) {
+  const { language } = useLocale();
+  useLayoutEffect(() => {
+    document.documentElement.lang = language === "ar" ? "ar-EG" : "en";
+    document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
+  }, [language]);
+  return <CacheProvider value={language === "ar" ? rtlCache : ltrCache}>
+    <ThemeProvider theme={language === "ar" ? rtlTheme : theme}>
+      <CssBaseline />{children}
+    </ThemeProvider>
+  </CacheProvider>;
+}

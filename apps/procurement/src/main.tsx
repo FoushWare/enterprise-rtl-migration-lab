@@ -6,12 +6,10 @@ import App from "./App";
 import { LocaleProvider } from "@atlas/shared";
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <Provider>
-      <BrowserRouter>
-        <LocaleProvider>
-          <App />
-        </LocaleProvider>
-      </BrowserRouter>
-    </Provider>
+    <BrowserRouter>
+      <LocaleProvider>
+        <Provider><App /></Provider>
+      </LocaleProvider>
+    </BrowserRouter>
   </React.StrictMode>,
 );

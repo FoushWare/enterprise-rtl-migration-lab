@@ -2,8 +2,6 @@ import { useLocale, DemoControls } from "@atlas/shared";
 import { useState, type ReactNode } from "react";
 import { NavLink } from "react-router-dom";
 import {
-  ThemeProvider,
-  CssBaseline,
   Button as MuiButton,
   Paper,
   TextField,
@@ -35,16 +33,7 @@ import ArrowForward from "@mui/icons-material/ArrowForward";
 import styled from "@emotion/styled";
 import type { Status } from "@atlas/shared";
 import "./styles.css";
-import { theme } from "./runtime";
-export { theme } from "./runtime";
-export function Provider({ children }: { children: ReactNode }) {
-  return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      {children}
-    </ThemeProvider>
-  );
-}
+export { Provider, theme } from "./runtime";
 export const Button = <C extends React.ElementType = "button">(
   props: ButtonProps<C, { component?: C }>,
 ) => <MuiButton variant="contained" {...props} />;
@@ -179,20 +168,20 @@ export function DataTable<T>({
 }
 const SidebarFrame = styled.aside`
   position: fixed;
-  left: 0;
+  /* @noflip */ left: 0;
   top: 0;
   bottom: 0;
   width: 238px;
   background: #fff;
-  border-right: 1px solid #e9edf4;
+  /* @noflip */ border-right: 1px solid #e9edf4;
   padding: 30px 18px;
   z-index: 30;
   display: flex;
   flex-direction: column;
   @media (max-width: 900px) {
-    transform: translateX(-100%);
+    /* @noflip */ transform: translateX(-100%);
     &.is-open {
-      transform: translateX(0);
+      /* @noflip */ transform: translateX(0);
     }
   }
 `;

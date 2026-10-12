@@ -79,30 +79,6 @@
       "issueId": "RTL-03"
     },
     {
-      "ruleId": "RTL.RUNTIME.MISMATCH",
-      "path": "libs/design-system/src/runtime.tsx",
-      "contextIncludes": "theme",
-      "issueId": "RTL-04"
-    },
-    {
-      "ruleId": "RTL.RUNTIME.MISMATCH",
-      "path": "libs/design-system/src/runtime.tsx",
-      "contextIncludes": "theme",
-      "issueId": "RTL-06"
-    },
-    {
-      "ruleId": "RTL.RUNTIME.MISMATCH",
-      "path": "libs/design-system/src/runtime.tsx",
-      "contextIncludes": "theme",
-      "issueId": "RTL-07"
-    },
-    {
-      "ruleId": "RTL.RUNTIME.CACHE",
-      "path": "libs/design-system/src/index.tsx",
-      "contextIncludes": "Provider/ThemeProvider",
-      "issueId": "RTL-04"
-    },
-    {
       "ruleId": "RTL.FORM.DIRECTION",
       "path": "libs/design-system/src/index.tsx",
       "contextIncludes": "FormField/TextField",
@@ -205,7 +181,7 @@
       "property": "background",
       "valueDigest": "3c7f9c16a09ca1ac96b83240c6703118c78de201885e7d3f9bcd03c8434fab39",
       "reason": "Reviewed status-color dictionary contains literal color values only.",
-      "sourceDigest": "9c403c88f291ff07cca6f03c7840acbd5d59dfd098fa0b4058684101eff48c0f"
+      "sourceDigest": "7ab550cb2ad95ac3fa0728bd324d26cef06c013bbe2d1f148a81aa01b98de8d8"
     }
   ],
   "roles": [

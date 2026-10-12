@@ -1,4 +1,4 @@
-import { createContext, useContext, useLayoutEffect, type ReactNode } from "react";
+import { createContext, useContext, type ReactNode } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { arabic, type TranslationKey } from "./translations";
 import "./demo.css";
@@ -29,10 +29,6 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
   const demo = query.get("demo") === "unmigrated-rtl";
   const language: Language = demo && query.get("lang") === "ar" ? "ar" : "en";
   const t = translator(language);
-  useLayoutEffect(() => {
-    document.documentElement.lang = language === "ar" ? "ar-EG" : "en";
-    document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
-  }, [language]);
   function demoHref(href: string) {
     if (!demo || /^(mailto:|tel:|#)/.test(href)) return href;
     const url = new URL(href, window.location.origin);
