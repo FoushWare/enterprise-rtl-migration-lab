@@ -1,19 +1,18 @@
-import { readFile } from 'node:fs/promises';
+import { readFile, lstat } from 'node:fs/promises';
 import { join } from 'node:path';
-import type { Mechanism, Category } from './model.js';
+import { range, type Mechanism } from './model.js';
+import { PolicyError, policyPath, validatePolicy } from './policy-validation.js';
 export interface Binding { ruleId:string; path:string; contextIncludes:string; originalIncludes?:string; issueId:string }
 export interface Approval { path:string; context:string; property:string; value:string; owner:string; logicalProperty:string; reason:string; reviewedBy:string; sourceDigest:string }
 export interface Exception { ruleId:string; path:string; context:string; category:'INTENTIONAL_LTR'|'INFORMATIONAL'; reason:string; reviewedBy:string; originalDigest:string }
 export interface Policy { schemaVersion:1; generatedStyleOwner:string; ownership:Partial<Record<Mechanism,string>>; ownerOverrides?:{path:string;context:string;owner:string;reason:string}[]; approvals:Approval[]; exceptions:Exception[]; issueBindings:Binding[]; dynamicExceptions:{path:string; property:string; valueDigest:string; sourceDigest:string; reason:string}[]; roles:{kind:'brand';path:string;className:string}[] }
 export const emptyPolicy:Policy={schemaVersion:1,generatedStyleOwner:'unknown',ownership:{},approvals:[],exceptions:[],issueBindings:[],dynamicExceptions:[],roles:[]};
+const sourceTexts = new WeakMap<Policy,string>();
+export const policySourceText = (policy:Policy) => sourceTexts.get(policy) ?? JSON.stringify(policy,null,2);
 export async function loadPolicy(root:string):Promise<Policy>{
- let text:string;try{text=await readFile(join(root,'rtl-scanner.config.json'),'utf8');}catch(e){if((e as NodeJS.ErrnoException).code==='ENOENT')return emptyPolicy;throw e;}
- const p=JSON.parse(text) as Policy;
- if(p.schemaVersion!==1||!p.ownership||!['approvals','exceptions','issueBindings','dynamicExceptions','roles'].every(k=>Array.isArray(p[k as keyof Policy])))throw new Error('Invalid scanner policy schema');
- const categories:Category[]=['INTENTIONAL_LTR','INFORMATIONAL'];
- for(const a of p.approvals)if(!a.path||!a.context||!a.property||!a.value||!a.owner||!a.logicalProperty||!a.reason||!a.reviewedBy||!a.sourceDigest)throw new Error('Invalid semantic approval');
- for(const x of p.exceptions)if(!x.ruleId||!x.path||!x.context||!categories.includes(x.category)||!x.reason||!x.reviewedBy||!x.originalDigest)throw new Error('Invalid exception');
- for(const b of p.issueBindings)if(!b.ruleId||!b.path||!b.contextIncludes||!/^RTL-0[1-9]$/.test(b.issueId))throw new Error('Invalid issue binding');
- for(const d of p.dynamicExceptions)if(!d.path||!d.property||!d.reason||!d.valueDigest||!d.sourceDigest)throw new Error('Invalid dynamic exception');
- return p;
+ let text:string;try{if((await lstat(join(root,policyPath))).isSymbolicLink())throw new PolicyError({path:policyPath,range:range('',0,0),code:'POLICY_INVALID_PATH',message:'BLOCKING /: symlink policy file not permitted',impact:'SOURCE_FAILURE',blocking:true,rationale:'Policy input must remain inside the read-only repository scope.'});text=await readFile(join(root,policyPath),'utf8');}catch(e){if((e as NodeJS.ErrnoException).code==='ENOENT')return emptyPolicy;throw e;}
+ if(text.length>1_000_000)throw new PolicyError({path:policyPath,range:range(text,0,0),code:'POLICY_INVALID',message:'BLOCKING /: policy exceeds size limit',impact:'SOURCE_FAILURE',blocking:true,rationale:'Policy input size is bounded.'});
+ let input:unknown;
+ try { input=JSON.parse(text); } catch { throw new PolicyError({path:policyPath,range:range(text,0,0),code:'POLICY_INVALID_JSON',message:'BLOCKING /: invalid JSON',impact:'SOURCE_FAILURE',blocking:true,rationale:'Policy JSON cannot be interpreted; no policy decisions are applied.'}); }
+ const policy=validatePolicy(input,text);sourceTexts.set(policy,text);return policy;
 }
