@@ -168,18 +168,21 @@ export function DataTable<T>({
 }
 const SidebarFrame = styled.aside`
   position: fixed;
-  /* @noflip */ left: 0;
+  inset-inline-start: 0;
   top: 0;
   bottom: 0;
   width: 238px;
   background: #fff;
-  /* @noflip */ border-right: 1px solid #e9edf4;
+  border-inline-end: 1px solid #e9edf4;
   padding: 30px 18px;
   z-index: 30;
   display: flex;
   flex-direction: column;
   @media (max-width: 900px) {
     /* @noflip */ transform: translateX(-100%);
+    html[dir="rtl"] &:not(.is-open) {
+      /* @noflip */ transform: translateX(100%);
+    }
     &.is-open {
       /* @noflip */ transform: translateX(0);
     }

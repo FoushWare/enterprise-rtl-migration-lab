@@ -85,18 +85,26 @@ it('live Atlas scan reflects approved logical margins and theme relocation while
   const expectedFacts=historical.evidence.map(factMeaning).map(e=>{
     if(e.path==='libs/design-system/src/index.tsx'&&e.mechanism==='mui-theme'&&e.context.startsWith('theme/'))return {...e,path:runtimePath};
     if(e.path==='libs/design-system/src/styles.css'&&pilot.some(c=>c.context===e.context)&&e.property==='margin-right')return {...e,property:'margin-inline-end',original:`margin-inline-end: ${e.value};`};
+    const shell=e.path==='libs/design-system/src/index.tsx'&&e.context==='SidebarFrame/';
+    const gutter=e.path==='libs/design-system/src/styles.css'&&e.context.endsWith('/.app-main');
+    const active=e.path==='libs/design-system/src/styles.css'&&e.context==='stylesheet/nav a.active';
+    const logical=shell?({left:'inset-inline-start','border-right':'border-inline-end'} as Record<string,string>)[e.property]:gutter&&e.property==='margin-left'?'margin-inline-start':active?({'border-left':'border-inline-start','padding-left':'padding-inline-start'} as Record<string,string>)[e.property]:undefined;
+    if(logical)return {...e,property:logical,original:e.original.replace(e.property+':',logical+':')};
     return e;
   });
   const preparedFacts=oldTheme.map(factMeaning).map(e=>({...e,path:runtimePath,context:e.context.replace('theme/','rtlTheme/')}));
+  const negativeFact=historical.evidence.find(e=>e.path==='libs/design-system/src/index.tsx'&&e.context==='SidebarFrame/@media (max-width: 900px)'&&e.property==='transform'&&e.value==='translateX(-100%)')!;
+  expect(negativeFact).toBeTruthy();
+  const positiveFact={...factMeaning(negativeFact),context:'SidebarFrame/@media (max-width: 900px)/html[dir="rtl"] &:not(.is-open)',value:'translateX(100%)',original:'transform: translateX(100%);',tokens:['translateX(100%)']};
   const ordered=<T,>(items:T[])=>items.map(e=>JSON.stringify(e)).sort();
-  expect(ordered(report.evidence.map(factMeaning))).toEqual(ordered([...expectedFacts,...preparedFacts]));
-  expect(report.evidence).toHaveLength(historical.evidence.length+preparedFacts.length);
+  expect(ordered(report.evidence.map(factMeaning))).toEqual(ordered([...expectedFacts,...preparedFacts,positiveFact]));
+  expect(report.evidence).toHaveLength(historical.evidence.length+preparedFacts.length+1);
   const diagnosticMeaning=(d:Report['diagnostics'][number])=>{const {range,...meaning}=d;expect(range.start.offset).toBeLessThanOrEqual(range.end.offset);return meaning;};
   expect(report.diagnostics.map(diagnosticMeaning)).toEqual(historical.diagnostics.map(diagnosticMeaning));
   for(const [i,d] of report.diagnostics.entries()){const source=await readFile(d.path,'utf8');const span=source.slice(d.range.start.offset,d.range.end.offset);expect(span.length).toBeGreaterThan(0);if(d.path!=='libs/design-system/src/index.tsx')expect(d.range).toEqual(historical.diagnostics[i].range);else expect(span).toMatch(/^colors\[status\]\[[01]\]$/);}
   expect(report.diagnostics.every(d=>!d.blocking)).toBe(true);
   expect(report.diagnostics.some(d=>d.code.startsWith('POLICY'))).toBe(false);
-  expect(report.policyDigest).toBe('779f4c5dbdee63251cc3846f790ee0f772be105723315f731d930798a500e532');
+  expect(report.policyDigest).toBe('09540282d538c9eb5306512ab068926981c65539502d2b2295cf0b77b6e9adbd');
   expect(report.files).toEqual([...historical.files,runtimePath].sort()); expect(report.skipped).toEqual(historical.skipped);
   expect(json(report)).toBe(json(repeated)); expect(markdown(report)).toBe(markdown(repeated));
   const stylesheet = 'libs/design-system/src/styles.css';
@@ -107,9 +115,12 @@ it('live Atlas scan reflects approved logical margins and theme relocation while
     expect(report.findings.some(f=>f.id===candidate.id)).toBe(false);
   }
   expect(report.evidence.find(e=>e.path===stylesheet&&e.context==='stylesheet/.kpi-note b'&&e.property==='margin-right')).toMatchObject({value:'5px'});
-  const removed=new Set([...pilot.map(c=>c.id),'RTL.RUNTIME.MISMATCH:631220ab170fd844366645f4','RTL.RUNTIME.CACHE:c6803b61cf2818cad26b1416']);
+  const removed=new Set([...pilot.map(c=>c.id),'RTL.RUNTIME.MISMATCH:631220ab170fd844366645f4','RTL.RUNTIME.CACHE:c6803b61cf2818cad26b1416','RTL.CSS.PHYSICAL:28c2d60d10633572c611bf0c','RTL.CSS.PHYSICAL:5f4d415396df52ea51e0a5d6','RTL.CSS.PHYSICAL:87c7c8a9a1668b5ed0eb9d9e','RTL.CSS.PHYSICAL:a73f6f180169335db97e8e52','RTL.CSS.PHYSICAL:d64ac5113f2d40f44c75d315','RTL.CSS.PHYSICAL:eef2d882a74a3ca1f4724fc2','RTL.GEOMETRY.COUPLED:cd662af13b746b307885c1c6','RTL.GEOMETRY.EDGE:91f8525674eed0701dd95542']);
   const expectedFindings=historical.findings.filter(f=>!removed.has(f.id)).map(f=>f.id==='RTL.DOCUMENT.RUNTIME:12875636fcbc0a9be9a7b6f4'
     ? {...f,id:'RTL.DOCUMENT.RUNTIME:1f3bd0fab5211f473ef82db4',path:runtimePath,context:'Provider'}:f);
+  const negativeFinding=historical.findings.find(f=>f.id==='RTL.GEOMETRY.ORDER:0b23a5f6f4bc3966eb9e0efc')!;
+  expect(negativeFinding).toBeTruthy();
+  expectedFindings.push({...negativeFinding,id:'RTL.GEOMETRY.ORDER:1226abd54e967deed14a4a6c',context:positiveFact.context,original:positiveFact.original,evidenceIds:['bec7eb48070732847dd4606aafc361f8f2f81e80b9bf2ba7be2b637c274781c7']});
   expect([...report.findings.map(f=>f.id)].sort()).toEqual(expectedFindings.map(f=>f.id).sort());
   expect(ordered(report.findings.map(findingMeaning))).toEqual(ordered(expectedFindings.map(findingMeaning)));
   expect(report.findings.some(f=>f.category==='AUTO_CANDIDATE')).toBe(false);

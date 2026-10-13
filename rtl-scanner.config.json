@@ -31,33 +31,9 @@
   ],
   "issueBindings": [
     {
-      "ruleId": "RTL.GEOMETRY.EDGE",
-      "path": "libs/design-system/src/index.tsx",
-      "contextIncludes": "SidebarFrame",
-      "issueId": "RTL-01"
-    },
-    {
-      "ruleId": "RTL.GEOMETRY.COUPLED",
-      "path": "libs/design-system/src/index.tsx",
-      "contextIncludes": "SidebarFrame",
-      "issueId": "RTL-01"
-    },
-    {
       "ruleId": "RTL.GEOMETRY.ORDER",
       "path": "libs/design-system/src/index.tsx",
       "contextIncludes": "SidebarFrame",
-      "issueId": "RTL-01"
-    },
-    {
-      "ruleId": "RTL.CSS.PHYSICAL",
-      "path": "libs/design-system/src/styles.css",
-      "contextIncludes": "nav a.active",
-      "issueId": "RTL-01"
-    },
-    {
-      "ruleId": "RTL.CSS.PHYSICAL",
-      "path": "libs/design-system/src/styles.css",
-      "contextIncludes": ".app-main",
       "issueId": "RTL-01"
     },
     {
@@ -181,7 +157,7 @@
       "property": "background",
       "valueDigest": "3c7f9c16a09ca1ac96b83240c6703118c78de201885e7d3f9bcd03c8434fab39",
       "reason": "Reviewed status-color dictionary contains literal color values only.",
-      "sourceDigest": "7ab550cb2ad95ac3fa0728bd324d26cef06c013bbe2d1f148a81aa01b98de8d8"
+      "sourceDigest": "6493f544a7858be20d078b74f0c51ab957890230da9a66160318d93ebc2384ab"
     }
   ],
   "roles": [

@@ -60,7 +60,9 @@ it('Atlas actual inventory maps reference evidence without approving transformat
  expect(prepared.map(e=>[e.id,e.context,e.property,e.value])).toEqual(expectedPrepared);
  const relocated=a.evidence.filter(e=>e.path==='libs/design-system/src/runtime.tsx'&&e.context.startsWith('theme/'));
  expect(relocated.map(e=>[e.context.replace('theme/','rtlTheme/'),e.property,e.value,e.original,e.semantics])).toEqual(prepared.map(e=>[e.context,e.property,e.value,e.original,e.semantics]));
- expect(a.evidence.filter(e=>!prepared.includes(e))).toHaveLength(419);
+ const rtlClosed=a.evidence.filter(e=>e.path==='libs/design-system/src/index.tsx'&&e.context==='SidebarFrame/@media (max-width: 900px)/html[dir="rtl"] &:not(.is-open)'&&e.property==='transform');
+ expect(rtlClosed).toEqual([expect.objectContaining({id:'bec7eb48070732847dd4606aafc361f8f2f81e80b9bf2ba7be2b637c274781c7',value:'translateX(100%)',original:'transform: translateX(100%);',mechanism:'emotion-template'})]);
+ expect(a.evidence.filter(e=>!prepared.includes(e)&&!rtlClosed.includes(e))).toHaveLength(419);
 expect(a.complete).toBe(true);expect(a.diagnostics).toHaveLength(9);expect(a.diagnostics.every(d=>d.blocking===false)).toBe(true);expect(a.findings.filter(f=>f.category==='AUTO_CANDIDATE')).toEqual([]);expect(new Set(a.findings.flatMap(f=>f.issueIds))).toEqual(new Set(['RTL-01','RTL-02','RTL-03','RTL-04','RTL-05','RTL-06','RTL-07','RTL-08','RTL-09']));expect(json(a)).toBe(json(b));expect(markdown(a)).toBe(markdown(b));
  for(const f of a.findings){const s=await readFile(f.path,'utf8');expect(s.slice(f.range.start.offset,f.range.end.offset)).toBe(f.original);expect(f.rationale.length).toBeGreaterThan(0);expect(f.treatment.length).toBeGreaterThan(0);expect(f.suggestion).toBeNull();}
 });

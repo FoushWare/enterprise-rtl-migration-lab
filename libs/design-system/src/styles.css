@@ -80,8 +80,8 @@ nav a.active {
   background: #edf0ff;
   color: #4c58d6;
   font-weight: 650;
-  border-left: 3px solid #4c58d6;
-  padding-left: 11px;
+  border-inline-start: 3px solid #4c58d6;
+  padding-inline-start: 11px;
 }
 .sidebar-bottom {
   margin-top: auto;
@@ -111,7 +111,7 @@ nav a.active {
   font-size: 11px;
 }
 .app-main {
-  margin-left: 238px;
+  margin-inline-start: 238px;
 }
 .header {
   height: 76px;
@@ -499,7 +499,7 @@ footer i {
 }
 @media (max-width: 900px) {
   .app-main {
-    margin-left: 0;
+    margin-inline-start: 0;
   }
   .mobile-menu.MuiIconButton-root {
     display: inline-flex;
@@ -558,7 +558,7 @@ footer i {
     display: none !important;
   }
   .app-main {
-    margin-left: 0;
+    margin-inline-start: 0;
   }
   body {
     background: #fff;
