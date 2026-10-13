@@ -101,11 +101,17 @@ it('live Atlas scan reflects approved logical margins and theme relocation while
   const chartFacts=[{"path": "libs/design-system/src/styles.css", "mechanism": "css", "context": "stylesheet/.chart-wrap", "property": "direction", "value": "ltr", "original": "direction: ltr;", "semantics": "css", "tokens": ["ltr"]}, {"path": "libs/design-system/src/styles.css", "mechanism": "css", "context": "stylesheet/html[dir=\"rtl\"] .chart-labels span", "property": "direction", "value": "rtl", "original": "direction: rtl;", "semantics": "css", "tokens": ["rtl"]}, {"path": "libs/design-system/src/styles.css", "mechanism": "css", "context": "stylesheet/html[dir=\"rtl\"] .chart-labels span", "property": "unicode-bidi", "value": "isolate", "original": "unicode-bidi: isolate;", "semantics": "css", "tokens": ["isolate"]}];
   const ordered=<T,>(items:T[])=>items.map(e=>JSON.stringify(e)).sort();
   const brandFact={path:'libs/design-system/src/styles.css',mechanism:'css',context:'stylesheet/.brand',property:'direction',value:'ltr',original:'direction: ltr;',semantics:'css',tokens:['ltr']};
-  expect(ordered(report.evidence.map(factMeaning))).toEqual(ordered([...expectedFacts,...preparedFacts,positiveFact,...chartFacts,brandFact]));
-  expect(report.evidence).toHaveLength(historical.evidence.length+preparedFacts.length+1+chartFacts.length+1);
+  const arrowBackFacts: Report['evidence']=[{"id":"32869cf5037c74759f509f79dfeb84bfffe2289a939313afeb0cf4541aa3e221","path":"apps/invoicing/src/components/InvoiceTable.tsx","mechanism":"mui-sx","context":"InvoiceTable/ArrowBack","property":"fontSize","value":"15","original":"fontSize: 15","range":{"start":{"offset":2472,"line":78,"column":34},"end":{"offset":2484,"line":78,"column":46}},"semantics":"mui-system"},{"id":"f05e60a9be9bc2433fb95fc3c40c60a082d02143d4d6f1fa7d7e5f7a9fd7d57e","path":"apps/invoicing/src/components/InvoiceTable.tsx","mechanism":"mui-sx","context":"InvoiceTable/ArrowBack","property":"color","value":"\"#9aa2b3\"","original":"color: \"#9aa2b3\"","range":{"start":{"offset":2486,"line":78,"column":48},"end":{"offset":2502,"line":78,"column":64}},"semantics":"mui-system"}];
+  expect(report.evidence.filter(e=>e.path==='apps/invoicing/src/components/InvoiceTable.tsx'&&e.context==='InvoiceTable/ArrowBack')).toEqual(arrowBackFacts);
+  expect(ordered(report.evidence.map(factMeaning))).toEqual(ordered([...expectedFacts,...preparedFacts,positiveFact,...chartFacts,brandFact,...arrowBackFacts.map(factMeaning)]));
+  expect(report.evidence).toHaveLength(historical.evidence.length+preparedFacts.length+1+chartFacts.length+1+arrowBackFacts.length);
   const diagnosticMeaning=(d:Report['diagnostics'][number])=>{const {range,...meaning}=d;expect(range.start.offset).toBeLessThanOrEqual(range.end.offset);return meaning;};
   expect(report.diagnostics.map(diagnosticMeaning)).toEqual(historical.diagnostics.map(diagnosticMeaning));
-  for(const [i,d] of report.diagnostics.entries()){const source=await readFile(d.path,'utf8');const span=source.slice(d.range.start.offset,d.range.end.offset);expect(span.length).toBeGreaterThan(0);if(d.path!=='libs/design-system/src/index.tsx')expect(d.range).toEqual(historical.diagnostics[i].range);else expect(span).toMatch(/^colors\[status\]\[[01]\]$/);}
+  const invoiceDiagnosticRanges=new Map([
+    ['Value for bgcolor is dynamic; original retained.',{start:{offset:1136,line:33,column:30},end:{offset:1150,line:33,column:44}}],
+    ['Value for color is dynamic; original retained.',{start:{offset:1179,line:34,column:28},end:{offset:1186,line:34,column:35}}],
+  ]);
+  for(const [i,d] of report.diagnostics.entries()){const source=await readFile(d.path,'utf8');const span=source.slice(d.range.start.offset,d.range.end.offset);expect(span.length).toBeGreaterThan(0);if(d.path==='apps/invoicing/src/components/InvoiceTable.tsx'&&invoiceDiagnosticRanges.has(d.message))expect(d.range).toEqual(invoiceDiagnosticRanges.get(d.message));else if(d.path!=='libs/design-system/src/index.tsx')expect(d.range).toEqual(historical.diagnostics[i].range);else expect(span).toMatch(/^colors\[status\]\[[01]\]$/);}
   expect(report.diagnostics.every(d=>!d.blocking)).toBe(true);
   expect(report.diagnostics.some(d=>d.code.startsWith('POLICY'))).toBe(false);
   expect(report.policyDigest).toBe('fc82bc0137f0800c3c6818b55a14ef2ac9abaeb1b018d503834d9899183abf49');
@@ -125,6 +131,14 @@ it('live Atlas scan reflects approved logical margins and theme relocation while
   const negativeFinding=historical.findings.find(f=>f.id==='RTL.GEOMETRY.ORDER:0b23a5f6f4bc3966eb9e0efc')!;
   expect(negativeFinding).toBeTruthy();
   expectedFindings.push({...negativeFinding,id:'RTL.GEOMETRY.ORDER:1226abd54e967deed14a4a6c',context:positiveFact.context,original:positiveFact.original,evidenceIds:['bec7eb48070732847dd4606aafc361f8f2f81e80b9bf2ba7be2b637c274781c7']});
+  const arrowBackFinding: Finding={"id":"RTL.ICON.PROGRESSION:237172da962fe4d0605ddd83","ruleId":"RTL.ICON.PROGRESSION","ruleVersion":1,"category":"MANUAL_REVIEW","severity":"Minor","confidence":"Medium","title":"Directional icon requires semantic review","sourceMechanism":"typescript-structure","applications":["invoicing"],"path":"apps/invoicing/src/components/InvoiceTable.tsx","range":{"start":{"offset":2455,"line":78,"column":17},"end":{"offset":2508,"line":78,"column":70}},"original":"<ArrowBack sx={{ fontSize: 15, color: \"#9aa2b3\" }} />","context":"InvoiceTable/ArrowBack","ownership":"custom-icon","rationale":"Imported directional icon renders in JSX; navigation meaning and appropriate orientation need review.","treatment":"Distinguish progression from trends/external-link conventions; coordinate MUI-owned roles before mirroring.","evidenceIds":[],"relatedLocations":[],"issueIds":[],"suggestion":null,"limitation":"Static evidence indicates a risk; rendered behavior is not established by this scan."};
+  expect(expectedFindings).toHaveLength(46);
+  expect(report.findings.find(f=>f.id===arrowBackFinding.id)).toEqual(arrowBackFinding);
+  expectedFindings.push(arrowBackFinding);
+  expect(report.findings).toHaveLength(47);
+  expect(report.findings.filter(f=>!['INFORMATIONAL','INTENTIONAL_LTR'].includes(f.category))).toHaveLength(44);
+  expect(report.findings.find(f=>f.id==='RTL.ICON.PROGRESSION:07d33024c457dfcdc175bd85')).toMatchObject({issueIds:['RTL-07']});
+  expect(p.issueBindings).toContainEqual({ruleId:'RTL.ICON.PROGRESSION',path:'apps/invoicing/src/components/InvoiceTable.tsx',contextIncludes:'InvoiceTable/ArrowForward',issueId:'RTL-07'});
   expect([...report.findings.map(f=>f.id)].sort()).toEqual(expectedFindings.map(f=>f.id).sort());
   expect(ordered(report.findings.map(findingMeaning))).toEqual(ordered(expectedFindings.map(findingMeaning)));
   expect(report.findings.some(f=>f.category==='AUTO_CANDIDATE')).toBe(false);

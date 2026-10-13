@@ -2,10 +2,11 @@ import { useLocale } from "@atlas/shared";
 import { Link } from "react-router-dom";
 import { Avatar, IconButton } from "@mui/material";
 import ArrowForward from "@mui/icons-material/ArrowForward";
+import ArrowBack from "@mui/icons-material/ArrowBack";
 import { DataTable, StatusBadge } from "@atlas/design-system";
 import { customerFor, money, total, type Invoice } from "@atlas/shared";
 export function InvoiceTable({ invoices }: { invoices: Invoice[] }) {
-  const { t, demoHref } = useLocale();
+  const { t, demoHref, language } = useLocale();
   return (
     <DataTable
       rows={invoices}
@@ -73,7 +74,11 @@ export function InvoiceTable({ invoices }: { invoices: Invoice[] }) {
               aria-label={t("View {id}", { id: i.id })}
               size="small"
             >
-              <ArrowForward sx={{ fontSize: 15, color: "#9aa2b3" }} />
+              {language === "ar" ? (
+                <ArrowBack sx={{ fontSize: 15, color: "#9aa2b3" }} />
+              ) : (
+                <ArrowForward sx={{ fontSize: 15, color: "#9aa2b3" }} />
+              )}
             </IconButton>
           ),
         },
