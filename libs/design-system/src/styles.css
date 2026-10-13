@@ -272,6 +272,7 @@ footer i {
   margin-bottom: 24px;
 }
 .chart-wrap {
+  direction: ltr;
   padding: 0 24px 18px;
 }
 .chart-wrap svg {
@@ -285,6 +286,10 @@ footer i {
   padding-left: 40px;
   font-size: 9px;
   color: #949cad;
+}
+html[dir="rtl"] .chart-labels span {
+  direction: rtl;
+  unicode-bidi: isolate;
 }
 .chart-legend {
   font-size: 10px;
