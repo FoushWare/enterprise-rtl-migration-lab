@@ -238,7 +238,7 @@ footer i {
 }
 .kpi-icon {
   position: absolute;
-  right: 20px;
+  inset-inline-end: 20px;
   top: 20px;
   background: #f2f3fb;
   border-radius: 8px;

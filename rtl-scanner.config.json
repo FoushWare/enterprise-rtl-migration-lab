@@ -49,12 +49,6 @@
       "issueId": "RTL-02"
     },
     {
-      "ruleId": "RTL.GEOMETRY.EDGE",
-      "path": "libs/design-system/src/styles.css",
-      "contextIncludes": ".kpi-icon",
-      "issueId": "RTL-03"
-    },
-    {
       "ruleId": "RTL.FORM.DIRECTION",
       "path": "libs/design-system/src/index.tsx",
       "contextIncludes": "FormField/TextField",

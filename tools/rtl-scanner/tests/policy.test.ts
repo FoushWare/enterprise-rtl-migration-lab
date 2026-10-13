@@ -76,6 +76,7 @@ it('live Atlas scan reflects approved logical margins and theme relocation while
   const p = await loadPolicy(process.cwd()), historical = await historicalReport();
   expect(p.dynamicExceptions).toHaveLength(3); expect(p.exceptions).toHaveLength(2); expect(p.approvals).toEqual([]);
   expect(p.ownership.css).toBe('custom-css');
+  expect(p.issueBindings).not.toContainEqual({ruleId:'RTL.GEOMETRY.EDGE',path:'libs/design-system/src/styles.css',contextIncludes:'.kpi-icon',issueId:'RTL-03'});
   const report = await scan(process.cwd()), repeated = await scan(process.cwd());
   expect(report.complete).toBe(true);
   const runtimePath='libs/design-system/src/runtime.tsx';
@@ -83,6 +84,7 @@ it('live Atlas scan reflects approved logical margins and theme relocation while
   expect(oldTheme).toHaveLength(8);
   const factMeaning=(e: Report['evidence'][number])=>{const {id,range,...meaning}=e;expect(id).toBeTruthy();expect(range.start.offset).toBeLessThanOrEqual(range.end.offset);return meaning;};
   const expectedFacts=historical.evidence.map(factMeaning).map(e=>{
+    if(e.path==='libs/design-system/src/styles.css'&&e.context==='stylesheet/.kpi-icon'&&e.property==='right')return {...e,property:'inset-inline-end',original:'inset-inline-end: 20px;'};
     if(e.path==='libs/design-system/src/index.tsx'&&e.mechanism==='mui-theme'&&e.context.startsWith('theme/'))return {...e,path:runtimePath};
     if(e.path==='libs/design-system/src/styles.css'&&pilot.some(c=>c.context===e.context)&&e.property==='margin-right')return {...e,property:'margin-inline-end',original:`margin-inline-end: ${e.value};`};
     const shell=e.path==='libs/design-system/src/index.tsx'&&e.context==='SidebarFrame/';
@@ -105,7 +107,7 @@ it('live Atlas scan reflects approved logical margins and theme relocation while
   for(const [i,d] of report.diagnostics.entries()){const source=await readFile(d.path,'utf8');const span=source.slice(d.range.start.offset,d.range.end.offset);expect(span.length).toBeGreaterThan(0);if(d.path!=='libs/design-system/src/index.tsx')expect(d.range).toEqual(historical.diagnostics[i].range);else expect(span).toMatch(/^colors\[status\]\[[01]\]$/);}
   expect(report.diagnostics.every(d=>!d.blocking)).toBe(true);
   expect(report.diagnostics.some(d=>d.code.startsWith('POLICY'))).toBe(false);
-  expect(report.policyDigest).toBe('09540282d538c9eb5306512ab068926981c65539502d2b2295cf0b77b6e9adbd');
+  expect(report.policyDigest).toBe('fc82bc0137f0800c3c6818b55a14ef2ac9abaeb1b018d503834d9899183abf49');
   expect(report.files).toEqual([...historical.files,runtimePath].sort()); expect(report.skipped).toEqual(historical.skipped);
   expect(json(report)).toBe(json(repeated)); expect(markdown(report)).toBe(markdown(repeated));
   const stylesheet = 'libs/design-system/src/styles.css';
@@ -116,7 +118,7 @@ it('live Atlas scan reflects approved logical margins and theme relocation while
     expect(report.findings.some(f=>f.id===candidate.id)).toBe(false);
   }
   expect(report.evidence.find(e=>e.path===stylesheet&&e.context==='stylesheet/.kpi-note b'&&e.property==='margin-right')).toMatchObject({value:'5px'});
-  const removed=new Set([...pilot.map(c=>c.id),'RTL.RUNTIME.MISMATCH:631220ab170fd844366645f4','RTL.RUNTIME.CACHE:c6803b61cf2818cad26b1416','RTL.CSS.PHYSICAL:28c2d60d10633572c611bf0c','RTL.CSS.PHYSICAL:5f4d415396df52ea51e0a5d6','RTL.CSS.PHYSICAL:87c7c8a9a1668b5ed0eb9d9e','RTL.CSS.PHYSICAL:a73f6f180169335db97e8e52','RTL.CSS.PHYSICAL:d64ac5113f2d40f44c75d315','RTL.CSS.PHYSICAL:eef2d882a74a3ca1f4724fc2','RTL.GEOMETRY.COUPLED:cd662af13b746b307885c1c6','RTL.GEOMETRY.EDGE:91f8525674eed0701dd95542']);
+  const removed=new Set([...pilot.map(c=>c.id),'RTL.RUNTIME.MISMATCH:631220ab170fd844366645f4','RTL.RUNTIME.CACHE:c6803b61cf2818cad26b1416','RTL.CSS.PHYSICAL:28c2d60d10633572c611bf0c','RTL.CSS.PHYSICAL:5f4d415396df52ea51e0a5d6','RTL.CSS.PHYSICAL:87c7c8a9a1668b5ed0eb9d9e','RTL.CSS.PHYSICAL:a73f6f180169335db97e8e52','RTL.CSS.PHYSICAL:d64ac5113f2d40f44c75d315','RTL.CSS.PHYSICAL:eef2d882a74a3ca1f4724fc2','RTL.GEOMETRY.COUPLED:cd662af13b746b307885c1c6','RTL.GEOMETRY.EDGE:91f8525674eed0701dd95542','RTL.GEOMETRY.EDGE:a9ac460392929e44328f29fe']);
   const expectedFindings=historical.findings.filter(f=>!removed.has(f.id)).map(f=>f.id==='RTL.DOCUMENT.RUNTIME:12875636fcbc0a9be9a7b6f4'
     ? {...f,id:'RTL.DOCUMENT.RUNTIME:1f3bd0fab5211f473ef82db4',path:runtimePath,context:'Provider'}:f);
   const negativeFinding=historical.findings.find(f=>f.id==='RTL.GEOMETRY.ORDER:0b23a5f6f4bc3966eb9e0efc')!;
