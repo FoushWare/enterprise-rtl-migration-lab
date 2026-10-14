@@ -29,9 +29,9 @@ export function Customers() {
               <Avatar sx={{ bgcolor: c.color + "20", color: c.color }}>
                 {c.initials}
               </Avatar>
-              <h3>{c.name}</h3>
-              <p>{c.email}</p>
-              <p>{c.contact}</p>
+              <h3><bdi dir="auto">{c.name}</bdi></h3>
+              <p><bdi dir="ltr">{c.email}</bdi></p>
+              <p><bdi dir="auto">{c.contact}</bdi></p>
               <Button
                 size="small"
                 variant="outlined"
@@ -47,9 +47,9 @@ export function Customers() {
       >
         {c && (
           <>
-            <p>{c.contact}</p>
-            <p>{c.email}</p>
-            <p className="hint">{c.address}</p>
+            <p><bdi dir="auto">{c.contact}</bdi></p>
+            <p><bdi dir="ltr">{c.email}</bdi></p>
+            <p className="hint"><bdi dir="auto">{c.address}</bdi></p>
           </>
         )}
       </Modal>

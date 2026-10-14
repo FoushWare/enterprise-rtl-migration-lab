@@ -5,9 +5,13 @@ Feature commit 8041f4c9c4411adb0247c3061727086c9d0735b7 historically passed 186 
 
 Original CI run 38528647102 and diagnostic PR runs reproduce byte-identical expected/actual/diff date images. No Sidebar pixel change. Successful run 38559532287 observed macOS 26.6.2/25G83 arm64, Chrome 156.0.8078.4, en_US AppleLocale, [en-US] AppleLanguages, en_US.UTF-8 shell, en-US context/UTC and month/day dates. Local exact Chrome 156 under en_EG rendered day/month. No individual causation claimed.
 
-New experiment run: https://github.com/FoushWare/enterprise-rtl-migration-lab/actions/runs/38597366727 , head 80f1bae611f38af4e7731b22f2fb73c652e9535e, A-D only. Results pending.
+New experiment run: https://github.com/FoushWare/enterprise-rtl-migration-lab/actions/runs/38597366727 , head 80f1bae611f38af4e7731b22f2fb73c652e9535e, A-D only. Results complete below.
 
 Protected inventory hashes captured outside repository at /private/tmp/atlas-autonomous-protected.json; six English image hashes also have existing committed docs/phase-2a-ltr-baselines.sha256. Verify the 68 documentary images and both Stage 3 report hashes before every applicable closure. No screenshot updates permitted.
 
 ## Regional causal experiment 38597366727 — SUCCESS
 All A-D jobs succeeded; same macOS/image/browser/lock/page configuration, unrelated preference digests unchanged, all preference restoration and checkout checks passed. Readable screenshots and native segments agree: A default => 10/11/2026,11/10/2026; B AppleLocale=en_EG only => 11/10/2026,10/11/2026; C languages only => month/day; D shell locale family only => month/day. Foundation patterns M/d/yy vs dd/MM/y corroborate observed widget output. AppleLocale intervention is sufficient in this exact configuration; no universal claim or direct renderer-memory introspection is made. Artifact source: https://github.com/FoushWare/enterprise-rtl-migration-lab/actions/runs/38597366727 .
+
+CI repair PR #3: push 38598212535 and PR 38598345336 SUCCESS, including six protected English comparisons and restoration. Diagnostic PR #2 after main update: push 38599527312 and PR 38599535009 SUCCESS. Normal merge receipts recorded in STATE.md.
+
+Current semantic tests: Dashboard seven-width/five-cycle pointer+keyboard tests 7 passed; bidi glyph/copy/state/title-clearance plus old forms/dialog/table suite 28 passed. Scanner all 186 passed after exact five-fact/seven-removed/two-added finding alignment; archived assertions untouched. Full development suite: 108 passed with all six protected English screenshots at zero difference. Production suite is currently running against built assets. Codemod fixture suite: 24 passed; lint/typechecks/unit tests and uncached app builds passed. Deterministic JSON/Markdown confirmed; protection verifier checks 78 immutable files plus exact exception records.

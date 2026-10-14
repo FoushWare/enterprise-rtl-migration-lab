@@ -582,3 +582,22 @@ html[dir="rtl"] .chart-labels span {
     grid-template-columns: 1.9fr 1fr;
   }
 }
+
+/* Keep each title's text direction while retaining Arabic reading-start alignment.
+   The shared title API is string-only; this avoids changing its protected source. */
+html[dir="rtl"] .MuiDialogTitle-root {
+  unicode-bidi: plaintext;
+  text-align: right;
+}
+
+/* Canonical en-US amounts and numeric KPI values keep their token order.
+   This does not set direction on human labels, editable inputs or containers. */
+.amount,
+.form-total strong,
+.kpi-value {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+html[dir="rtl"] .kpi-value {
+  text-align: right;
+}

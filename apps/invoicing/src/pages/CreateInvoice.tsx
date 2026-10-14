@@ -198,7 +198,7 @@ export function CreateInvoice({
           >{t("Add line item")}</Button>
           <div className="form-total">
             <span>{t("Total")}</span>
-            <strong>{money(total({ items }), currency)}</strong>
+            <strong><bdi dir="ltr">{money(total({ items }), currency)}</bdi></strong>
           </div>
         </Card>
         {error && <Alert severity="error">{error}</Alert>}
@@ -225,7 +225,7 @@ export function CreateInvoice({
         }
       >
         <p>{t("Create an invoice for")}{" "}
-          <strong>{customers.find((c) => c.id === customer)?.name}</strong>{" "}{t("totaling")}{" "}<strong>{money(total({ items }), currency)}</strong>{t("?")}</p>
+          <strong><bdi dir="auto">{customers.find((c) => c.id === customer)?.name}</bdi></strong>{" "}{t("totaling")}{" "}<strong><bdi dir="ltr">{money(total({ items }), currency)}</bdi></strong>{t("?")}</p>
         <p className="hint">{t("The invoice will be saved to this demo workspace as Pending. No email is sent.")}</p>
       </Modal>
     </>

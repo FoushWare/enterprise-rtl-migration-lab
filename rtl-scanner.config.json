@@ -91,34 +91,6 @@
       "issueId": "RTL-07"
     },
     {
-      "ruleId": "RTL.BIDI.ISOLATION",
-      "path": "apps/invoicing/src/pages/CreateInvoice.tsx",
-      "contextIncludes": "CreateInvoice",
-      "issueId": "RTL-08",
-      "originalIncludes": "customers.find"
-    },
-    {
-      "ruleId": "RTL.BIDI.ISOLATION",
-      "path": "apps/invoicing/src/pages/CreateInvoice.tsx",
-      "contextIncludes": "CreateInvoice",
-      "issueId": "RTL-08",
-      "originalIncludes": "money(total({ items })"
-    },
-    {
-      "ruleId": "RTL.BIDI.ISOLATION",
-      "path": "apps/invoicing/src/pages/Customers.tsx",
-      "contextIncludes": "Customers",
-      "issueId": "RTL-08",
-      "originalIncludes": "c.name"
-    },
-    {
-      "ruleId": "RTL.BIDI.ISOLATION",
-      "path": "apps/invoicing/src/pages/Customers.tsx",
-      "contextIncludes": "Customers",
-      "issueId": "RTL-08",
-      "originalIncludes": "c.address"
-    },
-    {
       "ruleId": "RTL.RUNTIME.LOCALE",
       "path": "libs/shared/src/index.ts",
       "contextIncludes": "money",
