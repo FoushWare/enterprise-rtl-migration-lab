@@ -1,3 +1,4 @@
+import { useLocale } from "@atlas/shared";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { MenuItem, IconButton, Alert } from "@mui/material";
@@ -18,6 +19,7 @@ export function CreateInvoice({
 }: {
   onCreated: (invoice: Invoice) => void;
 }) {
+  const { t, demoHref } = useLocale();
   const navigate = useNavigate();
   const [customer, setCustomer] = useState(""),
     [date, setDate] = useState("2026-10-11"),
@@ -66,9 +68,9 @@ export function CreateInvoice({
       };
       await mockApi.createInvoice(invoice);
       onCreated(invoice);
-      navigate(`/invoices/${invoice.id}`);
+      navigate(demoHref(`/invoices/${invoice.id}`));
     } catch {
-      setError("Unable to save invoice. Please try again.");
+      setError(t("Unable to save invoice. Please try again."));
       setConfirm(false);
     } finally {
       setSaving(false);
@@ -77,8 +79,8 @@ export function CreateInvoice({
   return (
     <>
       <Heading
-        title="Create invoice"
-        description="Make your next great project official."
+        title={t("Create invoice")}
+        description={t("Make your next great project official.")}
       />
       <form
         onSubmit={(e) => {
@@ -89,18 +91,18 @@ export function CreateInvoice({
         noValidate
       >
         <Card className="card-pad form-section">
-          <h2>Invoice details</h2>
+          <h2>{t("Invoice details")}</h2>
           <div className="form-grid">
             <FormField
-              label="Customer"
+              label={t("Customer")}
               select
               value={customer}
               onChange={(e) => setCustomer(e.target.value)}
               error={errors && !customer}
               helperText={
                 errors && !customer
-                  ? "Select a customer"
-                  : "Choose the company you’re billing"
+                  ? t("Select a customer")
+                  : t("Choose the company you’re billing")
               }
             >
               {customers.map((c) => (
@@ -110,7 +112,7 @@ export function CreateInvoice({
               ))}
             </FormField>
             <FormField
-              label="Currency"
+              label={t("Currency")}
               select
               value={currency}
               onChange={(e) => setCurrency(e.target.value)}
@@ -122,16 +124,16 @@ export function CreateInvoice({
               ))}
             </FormField>
             <FormField
-              label="Invoice date"
+              label={t("Invoice date")}
               type="date"
               slotProps={{ inputLabel: { shrink: true } }}
               value={date}
               onChange={(e) => setDate(e.target.value)}
               error={errors && !date}
-              helperText={errors && !date ? "Invoice date is required" : ""}
+              helperText={errors && !date ? t("Invoice date is required") : ""}
             />
             <FormField
-              label="Due date"
+              label={t("Due date")}
               type="date"
               slotProps={{ inputLabel: { shrink: true } }}
               value={due}
@@ -139,47 +141,47 @@ export function CreateInvoice({
               error={errors && (!due || due < date)}
               helperText={
                 errors && (!due || due < date)
-                  ? "Due date must be on or after the invoice date"
+                  ? t("Due date must be on or after the invoice date")
                   : ""
               }
             />
           </div>
         </Card>
         <Card className="card-pad form-section">
-          <h2>Line items</h2>
+          <h2>{t("Line items")}</h2>
           {items.map((item, index) => (
             <div className="line-item" key={index}>
               <FormField
-                label={`Description ${index + 1}`}
+                label={t("Description {number}", { number: index + 1 })}
                 value={item.description}
                 onChange={(e) => update(index, "description", e.target.value)}
                 error={errors && !item.description.trim()}
                 helperText={
                   errors && !item.description.trim()
-                    ? "Description is required"
+                    ? t("Description is required")
                     : ""
                 }
               />
               <FormField
-                label={`Quantity ${index + 1}`}
+                label={t("Quantity {number}", { number: index + 1 })}
                 type="number"
                 value={item.quantity}
                 onChange={(e) => update(index, "quantity", e.target.value)}
                 error={errors && item.quantity <= 0}
                 helperText={
-                  errors && item.quantity <= 0 ? "Must be positive" : ""
+                  errors && item.quantity <= 0 ? t("Must be positive") : ""
                 }
               />
               <FormField
-                label={`Rate ${index + 1}`}
+                label={t("Rate {number}", { number: index + 1 })}
                 type="number"
                 value={item.rate}
                 onChange={(e) => update(index, "rate", e.target.value)}
                 error={errors && item.rate <= 0}
-                helperText={errors && item.rate <= 0 ? "Must be positive" : ""}
+                helperText={errors && item.rate <= 0 ? t("Must be positive") : ""}
               />
               <IconButton
-                aria-label={`Remove item ${index + 1}`}
+                aria-label={t("Remove item {number}", { number: index + 1 })}
                 disabled={items.length === 1}
                 onClick={() => setItems(items.filter((_, i) => i !== index))}
               >
@@ -193,24 +195,20 @@ export function CreateInvoice({
             onClick={() =>
               setItems([...items, { description: "", quantity: 1, rate: 0 }])
             }
-          >
-            Add line item
-          </Button>
+          >{t("Add line item")}</Button>
           <div className="form-total">
-            <span>Total</span>
-            <strong>{money(total({ items }), currency)}</strong>
+            <span>{t("Total")}</span>
+            <strong><bdi dir="ltr">{money(total({ items }), currency)}</bdi></strong>
           </div>
         </Card>
         {error && <Alert severity="error">{error}</Alert>}
         <div className="heading-actions" style={{ justifyContent: "flex-end" }}>
-          <Button component={Link} to="/invoices" variant="outlined">
-            Cancel
-          </Button>
-          <Button type="submit">Review invoice</Button>
+          <Button component={Link} to={demoHref("/invoices")} variant="outlined">{t("Cancel")}</Button>
+          <Button type="submit">{t("Review invoice")}</Button>
         </div>
       </form>
       <Modal
-        title="Confirm invoice"
+        title={t("Confirm invoice")}
         open={confirm}
         onClose={() => !saving && setConfirm(false)}
         actions={
@@ -219,24 +217,16 @@ export function CreateInvoice({
               variant="outlined"
               disabled={saving}
               onClick={() => setConfirm(false)}
-            >
-              Keep editing
-            </Button>
+            >{t("Keep editing")}</Button>
             <Button disabled={saving} onClick={save}>
-              {saving ? "Saving…" : "Create invoice"}
+              {saving ? t("Saving…") : t("Create invoice")}
             </Button>
           </>
         }
       >
-        <p>
-          Create an invoice for{" "}
-          <strong>{customers.find((c) => c.id === customer)?.name}</strong>{" "}
-          totaling <strong>{money(total({ items }), currency)}</strong>?
-        </p>
-        <p className="hint">
-          The invoice will be saved to this demo workspace as Pending. No email
-          is sent.
-        </p>
+        <p>{t("Create an invoice for")}{" "}
+          <strong><bdi dir="auto">{customers.find((c) => c.id === customer)?.name}</bdi></strong>{" "}{t("totaling")}{" "}<strong><bdi dir="ltr">{money(total({ items }), currency)}</bdi></strong>{t("?")}</p>
+        <p className="hint">{t("The invoice will be saved to this demo workspace as Pending. No email is sent.")}</p>
       </Modal>
     </>
   );

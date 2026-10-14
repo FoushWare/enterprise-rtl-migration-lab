@@ -1,0 +1,6 @@
+916e312a2937d60c6c65d546e8152f94db4cb8407f1c5918a81c40b998fcda9b  tests/e2e/baseline.spec.ts-snapshots/create-invoice-ltr-darwin.png
+7ab9001ab8e2349500a21409cd21bc398b873806e34b7db42a774fa956a0f2f6  tests/e2e/baseline.spec.ts-snapshots/customers-ltr-darwin.png
+23574c948b596080f77968bb6fddd00cd5ebcb6b4974e1d9dd6c6337c75e9c85  tests/e2e/baseline.spec.ts-snapshots/invoices-ltr-darwin.png
+8e135caa2159f925122881cc55b0c0f38b20d8b53d96866df5bb255c2b22fe16  tests/e2e/baseline.spec.ts-snapshots/overview-ltr-darwin.png
+d34fb9e6a64bc91be8c72ef40439b09fd953c9e571d41c4b5c9700cc53c1103d  tests/e2e/baseline.spec.ts-snapshots/procurement-ltr-darwin.png
+ea8ec30577e9cd89248b5cbecc0777c977949199a143944e292327c5c35ec200  tests/e2e/baseline.spec.ts-snapshots/settings-ltr-darwin.png

@@ -7,3 +7,5 @@ storybook-static/
 
 .DS_Store
 *.log
+test-results-production/
+playwright-production-report/

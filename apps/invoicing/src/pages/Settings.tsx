@@ -1,8 +1,10 @@
+import { useLocale } from "@atlas/shared";
 import { useState } from "react";
 import { Alert, FormControlLabel, Switch } from "@mui/material";
 import { Card, Button, FormField } from "@atlas/design-system";
 import { Heading } from "../components/InvoiceUi";
 export function Settings() {
+  const { t } = useLocale();
   const initial = JSON.parse(
     localStorage.getItem("atlas-settings") || "null",
   ) || {
@@ -16,8 +18,8 @@ export function Settings() {
   return (
     <>
       <Heading
-        title="Settings"
-        description="Your workspace, just the way you like it."
+        title={t("Settings")}
+        description={t("Your workspace, just the way you like it.")}
       />
       <form
         className="settings-width"
@@ -28,11 +30,11 @@ export function Settings() {
         }}
       >
         <Card className="card-pad form-section">
-          <h2>Company information</h2>
+          <h2>{t("Company information")}</h2>
           <div className="form-grid">
             <FormField
               required
-              label="Company name"
+              label={t("Company name")}
               value={form.company}
               onChange={(e) => {
                 setSaved(false);
@@ -41,7 +43,7 @@ export function Settings() {
             />
             <FormField
               required
-              label="Billing email"
+              label={t("Billing email")}
               type="email"
               value={form.email}
               onChange={(e) => {
@@ -51,7 +53,7 @@ export function Settings() {
             />
             <FormField
               required
-              label="Company address"
+              label={t("Company address")}
               value={form.address}
               onChange={(e) => {
                 setSaved(false);
@@ -61,7 +63,7 @@ export function Settings() {
           </div>
         </Card>
         <Card className="card-pad form-section">
-          <h2>Application preferences</h2>
+          <h2>{t("Application preferences")}</h2>
           <FormControlLabel
             control={
               <Switch
@@ -72,20 +74,15 @@ export function Settings() {
                 }}
               />
             }
-            label="Enable payment reminder preference"
+            label={t("Enable payment reminder preference")}
           />
-          <p className="hint">English · United States · LTR</p>
-          <p className="hint">
-            Preferences are stored locally. Reminder delivery is not connected
-            in this demo.
-          </p>
+          <p className="hint">{t("English · United States · LTR")}</p>
+          <p className="hint">{t("Preferences are stored locally. Reminder delivery is not connected in this demo.")}</p>
         </Card>
         {saved && (
-          <Alert severity="success" sx={{ marginBottom: 2 }}>
-            Settings saved
-          </Alert>
+          <Alert severity="success" sx={{ marginBottom: 2 }}>{t("Settings saved")}</Alert>
         )}
-        <Button type="submit">Save changes</Button>
+        <Button type="submit">{t("Save changes")}</Button>
       </form>
     </>
   );

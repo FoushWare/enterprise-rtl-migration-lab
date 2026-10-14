@@ -1,3 +1,4 @@
+import { useLocale } from "@atlas/shared";
 import { useEffect, useState } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { AppShell, EmptyState } from "@atlas/design-system";
@@ -9,6 +10,7 @@ import { CreateInvoice } from "./pages/CreateInvoice";
 import { Customers } from "./pages/Customers";
 import { Settings } from "./pages/Settings";
 export default function App() {
+  const { t, label } = useLocale();
   const [invoices, setInvoices] = useState<Invoice[]>([]),
     [loaded, setLoaded] = useState(false);
   useEffect(() => {
@@ -27,7 +29,7 @@ export default function App() {
           ? "Customers"
           : "Settings";
   return (
-    <AppShell title={title}>
+    <AppShell title={label(title)}>
       {loaded ? (
         <Routes>
           <Route path="/" element={<Dashboard invoices={invoices} />} />
@@ -50,14 +52,14 @@ export default function App() {
             path="*"
             element={
               <EmptyState
-                title="Page not found"
-                description="Choose a page from the sidebar."
+                title={t("Page not found")}
+                description={t("Choose a page from the sidebar.")}
               />
             }
           />
         </Routes>
       ) : (
-        <p>Loading your workspace…</p>
+        <p>{t("Loading your workspace…")}</p>
       )}
     </AppShell>
   );

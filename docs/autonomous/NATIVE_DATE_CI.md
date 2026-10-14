@@ -17,4 +17,4 @@ The English baseline job now changes only AppleLocale to en_EG on a disposable G
 
 Acceptance requires the full existing CI workflow to pass with all six original images unmodified; isolated fixture success is insufficient. Any new mismatch fails at the existing zero tolerance. Browser/runner updates can require a fresh investigation. Rollback is a normal reviewed revert of this workflow/documentation change, preserving all source and protected evidence. Temporary diagnostic workflow cleanup is a separate reviewed step after green verification.
 
-At preparation: syntax/structure checks passed; full application CI result pending. No merge exemption is granted for red checks.
+Verified: both full application CI runs 38598212535 and 38598345336 passed before normal merge of PR #3. No merge exemption was used for red checks. The final delivery PR removes temporary diagnostics after preserving causal evidence, while retaining the permanent CI-only region safeguard.

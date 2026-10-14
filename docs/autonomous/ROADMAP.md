@@ -1,0 +1,11 @@
+# Remaining delivery roadmap
+
+Authoritative sequence: Phase 4D runtime (complete), 4E semantic remediation/verification, then 4F conservative automation and final delivery. Source: ../phase-4a-implementation-roadmap.md and subsequent committed reviews. Current autonomous mission supersedes routine per-stage stop prompts, while protected evidence and product/security decision gates remain.
+
+1. **A — Native date CI:** run reviewed independent A-D diagnostics on their already registered workflow branch, without merging red PR #2; establish causation; prove smallest CI-only normalization; verify six untouched English goldens; achieve green main/feature CI; then merge or retire diagnostic work normally and remove temporary infrastructure through green reviewed PRs.
+2. **B — Navigation:** revalidate invoice/sidebar arrows; remediate Dashboard progression glyph via the existing Arabic translation if it preserves surrounding text and avoids protected Dashboard pins; test actual glyph orientation, navigation, accessibility, widths and repeated switching. Financial/external/disclosure/pagination semantics stay unchanged.
+3. **C — Bidi:** revalidate remaining RTL-08 symptoms; isolate known LTR tokens/amounts and unknown human text only at proven boundaries; preserve copy/storage/formatting and English visuals. Pin-protected sources cannot be edited without specific authorization.
+4. **D — 4F codemods:** inventory remaining physical declarations and intentional islands; implement tooling with strict reviewed plans, dry-run, exact digests/ranges, transactional application/rollback, negative/fixture/idempotency tests. Do not automatically approve or apply ambiguous production conversions.
+5. **E — Final delivery:** full scanner, unit, typecheck, lint, build, 6 exact English screenshots and Arabic/browser/state/accessibility regression checks; green applicable CI, merged scoped PRs, documentation current, temporary workflows removed, protected hashes retained, final report complete only when every criterion passes.
+
+Migration Control Center/dashboard is not in the approved Phase 4 roadmap. Historical Before remains separate checkpoints/screenshots. Deployment-origin navigation remains an explicit verification limitation until a real approved hosting environment exists.

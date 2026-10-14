@@ -1,9 +1,7 @@
+import { useLocale, DemoControls } from "@atlas/shared";
 import { useState, type ReactNode } from "react";
 import { NavLink } from "react-router-dom";
 import {
-  ThemeProvider,
-  createTheme,
-  CssBaseline,
   Button as MuiButton,
   Paper,
   TextField,
@@ -35,48 +33,7 @@ import ArrowForward from "@mui/icons-material/ArrowForward";
 import styled from "@emotion/styled";
 import type { Status } from "@atlas/shared";
 import "./styles.css";
-export const theme = createTheme({
-  direction: "ltr",
-  palette: {
-    primary: { main: "#4c58d6" },
-    background: { default: "#f7f8fb" },
-    text: { primary: "#202738", secondary: "#7a8294" },
-  },
-  typography: {
-    fontFamily:
-      'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-    button: { textTransform: "none", fontWeight: 600 },
-    h4: { fontWeight: 700, fontSize: "1.8rem", letterSpacing: "-.7px" },
-  },
-  shape: { borderRadius: 10 },
-  components: {
-    MuiButton: {
-      defaultProps: { disableElevation: true },
-      styleOverrides: { root: { padding: "10px 18px" } },
-    },
-    MuiTextField: { defaultProps: { size: "small" } },
-    MuiTableCell: {
-      styleOverrides: {
-        root: { borderColor: "#edf0f5", padding: "17px 20px" },
-        head: {
-          fontSize: 11,
-          fontWeight: 700,
-          color: "#80889a",
-          letterSpacing: ".6px",
-          background: "#fafbfc",
-        },
-      },
-    },
-  },
-});
-export function Provider({ children }: { children: ReactNode }) {
-  return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      {children}
-    </ThemeProvider>
-  );
-}
+export { Provider, theme } from "./runtime";
 export const Button = <C extends React.ElementType = "button">(
   props: ButtonProps<C, { component?: C }>,
 ) => <MuiButton variant="contained" {...props} />;
@@ -97,6 +54,7 @@ export function Card({
   );
 }
 export function StatusBadge({ status }: { status: Status }) {
+  const { label } = useLocale();
   const colors: Record<Status, [string, string]> = {
     Paid: ["#e9f6ef", "#27805a"],
     Pending: ["#fff5df", "#af7a14"],
@@ -111,7 +69,7 @@ export function StatusBadge({ status }: { status: Status }) {
       label={
         <>
           <span className="status-dot">●</span>
-          {status}
+          {label(status)}
         </>
       }
       sx={{
@@ -137,12 +95,13 @@ export function Modal({
   children: ReactNode;
   actions?: ReactNode;
 }) {
+  const { t } = useLocale();
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>
         {title}
         <IconButton
-          aria-label="Close dialog"
+          aria-label={t("Close dialog")}
           onClick={onClose}
           sx={{ position: "absolute", right: 12, top: 12 }}
         >
@@ -178,6 +137,7 @@ export function DataTable<T>({
   rows: T[];
   rowKey: (row: T) => string;
 }) {
+  const { t } = useLocale();
   return rows.length ? (
     <div className="table-scroll">
       <Table>
@@ -201,27 +161,30 @@ export function DataTable<T>({
     </div>
   ) : (
     <EmptyState
-      title="No results found"
-      description="Try another search or adjust your filters."
+      title={t("No results found")}
+      description={t("Try another search or adjust your filters.")}
     />
   );
 }
 const SidebarFrame = styled.aside`
   position: fixed;
-  left: 0;
+  inset-inline-start: 0;
   top: 0;
   bottom: 0;
   width: 238px;
   background: #fff;
-  border-right: 1px solid #e9edf4;
+  border-inline-end: 1px solid #e9edf4;
   padding: 30px 18px;
   z-index: 30;
   display: flex;
   flex-direction: column;
   @media (max-width: 900px) {
-    transform: translateX(-100%);
+    /* @noflip */ transform: translateX(-100%);
+    html[dir="rtl"] &:not(.is-open) {
+      /* @noflip */ transform: translateX(100%);
+    }
     &.is-open {
-      transform: translateX(0);
+      /* @noflip */ transform: translateX(0);
     }
   }
 `;
@@ -240,9 +203,10 @@ export function Sidebar({
   open: boolean;
   onClose: () => void;
 }) {
+  const { t, demoHref, label: translateLabel } = useLocale();
   return (
     <SidebarFrame className={open ? "is-open" : ""}>
-      <a className="brand" href="/">
+      <a className="brand" href={demoHref("/")}>
         <span className="brand-mark">a</span>atlas
         <span className="brand-period">.</span>
       </a>
@@ -260,11 +224,11 @@ export function Sidebar({
         </Avatar>
         <div>
           <strong>Atlas Company</strong>
-          <small>Pro workspace</small>
+          <small>{t("Pro workspace")}</small>
         </div>
         <span>⌄</span>
       </div>
-      <div className="nav-label">WORKSPACE</div>
+      <div className="nav-label">{t("WORKSPACE")}</div>
       <nav>
         {(procurement
           ? ([
@@ -273,26 +237,26 @@ export function Sidebar({
             ] as const)
           : links
         ).map(([path, label, Icon]) => (
-          <NavLink end={path === "/"} to={path} key={path} onClick={onClose}>
+          <NavLink end={path === "/"} to={demoHref(path)} key={path} onClick={onClose}>
             <Icon fontSize="small" />
-            {label}
+            {translateLabel(label)}
           </NavLink>
         ))}
       </nav>
       <div className="sidebar-bottom">
-        <div className="nav-label">YOUR APPLICATIONS</div>
+        <div className="nav-label">{t("YOUR APPLICATIONS")}</div>
         <a
           className="app-link"
-          href={procurement ? "http://localhost:4200" : "http://localhost:4201"}
+          href={demoHref(procurement ? "http://localhost:4200" : "http://localhost:4201")}
         >
           <ShoppingBagOutlined fontSize="small" />
-          {procurement ? "Invoicing" : "Procurement"}
+          {t(procurement ? "Invoicing" : "Procurement")}
           <ArrowForward sx={{ fontSize: 15, marginLeft: "auto" }} />
         </a>
         <div className="support-card">
-          <strong>A little help goes a long way</strong>
-          <p>Everything you need to keep business moving.</p>
-          <a href="mailto:support@atlas.example">Contact support ↗</a>
+          <strong>{t("A little help goes a long way")}</strong>
+          <p>{t("Everything you need to keep business moving.")}</p>
+          <a href="mailto:support@atlas.example">{t("Contact support ↗")}</a>
         </div>
         <div className="profile">
           <Avatar
@@ -308,7 +272,7 @@ export function Sidebar({
           </Avatar>
           <div>
             <strong>Alex Johnson</strong>
-            <small>Workspace admin</small>
+            <small>{t("Workspace admin")}</small>
           </div>
         </div>
       </div>
@@ -322,28 +286,29 @@ export function Header({
   title: string;
   onMenu: () => void;
 }) {
+  const { t } = useLocale();
   return (
     <header className="header">
       <div className="header-title">
         <IconButton
           className="mobile-menu"
-          aria-label="Open navigation"
+          aria-label={t("Open navigation")}
           onClick={onMenu}
         >
           <Menu />
         </IconButton>
-        <span>Workspace</span>
+        <span>{t("Workspace")}</span>
         <span className="breadcrumb-slash">/</span>
         <strong>{title}</strong>
       </div>
       <div className="header-tools">
         <Search sx={{ fontSize: 20, color: "#8b92a3" }} />
-        <span className="header-search">Your business, at a glance</span>
+        <span className="header-search">{t("Your business, at a glance")}</span>
         <span className="header-divider" />
         <IconButton
-          aria-label="Notifications"
+          aria-label={t("Notifications")}
           onClick={() =>
-            window.alert("You’re all caught up. No new notifications.")
+            window.alert(t("You’re all caught up. No new notifications."))
           }
         >
           <NotificationsNone fontSize="small" />
@@ -372,6 +337,7 @@ export function AppShell({
   title: string;
   procurement?: boolean;
 }) {
+  const { t } = useLocale();
   const [open, setOpen] = useState(false);
   return (
     <>
@@ -383,17 +349,15 @@ export function AppShell({
       {open && (
         <button
           className="nav-scrim"
-          aria-label="Close navigation"
+          aria-label={t("Close navigation")}
           onClick={() => setOpen(false)}
         />
       )}
       <div className="app-main">
+        <DemoControls />
         <Header title={title} onMenu={() => setOpen(true)} />
         <main>{children}</main>
-        <footer>
-          © 2026 Atlas Invoice
-          <span>
-            All systems operational <i />
+        <footer>{t("© 2026 Atlas Invoice")}<span>{t("All systems operational")}{" "}<i />
           </span>
         </footer>
       </div>
