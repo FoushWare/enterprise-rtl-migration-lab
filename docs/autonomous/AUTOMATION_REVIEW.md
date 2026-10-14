@@ -2,7 +2,7 @@
 
 Measured after semantic remediation: 440 facts, 42 findings, 39 actionable, complete=true, nine nonblocking diagnostics and no policy warnings. There are zero automation candidates and zero approvals. No production codemod was applied.
 
-| Finding | Owner/source | Category | Review disposition |
+| Finding | Source/context | Category | Review disposition |
 | --- | --- | --- | --- |
 | RTL.DOCUMENT.INITIAL:3321a4fa4f1dd561e3b7fee5 | `apps/invoicing/index.html` / html | INTENTIONAL_LTR | Preserve approved default English markup; evaluate runtime direction separately. |
 | RTL.BIDI.ISOLATION:741d2ce2aec3a86cf2db37ea | `apps/invoicing/src/components/InvoiceTable.tsx` / InvoiceTable | MANUAL_REVIEW | Review opposite-direction token isolation or auto-direction for human text; preserve canonical storage and copying. |
@@ -52,3 +52,22 @@ Static findings are risk evidence, not a defect count. The unresolved diagnostic
 ## Verified boundaries
 
 Custom bidi fixes add explicit grouping for canonical en-US financial display and known customer tokens. Input caret policy and formatting are unchanged. The four retired RTL-08 bindings matched removed unisolated JSX source expressions; their historical issue definitions/severities remain in Phase 2A evidence. Two alignment declarations remain manual findings. Dashboard direction is resolved through the existing Arabic translation, preserving pinned source bytes.
+
+## Physical declaration inventory
+
+Every row remains unapproved for automation. MUI-owned units/processor behavior, pinned sources, deliberate LTR frames and mixed-token spacing require separate review; no generic left/right equivalence is inferred.
+
+| Finding | Source / owner | Exact extracted declaration |
+| --- | --- | --- |
+| RTL.CSS.PHYSICAL:adebba7d3ad0dda9b7b8d423 | `apps/invoicing/src/pages/Dashboard.tsx` / custom-inline | `marginLeft: 10` |
+| RTL.CSS.PHYSICAL:01b8d7fcb0e0dd788a73af31 | `apps/invoicing/src/pages/Invoices.tsx` / custom-inline | `marginLeft: "auto"` |
+| RTL.CSS.PHYSICAL:a82eeae5e376b962d817b8b2 | `libs/design-system/src/index.tsx` / custom-emotion-review | `marginLeft: "auto"` |
+| RTL.CSS.PHYSICAL:21623aff840f0d576f06f522 | `libs/design-system/src/styles.css` / custom-css | `margin-left: 12px` |
+| RTL.CSS.PHYSICAL:ecf95e3ab5ee9d97e51b7b4d | `libs/design-system/src/styles.css` / custom-css | `margin-right: 10px` |
+| RTL.CSS.PHYSICAL:190bcc5a6e2552cc91cd610b | `libs/design-system/src/styles.css` / custom-css | `margin-left: auto` |
+| RTL.CSS.PHYSICAL:0dfdf26ee014cb3b23ca8b7f | `libs/design-system/src/styles.css` / custom-css | `border-left: 1px solid #e7eaf1` |
+| RTL.CSS.PHYSICAL:a750b772938d00bc32351bff | `libs/design-system/src/styles.css` / custom-css | `margin-left: 6px` |
+| RTL.CSS.PHYSICAL:b25c21f026c69d421df65fa6 | `libs/design-system/src/styles.css` / custom-css | `margin-right: 5px` |
+| RTL.CSS.PHYSICAL:82212e990854fbb975d34448 | `libs/design-system/src/styles.css` / custom-css | `padding-left: 40px` |
+| RTL.CSS.PHYSICAL:0031e17b6a889ff32cbf3adc | `libs/design-system/src/styles.css` / custom-css | `text-align: right` |
+| RTL.CSS.PHYSICAL:5a0239345a9e743d6571ae0d | `libs/design-system/src/styles.css` / custom-css | `text-align: right` |

@@ -23,6 +23,7 @@ npm run build
 npm test
 npx playwright install chromium --no-shell
 npm run test:e2e
+npm run test:e2e:production  # requires completed builds and free ports 4200/4201
 npm run storybook
 ```
 
