@@ -15,7 +15,59 @@ jobs:
       - run: npm run build
       - run: npm test
       - run: npx playwright install chromium --no-shell
+      - name: Match protected native-date baseline region
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$RUNNER_ENVIRONMENT" = github-hosted
+          cat > "$RUNNER_TEMP/native-date-region.py" <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import plistlib
+          import subprocess
+          import sys
+
+          if sys.platform != 'darwin' or os.environ.get('GITHUB_ACTIONS') != 'true' or os.environ.get('RUNNER_ENVIRONMENT') != 'github-hosted':
+              raise SystemExit('Preference changes require a disposable GitHub-hosted macOS runner')
+          snapshot = Path(os.environ['RUNNER_TEMP']) / 'native-date-region-original.json'
+          if sys.argv[1] == 'prepare':
+              if snapshot.exists():
+                  raise SystemExit('Refusing to overwrite original region snapshot')
+              preferences = plistlib.loads(subprocess.check_output(['defaults', 'export', 'NSGlobalDomain', '-']))
+              original = {'present': 'AppleLocale' in preferences, 'value': preferences.get('AppleLocale')}
+              if original['present'] and not isinstance(original['value'], str):
+                  raise SystemExit('Unsupported original AppleLocale type')
+              snapshot.write_text(json.dumps(original))
+              subprocess.run(['defaults', 'write', 'NSGlobalDomain', 'AppleLocale', '-string', 'en_EG'], check=True)
+              if subprocess.check_output(['defaults', 'read', 'NSGlobalDomain', 'AppleLocale'], text=True).strip() != 'en_EG':
+                  raise SystemExit('Native date region readback failed')
+              print('CI-only AppleLocale=en_EG; application/browser locale and baselines unchanged')
+          elif sys.argv[1] == 'restore':
+              if snapshot.exists():
+                  original = json.loads(snapshot.read_text())
+                  if original['present']:
+                      subprocess.run(['defaults', 'write', 'NSGlobalDomain', 'AppleLocale', '-string', original['value']], check=True)
+                  else:
+                      subprocess.run(['defaults', 'delete', 'NSGlobalDomain', 'AppleLocale'], check=True)
+                  preferences = plistlib.loads(subprocess.check_output(['defaults', 'export', 'NSGlobalDomain', '-']))
+                  restored = {'present': 'AppleLocale' in preferences, 'value': preferences.get('AppleLocale')}
+                  if restored != original:
+                      raise SystemExit('Original AppleLocale restoration failed')
+                  print('Original AppleLocale restored')
+          else:
+              raise SystemExit('Unknown action')
+          PY
+          python3 "$RUNNER_TEMP/native-date-region.py" prepare
       - run: npm run test:e2e
+      - name: Restore runner native-date region
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -f "$RUNNER_TEMP/native-date-region.py" ]]; then
+            python3 "$RUNNER_TEMP/native-date-region.py" restore
+          fi
       - uses: actions/upload-artifact@v4
         if: always()
         with:
