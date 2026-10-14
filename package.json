@@ -17,7 +17,9 @@
     "rtl:scan:typecheck": "tsc -p tools/rtl-scanner/tsconfig.typecheck.json",
     "rtl:scan:build": "tsc -p tools/rtl-scanner/tsconfig.json",
     "rtl:codemod": "node tools/rtl-codemod/cli.mjs",
-    "rtl:codemod:test": "npm run rtl:scan:build && vitest run --config tools/rtl-codemod/vitest.config.ts"
+    "rtl:codemod:test": "npm run rtl:scan:build && vitest run --config tools/rtl-codemod/vitest.config.ts",
+    "test:e2e:production": "playwright test --config playwright.production.config.ts",
+    "rtl:verify:protected": "node scripts/verify-rtl-protections.mjs"
   },
   "dependencies": {
     "@emotion/cache": "11.14.0",

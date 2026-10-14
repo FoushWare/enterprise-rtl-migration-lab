@@ -12,7 +12,14 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run typecheck
-      - run: npm run build
+      - run: npm run rtl:verify:protected
+      - run: npm run rtl:scan:typecheck
+      - run: npm run rtl:scan:build
+      - run: npm run rtl:scan:test
+      - run: npm run rtl:scan
+      - run: npm run rtl:codemod:test
+      - run: npm run rtl:codemod -- --dry-run
+      - run: npm run build -- --skip-nx-cache
       - run: npm test
       - run: npx playwright install chromium --no-shell
       - name: Match protected native-date baseline region
@@ -60,6 +67,8 @@ jobs:
           PY
           python3 "$RUNNER_TEMP/native-date-region.py" prepare
       - run: npm run test:e2e
+      - run: npm run test:e2e:production
+      - run: npm run rtl:verify:protected
       - name: Restore runner native-date region
         if: always()
         shell: bash
@@ -72,4 +81,6 @@ jobs:
         if: always()
         with:
           name: playwright-report
-          path: playwright-report/
+          path: |
+            playwright-report/
+            playwright-production-report/

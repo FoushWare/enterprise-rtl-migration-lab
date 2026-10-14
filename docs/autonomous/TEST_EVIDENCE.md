@@ -15,3 +15,10 @@ All A-D jobs succeeded; same macOS/image/browser/lock/page configuration, unrela
 CI repair PR #3: push 38598212535 and PR 38598345336 SUCCESS, including six protected English comparisons and restoration. Diagnostic PR #2 after main update: push 38599527312 and PR 38599535009 SUCCESS. Normal merge receipts recorded in STATE.md.
 
 Current semantic tests: Dashboard seven-width/five-cycle pointer+keyboard tests 7 passed; bidi glyph/copy/state/title-clearance plus old forms/dialog/table suite 28 passed. Scanner all 186 passed after exact five-fact/seven-removed/two-added finding alignment; archived assertions untouched. Full development suite: 108 passed with all six protected English screenshots at zero difference. Production suite is currently running against built assets. Codemod fixture suite: 24 passed; lint/typechecks/unit tests and uncached app builds passed. Deterministic JSON/Markdown confirmed; protection verifier checks 78 immutable files plus exact exception records.
+
+## Full local delivery verification
+Full development 108 passed; full built-production 108 passed. Every existing sidebar/brand/chart/KPI/form/dialog/table/invoice-arrow test remained, plus Dashboard/bidi cases. All six English screenshots passed at maxDiffPixels=0 without updates. The dedicated production configuration initially retained development servers through defineConfig merging; fixed by explicit spread/override. Its separate focused rerun verifies the runner lifecycle, screenshots and new cases. This was a test-config defect, not an application visual regression.
+
+Codemod 24/24; scanner 186/186; app unit 9/9; lint and both typechecks pass; uncached Nx builds pass. Deterministic report comparison and protected verifier pass. No source pins/exception records changed. Tool fixture approvals exist only in disposable repositories; production approvals remain empty.
+
+Dedicated production-config rerun: 25 passed (32.4s), including all six English comparisons. Final protected verifier and lint/typecheck passed after configuration correction.
