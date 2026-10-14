@@ -10,9 +10,6 @@ jobs:
   diagnose:
     runs-on: macos-latest
     timeout-minutes: 15
-    env:
-      DATE_PROBE_OUTPUT: ${{ runner.temp }}/native-date-diagnostic
-      PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/native-date-browsers
     steps:
       - name: Checkout investigated revision without persisted credentials
         uses: actions/checkout@v4
@@ -24,6 +21,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+
+      - name: Initialize temporary diagnostic paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'DATE_PROBE_OUTPUT=%s\n' "$RUNNER_TEMP/native-date-diagnostic" >> "$GITHUB_ENV"
+          printf 'PLAYWRIGHT_BROWSERS_PATH=%s\n' "$RUNNER_TEMP/native-date-browsers" >> "$GITHUB_ENV"
 
       - name: Record selected environment details (no environment dump)
         shell: bash
