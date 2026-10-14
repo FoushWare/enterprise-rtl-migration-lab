@@ -1,0 +1,174 @@
+name: Native date input diagnostic (temporary)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: macos-latest
+    timeout-minutes: 15
+    env:
+      DATE_PROBE_OUTPUT: ${{ runner.temp }}/native-date-diagnostic
+      PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/native-date-browsers
+    steps:
+      - name: Checkout investigated revision without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          repository: FoushWare/enterprise-rtl-migration-lab
+          ref: 8041f4c9c4411adb0247c3061727086c9d0735b7
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Record selected environment details (no environment dump)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$DATE_PROBE_OUTPUT"
+          {
+            sw_vers
+            printf '\nArchitecture\n'
+            uname -m
+            for key in AppleLocale AppleLanguages AppleICUDateFormatStrings; do
+              printf '\n%s\n' "$key"
+              if ! defaults read -g "$key"; then
+                printf 'Preference unavailable; no default value inferred.\n'
+              fi
+            done
+            printf '\nShell locale\n'
+            locale
+            printf '\nNode and npm\n'
+            node --version
+            npm --version
+            printf '\nChecked-out revision\n'
+            git rev-parse HEAD
+          } > "$DATE_PROBE_OUTPUT/environment.txt" 2>&1
+
+      - name: Install locked tools without lifecycle scripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts
+          node -e 'if (require("playwright/package.json").version !== "1.64.0") throw new Error("Unexpected Playwright version")'
+          ./node_modules/.bin/playwright install chromium --no-shell
+
+      - name: Probe native controls without application or baseline execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > "$RUNNER_TEMP/native-date-probe.mjs" <<'JS'
+          import { createRequire } from 'node:module';
+          import fs from 'node:fs';
+          import path from 'node:path';
+          const require = createRequire(process.cwd() + '/package.json');
+          const { chromium } = require('playwright');
+          const { PNG } = require(path.join(path.dirname(require.resolve('playwright-core/package.json')), 'lib/utilsBundle.js'));
+          const output = process.env.DATE_PROBE_OUTPUT;
+          if (!output || !path.isAbsolute(output)) throw new Error('Absolute temporary output path required');
+          fs.mkdirSync(output, { recursive: true });
+          const browser = await chromium.launch({ channel: 'chromium', headless: true, args: ['--enable-automation'] });
+          try {
+            if (browser.version() !== '156.0.8078.4') throw new Error('Unexpected browser version: ' + browser.version());
+            const context = await browser.newContext({ locale: 'en-US', timezoneId: 'UTC', viewport: { width: 1440, height: 1000 }, colorScheme: 'light' });
+            let blockedRequests = 0;
+            await context.route('**/*', route => { blockedRequests++; return route.abort(); });
+            const page = await context.newPage();
+            await page.setContent('<html lang="en" dir="ltr"><style>input{font:16px Arial;width:250px;padding:12px;margin:20px}</style><label>Invoice date<input type="date" value="2026-10-11"></label><label>Due date<input type="date" value="2026-11-10"></label></html>');
+            await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+            await page.waitForTimeout(500);
+            const session = await context.newCDPSession(page);
+            const rendered = [];
+            let segmentInspectionError = null;
+            function text(node) {
+              return (node.nodeName === '#text' ? node.nodeValue : '') + [...(node.children || []), ...(node.shadowRoots || [])].map(text).join('');
+            }
+            function walk(node) {
+              if (node.nodeName === 'INPUT') rendered.push(text(node));
+              for (const child of [...(node.children || []), ...(node.shadowRoots || [])]) walk(child);
+            }
+            try {
+              walk((await session.send('DOM.getDocument', { depth: -1, pierce: true })).root);
+            } catch (error) {
+              segmentInspectionError = error.message;
+            }
+            const rawArguments = (await session.send('Browser.getBrowserCommandLine')).arguments;
+            const executablePath = rawArguments[0];
+            const allowedPrefixes = ['--disable-', '--enable-', '--headless', '--hide-scrollbars', '--mute-audio', '--blink-settings=', '--force-color-profile=', '--lang=', '--no-', '--remote-debugging-pipe', '--use-mock-keychain', '--password-store=basic', '--metrics-recording-only', '--allow-pre-commit-input', '--export-tagged-pdf'];
+            const launchArguments = rawArguments.slice(1).filter(argument => allowedPrefixes.some(prefix => argument.startsWith(prefix)));
+            function inspectPng(file) {
+              const png = PNG.sync.read(fs.readFileSync(file));
+              let meaningfulPixels = 0;
+              for (let i = 0; i < png.data.length; i += 4) {
+                const [r, g, b, a] = png.data.subarray(i, i + 4);
+                if (a && !(r === 255 && g === 255 && b === 255) && !(r === 0 && g === 0 && b === 0)) meaningfulPixels++;
+              }
+              return { file: path.basename(file), width: png.width, height: png.height, meaningfulPixels, nonblank: meaningfulPixels > 100 };
+            }
+            const screenshots = [];
+            const screenshotErrors = [];
+            try {
+              await page.screenshot({ path: output + '/surface.png' });
+              screenshots.push(inspectPng(output + '/surface.png'));
+            } catch (error) { screenshotErrors.push({ capture: 'surface', message: error.message }); }
+            try {
+              const capture = await session.send('Page.captureScreenshot', { format: 'png', fromSurface: false });
+              fs.writeFileSync(output + '/visible.png', Buffer.from(capture.data, 'base64'));
+              screenshots.push(inspectPng(output + '/visible.png'));
+            } catch (error) { screenshotErrors.push({ capture: 'visible', message: error.message }); }
+            const pageState = await page.evaluate(() => ({
+              browserLocale: navigator.language,
+              documentLanguage: document.documentElement.lang,
+              documentDirection: document.documentElement.dir,
+              timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+              viewport: { width: innerWidth, height: innerHeight },
+              devicePixelRatio,
+              inputs: [...document.querySelectorAll('input')].map(input => ({ value: input.value, bounds: input.getBoundingClientRect().toJSON() }))
+            }));
+            const result = { browserVersion: browser.version(), executablePath, launchArguments, omittedArgumentCount: rawArguments.length - 1 - launchArguments.length, requestedLocale: 'en-US', requestedTimezone: 'UTC', pageState, nativeSegments: rendered, segmentInspectionError, screenshots, screenshotErrors, blockedRequests, visualOrdering: 'Requires human inspection of nonblank screenshots; ISO values are not presentation evidence.' };
+            fs.writeFileSync(output + '/probe.json', JSON.stringify(result, null, 2));
+            fs.writeFileSync(output + '/comparison.md', [
+              '# Native date diagnostic',
+              'Local reference: Chrome 155.0.8059.40 and Chrome for Testing 156.0.8078.4 both displayed 11/10/2026 and 10/11/2026 under AppleLocale=en_EG.',
+              'Original CI screenshots displayed 10/11/2026 and 11/10/2026; its regional preferences were not recorded.',
+              'Current native segments: ' + JSON.stringify(rendered),
+              'Compare environment.txt and probe.json, then inspect nonblank screenshots. A nonblank flag alone does not prove readable date glyphs.',
+              'The visible fallback can contain browser-window surroundings and may not have viewport-sized dimensions.',
+              'This isolated fixture does not establish production application compatibility or authorize remediation.'
+            ].join('\n\n') + '\n');
+            if (!screenshots.some(screenshot => screenshot.nonblank)) throw new Error('No meaningful screenshot evidence; diagnostic incomplete');
+          } finally {
+            await browser.close();
+          }
+          JS
+          node --check "$RUNNER_TEMP/native-date-probe.mjs"
+          node "$RUNNER_TEMP/native-date-probe.mjs"
+
+      - name: Confirm tracked checkout remains unchanged
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --exit-code
+          git diff --cached --exit-code
+          git status --porcelain --untracked-files=all > "$DATE_PROBE_OUTPUT/checkout-status.txt"
+          test ! -s "$DATE_PROBE_OUTPUT/checkout-status.txt"
+
+      - name: Upload only diagnostic evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-date-diagnostic
+          path: |
+            ${{ runner.temp }}/native-date-diagnostic/environment.txt
+            ${{ runner.temp }}/native-date-diagnostic/probe.json
+            ${{ runner.temp }}/native-date-diagnostic/comparison.md
+            ${{ runner.temp }}/native-date-diagnostic/surface.png
+            ${{ runner.temp }}/native-date-diagnostic/visible.png
+            ${{ runner.temp }}/native-date-diagnostic/checkout-status.txt
+          retention-days: 3
+          if-no-files-found: error
