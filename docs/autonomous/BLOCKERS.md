@@ -1,6 +1,7 @@
-# Blockers
+# Delivery limitations and gates
 
-- **CI environment:** create-invoice English screenshot differs solely in native date ordering. Do not merge red PRs or weaken screenshots. Next: independent A-D causal experiment, then defensible environment fix.
-- **Protected pins:** Dashboard.tsx and design-system/index.tsx whole-file background exception pins must not change silently or under generic autonomy. Editing these files is blocked unless explicit controlled pin migration is authorized; seek safe unpinned alternatives.
-- **Deployment origins:** production-origin cross-app routing cannot be certified without an actual approved deployment environment; local dev/production fixture verification is distinct. Do not deploy.
-- **Finality:** project incomplete until all remaining phases, relevant tests/CI, normal merges, cleanup and final report meet acceptance.
+- Native date CI blocker resolved by controlled A-D experiment and green CI-only normalization PR #3. No baseline or product input change.
+- Protected pins remain immutable; Dashboard translation and unpinned bidi boundaries avoid editing pinned sources. All 78 protected hashes and exception records verify.
+- Deployment origins remain unverified without approved hosting; no production deployment is authorized. Local production builds are independently tested.
+- Static uncertainty remains nine nonblocking diagnostics and 39 actionable review findings, with zero automatic candidates. They are visible limitations, not claimed defects or approvals.
+- Final delivery requires consolidated green CI/normal merge and temporary workflow cleanup. Until then status remains in progress.
