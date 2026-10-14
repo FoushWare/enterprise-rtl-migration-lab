@@ -1,4 +1,4 @@
-name: Native date input diagnostic (temporary)
+name: Native date regional A/B diagnostic (temporary)
 
 on:
   workflow_dispatch:
@@ -10,6 +10,12 @@ jobs:
   diagnose:
     runs-on: macos-latest
     timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        case: [A, B, C, D]
+    env:
+      REGION_AB_APPROVED: ephemeral-runner-only
     steps:
       - name: Checkout investigated revision without persisted credentials
         uses: actions/checkout@v4
@@ -28,6 +34,180 @@ jobs:
           set -euo pipefail
           printf 'DATE_PROBE_OUTPUT=%s\n' "$RUNNER_TEMP/native-date-diagnostic" >> "$GITHUB_ENV"
           printf 'PLAYWRIGHT_BROWSERS_PATH=%s\n' "$RUNNER_TEMP/native-date-browsers" >> "$GITHUB_ENV"
+
+      - name: Snapshot and apply one regional intervention (ephemeral runner only)
+        env:
+          REGION_CASE: ${{ matrix.case }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$DATE_PROBE_OUTPUT"
+          cat > "$RUNNER_TEMP/read-native-locale.m" <<'OBJC'
+          #import <Foundation/Foundation.h>
+          int main(void) {
+            @autoreleasepool {
+              NSUserDefaults *defaults = NSUserDefaults.standardUserDefaults;
+              NSLocale *locale = NSLocale.currentLocale;
+              NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+              formatter.locale = locale;
+              formatter.dateStyle = NSDateFormatterShortStyle;
+              formatter.timeStyle = NSDateFormatterNoStyle;
+              formatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+              formatter.calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+              NSMutableDictionary *result = [NSMutableDictionary dictionary];
+              for (NSString *key in @[@"AppleLocale", @"AppleLanguages", @"AppleICUDateFormatStrings"]) {
+                result[key] = [defaults objectForKey:key] ?: NSNull.null;
+              }
+              result[@"currentLocale"] = locale.localeIdentifier;
+              result[@"preferredLanguages"] = NSLocale.preferredLanguages;
+              result[@"shortDatePattern"] = formatter.dateFormat;
+              result[@"measurementScope"] = @"Fresh Foundation helper process; not direct inspection of Chromium renderer memory";
+              NSData *json = [NSJSONSerialization dataWithJSONObject:result options:NSJSONWritingPrettyPrinted error:nil];
+              fwrite(json.bytes, 1, json.length, stdout);
+              printf("\n");
+            }
+            return 0;
+          }
+          OBJC
+          cat > "$RUNNER_TEMP/regional-preferences.py" <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import plistlib
+          import subprocess
+          import sys
+
+          # Never execute preference mutation on a developer machine or self-hosted runner.
+          if not (sys.platform == 'darwin' and os.environ.get('GITHUB_ACTIONS') == 'true'
+                  and os.environ.get('RUNNER_ENVIRONMENT') == 'github-hosted'
+                  and os.environ.get('REGION_AB_APPROVED') == 'ephemeral-runner-only'):
+              raise SystemExit('Hosted-runner-only guard refused execution; no preferences written')
+
+          output = Path(os.environ['DATE_PROBE_OUTPUT'])
+          output.mkdir(parents=True, exist_ok=True)
+          file = output / 'original-selected-settings.json'
+          keys = ['AppleLocale', 'AppleLanguages', 'AppleICUDateFormatStrings']
+          locale_keys = ['LANG', 'LC_ALL', 'LC_COLLATE', 'LC_CTYPE', 'LC_MESSAGES', 'LC_MONETARY', 'LC_NUMERIC', 'LC_TIME']
+
+          def all_settings():
+              raw = subprocess.check_output(['defaults', 'export', 'NSGlobalDomain', '-'])
+              return plistlib.loads(raw)
+
+          def settings():
+              values = all_settings()
+              return {key: {'present': key in values, 'value': values.get(key)} for key in keys}
+
+          def other_preferences_digest():
+              values = {key: value for key, value in all_settings().items() if key not in keys}
+              return hashlib.sha256(plistlib.dumps(values, sort_keys=True)).hexdigest()
+
+          def write_key(key, entry):
+              if not entry['present']:
+                  now = settings()
+                  if now[key]['present']:
+                      subprocess.run(['defaults', 'delete', 'NSGlobalDomain', key], check=True)
+              elif key == 'AppleLocale' and isinstance(entry['value'], str):
+                  subprocess.run(['defaults', 'write', 'NSGlobalDomain', key, '-string', entry['value']], check=True)
+              elif key == 'AppleLanguages' and isinstance(entry['value'], list) and all(isinstance(x, str) for x in entry['value']):
+                  subprocess.run(['defaults', 'write', 'NSGlobalDomain', key, '-array', *entry['value']], check=True)
+              else:
+                  raise SystemExit('Unsupported original preference type; stop before mutation')
+
+          action = sys.argv[1]
+          if action == 'snapshot':
+              if file.exists():
+                  raise SystemExit('Original settings already recorded; refusing overwrite')
+              state = settings()
+              if state['AppleLocale'] != {'present': True, 'value': 'en_US'} or state['AppleLanguages'] != {'present': True, 'value': ['en-US']}:
+                  raise SystemExit('Unexpected CI baseline preferences; experiment invalid')
+              if state['AppleICUDateFormatStrings']['present']:
+                  raise SystemExit('Unexpected date-format override; experiment invalid')
+              system = {
+                  'macOS': subprocess.check_output(['sw_vers', '-productVersion'], text=True).strip(),
+                  'build': subprocess.check_output(['sw_vers', '-buildVersion'], text=True).strip(),
+                  'arch': subprocess.check_output(['uname', '-m'], text=True).strip(),
+                  'runnerImage': os.environ.get('ImageOS'),
+                  'runnerImageVersion': os.environ.get('ImageVersion')
+              }
+              if (system['macOS'], system['build'], system['arch']) != ('26.6.2', '25G83', 'arm64'):
+                  raise SystemExit('Runner OS changed; no cross-case causal comparison allowed')
+              shell = {key: os.environ.get(key) for key in locale_keys}
+              if any(value not in (None, 'en_US.UTF-8') for value in shell.values()):
+                  raise SystemExit('Unexpected baseline shell locale; experiment invalid')
+              lock_hash = hashlib.sha256(Path('package-lock.json').read_bytes()).hexdigest()
+              file.write_text(json.dumps({'preferences': state, 'shell': shell, 'system': system, 'lockDigest': lock_hash, 'otherPreferencesDigest': other_preferences_digest()}, indent=2))
+          elif action == 'apply':
+              original = json.loads(file.read_text())
+              if settings() != original['preferences']:
+                  raise SystemExit('Preferences changed before intervention')
+              if other_preferences_digest() != original['otherPreferencesDigest']:
+                  raise SystemExit('Other global preferences changed before intervention')
+              case = os.environ['REGION_CASE']
+              if case not in ['A', 'B', 'C', 'D']:
+                  raise SystemExit('Unknown case')
+              expected = json.loads(json.dumps(original['preferences']))
+              if case == 'B':
+                  expected['AppleLocale'] = {'present': True, 'value': 'en_EG'}
+                  write_key('AppleLocale', expected['AppleLocale'])
+              if case == 'C':
+                  expected['AppleLanguages'] = {'present': True, 'value': ['en-EG', 'ar-EG']}
+                  write_key('AppleLanguages', expected['AppleLanguages'])
+              if settings() != expected:
+                  raise SystemExit('Selected preference readback differs from requested intervention')
+              expected_shell = dict(original['shell'])
+              if case == 'D':
+                  expected_shell = {key: 'C.UTF-8' for key in locale_keys}
+                  with open(os.environ['GITHUB_ENV'], 'a') as stream:
+                      for key, value in expected_shell.items():
+                          stream.write(key + '=' + value + '\n')
+              (output / 'intervention.json').write_text(json.dumps({'case': case, 'expectedPreferences': expected, 'expectedShell': expected_shell}, indent=2))
+          elif action == 'verify':
+              expected = json.loads((output / 'intervention.json').read_text())
+              helper = json.loads((output / 'effective-native.json').read_text())
+              actual = settings()
+              original = json.loads(file.read_text())
+              if other_preferences_digest() != original['otherPreferencesDigest']:
+                  raise SystemExit('Other global preferences changed; causal comparison invalid')
+              if actual != expected['expectedPreferences']:
+                  raise SystemExit('Preference readback changed before browser launch')
+              for key in keys:
+                  if helper[key] != actual[key]['value']:
+                      raise SystemExit('Foundation effective preference mismatch: ' + key)
+              if {key: os.environ.get(key) for key in locale_keys} != expected['expectedShell']:
+                  raise SystemExit('Effective child-process shell locale differs')
+          elif action == 'restore':
+              if not file.exists():
+                  print('Snapshot absent; no intervention could start')
+                  raise SystemExit(0)
+              original = json.loads(file.read_text())
+              changed = settings()
+              for key in ['AppleLocale', 'AppleLanguages']:
+                  if changed[key] != original['preferences'][key]:
+                      write_key(key, original['preferences'][key])
+              if settings() != original['preferences']:
+                  raise SystemExit('Original selected preferences not restored')
+              if other_preferences_digest() != original['otherPreferencesDigest']:
+                  raise SystemExit('Unrelated global preference change; report instead of restoring broadly')
+              env = dict(os.environ)
+              for key, value in original['shell'].items():
+                  if value is None:
+                      env.pop(key, None)
+                  else:
+                      env[key] = value
+              helper = subprocess.check_output([os.environ['RUNNER_TEMP'] + '/read-native-locale'], env=env, text=True)
+              (output / 'restored-native.json').write_text(helper)
+              before_helper = json.loads((output / 'before-native.json').read_text())
+              if json.loads(helper) != before_helper:
+                  raise SystemExit('Fresh restored Foundation readback differs from baseline')
+              (output / 'restoration.json').write_text(json.dumps({'selectedPreferencesRestored': True, 'verificationShell': original['shell'], 'scope': 'Runner user NSGlobalDomain selected keys; fresh verification child uses original shell. Job VM is discarded.'}, indent=2))
+          else:
+              raise SystemExit('Unknown action')
+          PY
+          xcrun clang -fobjc-arc -framework Foundation "$RUNNER_TEMP/read-native-locale.m" -o "$RUNNER_TEMP/read-native-locale"
+          python3 "$RUNNER_TEMP/regional-preferences.py" snapshot
+          "$RUNNER_TEMP/read-native-locale" > "$DATE_PROBE_OUTPUT/before-native.json"
+          python3 "$RUNNER_TEMP/regional-preferences.py" apply
 
       - name: Record selected environment details (no environment dump)
         shell: bash
@@ -60,6 +240,13 @@ jobs:
           npm ci --ignore-scripts
           node -e 'if (require("playwright/package.json").version !== "1.64.0") throw new Error("Unexpected Playwright version")'
           ./node_modules/.bin/playwright install chromium --no-shell
+
+      - name: Verify effective child preferences before fresh browser launch
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/read-native-locale" > "$DATE_PROBE_OUTPUT/effective-native.json"
+          python3 "$RUNNER_TEMP/regional-preferences.py" verify
 
       - name: Probe native controls without application or baseline execution
         shell: bash
@@ -152,6 +339,21 @@ jobs:
           node --check "$RUNNER_TEMP/native-date-probe.mjs"
           node "$RUNNER_TEMP/native-date-probe.mjs"
 
+      - name: Check settings stayed controlled through browser execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "$RUNNER_TEMP/regional-preferences.py" verify
+
+      - name: Restore original selected runner preferences
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -f "$RUNNER_TEMP/regional-preferences.py" ]]; then
+            python3 "$RUNNER_TEMP/regional-preferences.py" restore
+          fi
+
       - name: Confirm tracked checkout remains unchanged
         if: always()
         shell: bash
@@ -166,9 +368,15 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: native-date-diagnostic
+          name: native-date-regional-${{ matrix.case }}
           path: |
             ${{ runner.temp }}/native-date-diagnostic/environment.txt
+            ${{ runner.temp }}/native-date-diagnostic/original-selected-settings.json
+            ${{ runner.temp }}/native-date-diagnostic/intervention.json
+            ${{ runner.temp }}/native-date-diagnostic/before-native.json
+            ${{ runner.temp }}/native-date-diagnostic/effective-native.json
+            ${{ runner.temp }}/native-date-diagnostic/restored-native.json
+            ${{ runner.temp }}/native-date-diagnostic/restoration.json
             ${{ runner.temp }}/native-date-diagnostic/probe.json
             ${{ runner.temp }}/native-date-diagnostic/comparison.md
             ${{ runner.temp }}/native-date-diagnostic/surface.png
