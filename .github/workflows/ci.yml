@@ -66,8 +66,8 @@ jobs:
               raise SystemExit('Unknown action')
           PY
           python3 "$RUNNER_TEMP/native-date-region.py" prepare
-      - run: npm run test:e2e
-      - run: npm run test:e2e:production
+      - run: npm run test:e2e -- --workers=2
+      - run: npm run test:e2e:production -- --workers=2
       - run: npm run rtl:verify:protected
       - name: Restore runner native-date region
         if: always()

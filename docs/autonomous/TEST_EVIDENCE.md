@@ -22,3 +22,7 @@ Full development 108 passed; full built-production 108 passed. Every existing si
 Codemod 24/24; scanner 186/186; app unit 9/9; lint and both typechecks pass; uncached Nx builds pass. Deterministic report comparison and protected verifier pass. No source pins/exception records changed. Tool fixture approvals exist only in disposable repositories; production approvals remain empty.
 
 Dedicated production-config rerun: 25 passed (32.4s), including all six English comparisons. Final protected verifier and lint/typecheck passed after configuration correction.
+
+Initial delivery PR #4: push 38604705938 SUCCESS, including full development and production; PR 38604804170 FAILURE solely brand activation at 1440px, 107 passed, six English visuals all passed. Logs/artifact showed lang=en read immediately after an asynchronous locale/link transition. Exact Chrome 156 CPU-throttled click instrumentation reproduced old href en with current URL ar and html dir ltr; readiness assertions corrected this (5/5 ar probes). Branding dev repetition: 42 passed across both apps/seven widths, no production change. Focused production and new head CI are verified before merge; the failed head is not eligible for merge.
+
+Brand synchronization production verification: 14 passed (38.7s). Lint/typecheck/protected verifier/whitespace checks pass. Original push full receipt: development 108 passed (9.8m), production 108 passed (6.7m), scanner 186, codemod 24, unit nine, restoration and final protected gate success. New head must pass both full automatic checks; no retry exemptions.

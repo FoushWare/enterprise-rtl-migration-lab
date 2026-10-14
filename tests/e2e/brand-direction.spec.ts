@@ -64,10 +64,12 @@ for (const application of ["invoicing", "procurement"] as const) for (const widt
       await page.locator('select[aria-label="Language / اللغة"]').selectOption(language);
       if (width <= 900) await page.getByRole("button", { name: language === "ar" ? "فتح قائمة التنقل" : "Open navigation", exact: true }).click();
       if (width <= 900 && !await page.locator("aside").evaluate(n => n.classList.contains("is-open"))) await page.getByRole("button", { name: language === "ar" ? "فتح قائمة التنقل" : "Open navigation", exact: true }).click();
+      // Router transitions are asynchronous; activate the committed locale link.
+      await expect(page.locator("html")).toHaveAttribute("dir", language === "ar" ? "rtl" : "ltr");
+      await expect(page.locator(".brand")).toHaveAttribute("href", `/?demo=unmigrated-rtl&lang=${language}`);
       if (language === "ar") await page.locator(".brand").click();
       else { await page.locator(".brand").focus(); await page.keyboard.press("Enter"); }
-      await expect.poll(() => new URL(page.url()).pathname).toBe("/");
-      expect(new URL(page.url()).searchParams.get("lang")).toBe(language);
+      await expect(page).toHaveURL(`${origin.origin}/?demo=unmigrated-rtl&lang=${language}`);
       if (width <= 900 && await page.locator("aside").evaluate(n => n.classList.contains("is-open"))) {
         await page.getByRole("button", { name: language === "ar" ? "إغلاق قائمة التنقل" : "Close navigation", exact: true }).click({ position: { x: language === "ar" ? 10 : width - 10, y: 400 } });
         await expect(page.locator("aside")).not.toHaveClass(/is-open/);
