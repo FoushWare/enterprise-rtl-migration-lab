@@ -697,5 +697,8 @@
   "أداة تعديل CSS بخطط مراجعة ورفض الحالات غير الآمنة وإمكانية الاسترجاع؛ مش تحويل آلي شامل للتطبيق.": "Adds reviewed CSS codemod plans, unsafe-case rejection and rollback. This is not a bulk automatic application conversion.",
   "تجميع بوابات CI والاختبارات وحماية الأدلة. النطاق يتضمن فروق الفروع التي اتجمعت قبل نقطة التحقق دي.": "Collects CI, regression and evidence-protection gates. The range includes branch changes accumulated before this checkpoint.",
   "التسليم النهائي بيضم توثيق النتائج وحدودها والتعديلات الأخيرة بعد نقطة CI؛ مش ادعاء بنشر إنتاجي.": "Final delivery includes result documentation, limitations and changes after the CI checkpoint; it does not claim a production deployment.",
-  "مفيش صورة مقابلة مطابقة موثّقة للّقطة دي؛ المعروض هو الأصل فقط.": "No documented exact counterpart is available for this capture; only the original is shown."
+  "مفيش صورة مقابلة مطابقة موثّقة للّقطة دي؛ المعروض هو الأصل فقط.": "No documented exact counterpart is available for this capture; only the original is shown.",
+  "نسخ الصورة واللغة الأخرى": "Other captures and language",
+  "بنجمّع نسخ نفس الصفحة والحالة والمقاس في كارت واحد. افتح «نسخ الصورة واللغة الأخرى» للنسخ المحفوظة، أو اختار لغة من الفلتر.": "Captures of the same page, state and viewport share one card. Open “Other captures and language” for preserved versions, or use the language filter.",
+  "افتح النسخة": "Open capture"
 }

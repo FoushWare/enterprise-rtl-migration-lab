@@ -109,6 +109,9 @@
       && (status ? note.status === status : ['before-fix', 'partial'].includes(note.status))
       && (!category || taxonomy.issues.find(item => item.id === note.issueId).categories.includes(category)))
       && (!search || [caption(pair), dictionary[caption(pair)], pair.state, pair.app, pair.route, pair.commit].filter(Boolean).join(' ').toLowerCase().includes(search))) : [];
+    const groupMap = JSON.parse(document.querySelector('#capture-group-map').textContent);
+    const seen = new Set();
+    matches = matches.filter(pair => { const key = groupMap[pair.stage + ':' + pair.ar] || pair.ar; if (seen.has(key)) return false; seen.add(key); return true; });
     grid.replaceChildren();
     const count = document.querySelector('#comparison-count');
     const issueInfo = taxonomy.issues.find(item => item.id === issue);

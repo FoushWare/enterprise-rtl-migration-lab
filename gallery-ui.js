@@ -5,15 +5,23 @@
   const statusById = Object.fromEntries(taxonomy.statuses.map(status => [status.id, status]));
   const globalBar = document.querySelector('#global-issue-filters');
   const number = value => new Intl.NumberFormat('ar-EG').format(value);
+  const captureGroups = JSON.parse(document.querySelector('#capture-group-map').textContent);
   const pageSize = 12;
   const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
   const chapters = [...document.querySelectorAll('article.stage')].map(element => ({
     element, bar: element.querySelector('.filters'), limit: pageSize,
     cards: [...element.querySelectorAll('.gallery > figure')].map(element => ({
       element, annotations: JSON.parse(element.dataset.annotations),
-      search: element.dataset.search, image: element.querySelector('button.pic').dataset.src,
+      origin: element.querySelector('.shot-origin').textContent, search: element.dataset.search, image: element.querySelector('button.pic').dataset.src,
     })), matches: [],
   }));
+  for (const chapter of chapters) for (const card of chapter.cards) {
+    const identity = captureGroups[card.element.dataset.cardKey];
+    if (identity) {
+      const values = JSON.parse(identity);
+      if (values[5] && values[6]) { const size = document.createElement('span'); size.dir = 'ltr'; size.className = 'capture-viewport'; size.textContent = values[5] + ' × ' + values[6]; card.element.querySelector('.shot-tags').append(size); }
+    }
+  }
   const chapterById = new Map(chapters.map(chapter => [chapter.element.id, chapter]));
   const dots = [...document.querySelectorAll('#stage-rail .stage-dot')];
   const params = new URLSearchParams(location.search);
@@ -101,6 +109,31 @@
         card.element.querySelector('.shot-evidence-status').textContent = statuses.length === 1 ? statusById[statuses[0]].label : 'الصورة مرتبطة بأكثر من حالة';
         updateChips(card);
         return match;
+      });
+      const grouped = new Map();
+      for (const card of chapter.matches) {
+        const key = captureGroups[card.element.dataset.cardKey] || card.element.dataset.cardKey;
+        if (!grouped.has(key)) grouped.set(key, []);
+        grouped.get(key).push(card);
+      }
+      chapter.matches = [...grouped.values()].map(candidates => {
+        const representative = candidates.find(card => card.element.dataset.lang === 'ar') || candidates[0];
+        const others = candidates.filter(card => card !== representative);
+        let details = representative.element.querySelector('.capture-alternates');
+        if (!details) { details = document.createElement('details'); details.className = 'capture-alternates'; representative.element.querySelector('figcaption').append(details); }
+        details.replaceChildren(); details.hidden = !others.length;
+        if (others.length) {
+          const summary = document.createElement('summary'); summary.textContent = document.documentElement.lang === 'en' ? 'Other captures and language' : 'نسخ الصورة واللغة الأخرى'; details.append(summary);
+          for (const other of others) {
+            const button = document.createElement('button'); button.type = 'button';
+            button.append(document.createTextNode(other.element.dataset.lang === 'ar' ? 'العربية' : 'الإنجليزية'), document.createTextNode(' · '), document.createTextNode(other.origin));
+            button.addEventListener('click', () => {
+              const request = new CustomEvent('gallery:open-image', {cancelable: true, detail: {card: other.element, target: button, cards: [other.element]}});
+              if (document.dispatchEvent(request)) openImage({...chapter, matches: [other]}, other, button);
+            }); details.append(button);
+          }
+        }
+        return representative;
       });
       chapter.element.hidden = chapter.matches.length === 0;
       renderPage(chapter);

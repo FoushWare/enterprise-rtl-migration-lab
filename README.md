@@ -43,3 +43,7 @@ Each stage has a collapsed code/PR explanation with nested file/commit inventori
 ## Paired stage-image viewer
 
 Stage screenshots with documented counterparts now open the paired viewer too: Arabic and English remain side by side, with independent zoom and the original issue descriptions below both images. Pair navigation follows the current stage’s matching captures. In addition to the 720 recreated pairs, 34 original Phase 2A pairs were matched by commit, app, state, normalized route, viewport and capture type; original bytes remain untouched. Unmatched English-only baseline or report images retain a single-image view with an explicit missing-counterpart notice.
+
+## Grouped captures
+
+Within a stage, captures with the same source commit, application, state, normalized route, viewport and print mode now share a single card. Arabic is the default representative where available; the language and collection filters still select their matching capture. Original and recreated alternatives remain accessible inside a disclosure on that card. Documentary cards stay distinct. Comparison results use the same identity grouping. No manifest records or image files were deleted. The current unfiltered presentation has 869 representative cards across the twelve stages while retaining all 1,677 original stage references.
