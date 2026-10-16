@@ -1,0 +1,65 @@
+<!doctype html><meta charset="utf-8"><title>Source evidence</title><style>body{margin:0;background:#0c1626;color:#e6edf5;font:18px Arial;padding:45px}small{color:#d4d991}h1{font-size:26px}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:16px/1.65 monospace;background:#142338;padding:24px;border-left:4px solid #d4d991}footer{color:#9eafc3;font-size:14px}</style><small>STAGE 04 · REPORT / SOURCE EVIDENCE · NOT AN APPLICATION SCREENSHOT</small><h1>docs/phase-3-rtl-findings.md:1–65</h1><p>0de6d609cbfb9aae662d1cb7c9589c38592bb21b</p><pre>0001  # Conservative RTL risk report
+0002
+0003  Static risks and documented exceptions, not automatic proof of visual failures.
+0004
+0005  Schema: 2; files: 20; extracted facts: 419; findings: 58; diagnostics: 9; complete: true.
+0006
+0007  - INFORMATIONAL: 1
+0008  - INTENTIONAL_LTR: 2
+0009  - MANUAL_REVIEW: 50
+0010  - RUNTIME_CONFIG: 5
+0011
+0012  ## Findings
+0013
+0014  ### RTL.DOCUMENT.INITIAL:3321a4fa4f1dd561e3b7fee5
+0015
+0016  **Initial HTML direction** — INTENTIONAL_LTR; Info; High confidence.
+0017
+0018  Source: apps/invoicing/index.html:2:17; mechanism: html-root; application attribution: invoicing; context: html; owner: document-runtime.
+0019
+0020  Original: dir=&quot;ltr&quot;
+0021
+0022  Rationale: Initial HTML direction is a source fact, not the client runtime direction.
+0023
+0024  Treatment: Preserve approved default English markup; evaluate runtime direction separately.
+0025
+0026  Limits: Static evidence indicates a risk; rendered behavior is not established by this scan.
+0027
+0028  Related issues: none; evidence IDs: 2d593e36727e04e8885441bf45fd5a780219a8886d19b36e8fbebca23cac5f20; related locations: none.
+0029
+0030  Exception: Phase 2A preserves the approved default English LTR entry markup; opt-in runtime direction is reviewed separately.; original category: INFORMATIONAL.
+0031
+0032  ### RTL.BIDI.ISOLATION:741d2ce2aec3a86cf2db37ea
+0033
+0034  **Unisolated token/content text sink** — MANUAL_REVIEW; Minor; Medium confidence.
+0035
+0036  Source: apps/invoicing/src/components/InvoiceTable.tsx:18:15; mechanism: typescript-structure; application attribution: invoicing; context: InvoiceTable; owner: manual-content.
+0037
+0038  Original: {i.id}
+0039
+0040  Rationale: Known-name/token expression is rendered without an explicit bdi/dir ancestor; actual run direction and punctuation remain data-dependent.
+0041
+0042  Treatment: Review opposite-direction token isolation or auto-direction for human text; preserve canonical storage and copying.
+0043
+0044  Limits: Static evidence indicates a risk; rendered behavior is not established by this scan.
+0045
+0046  Related issues: none; evidence IDs: structural AST evidence; related locations: none.
+0047
+0048  ### RTL.BIDI.ISOLATION:ee65b3a5436494c134055362
+0049
+0050  **Unisolated token/content text sink** — MANUAL_REVIEW; Minor; Medium confidence.
+0051
+0052  Source: apps/invoicing/src/components/InvoiceTable.tsx:41:27; mechanism: typescript-structure; application attribution: invoicing; context: InvoiceTable; owner: manual-content.
+0053
+0054  Original: {c.name}
+0055
+0056  Rationale: Known-name/token expression is rendered without an explicit bdi/dir ancestor; actual run direction and punctuation remain data-dependent.
+0057
+0058  Treatment: Review opposite-direction token isolation or auto-direction for human text; preserve canonical storage and copying.
+0059
+0060  Limits: Static evidence indicates a risk; rendered behavior is not established by this scan.
+0061
+0062  Related issues: none; evidence IDs: structural AST evidence; related locations: none.
+0063
+0064  ### RTL.BIDI.ISOLATION:c37e1290384b5b026d3550c4
+0065</pre><footer>Exact Git source excerpt. No reconstructed UI or invented terminal output. <a style="color:#d4d991" href="https://github.com/FoushWare/enterprise-rtl-migration-lab/blob/0de6d609cbfb9aae662d1cb7c9589c38592bb21b/docs/phase-3-rtl-findings.md#L1">Original source</a></footer>

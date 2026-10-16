@@ -1,0 +1,29 @@
+0065      MuiTableCell: {
+0066        styleOverrides: {
+0067          root: { borderColor: "#edf0f5", padding: "17px 20px" },
+0068          head: {
+0069            fontSize: 11,
+0070            fontWeight: 700,
+0071            color: "#80889a",
+0072            letterSpacing: ".6px",
+0073            background: "#fafbfc",
+0074          },
+0075        },
+0076      },
+0077    },
+0078  });
+0079
+0080  const ltrCache = createCache({ key: "css", stylisPlugins: [prefixer] });
+0081  const rtlCache = createCache({ key: "atlas-rtl", stylisPlugins: [prefixer, rtlPlugin] });
+0082  export function Provider({ children }: { children: ReactNode }) {
+0083    const { language } = useLocale();
+0084    useLayoutEffect(() => {
+0085      document.documentElement.lang = language === "ar" ? "ar-EG" : "en";
+0086      document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
+0087    }, [language]);
+0088    return <CacheProvider value={language === "ar" ? rtlCache : ltrCache}>
+0089      <ThemeProvider theme={language === "ar" ? rtlTheme : theme}>
+0090        <CssBaseline />{children}
+0091      </ThemeProvider>
+0092    </CacheProvider>;
+0093  }
