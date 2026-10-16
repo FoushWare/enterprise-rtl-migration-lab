@@ -1,0 +1,1623 @@
+{
+  "method": "GitHub commit-associated PRs; exact two-dot endpoint diffs; original commit subjects and bounded verbatim excerpts",
+  "stages": [
+    {
+      "stage": 1,
+      "commit": "2fe522fad44bb8f79b3f15190227b8b94b7d9469",
+      "previous": null,
+      "associations": [],
+      "files": [
+        {
+          "status": "A",
+          "path": ".github/workflows/ci.yml"
+        },
+        {
+          "status": "A",
+          "path": ".gitignore"
+        },
+        {
+          "status": "A",
+          "path": ".npmrc"
+        },
+        {
+          "status": "A",
+          "path": ".nvmrc"
+        },
+        {
+          "status": "A",
+          "path": ".storybook/main.ts"
+        },
+        {
+          "status": "A",
+          "path": "README.md"
+        },
+        {
+          "status": "A",
+          "path": "apps/invoicing/index.html"
+        },
+        {
+          "status": "A",
+          "path": "apps/invoicing/project.json"
+        },
+        {
+          "status": "A",
+          "path": "apps/invoicing/src/App.tsx"
+        },
+        {
+          "status": "A",
+          "path": "apps/invoicing/src/components/InvoiceTable.tsx"
+        },
+        {
+          "status": "A",
+          "path": "apps/invoicing/src/components/InvoiceUi.tsx"
+        },
+        {
+          "status": "A",
+          "path": "apps/invoicing/src/main.tsx"
+        },
+        {
+          "status": "A",
+          "path": "apps/invoicing/src/pages/CreateInvoice.tsx"
+        },
+        {
+          "status": "A",
+          "path": "apps/invoicing/src/pages/Customers.tsx"
+        },
+        {
+          "status": "A",
+          "path": "apps/invoicing/src/pages/Dashboard.tsx"
+        },
+        {
+          "status": "A",
+          "path": "apps/invoicing/src/pages/InvoiceDetails.tsx"
+        },
+        {
+          "status": "A",
+          "path": "apps/invoicing/src/pages/Invoices.tsx"
+        },
+        {
+          "status": "A",
+          "path": "apps/invoicing/src/pages/Settings.tsx"
+        },
+        {
+          "status": "A",
+          "path": "apps/invoicing/vite.config.ts"
+        },
+        {
+          "status": "A",
+          "path": "apps/procurement/index.html"
+        },
+        {
+          "status": "A",
+          "path": "apps/procurement/project.json"
+        },
+        {
+          "status": "A",
+          "path": "apps/procurement/src/App.tsx"
+        },
+        {
+          "status": "A",
+          "path": "apps/procurement/src/main.tsx"
+        },
+        {
+          "status": "A",
+          "path": "apps/procurement/vite.config.ts"
+        },
+        {
+          "status": "A",
+          "path": "docs/architecture.md"
+        },
+        {
+          "status": "A",
+          "path": "docs/legacy-ltr-inventory.md"
+        },
+        {
+          "status": "A",
+          "path": "docs/rtl-readiness-audit.md"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots.md"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/01-overview.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/02-invoices.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/03-invoice-details.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/04-create-invoice.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/05-form-validation.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/06-invoice-confirmation.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/07-customers.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/08-customer-details.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/09-settings.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/10-procurement.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/11-purchase-order-details.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/index.html"
+        },
+        {
+          "status": "A",
+          "path": "docs/testing-strategy.md"
+        },
+        {
+          "status": "A",
+          "path": "docs/verification.md"
+        },
+        {
+          "status": "A",
+          "path": "docs/video-demo-guide.md"
+        },
+        {
+          "status": "A",
+          "path": "eslint.config.mjs"
+        },
+        {
+          "status": "A",
+          "path": "libs/design-system/project.json"
+        },
+        {
+          "status": "A",
+          "path": "libs/design-system/src/StatusBadge.stories.tsx"
+        },
+        {
+          "status": "A",
+          "path": "libs/design-system/src/index.tsx"
+        },
+        {
+          "status": "A",
+          "path": "libs/design-system/src/styles.css"
+        },
+        {
+          "status": "A",
+          "path": "libs/shared/project.json"
+        },
+        {
+          "status": "A",
+          "path": "libs/shared/src/index.ts"
+        },
+        {
+          "status": "A",
+          "path": "nx.json"
+        },
+        {
+          "status": "A",
+          "path": "package-lock.json"
+        },
+        {
+          "status": "A",
+          "path": "package.json"
+        },
+        {
+          "status": "A",
+          "path": "playwright.config.ts"
+        },
+        {
+          "status": "A",
+          "path": "tests/e2e/baseline.spec.ts"
+        },
+        {
+          "status": "A",
+          "path": "tests/e2e/baseline.spec.ts-snapshots/create-invoice-ltr-darwin.png"
+        },
+        {
+          "status": "A",
+          "path": "tests/e2e/baseline.spec.ts-snapshots/customers-ltr-darwin.png"
+        },
+        {
+          "status": "A",
+          "path": "tests/e2e/baseline.spec.ts-snapshots/invoices-ltr-darwin.png"
+        },
+        {
+          "status": "A",
+          "path": "tests/e2e/baseline.spec.ts-snapshots/overview-ltr-darwin.png"
+        },
+        {
+          "status": "A",
+          "path": "tests/e2e/baseline.spec.ts-snapshots/procurement-ltr-darwin.png"
+        },
+        {
+          "status": "A",
+          "path": "tests/e2e/baseline.spec.ts-snapshots/settings-ltr-darwin.png"
+        },
+        {
+          "status": "A",
+          "path": "tests/setup.ts"
+        },
+        {
+          "status": "A",
+          "path": "tests/shared.test.tsx"
+        },
+        {
+          "status": "A",
+          "path": "tsconfig.json"
+        },
+        {
+          "status": "A",
+          "path": "vitest.config.ts"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "2fe522fad44bb8f79b3f15190227b8b94b7d9469",
+          "title": "feat: establish Atlas Invoice LTR platform and RTL readiness audit"
+        }
+      ],
+      "compareUrl": null,
+      "snippet": {
+        "path": "apps/invoicing/src/App.tsx",
+        "text": "diff --git a/apps/invoicing/src/App.tsx b/apps/invoicing/src/App.tsx\nnew file mode 100644\nindex 0000000..94e0c2a\n--- /dev/null\n+++ b/apps/invoicing/src/App.tsx\n@@ -0,0 +1,64 @@\n+import { useEffect, useState } from \"react\";\n+import { Routes, Route, useLocation } from \"react-router-dom\";\n+import { AppShell, EmptyState } from \"@atlas/design-system\";\n+import { mockApi, type Invoice } from \"@atlas/shared\";\n+import { Dashboard } from \"./pages/Dashboard\";\n+import { Invoices } from \"./pages/Invoices\";\n+import { InvoiceDetails } from \"./pages/InvoiceDetails\";\n+import { CreateInvoice } from \"./pages/CreateInvoice\";\n+import { Customers } from \"./pages/Customers\";\n+import { Settings } from \"./pages/Settings\";\n+export default function App() {\n+  const [invoices, setInvoices] = useState<Invoice[]>([]),\n+    [loaded, setLoaded] = useState(false);\n+  useEffect(() => {\n+    mockApi\n+      .listInvoices()\n+      .then(setInvoices)\n+      .finally(() => setLoaded(true));\n+  }, []);\n+  const { pathname } = useLocation();\n+  const title =\n+    pathname === \"/\"\n+      ? \"Overview\"\n+      : pathname.startsWith(\"/invoices\")\n+        ? \"Invoices\"\n+        : pathname.startsWith(\"/customers\")\n+          ? \"Customers\"\n+          : \"Settings\";\n+  return (\n+    <AppShell title={title}>\n+      {loaded ? (\n+        <Routes>\n+          <Route path=\"/\" element={<Dashboard invoices={invoices} />} />\n+          <Route path=\"/invoices\" element={<Invoices invoices={invoices} />} />\n+          <Route\n+            path=\"/invoices/new\"\n+            element={\n+              <CreateInvoice\n+                onCreated={(i) => setInvoices((current) => [i, ...current])}\n+              />",
+        "truncated": true
+      }
+    },
+    {
+      "stage": 2,
+      "commit": "2fe522fad44bb8f79b3f15190227b8b94b7d9469",
+      "previous": "2fe522fad44bb8f79b3f15190227b8b94b7d9469",
+      "associations": [],
+      "files": [],
+      "commits": [],
+      "compareUrl": null,
+      "snippet": null
+    },
+    {
+      "stage": 3,
+      "commit": "61491d7f6dd359033c4a9e80b556d3b3e2446305",
+      "previous": "2fe522fad44bb8f79b3f15190227b8b94b7d9469",
+      "associations": [
+        {
+          "number": 4,
+          "title": "feat(rtl): complete Arabic migration and regression delivery",
+          "html_url": "https://github.com/FoushWare/enterprise-rtl-migration-lab/pull/4",
+          "state": "closed",
+          "merged_at": "2026-10-14T17:51:21Z"
+        }
+      ],
+      "files": [
+        {
+          "status": "M",
+          "path": "README.md"
+        },
+        {
+          "status": "M",
+          "path": "apps/invoicing/src/App.tsx"
+        },
+        {
+          "status": "M",
+          "path": "apps/invoicing/src/components/InvoiceTable.tsx"
+        },
+        {
+          "status": "M",
+          "path": "apps/invoicing/src/components/InvoiceUi.tsx"
+        },
+        {
+          "status": "M",
+          "path": "apps/invoicing/src/main.tsx"
+        },
+        {
+          "status": "M",
+          "path": "apps/invoicing/src/pages/CreateInvoice.tsx"
+        },
+        {
+          "status": "M",
+          "path": "apps/invoicing/src/pages/Customers.tsx"
+        },
+        {
+          "status": "M",
+          "path": "apps/invoicing/src/pages/Dashboard.tsx"
+        },
+        {
+          "status": "M",
+          "path": "apps/invoicing/src/pages/InvoiceDetails.tsx"
+        },
+        {
+          "status": "M",
+          "path": "apps/invoicing/src/pages/Invoices.tsx"
+        },
+        {
+          "status": "M",
+          "path": "apps/invoicing/src/pages/Settings.tsx"
+        },
+        {
+          "status": "M",
+          "path": "apps/procurement/src/App.tsx"
+        },
+        {
+          "status": "M",
+          "path": "apps/procurement/src/main.tsx"
+        },
+        {
+          "status": "A",
+          "path": "docs/phase-2a-final-review.md"
+        },
+        {
+          "status": "A",
+          "path": "docs/phase-2a-ltr-baselines.sha256"
+        },
+        {
+          "status": "A",
+          "path": "docs/phase-2a-observed-issues.md"
+        },
+        {
+          "status": "A",
+          "path": "docs/phase-2a-plan.md"
+        },
+        {
+          "status": "A",
+          "path": "docs/phase-2a-screenshots.md"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/confirmation-desktop-ar.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/confirmation-desktop-en.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/confirmation-mobile-ar.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/confirmation-mobile-en.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/create-desktop-ar.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/create-desktop-en.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/create-focused-desktop-ar.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/create-focused-desktop-en.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/create-focused-mobile-ar.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/create-focused-mobile-en.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/create-mobile-ar.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/create-mobile-en.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/create-validation-desktop-ar.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/create-validation-desktop-en.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/create-validation-mobile-ar.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/create-validation-mobile-en.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/customer-dialog-desktop-ar.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/customer-dialog-desktop-en.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/customer-dialog-mobile-ar.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/customer-dialog-mobile-en.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/customer-menu-desktop-ar.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/customer-menu-desktop-en.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/customer-menu-mobile-ar.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/customer-menu-mobile-en.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/customers-desktop-ar.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/customers-desktop-en.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/customers-mobile-ar.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/customers-mobile-en.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/index.html"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/invoice-details-desktop-ar.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/invoice-details-desktop-en.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/invoice-details-mobile-ar.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/invoice-details-mobile-en.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/invoices-desktop-ar.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/invoices-desktop-en.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/invoices-mobile-ar.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/invoices-mobile-en.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/invoices-scroll-end-mobile-ar.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/invoices-scroll-end-mobile-en.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/invoicing-navigation-mobile-ar.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/invoicing-navigation-mobile-en.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/manifest.json"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/order-details-desktop-ar.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/order-details-desktop-en.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/order-details-mobile-ar.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/order-details-mobile-en.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/order-menu-desktop-ar.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/order-menu-desktop-en.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/order-menu-mobile-ar.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/order-menu-mobile-en.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/orders-desktop-ar.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/orders-desktop-en.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/orders-mobile-ar.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/orders-mobile-en.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/orders-scroll-end-mobile-ar.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/orders-scroll-end-mobile-en.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/overview-desktop-ar.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/overview-desktop-en.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/overview-mobile-ar.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/overview-mobile-en.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/procurement-navigation-mobile-ar.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/procurement-navigation-mobile-en.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/procurement-settings-desktop-ar.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/procurement-settings-desktop-en.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/procurement-settings-mobile-ar.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/procurement-settings-mobile-en.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/settings-desktop-ar.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/settings-desktop-en.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/settings-mobile-ar.png"
+        },
+        {
+          "status": "A",
+          "path": "docs/screenshots/phase-2a/settings-mobile-en.png"
+        },
+        {
+          "status": "M",
+          "path": "libs/design-system/src/index.tsx"
+        },
+        {
+          "status": "A",
+          "path": "libs/shared/src/demo.css"
+        },
+        {
+          "status": "A",
+          "path": "libs/shared/src/i18n.tsx"
+        },
+        {
+          "status": "M",
+          "path": "libs/shared/src/index.ts"
+        },
+        {
+          "status": "A",
+          "path": "libs/shared/src/translations.ts"
+        },
+        {
+          "status": "A",
+          "path": "scripts/capture-phase2a.mjs"
+        },
+        {
+          "status": "A",
+          "path": "tests/e2e/demo.spec.ts"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "8700e9c50259f70e77ba383fbe453e0af445aad4",
+          "title": "docs: record approved Phase 2A demonstration plan"
+        },
+        {
+          "sha": "61491d7f6dd359033c4a9e80b556d3b3e2446305",
+          "title": "feat: add opt-in Arabic unmigrated RTL demonstration"
+        }
+      ],
+      "compareUrl": "https://github.com/FoushWare/enterprise-rtl-migration-lab/compare/2fe522fad44bb8f79b3f15190227b8b94b7d9469..61491d7f6dd359033c4a9e80b556d3b3e2446305",
+      "snippet": {
+        "path": "libs/shared/src/i18n.tsx",
+        "text": "diff --git a/libs/shared/src/i18n.tsx b/libs/shared/src/i18n.tsx\nnew file mode 100644\nindex 0000000..65bf964\n--- /dev/null\n+++ b/libs/shared/src/i18n.tsx\n@@ -0,0 +1,78 @@\n+import { createContext, useContext, useLayoutEffect, type ReactNode } from \"react\";\n+import { useLocation, useNavigate } from \"react-router-dom\";\n+import { arabic, type TranslationKey } from \"./translations\";\n+import \"./demo.css\";\n+\n+type Language = \"en\" | \"ar\";\n+type Params = Record<string, string | number>;\n+function translator(language: Language) {\n+  return (key: TranslationKey, params: Params = {}) => {\n+    const text = language === \"ar\" ? arabic[key] : key;\n+    return text.replace(/\\{(\\w+)\\}/g, (match, name) => String(params[name] ?? match));\n+  };\n+}\n+const english = translator(\"en\");\n+const LocaleContext = createContext({\n+  language: \"en\" as Language,\n+  demo: false,\n+  t: english,\n+  label: (value: string | number) => String(value),\n+  demoHref: (href: string) => href,\n+  setLanguage: (() => {}) as (language: Language) => void,\n+});\n+export const useLocale = () => useContext(LocaleContext);\n+\n+export function LocaleProvider({ children }: { children: ReactNode }) {\n+  const location = useLocation();\n+  const navigate = useNavigate();\n+  const query = new URLSearchParams(location.search);\n+  const demo = query.get(\"demo\") === \"unmigrated-rtl\";\n+  const language: Language = demo && query.get(\"lang\") === \"ar\" ? \"ar\" : \"en\";\n+  const t = translator(language);\n+  useLayoutEffect(() => {\n+    document.documentElement.lang = language === \"ar\" ? \"ar-EG\" : \"en\";\n+    document.documentElement.dir = language === \"ar\" ? \"rtl\" : \"ltr\";\n+  }, [language]);\n+  function demoHref(href: string) {\n+    if (!demo || /^(mailto:|tel:|#)/.test(href)) return href;\n+    const url = new URL(href, window.location.origin);\n+    url.searchParams.set(\"demo\", \"unmigrated-rtl\");\n+    url.searchParams.set(\"lang\", language);",
+        "truncated": true
+      }
+    },
+    {
+      "stage": 4,
+      "commit": "0de6d609cbfb9aae662d1cb7c9589c38592bb21b",
+      "previous": "61491d7f6dd359033c4a9e80b556d3b3e2446305",
+      "associations": [
+        {
+          "number": 4,
+          "title": "feat(rtl): complete Arabic migration and regression delivery",
+          "html_url": "https://github.com/FoushWare/enterprise-rtl-migration-lab/pull/4",
+          "state": "closed",
+          "merged_at": "2026-10-14T17:51:21Z"
+        }
+      ],
+      "files": [
+        {
+          "status": "A",
+          "path": "docs/phase-3-detection-review.md"
+        },
+        {
+          "status": "A",
+          "path": "docs/phase-3-foundation-review.md"
+        },
+        {
+          "status": "A",
+          "path": "docs/phase-3-rtl-findings.json"
+        },
+        {
+          "status": "A",
+          "path": "docs/phase-3-rtl-findings.md"
+        },
+        {
+          "status": "A",
+          "path": "docs/phase-3-scanner-plan.md"
+        },
+        {
+          "status": "A",
+          "path": "docs/phase-3-stage-3-closure.md"
+        },
+        {
+          "status": "A",
+          "path": "docs/phase-3-stage-3-final-adjudication.md"
+        },
+        {
+          "status": "M",
+          "path": "package-lock.json"
+        },
+        {
+          "status": "M",
+          "path": "package.json"
+        },
+        {
+          "status": "A",
+          "path": "rtl-scanner.config.json"
+        },
+        {
+          "status": "A",
+          "path": "tools/rtl-scanner/README.md"
+        },
+        {
+          "status": "A",
+          "path": "tools/rtl-scanner/package.json"
+        },
+        {
+          "status": "A",
+          "path": "tools/rtl-scanner/project.json"
+        },
+        {
+          "status": "A",
+          "path": "tools/rtl-scanner/src/cli.ts"
+        },
+        {
+          "status": "A",
+          "path": "tools/rtl-scanner/src/coverage.ts"
+        },
+        {
+          "status": "A",
+          "path": "tools/rtl-scanner/src/css.ts"
+        },
+        {
+          "status": "A",
+          "path": "tools/rtl-scanner/src/html.ts"
+        },
+        {
+          "status": "A",
+          "path": "tools/rtl-scanner/src/model.ts"
+        },
+        {
+          "status": "A",
+          "path": "tools/rtl-scanner/src/policy.ts"
+        },
+        {
+          "status": "A",
+          "path": "tools/rtl-scanner/src/report.ts"
+        },
+        {
+          "status": "A",
+          "path": "tools/rtl-scanner/src/rules.ts"
+        },
+        {
+          "status": "A",
+          "path": "tools/rtl-scanner/src/scan.ts"
+        },
+        {
+          "status": "A",
+          "path": "tools/rtl-scanner/src/typescript.ts"
+        },
+        {
+          "status": "A",
+          "path": "tools/rtl-scanner/tests/detection.test.ts"
+        },
+        {
+          "status": "A",
+          "path": "tools/rtl-scanner/tests/fixtures/detection.css"
+        },
+        {
+          "status": "A",
+          "path": "tools/rtl-scanner/tests/fixtures/detection.tsx"
+        },
+        {
+          "status": "A",
+          "path": "tools/rtl-scanner/tests/fixtures/index.html"
+        },
+        {
+          "status": "A",
+          "path": "tools/rtl-scanner/tests/fixtures/styles.css"
+        },
+        {
+          "status": "A",
+          "path": "tools/rtl-scanner/tests/fixtures/styles.tsx"
+        },
+        {
+          "status": "A",
+          "path": "tools/rtl-scanner/tests/foundation.test.ts"
+        },
+        {
+          "status": "A",
+          "path": "tools/rtl-scanner/tests/integration.test.ts"
+        },
+        {
+          "status": "A",
+          "path": "tools/rtl-scanner/tsconfig.json"
+        },
+        {
+          "status": "A",
+          "path": "tools/rtl-scanner/tsconfig.typecheck.json"
+        },
+        {
+          "status": "A",
+          "path": "tools/rtl-scanner/vitest.config.ts"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "406b7cdb66940e9a236093219cf0b21c34bc2861",
+          "title": "feat(scanner): add read-only source extraction foundation"
+        },
+        {
+          "sha": "0de6d609cbfb9aae662d1cb7c9589c38592bb21b",
+          "title": "feat(scanner): add conservative RTL detection and close stage 3 review"
+        }
+      ],
+      "compareUrl": "https://github.com/FoushWare/enterprise-rtl-migration-lab/compare/61491d7f6dd359033c4a9e80b556d3b3e2446305..0de6d609cbfb9aae662d1cb7c9589c38592bb21b",
+      "snippet": {
+        "path": "tools/rtl-scanner/src/rules.ts",
+        "text": "diff --git a/tools/rtl-scanner/src/rules.ts b/tools/rtl-scanner/src/rules.ts\nnew file mode 100644\nindex 0000000..3e9c0ff\n--- /dev/null\n+++ b/tools/rtl-scanner/src/rules.ts\n@@ -0,0 +1,92 @@\n+import ts from 'typescript';\n+import valueParser from 'postcss-value-parser';\n+import { hash,range,type Evidence,type Finding,type Category,type Report,type Range } from './model.js';\n+import type { Policy } from './policy.js';\n+interface Anchor {path:string;range:Range;original:string;context:string;id:string}\n+const plain=(v:string)=>v.replace(/^['\"`]|['\"`]$/g,'');\n+const cssKey=(p:string)=>p.replace(/[A-Z]/g,c=>'-'+c.toLowerCase());\n+export function detect(evidence:Evidence[],sources:Map<string,string>,policy:Policy,diagnostics:Report['diagnostics']):Finding[]{\n+ const findings:Finding[]=[];const findingOccurrences=new Map<string,number>();\n+ function add(ruleId:string,title:string,a:Anchor,category:Category,rationale:string,treatment:string,ownership='unknown',refs:Evidence[]=[],confidence:Finding['confidence']='High',severity:Finding['severity']='Minor',suggestion:Finding['suggestion']=null,limitation='Static evidence indicates a risk; rendered behavior is not established by this scan.'){\n+  const exception=policy.exceptions.find(x=>x.ruleId===ruleId&&x.path===a.path&&x.context===a.context&&x.originalDigest===hash(a.original));\n+  const originalCategory=category;if(exception)category=exception.category;\n+  const key=ruleId+'|'+a.id;const occurrence=findingOccurrences.get(key)??0;findingOccurrences.set(key,occurrence+1);\n+  findings.push({id:ruleId+':'+hash(a.id+'|'+occurrence).slice(0,24),ruleId,ruleVersion:1,category,severity:category==='INFORMATIONAL'||category==='INTENTIONAL_LTR'?'Info':severity,confidence,title,sourceMechanism:'mechanism' in a?(a as Evidence).mechanism:'typescript-structure',applications:a.path.startsWith('apps/')?[a.path.split('/')[1]]:[],path:a.path,range:a.range,original:a.original,context:a.context,ownership,rationale,treatment,evidenceIds:refs.map(e=>e.id).sort(),relatedLocations:refs.filter(e=>e.id!==a.id).map(e=>({path:e.path,range:e.range})),issueIds:policy.issueBindings.filter(b=>b.ruleId===ruleId&&b.path===a.path&&a.context.includes(b.contextIncludes)&&(!b.originalIncludes||a.original.includes(b.originalIncludes))).map(b=>b.issueId).sort(),suggestion:exception?null:suggestion,limitation,...(exception?{exceptionReason:exception.reason,originalCategory}:{})});\n+  return findings.at(-1)!;\n+ }\n+ for(const e of evidence){\n+  if(cssKey(e.property)==='position'&&plain(e.value)==='fixed'){const peers=evidence.filter(x=>x.path===e.path&&x.context===e.context);const width=peers.find(x=>cssKey(x.property)==='width');const gutters=width?evidence.filter(x=>/^margin-(left|right)$/.test(cssKey(x.property))&&plain(x.value)===plain(width.value)):[];if(width&&gutters.length)add('RTL.GEOMETRY.COUPLED','Fixed shell width and physical content reservation',e,'MANUAL_REVIEW','Fixed region width equals a separate physical content margin; independently flipping either can desynchronize shell geometry.','Review anchor, gutter, border, mobile transform and resets together.',policy.ownership[e.mechanism]??'unknown',[e,...peers.filter(x=>/^(left|right|width|border-right|transform)$/.test(cssKey(x.property))),...gutters],'High');}\n+  if(e.mechanism==='html-root')continue;\n+  const overrides=policy.ownerOverrides?.filter(x=>x.path===e.path&&x.context===e.context)??[];const owners=new Set(overrides.map(x=>x.owner));\n+  const p=cssKey(e.property),v=plain(e.value),owner=owners.size>1?'conflicting':overrides[0]?.owner??policy.ownership[e.mechanism]??'unknown';\n+  if(owner==='conflicting'&&!findings.some(f=>f.ruleId==='RTL.OWNERSHIP.CONFLICT'&&f.path===e.path&&f.context===e.context))add('RTL.OWNERSHIP.CONFLICT','Conflicting style owners',e,'MANUAL_REVIEW','Multiple data-only policy entries claim different ownership for the same style context.','Resolve ownership before proposing logical conversion or RTL processing.',owner,[e],'High');\n+  const peers=evidence.filter(x=>x.path===e.path&&x.context===e.context);const position=peers.find(x=>cssKey(x.property)==='position');\n+  const dynamic=diagnostics.some(d=>d.path===e.path&&d.blocking&&d.range.start.offset>=e.range.start.offset&&d.range.end.offset<=e.range.end.offset);\n+  if(/^(left|right)$/.test(p))add('RTL.GEOMETRY.EDGE','Physical positioned edge',e,'MANUAL_REVIEW','Physical edge is coupled to placement, containing block and clearance; logical replacement alone does not select the correct side.','Review anchor, companion gutter, breakpoints and collision clearance as one layout contract.',owner,[e,...(position?[position]:[])],'High');\n+  else if(/^(margin|padding|border)-(left|right)(-|$)/.test(p)||/^(border-top-left-radius|border-top-right-radius|border-bottom-left-radius|border-bottom-right-radius)$/.test(p)||(/^(text-align|float|clear)$/.test(p)&&/^(left|right)$/.test(v))){\n+   const approval=policy.approvals.find(a=>a.path===e.path&&a.context===e.context&&a.property===e.property&&a.value===e.value&&a.owner===owner&&a.sourceDigest===hash(sources.get(e.path)??''));\n+   const expectedLogical=p.replace(/^(margin|padding|border)-(left|right)(.*)$/,(_,group,side,suffix)=>`${group}-inline-${side==='left'?'start':'end'}${suffix}`);\n+   const safe=approval&&cssKey(approval.logicalProperty)===expectedLogical&&!evidence.some(x=>cssKey(x.property)==='writing-mode'&&plain(x.value)!=='horizontal-tb')&&e.mechanism!=='mui-sx'&&!/^(inherit|initial|unset|revert|revert-layer)$/.test(v)&&!/\\b(var|env)\\(/.test(v)&&!dynamic&&['custom-css','custom-inline','custom-emotion-logical'].includes(owner)&&/^(margin|padding|border)-(left|right)(-|$)/.test(p)&&!diagnostics.some(d=>d.blocking)&&!peers.some(x=>x!==e&&cssKey(x.property)===p)&&!position&&!peers.some(x=>/writing-mode|direction/.test(cssKey(x.property)));\n+   add('RTL.CSS.PHYSICAL','Physical horizontal declaration',e,safe?'AUTO_CANDIDATE':'MANUAL_REVIEW',safe?approval.reason:'Physical syntax does not establish reading-start/end intent or styling ownership.','Review semantics, writing mode, cascade and owner before any conversion.',owner,[e],'High','Minor',safe?{property:approval.logicalProperty,value:e.value}:null);\n+  }else if(/^(margin|padding|inset|border-radius)$/.test(p)){\n+   const tokens=valueParser(v).nodes.filter(n=>n.type!=='space'&&n.type!=='comment');const simple=tokens.every(n=>n.type==='word');const words=tokens.map(n=>valueParser.stringify(n));\n+   const asymmetric=p==='border-radius'?words.length>1&&new Set(words).size>1:words.length===4&&words[1]!==words[3];\n+   if(asymmetric||!simple&&words.length>0&&!/^[-\\d.%pxemauto ]+$/.test(v))add('RTL.CSS.SHORTHAND','Shorthand needs side/corner review',e,'MANUAL_REVIEW','Shorthand may encode unequal physical sides, elliptical corners or unresolved values.','Review tokenized values and cascade; do not split functions or reverse corner order blindly.',owner,[e],simple?'High':'Medium');\n+  }else if((p==='transform'&&/translateX\\((?!0\\))/i.test(v))||(/^(transform-origin|background-position|box-shadow)$/.test(p)&&/left|right|\\d/.test(v))||p==='order'||p==='flex-direction'&&v==='row-reverse'||/^grid-(column|row|area)/.test(p)&&!/^auto$/.test(v)&&!/^1\\s*\\/\\s*-1$/.test(v))add('RTL.GEOMETRY.ORDER','Directional geometry or explicit order',e,'MANUAL_REVIEW','Transform/axis/order semantics require geometric and reading-order decisions.','Review spatial intent, focus order and companion positioning; no numeric sign reversal.',owner,[e],'Medium');\n+ }\n+ // Generic syntax evidence: imports and JSX/data flow are inspected, never executed.\n+ const themes:Anchor[]=[],rtl:Anchor[]=evidence.filter(e=>e.mechanism==='html-root'&&e.property==='dir'&&e.value==='rtl'),providers:Anchor[]=[],caches:Anchor[]=[];\n+ const entries=[...sources.entries()].filter(([p])=>/\\.[jt]sx?$/.test(p));\n+ for(const [path,text] of entries){",
+        "truncated": true
+      }
+    },
+    {
+      "stage": 5,
+      "commit": "9c2df15f1df50ea101150b48f6d31249678a9b0f",
+      "previous": "0de6d609cbfb9aae662d1cb7c9589c38592bb21b",
+      "associations": [
+        {
+          "number": 4,
+          "title": "feat(rtl): complete Arabic migration and regression delivery",
+          "html_url": "https://github.com/FoushWare/enterprise-rtl-migration-lab/pull/4",
+          "state": "closed",
+          "merged_at": "2026-10-14T17:51:21Z"
+        }
+      ],
+      "files": [
+        {
+          "status": "A",
+          "path": "docs/phase-4a-css-pilot-review.md"
+        },
+        {
+          "status": "A",
+          "path": "docs/phase-4a-evidence-plan.md"
+        },
+        {
+          "status": "A",
+          "path": "docs/phase-4a-final-review.md"
+        },
+        {
+          "status": "A",
+          "path": "docs/phase-4a-implementation-roadmap.md"
+        },
+        {
+          "status": "A",
+          "path": "docs/phase-4a-issue-migration-matrix.md"
+        },
+        {
+          "status": "A",
+          "path": "docs/phase-4a-migration-policies.md"
+        },
+        {
+          "status": "A",
+          "path": "docs/phase-4a-policy-validation-plan.md"
+        },
+        {
+          "status": "A",
+          "path": "docs/phase-4a-regression-plan.md"
+        },
+        {
+          "status": "A",
+          "path": "docs/phase-4a-style-ownership.md"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "9c2df15f1df50ea101150b48f6d31249678a9b0f",
+          "title": "docs(rtl): complete phase 4a migration planning"
+        }
+      ],
+      "compareUrl": "https://github.com/FoushWare/enterprise-rtl-migration-lab/compare/0de6d609cbfb9aae662d1cb7c9589c38592bb21b..9c2df15f1df50ea101150b48f6d31249678a9b0f",
+      "snippet": {
+        "path": "docs/phase-4a-implementation-roadmap.md",
+        "text": "diff --git a/docs/phase-4a-implementation-roadmap.md b/docs/phase-4a-implementation-roadmap.md\nnew file mode 100644\nindex 0000000..f51138e\n--- /dev/null\n+++ b/docs/phase-4a-implementation-roadmap.md\n@@ -0,0 +1,30 @@\n+# Stage 4A — Reviewable implementation roadmap\n+\n+Project: **Migrating Enterprise React Apps to RTL Without Breaking LTR**. Stage 4A planning only, 12 October 2026. Branch `feat/phase-3-rtl-scanner`, approved HEAD `0de6d609cbfb9aae662d1cb7c9589c38592bb21b`. All treatments are proposals; no approval, code/policy/test change, commit or push is granted by these documents.\n+\n+## Ordering and authority\n+\n+Stage 4A ends with these nine documents. Each later stage requires a fresh explicit authorization with reviewed semantic scope. Current AUTO_CANDIDATE count stays zero; neither this roadmap nor a conditional pilot recommendation is a config approval. Proposed mode boundary and runtime ownership must be settled before runtime migration. No new branch/commit/push occurs in Stage 4A.\n+\n+| Stage | Scope / deliverables | Dependencies | Risks | Required checks | Approval gate / stop condition |\n+| --- | --- | --- | --- | --- | --- |\n+| **4B — Policy validation safeguards** | Strict runtime schema, enum/unknown-field rejection, stale/source/ID/ownership diagnostics, negative/read-only fixtures and report compatibility notes. Scanner/tooling only; zero semantic approvals. | Approve validator dependency choice, stale warning/blocking boundary and schema compatibility contract. | Stronger diagnostics may change completeness/exits; stale reference bindings can invalidate reported calibration. | 60 existing tests + new negative cases, tooling/app checks, same current Atlas report semantics/IDs/categories and all evidence hashes, all 20 browser tests. | Explicit 4B approval; review exact policy/report contract changes; stop before migrations. |\n+| **4C — Logical CSS pilot** | Only independently approved status-dot and/or chart-legend declarations; KPI-note deferred unless separately resolved. Small reviewed patch, no broad codemod. | 4B validated, per-ID semantics/owner/current pin approval, before evidence and future-mode policy. | Inline bidi/wrapping can change perceived gap; later cache/parent direction affects spacing. | Six English goldens exact; marker text-range/computed-margin RTL checks both widths/apps; original tests + deterministic report/coverage explanation. | Exact declaration allowlist and values approved; approval to patch distinct from AUTO metadata; stop after reviewed pilot. |\n+| **4D — MUI/Emotion runtime direction** | Shared direction-aware themes/caches, reviewed provider order, approved direct runtime dependencies, mode distinction, portal/state switching proof. Temporary verified shell opt-out or separately authorized atomic shell work. | Mode/topology/cache/plugin/ownership plan approval; compatibility fixture proof and pilot reviewed. | Global plugin can partially flip sidebar while CSS gutter stays left; custom sx double-handling; default-English style insertion changes; form remount. | All original tests, English zero pixel diffs; theme/root/cache agreement, repeated switches/open portals, form state and cross-app routing. Verify shell remains coordinated during transition. | Runtime dependencies/topology/plugin exclusions explicitly approved; new unsupported scanner cache expressions remain visible; stop before extra component fixes. |\n+| **4E — Component fixes** | Independent slices: shell/nav; form/table contracts; dialog/KPI clearance; custom progression icons; chart frame; bidi boundaries; complete brand island. Reinspect symptoms after 4D first. | Per-slice semantic/evidence acceptance; unresolved locale/input policies decided; no speculative fixes for no-reproduction cases. | Shared roots affect many components; physical/logical/plugin collisions; copied data/caret; focus and chart misinformation. | Issue matrix criteria plus full English/Arabic/apps/breakpoints/print regression; protected before evidence; per-slice diff and source pin re-review. | Approve each bounded slice separately; stop after each review. Runtime/semantic fixes are manual, not disguised codemods. |\n+| **4F — Controlled codemod expansion** | Transform only reviewed declarations with strict allowlists, dry-run plan, reproducible diff, exact source pins, transaction checks and rollback manifest; no dashboard assumed. | 4B safeguards + successful pilot + stable runtime ownership + selected 4E semantics and explicit automation authorization. | Cascade/writing-mode/units/custom variables unsupported; stale file hashes; scope drift and duplicate transformations. | Dry-run no writes; approved apply only exact matches; same second dry-run yields no changes; deterministic patch hash, unchanged business/runtime files outside allowlist; full tests/hashes. | Review concrete dry-run diff before apply; conflicts/stale evidence abort with no partial mutation; stop before any wider coverage. |\n+\n+## Proposed small component slices\n+\n+1. Shell: choose right reading-start RTL with matched gutter/border/active stripe, mobile sign and print reset; preserve English left geometry.\n+2. Runtime-generated controls then alignment/clearance: verify MUI alone resolves symptoms before custom patch; define numeric/human/token columns and input direction; Modal clearance is separately accepted.\n+3. Chart: fixed LTR chronological frame and Arabic labels, exact source data unchanged; no coordinate mirroring.\n+4. Bidi/brand/icons: explicit token grouping, complete Latin brand island, direction-aware custom progression only; no locale display change without separate approval.\n+\n+These are proposed orderings inside 4E, not authority to implement several at once. Unknown ownership and 18 unresolved evidence outcomes can delay particular slices without forcing a guessed fix.\n+\n+## Future apply/rollback boundary\n+\n+4F should create a precondition manifest (commit, files/digests, IDs, approved owner/intent, exact ranges, expected patch hash), refuse dirty/conflicting targets, propose output only in dry-run, and apply atomically only after diff approval. Rollback must reverse only the exact migration patch or its separately reviewed commit; never reset/discard unrelated user work. Physical-only chart/brand exceptions are reviewed scoped policy, not keyword suppressions. Logical conversions must be idempotent and exclude sx alias/theme unit ambiguity until separately proved. No transformation command exists or was executed in Stage 4A.\n+\n+Before approving 4C, decide live before-mode preservation: a global stylesheet pilot affects legacy demo too. Either compare against a separately served approved before checkpoint, or explicitly approve migration-mode-scoped CSS and its expanded diff. See migration policies; no second server/checkpoint or mode was created in Stage 4A.\n",
+        "truncated": false
+      }
+    },
+    {
+      "stage": 6,
+      "commit": "05138f1c5f68db92bcd94afe11e63fd83322f8cb",
+      "previous": "9c2df15f1df50ea101150b48f6d31249678a9b0f",
+      "associations": [
+        {
+          "number": 4,
+          "title": "feat(rtl): complete Arabic migration and regression delivery",
+          "html_url": "https://github.com/FoushWare/enterprise-rtl-migration-lab/pull/4",
+          "state": "closed",
+          "merged_at": "2026-10-14T17:51:21Z"
+        }
+      ],
+      "files": [
+        {
+          "status": "A",
+          "path": "docs/phase-4b-policy-validation-review.md"
+        },
+        {
+          "status": "M",
+          "path": "tools/rtl-scanner/README.md"
+        },
+        {
+          "status": "A",
+          "path": "tools/rtl-scanner/src/policy-audit.ts"
+        },
+        {
+          "status": "A",
+          "path": "tools/rtl-scanner/src/policy-validation.ts"
+        },
+        {
+          "status": "M",
+          "path": "tools/rtl-scanner/src/policy.ts"
+        },
+        {
+          "status": "M",
+          "path": "tools/rtl-scanner/src/report.ts"
+        },
+        {
+          "status": "M",
+          "path": "tools/rtl-scanner/src/scan.ts"
+        },
+        {
+          "status": "A",
+          "path": "tools/rtl-scanner/tests/fixtures/policy-conflicting-owners.json"
+        },
+        {
+          "status": "A",
+          "path": "tools/rtl-scanner/tests/fixtures/policy-unknown-field.json"
+        },
+        {
+          "status": "A",
+          "path": "tools/rtl-scanner/tests/policy.test.ts"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "05138f1c5f68db92bcd94afe11e63fd83322f8cb",
+          "title": "feat(rtl-scanner): enforce strict policy validation and stale diagnostics"
+        }
+      ],
+      "compareUrl": "https://github.com/FoushWare/enterprise-rtl-migration-lab/compare/9c2df15f1df50ea101150b48f6d31249678a9b0f..05138f1c5f68db92bcd94afe11e63fd83322f8cb",
+      "snippet": {
+        "path": "tools/rtl-scanner/src/policy-validation.ts",
+        "text": "diff --git a/tools/rtl-scanner/src/policy-validation.ts b/tools/rtl-scanner/src/policy-validation.ts\nnew file mode 100644\nindex 0000000..9093262\n--- /dev/null\n+++ b/tools/rtl-scanner/src/policy-validation.ts\n@@ -0,0 +1,109 @@\n+import ts from 'typescript';\n+import { range, type Diagnostic, type Range } from './model.js';\n+import type { Policy } from './policy.js';\n+\n+export const policyPath = 'rtl-scanner.config.json';\n+export const mechanisms = ['css', 'emotion-template', 'mui-sx', 'mui-theme', 'react-inline', 'html-root'] as const;\n+const owners = ['custom-css', 'custom-inline', 'custom-emotion-review', 'custom-emotion-logical', 'mui-generated', 'document-runtime', 'unknown'];\n+export const ruleIds = new Set([\n+  'RTL.CSS.PHYSICAL', 'RTL.CSS.SHORTHAND', 'RTL.GEOMETRY.EDGE', 'RTL.GEOMETRY.COUPLED', 'RTL.GEOMETRY.ORDER',\n+  'RTL.OWNERSHIP.CONFLICT', 'RTL.RUNTIME.MISMATCH', 'RTL.RUNTIME.CACHE', 'RTL.RUNTIME.CACHE_UNVERIFIED',\n+  'RTL.RUNTIME.DIRECTION_UNKNOWN', 'RTL.RUNTIME.PAGINATION', 'RTL.RUNTIME.LOCALE', 'RTL.FORM.DIRECTION',\n+  'RTL.TABLE.ALIGNMENT', 'RTL.CHART.LABEL_FLOW', 'RTL.ICON.PROGRESSION', 'RTL.ICON.LITERAL',\n+  'RTL.BIDI.ISOLATION', 'RTL.BRAND.ISLAND', 'RTL.DOCUMENT.INITIAL', 'RTL.DOCUMENT.RUNTIME',\n+]);\n+export const findingIdPattern = /^RTL\\.[A-Z_]+(?:\\.[A-Z_]+)*:[a-f0-9]{24}$/;\n+export class PolicyError extends Error {\n+  constructor(public diagnostic: Diagnostic) {\n+    super(`Invalid scanner policy: ${diagnostic.path}:${diagnostic.range.start.line}:${diagnostic.range.start.column} ${diagnostic.code}: ${diagnostic.message}`);\n+  }\n+}\n+const pointerPart = (s: string) => s.replace(/~/g, '~0').replace(/\\//g, '~1');\n+export function policyLocations(text: string): Map<string, Range> {\n+  const sf = ts.parseJsonText(policyPath, text);\n+  const locations = new Map<string, Range>();\n+  function walk(n: ts.Node, pointer: string) {\n+    locations.set(pointer, range(text, n.getStart(sf), n.end));\n+    if (ts.isObjectLiteralExpression(n)) {\n+      const seen = new Set<string>();\n+      for (const p of n.properties) if (ts.isPropertyAssignment(p) && ts.isStringLiteral(p.name)) {\n+        const child = `${pointer}/${pointerPart(p.name.text)}`;\n+        if (seen.has(p.name.text)) throw new PolicyError({ path: policyPath, range: range(text, p.getStart(sf), p.end), code: 'POLICY_DUPLICATE', message: `BLOCKING ${child}: duplicate JSON member`, blocking: true, impact: 'SOURCE_FAILURE', rationale: 'JSON member overwrite is ambiguous; no policy decisions are applied.' });\n+        seen.add(p.name.text); walk(p.initializer, child);\n+      }\n+    } else if (ts.isArrayLiteralExpression(n)) n.elements.forEach((e, i) => walk(e, `${pointer}/${i}`));\n+  }\n+  const statement = sf.statements[0];\n+  if (statement && ts.isExpressionStatement(statement)) walk(statement.expression, '');\n+  return locations;\n+}\n+export function validatePolicy(input: unknown, text: string): Policy {",
+        "truncated": true
+      }
+    },
+    {
+      "stage": 7,
+      "commit": "85f4dde02142f305b434c815a39015a4c5eaafec",
+      "previous": "05138f1c5f68db92bcd94afe11e63fd83322f8cb",
+      "associations": [
+        {
+          "number": 4,
+          "title": "feat(rtl): complete Arabic migration and regression delivery",
+          "html_url": "https://github.com/FoushWare/enterprise-rtl-migration-lab/pull/4",
+          "state": "closed",
+          "merged_at": "2026-10-14T17:51:21Z"
+        }
+      ],
+      "files": [
+        {
+          "status": "A",
+          "path": "docs/phase-4c1-semantic-review.md"
+        },
+        {
+          "status": "A",
+          "path": "docs/phase-4c2-css-pilot-review.md"
+        },
+        {
+          "status": "A",
+          "path": "docs/phase-4c2a-test-repair-review.md"
+        },
+        {
+          "status": "M",
+          "path": "libs/design-system/src/styles.css"
+        },
+        {
+          "status": "M",
+          "path": "tools/rtl-scanner/tests/policy.test.ts"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "85f4dde02142f305b434c815a39015a4c5eaafec",
+          "title": "feat(rtl): pilot approved logical spacing with scanner regression coverage"
+        }
+      ],
+      "compareUrl": "https://github.com/FoushWare/enterprise-rtl-migration-lab/compare/05138f1c5f68db92bcd94afe11e63fd83322f8cb..85f4dde02142f305b434c815a39015a4c5eaafec",
+      "snippet": {
+        "path": "libs/design-system/src/styles.css",
+        "text": "diff --git a/libs/design-system/src/styles.css b/libs/design-system/src/styles.css\nindex f6605f3..966ca3a 100644\n--- a/libs/design-system/src/styles.css\n+++ b/libs/design-system/src/styles.css\n@@ -296,7 +296,7 @@ footer i {\n   height: 7px;\n   background: #5662dc;\n   border-radius: 50%;\n-  margin-right: 7px;\n+  margin-inline-end: 7px;\n }\n .breakdown {\n   padding: 0 24px 22px;\n@@ -382,7 +382,7 @@ footer i {\n }\n .status-dot {\n   font-size: 7px;\n-  margin-right: 6px;\n+  margin-inline-end: 6px;\n }\n .toolbar {\n   padding: 20px 24px;\n",
+        "truncated": false
+      }
+    },
+    {
+      "stage": 8,
+      "commit": "1098eb782b2d61eb8b17b146e4f01867820b76ff",
+      "previous": "85f4dde02142f305b434c815a39015a4c5eaafec",
+      "associations": [
+        {
+          "number": 4,
+          "title": "feat(rtl): complete Arabic migration and regression delivery",
+          "html_url": "https://github.com/FoushWare/enterprise-rtl-migration-lab/pull/4",
+          "state": "closed",
+          "merged_at": "2026-10-14T17:51:21Z"
+        }
+      ],
+      "files": [
+        {
+          "status": "M",
+          "path": "apps/invoicing/src/main.tsx"
+        },
+        {
+          "status": "M",
+          "path": "apps/procurement/src/main.tsx"
+        },
+        {
+          "status": "A",
+          "path": "docs/phase-4c3-roadmap-review.md"
+        },
+        {
+          "status": "A",
+          "path": "docs/phase-4d1-runtime-contract.md"
+        },
+        {
+          "status": "A",
+          "path": "docs/phase-4d2-compatibility-review.md"
+        },
+        {
+          "status": "A",
+          "path": "docs/phase-4d3-implementation-plan.md"
+        },
+        {
+          "status": "M",
+          "path": "libs/design-system/src/index.tsx"
+        },
+        {
+          "status": "A",
+          "path": "libs/design-system/src/runtime.tsx"
+        },
+        {
+          "status": "M",
+          "path": "libs/shared/src/i18n.tsx"
+        },
+        {
+          "status": "M",
+          "path": "package-lock.json"
+        },
+        {
+          "status": "M",
+          "path": "package.json"
+        },
+        {
+          "status": "M",
+          "path": "rtl-scanner.config.json"
+        },
+        {
+          "status": "A",
+          "path": "tests/runtime-foundation.test.tsx"
+        },
+        {
+          "status": "M",
+          "path": "tools/rtl-scanner/README.md"
+        },
+        {
+          "status": "M",
+          "path": "tools/rtl-scanner/src/rules.ts"
+        },
+        {
+          "status": "A",
+          "path": "tools/rtl-scanner/src/runtime-direction.ts"
+        },
+        {
+          "status": "A",
+          "path": "tools/rtl-scanner/tests/experiments/compatibility-proof.mjs"
+        },
+        {
+          "status": "A",
+          "path": "tools/rtl-scanner/tests/experiments/runtime-fixture.jsx"
+        },
+        {
+          "status": "A",
+          "path": "tools/rtl-scanner/tests/fixtures/runtime/paired.tsx"
+        },
+        {
+          "status": "M",
+          "path": "tools/rtl-scanner/tests/integration.test.ts"
+        },
+        {
+          "status": "M",
+          "path": "tools/rtl-scanner/tests/policy.test.ts"
+        },
+        {
+          "status": "A",
+          "path": "tools/rtl-scanner/tests/runtime-direction.test.ts"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "ceeabfdbde3b2fc7d3592b88d54daa6f760905d9",
+          "title": "docs(rtl): review roadmap and define runtime design prerequisites"
+        },
+        {
+          "sha": "ffc50d407fe560c46e936f2be0ccb5a1a5101ba0",
+          "title": "docs(rtl): define runtime direction and cache compatibility contract"
+        },
+        {
+          "sha": "b65010b380f1659f5eef05bfc96a8f39d09ee89d",
+          "title": "fix(rtl-scanner): enforce fail-closed runtime direction analysis"
+        },
+        {
+          "sha": "2f715e20020d947933d5eb1c5eb95eab73247c9e",
+          "title": "docs(rtl): plan controlled phase 4d3 runtime integration"
+        },
+        {
+          "sha": "2d9f0edd76a03884045d9378819899083ec21d87",
+          "title": "build(rtl): add verified runtime direction dependencies"
+        },
+        {
+          "sha": "e472d34f18005a60ad894a80059b9373b6158ccf",
+          "title": "feat(rtl): prepare isolated theme and emotion cache foundation"
+        },
+        {
+          "sha": "1098eb782b2d61eb8b17b146e4f01867820b76ff",
+          "title": "feat(rtl): activate synchronized direction runtime"
+        }
+      ],
+      "compareUrl": "https://github.com/FoushWare/enterprise-rtl-migration-lab/compare/85f4dde02142f305b434c815a39015a4c5eaafec..1098eb782b2d61eb8b17b146e4f01867820b76ff",
+      "snippet": {
+        "path": "libs/design-system/src/runtime.tsx",
+        "text": "diff --git a/libs/design-system/src/runtime.tsx b/libs/design-system/src/runtime.tsx\nnew file mode 100644\nindex 0000000..4afb5d7\n--- /dev/null\n+++ b/libs/design-system/src/runtime.tsx\n@@ -0,0 +1,93 @@\n+import { useLayoutEffect, type ReactNode } from \"react\";\n+import { useLocale } from \"@atlas/shared\";\n+import { CacheProvider } from \"@emotion/react\";\n+import { ThemeProvider, CssBaseline, createTheme } from \"@mui/material\";\n+import createCache from \"@emotion/cache\";\n+import { prefixer } from \"stylis\";\n+import rtlPlugin from \"@mui/stylis-plugin-rtl\";\n+\n+// The public English theme remains the sole LTR configuration owner.\n+export const theme = createTheme({\n+  direction: \"ltr\",\n+  palette: {\n+    primary: { main: \"#4c58d6\" },\n+    background: { default: \"#f7f8fb\" },\n+    text: { primary: \"#202738\", secondary: \"#7a8294\" },\n+  },\n+  typography: {\n+    fontFamily:\n+      'Inter, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif',\n+    button: { textTransform: \"none\", fontWeight: 600 },\n+    h4: { fontWeight: 700, fontSize: \"1.8rem\", letterSpacing: \"-.7px\" },\n+  },\n+  shape: { borderRadius: 10 },\n+  components: {\n+    MuiButton: {\n+      defaultProps: { disableElevation: true },\n+      styleOverrides: { root: { padding: \"10px 18px\" } },\n+    },\n+    MuiTextField: { defaultProps: { size: \"small\" } },\n+    MuiTableCell: {\n+      styleOverrides: {\n+        root: { borderColor: \"#edf0f5\", padding: \"17px 20px\" },\n+        head: {\n+          fontSize: 11,\n+          fontWeight: 700,\n+          color: \"#80889a\",\n+          letterSpacing: \".6px\",\n+          background: \"#fafbfc\",\n+        },\n+      },",
+        "truncated": true
+      }
+    },
+    {
+      "stage": 9,
+      "commit": "767e70f525dac6e3a12aa6eb827fdcc73e498da7",
+      "previous": "1098eb782b2d61eb8b17b146e4f01867820b76ff",
+      "associations": [
+        {
+          "number": 4,
+          "title": "feat(rtl): complete Arabic migration and regression delivery",
+          "html_url": "https://github.com/FoushWare/enterprise-rtl-migration-lab/pull/4",
+          "state": "closed",
+          "merged_at": "2026-10-14T17:51:21Z"
+        }
+      ],
+      "files": [
+        {
+          "status": "A",
+          "path": "AGENTS.md"
+        },
+        {
+          "status": "M",
+          "path": "apps/invoicing/src/components/InvoiceTable.tsx"
+        },
+        {
+          "status": "M",
+          "path": "apps/invoicing/src/pages/CreateInvoice.tsx"
+        },
+        {
+          "status": "M",
+          "path": "apps/invoicing/src/pages/Customers.tsx"
+        },
+        {
+          "status": "A",
+          "path": "docs/autonomous/BLOCKERS.md"
+        },
+        {
+          "status": "A",
+          "path": "docs/autonomous/DECISIONS.md"
+        },
+        {
+          "status": "A",
+          "path": "docs/autonomous/FINAL_REPORT.md"
+        },
+        {
+          "status": "A",
+          "path": "docs/autonomous/ROADMAP.md"
+        },
+        {
+          "status": "A",
+          "path": "docs/autonomous/STATE.md"
+        },
+        {
+          "status": "A",
+          "path": "docs/autonomous/TEST_EVIDENCE.md"
+        },
+        {
+          "status": "M",
+          "path": "libs/design-system/src/index.tsx"
+        },
+        {
+          "status": "M",
+          "path": "libs/design-system/src/styles.css"
+        },
+        {
+          "status": "M",
+          "path": "libs/shared/src/translations.ts"
+        },
+        {
+          "status": "M",
+          "path": "rtl-scanner.config.json"
+        },
+        {
+          "status": "A",
+          "path": "tests/e2e/bidi-boundaries.spec.ts"
+        },
+        {
+          "status": "A",
+          "path": "tests/e2e/brand-direction.spec.ts"
+        },
+        {
+          "status": "A",
+          "path": "tests/e2e/chart-direction.spec.ts"
+        },
+        {
+          "status": "A",
+          "path": "tests/e2e/dashboard-navigation-arrow.spec.ts"
+        },
+        {
+          "status": "A",
+          "path": "tests/e2e/forms-dialogs-tables.spec.ts"
+        },
+        {
+          "status": "A",
+          "path": "tests/e2e/invoice-navigation-arrow.spec.ts"
+        },
+        {
+          "status": "A",
+          "path": "tests/e2e/kpi-direction.spec.ts"
+        },
+        {
+          "status": "A",
+          "path": "tests/e2e/sidebar-navigation-arrow.spec.ts"
+        },
+        {
+          "status": "M",
+          "path": "tools/rtl-scanner/tests/integration.test.ts"
+        },
+        {
+          "status": "M",
+          "path": "tools/rtl-scanner/tests/policy.test.ts"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "f96853b93e7ad8d49a5e4a6578b9ca5817ca07bd",
+          "title": "feat(rtl): migrate sidebar geometry to logical properties"
+        },
+        {
+          "sha": "9d19db88780a799576cec444f01607197b0751e6",
+          "title": "fix(rtl): preserve revenue chart chronology in Arabic"
+        },
+        {
+          "sha": "33b3fac694c19a2a3bfae3b980db6a5beea62bbc",
+          "title": "fix(rtl): resolve KPI icon and label overlap"
+        },
+        {
+          "sha": "14c217761c574a65e8b409909bc5dad4b31f0f66",
+          "title": "test(rtl): cover forms dialogs and tables in both directions"
+        },
+        {
+          "sha": "da6c6b9aca3d4febb83444f8bfa37fb0181b0106",
+          "title": "fix(rtl): preserve brand composition in Arabic"
+        },
+        {
+          "sha": "6adfee997347472dcf7e854cf35daba2db28c8ef",
+          "title": "fix(rtl): make invoice action arrow direction-aware"
+        },
+        {
+          "sha": "8041f4c9c4411adb0247c3061727086c9d0735b7",
+          "title": "fix(rtl): mirror sidebar navigation arrow"
+        },
+        {
+          "sha": "5c42420bcb4bfff687a73ccb8f576cf601843e40",
+          "title": "docs(rtl): establish autonomous delivery state"
+        },
+        {
+          "sha": "4e966e92e1ae948f7f8937840758771dbcaa5499",
+          "title": "fix(rtl): localize dashboard navigation progression glyph"
+        },
+        {
+          "sha": "767e70f525dac6e3a12aa6eb827fdcc73e498da7",
+          "title": "fix(rtl): isolate mixed customer and financial text boundaries"
+        }
+      ],
+      "compareUrl": "https://github.com/FoushWare/enterprise-rtl-migration-lab/compare/1098eb782b2d61eb8b17b146e4f01867820b76ff..767e70f525dac6e3a12aa6eb827fdcc73e498da7",
+      "snippet": {
+        "path": "apps/invoicing/src/components/InvoiceTable.tsx",
+        "text": "diff --git a/apps/invoicing/src/components/InvoiceTable.tsx b/apps/invoicing/src/components/InvoiceTable.tsx\nindex 29fe7ca..59f4d88 100644\n--- a/apps/invoicing/src/components/InvoiceTable.tsx\n+++ b/apps/invoicing/src/components/InvoiceTable.tsx\n@@ -2,10 +2,11 @@ import { useLocale } from \"@atlas/shared\";\n import { Link } from \"react-router-dom\";\n import { Avatar, IconButton } from \"@mui/material\";\n import ArrowForward from \"@mui/icons-material/ArrowForward\";\n+import ArrowBack from \"@mui/icons-material/ArrowBack\";\n import { DataTable, StatusBadge } from \"@atlas/design-system\";\n import { customerFor, money, total, type Invoice } from \"@atlas/shared\";\n export function InvoiceTable({ invoices }: { invoices: Invoice[] }) {\n-  const { t, demoHref } = useLocale();\n+  const { t, demoHref, language } = useLocale();\n   return (\n     <DataTable\n       rows={invoices}\n@@ -73,7 +74,11 @@ export function InvoiceTable({ invoices }: { invoices: Invoice[] }) {\n               aria-label={t(\"View {id}\", { id: i.id })}\n               size=\"small\"\n             >\n-              <ArrowForward sx={{ fontSize: 15, color: \"#9aa2b3\" }} />\n+              {language === \"ar\" ? (\n+                <ArrowBack sx={{ fontSize: 15, color: \"#9aa2b3\" }} />\n+              ) : (\n+                <ArrowForward sx={{ fontSize: 15, color: \"#9aa2b3\" }} />\n+              )}\n             </IconButton>\n           ),\n         },\n",
+        "truncated": false
+      }
+    },
+    {
+      "stage": 10,
+      "commit": "0f8f4c443eb118ba3904ed2f902f86040c71ba54",
+      "previous": "767e70f525dac6e3a12aa6eb827fdcc73e498da7",
+      "associations": [
+        {
+          "number": 4,
+          "title": "feat(rtl): complete Arabic migration and regression delivery",
+          "html_url": "https://github.com/FoushWare/enterprise-rtl-migration-lab/pull/4",
+          "state": "closed",
+          "merged_at": "2026-10-14T17:51:21Z"
+        }
+      ],
+      "files": [
+        {
+          "status": "A",
+          "path": "docs/autonomous/AUTOMATION_REVIEW.md"
+        },
+        {
+          "status": "A",
+          "path": "docs/autonomous/protected-evidence.json"
+        },
+        {
+          "status": "M",
+          "path": "package.json"
+        },
+        {
+          "status": "A",
+          "path": "scripts/verify-rtl-protections.mjs"
+        },
+        {
+          "status": "A",
+          "path": "tools/rtl-codemod/README.md"
+        },
+        {
+          "status": "A",
+          "path": "tools/rtl-codemod/cli.mjs"
+        },
+        {
+          "status": "A",
+          "path": "tools/rtl-codemod/codemod.mjs"
+        },
+        {
+          "status": "A",
+          "path": "tools/rtl-codemod/codemod.test.mjs"
+        },
+        {
+          "status": "A",
+          "path": "tools/rtl-codemod/vitest.config.ts"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "0f8f4c443eb118ba3904ed2f902f86040c71ba54",
+          "title": "feat(rtl): add reviewed CSS codemod plans and safe rollback"
+        }
+      ],
+      "compareUrl": "https://github.com/FoushWare/enterprise-rtl-migration-lab/compare/767e70f525dac6e3a12aa6eb827fdcc73e498da7..0f8f4c443eb118ba3904ed2f902f86040c71ba54",
+      "snippet": {
+        "path": "tools/rtl-codemod/vitest.config.ts",
+        "text": "diff --git a/tools/rtl-codemod/vitest.config.ts b/tools/rtl-codemod/vitest.config.ts\nnew file mode 100644\nindex 0000000..20429fe\n--- /dev/null\n+++ b/tools/rtl-codemod/vitest.config.ts\n@@ -0,0 +1,2 @@\n+import { defineConfig } from \"vitest/config\";\n+export default defineConfig({ test: { environment: \"node\", include: [\"tools/rtl-codemod/**/*.test.mjs\"] } });\n",
+        "truncated": false
+      }
+    },
+    {
+      "stage": 11,
+      "commit": "de7f7676e15b2f9d45bee634885cd6266b9a541e",
+      "previous": "0f8f4c443eb118ba3904ed2f902f86040c71ba54",
+      "associations": [
+        {
+          "number": 4,
+          "title": "feat(rtl): complete Arabic migration and regression delivery",
+          "html_url": "https://github.com/FoushWare/enterprise-rtl-migration-lab/pull/4",
+          "state": "closed",
+          "merged_at": "2026-10-14T17:51:21Z"
+        }
+      ],
+      "files": [
+        {
+          "status": "M",
+          "path": ".github/workflows/ci.yml"
+        },
+        {
+          "status": "M",
+          "path": ".gitignore"
+        },
+        {
+          "status": "M",
+          "path": "README.md"
+        },
+        {
+          "status": "M",
+          "path": "docs/autonomous/BLOCKERS.md"
+        },
+        {
+          "status": "M",
+          "path": "docs/autonomous/FINAL_REPORT.md"
+        },
+        {
+          "status": "A",
+          "path": "docs/autonomous/NATIVE_DATE_CI.md"
+        },
+        {
+          "status": "A",
+          "path": "docs/autonomous/NATIVE_DATE_RESULTS.md"
+        },
+        {
+          "status": "M",
+          "path": "docs/autonomous/STATE.md"
+        },
+        {
+          "status": "M",
+          "path": "docs/autonomous/TEST_EVIDENCE.md"
+        },
+        {
+          "status": "M",
+          "path": "package.json"
+        },
+        {
+          "status": "A",
+          "path": "playwright.production.config.ts"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "0ca58a11de42b4d442e4ecfe05061250fa3336e7",
+          "title": "chore(ci): add temporary native date diagnostic"
+        },
+        {
+          "sha": "e2c629ea8b76524fb49255883e71e504a0311518",
+          "title": "fix(ci): initialize diagnostic paths from runner environment"
+        },
+        {
+          "sha": "aa4c1378927fb9faca1a730f6943e3b803175a7d",
+          "title": "Merge pull request #1 from FoushWare/chore/native-date-ci-diagnostic"
+        },
+        {
+          "sha": "80f1bae611f38af4e7731b22f2fb73c652e9535e",
+          "title": "test(ci): add isolated regional date probes"
+        },
+        {
+          "sha": "671e98a12def644a20c3692b42b54cde5961d770",
+          "title": "fix(ci): align native date region with protected baselines"
+        },
+        {
+          "sha": "a3e4b8ca37bc828b8a943f77a9a81f57ad4ea70e",
+          "title": "Merge pull request #3 from FoushWare/codex/native-date-ci-stability"
+        },
+        {
+          "sha": "572e5c3f22e17a727f6aa4fb3d6b9d2baaf345a9",
+          "title": "Merge remote-tracking branch 'origin/main' into chore/native-date-regional-ab"
+        },
+        {
+          "sha": "c0b603e93fb5d2160d2eff365a96228973cf9eef",
+          "title": "Merge pull request #2 from FoushWare/chore/native-date-regional-ab"
+        },
+        {
+          "sha": "891c2a1b2cfdf3436e9f5abeb7b178f8ba182a91",
+          "title": "docs(rtl): document migration boundaries and causal CI evidence"
+        },
+        {
+          "sha": "72fd38ee25b827aa935ae6a22feed5c998859691",
+          "title": "Merge remote-tracking branch 'origin/main' into codex/autonomous-rtl-delivery"
+        },
+        {
+          "sha": "de7f7676e15b2f9d45bee634885cd6266b9a541e",
+          "title": "ci(rtl): gate final regressions and retire temporary diagnostics"
+        }
+      ],
+      "compareUrl": "https://github.com/FoushWare/enterprise-rtl-migration-lab/compare/0f8f4c443eb118ba3904ed2f902f86040c71ba54..de7f7676e15b2f9d45bee634885cd6266b9a541e",
+      "snippet": {
+        "path": ".github/workflows/ci.yml",
+        "text": "diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml\nindex 9c1ad4e..33a855b 100644\n--- a/.github/workflows/ci.yml\n+++ b/.github/workflows/ci.yml\n@@ -12,12 +12,75 @@ jobs:\n       - run: npm ci\n       - run: npm run lint\n       - run: npm run typecheck\n-      - run: npm run build\n+      - run: npm run rtl:verify:protected\n+      - run: npm run rtl:scan:typecheck\n+      - run: npm run rtl:scan:build\n+      - run: npm run rtl:scan:test\n+      - run: npm run rtl:scan\n+      - run: npm run rtl:codemod:test\n+      - run: npm run rtl:codemod -- --dry-run\n+      - run: npm run build -- --skip-nx-cache\n       - run: npm test\n       - run: npx playwright install chromium --no-shell\n+      - name: Match protected native-date baseline region\n+        shell: bash\n+        run: |\n+          set -euo pipefail\n+          test \"$RUNNER_ENVIRONMENT\" = github-hosted\n+          cat > \"$RUNNER_TEMP/native-date-region.py\" <<'PY'\n+          import json\n+          import os\n+          from pathlib import Path\n+          import plistlib\n+          import subprocess\n+          import sys\n+\n+          if sys.platform != 'darwin' or os.environ.get('GITHUB_ACTIONS') != 'true' or os.environ.get('RUNNER_ENVIRONMENT') != 'github-hosted':\n+              raise SystemExit('Preference changes require a disposable GitHub-hosted macOS runner')\n+          snapshot = Path(os.environ['RUNNER_TEMP']) / 'native-date-region-original.json'\n+          if sys.argv[1] == 'prepare':\n+              if snapshot.exists():\n+                  raise SystemExit('Refusing to overwrite original region snapshot')\n+              preferences = plistlib.loads(subprocess.check_output(['defaults', 'export', 'NSGlobalDomain', '-']))\n+              original = {'present': 'AppleLocale' in preferences, 'value': preferences.get('AppleLocale')}\n+              if original['present'] and not isinstance(original['value'], str):\n+                  raise SystemExit('Unsupported original AppleLocale type')\n+              snapshot.write_text(json.dumps(original))\n+              subprocess.run(['defaults', 'write', 'NSGlobalDomain', 'AppleLocale', '-string', 'en_EG'], check=True)\n+              if subprocess.check_output(['defaults', 'read', 'NSGlobalDomain', 'AppleLocale'], text=True).strip() != 'en_EG':\n+                  raise SystemExit('Native date region readback failed')",
+        "truncated": true
+      }
+    },
+    {
+      "stage": 12,
+      "commit": "b127325a14ad3bf8e70aede2a2e29b9dae638355",
+      "previous": "de7f7676e15b2f9d45bee634885cd6266b9a541e",
+      "associations": [
+        {
+          "number": 5,
+          "title": "docs(rtl): finalize migration delivery evidence",
+          "html_url": "https://github.com/FoushWare/enterprise-rtl-migration-lab/pull/5",
+          "state": "closed",
+          "merged_at": "2026-10-14T18:13:12Z"
+        }
+      ],
+      "files": [
+        {
+          "status": "M",
+          "path": ".github/workflows/ci.yml"
+        },
+        {
+          "status": "M",
+          "path": "README.md"
+        },
+        {
+          "status": "M",
+          "path": "docs/architecture.md"
+        },
+        {
+          "status": "M",
+          "path": "docs/autonomous/AUTOMATION_REVIEW.md"
+        },
+        {
+          "status": "M",
+          "path": "docs/autonomous/BLOCKERS.md"
+        },
+        {
+          "status": "M",
+          "path": "docs/autonomous/DECISIONS.md"
+        },
+        {
+          "status": "M",
+          "path": "docs/autonomous/FINAL_REPORT.md"
+        },
+        {
+          "status": "M",
+          "path": "docs/autonomous/ROADMAP.md"
+        },
+        {
+          "status": "M",
+          "path": "docs/autonomous/STATE.md"
+        },
+        {
+          "status": "M",
+          "path": "docs/autonomous/TEST_EVIDENCE.md"
+        },
+        {
+          "status": "M",
+          "path": "docs/testing-strategy.md"
+        },
+        {
+          "status": "M",
+          "path": "tests/e2e/brand-direction.spec.ts"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "a4a1894876f107f467af28cf4e5402b8dbf012de",
+          "title": "test(rtl): await committed locale before brand activation"
+        },
+        {
+          "sha": "a34f24044afef2724c0a56764eadcc2d3750d5aa",
+          "title": "docs(rtl): describe current runtime and verification contracts"
+        },
+        {
+          "sha": "94898ceb0d6ccbdab3fbf1ed7bf4e7a10121abbe",
+          "title": "Merge pull request #4 from FoushWare/codex/autonomous-rtl-delivery"
+        },
+        {
+          "sha": "e7ac96cb1795b6328b330965a83c851e65d3e948",
+          "title": "docs(rtl): finalize migration delivery evidence"
+        },
+        {
+          "sha": "b127325a14ad3bf8e70aede2a2e29b9dae638355",
+          "title": "Merge pull request #5 from FoushWare/codex/rtl-delivery-record"
+        }
+      ],
+      "compareUrl": "https://github.com/FoushWare/enterprise-rtl-migration-lab/compare/de7f7676e15b2f9d45bee634885cd6266b9a541e..b127325a14ad3bf8e70aede2a2e29b9dae638355",
+      "snippet": {
+        "path": "docs/autonomous/FINAL_REPORT.md",
+        "text": "diff --git a/docs/autonomous/FINAL_REPORT.md b/docs/autonomous/FINAL_REPORT.md\nindex 2ba7d9a..507e380 100644\n--- a/docs/autonomous/FINAL_REPORT.md\n+++ b/docs/autonomous/FINAL_REPORT.md\n@@ -1,17 +1,55 @@\n-# RTL migration delivery candidate\n+# Enterprise RTL Migration Lab — delivery record\n \n-Status: verification candidate; final remote CI/merge pending. This document does not yet claim delivery complete.\n+The approved RTL lab implementation is delivered through [PR #4](https://github.com/FoushWare/enterprise-rtl-migration-lab/pull/4), normally merged at `94898ceb0d6ccbdab3fbf1ed7bf4e7a10121abbe`. Its validated source head is `a34f24044afef2724c0a56764eadcc2d3750d5aa`; the merged tree is identical. This separate documentation closure changes no application, dependency, scanner, policy, test logic or protected evidence. Publication requires its own normal green merge; current repository history and GitHub checks are the authoritative final HEAD/merge receipts.\n \n-Completed scope includes Phase 2A opt-in Arabic and preserved historical evidence; Phase 3 fail-closed scanner; Phase 4 strict policy, runtime themes/caches/document synchronization, logical shell, LTR chronological chart, KPI clearance, complete Latin brand, invoice/sidebar arrows and forms/dialogs/tables regression coverage. Remaining autonomous work adds Arabic Dashboard progression, measured customer/financial bidi boundaries and conservative codemod tooling.\n+## Delivered roadmap\n \n-Native date CI causation is documented in NATIVE_DATE_RESULTS.md: only AppleLocale intervention changed native widget date order in the controlled A-D configuration. Green PR #3 established ephemeral runner normalization/restoration without changing product inputs, snapshots or thresholds. PR #2 merged after all relevant checks were green; temporary diagnostic workflow removal is part of the current reviewed delivery candidate.\n+| Phase | Result |\n+| --- | --- |\n+| A — Native date CI | Controlled independent A-D experiment proved AppleLocale=en_EG sufficient to reproduce protected day/month rendering. CI normalizes only an ephemeral hosted-runner preference and restores its original typed value/key presence. PR #3 and subsequently #2 merged only after green checks. |\n+| B — Directional navigation | Existing invoice/sidebar fixes retained; Arabic Dashboard progression uses the existing translation's left arrow, without editing pinned Dashboard source. Financial/external/disclosure/pagination semantics remain unchanged. |\n+| C — Bidi boundaries | Measured currency/name/address defects corrected with semantic bdi boundaries and scoped numeric/title CSS. Canonical data, en-US financial formatting and editable-input caret policy remain unchanged. |\n+| D — Conservative codemods | Exact reviewed plain-CSS plans, read-only default, strict source/commit/policy guards, staged writes, external recovery journal, safe rollback, negative/fixture/idempotency tests. Production approvals/candidates remain zero; no bulk conversion applied. |\n+| E — Verification and cleanup | Full English/Arabic, both-app, responsive/print/state/accessibility regression suites passed; six original English PNGs zero-diff; consolidated PR merged green; temporary diagnostic workflow removed; current documentation and persistent state maintained. |\n \n-Local verification: 108 development and 108 built-production Playwright tests; six unchanged English baselines at zero pixel difference; 186 scanner tests; 24 codemod fixture tests; nine app tests; scanner/app typechecks, lint and uncached Nx builds. Corrected dedicated production runner configuration: 25 focused tests passed, including all six English screenshots. Both apps, seven widths, repeated language switches, navigation/state, portals/focus, glyph-level bidi/clearance, print and existing regressions are covered.\n+Earlier Phase 2A translations/documentary evidence, Phase 3 scanner, strict policy, runtime themes/caches/document ownership, spacing pilots, sidebar geometry, chart chronology, KPI/brand fixes and forms/dialogs/tables coverage are included in the consolidated history. The legacy demo query/banner are retained for compatibility; historical checkpoints/screenshots provide the unmigrated Before state. No new runtime flag or Migration Control Center was introduced.\n \n-Scanner: 440 facts, 42 findings, 39 actionable, complete=true; nine nonblocking diagnostics and zero policy warnings; deterministic JSON/Markdown. Current automation approvals/candidates: zero. No production codemod applied. Four stale RTL-08 reference bindings were retired after exact source sinks disappeared; historical issue meanings/severities, all exception records and source pins remain unchanged. Static risks are not a claim of unresolved user-visible defects or universal correctness.\n+## Verification receipts\n \n-Protection verifier preserves six English PNGs, 68 documentary PNGs, two archived reports and two pinned source files (78 hashes total). The original user checkout/untracked work and original feature remote remain unchanged. No admin bypass, force push, red-check merge, baseline regeneration or production deployment.\n+Both final-head runs completed SUCCESS before PR #4 merged:\n \n-Limitations: deployment-origin cross-app navigation is not certified without approved hosting; macOS/browser updates may require revalidating native date behavior; scanner grammar is bounded and diagnostics remain visible; codemod multi-file replacement uses staged writes and durable recovery journal rather than claiming crash-atomic filesystem transactions. Unknown semantic conversions stay manual.\n+- [Push 38607850878](https://github.com/FoushWare/enterprise-rtl-migration-lab/actions/runs/38607850878).\n+- [PR 38607858920](https://github.com/FoushWare/enterprise-rtl-migration-lab/actions/runs/38607858920).\n+- [Merged-main 38610207500](https://github.com/FoushWare/enterprise-rtl-migration-lab/actions/runs/38610207500) is the additional default-branch receipt; its conclusion is obtained from GitHub, not inferred from branch success.\n \n-Final remote PR/check/merge receipts will be recorded after successful closure; see STATE.md and TEST_EVIDENCE.md.\n+| Gate | Verified result |\n+| --- | --- |\n+| Development Playwright | 108 passed; final PR run 7.1 minutes |\n+| Built-production Playwright | 108 passed; final PR run 4.5 minutes |\n+| English screenshots | Six zero-difference comparisons in both suites, maxDiffPixels=0; no updates |\n+| Scanner tests | 186 passed |\n+| Codemod fixtures | 24 passed |\n+| Application unit tests | Nine passed |",
+        "truncated": true
+      }
+    }
+  ]
+}

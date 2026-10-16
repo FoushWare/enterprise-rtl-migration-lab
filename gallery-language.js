@@ -26,7 +26,7 @@
     const translated = value.replace(source, result); cache.set(value, translated); return translated;
   }
   function skip(element) {
-    return element.closest('script,style,noscript,[data-gallery-language]') !== null;
+    return element.closest('script,style,noscript,[data-gallery-language],[data-source-code]') !== null;
   }
   function text(node) {
     if (!node.parentElement || skip(node.parentElement)) return;

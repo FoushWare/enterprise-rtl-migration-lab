@@ -35,3 +35,7 @@ See BILINGUAL_VALIDATION.json for bilingual and responsive checks.
 ## Independent issue comparisons
 
 Issue-card clicks now open the comparison results inside the browse panel, not a historical stage. Global issue/category/status/search controls apply to these comparisons; stage-local controls remain independent. Default results include before-fix and partly addressed Arabic evidence, paired with English captures from the same commit, application, route, state, viewport, media and capture collection. Explicit status selection can inspect other source states. There are 720 exact metadata pairs with no missing counterparts; this is not a claim of 720 independently measured defects. Both images can be opened together in a full-size dialog. Historical screenshots and the manifest remain unchanged.
+
+## Per-stage code and PR evidence
+
+Each stage has a collapsed code/PR explanation with nested file/commit inventories and a bounded verbatim Git excerpt. Associations were verified using GitHub’s commit-associated-PR API: stages 3–11 belong to consolidated PR #4, final delivery to PR #5, and the shared starting commit has no associated PR. A consolidated PR is explicitly distinguished from a stage-specific PR. File inventories use exact checkpoint endpoint diffs; stage two shares stage one’s commit and has no source delta. Code excerpts are preserved verbatim across UI-language changes and link to full GitHub context. See stage-code-history.json for the reviewed metadata.
