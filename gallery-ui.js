@@ -226,10 +226,13 @@
     const tags = card.element.querySelector('.shot-tags').cloneNode(true); info.append(tags);
     const status = document.createElement('p'); status.textContent = card.element.querySelector('.shot-evidence-status').textContent; info.append(status);
     const notes = card.element.querySelector('.issue-annotations').cloneNode(true); info.append(notes);
+    const unavailable = document.createElement('p'); unavailable.className = 'pair-unavailable'; unavailable.textContent = 'مفيش صورة مقابلة مطابقة موثّقة للّقطة دي؛ المعروض هو الأصل فقط.'; info.prepend(unavailable);
     const hint = document.createElement('p'); hint.className = 'viewer-hint'; hint.textContent = 'Esc للإغلاق · ← للصورة التالية · → للصورة السابقة'; info.append(hint);
     document.querySelector('#next').disabled = viewerCards.length < 2; document.querySelector('#prev').disabled = viewerCards.length < 2;
   }
   function openImage(chapter, card, target) {
+    const request = new CustomEvent('gallery:open-image', {cancelable: true, detail: {stage: chapter.element.id, card: card.element, target, cards: chapter.matches.map(item => item.element)}});
+    if (!document.dispatchEvent(request)) return;
     viewerCards = chapter.matches; returnTarget = target; viewerIndex = viewerCards.indexOf(card); if (viewerIndex < 0) return;
     previousOverflow = document.body.style.overflow; document.body.style.overflow = 'hidden';
     for (const child of document.body.children) if (child !== box && child.tagName !== 'SCRIPT') { inertBefore.set(child, child.inert); child.inert = true; }

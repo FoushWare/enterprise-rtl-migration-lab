@@ -1,11 +1,12 @@
 'use strict';
 (() => {
   const pairs = JSON.parse(document.querySelector('#comparison-data').textContent);
+  const viewerPairs = [...pairs, ...JSON.parse(document.querySelector('#stage-viewer-pairs').textContent)];
   const taxonomy = JSON.parse(document.querySelector('#gallery-taxonomy').textContent);
   const dictionary = JSON.parse(document.querySelector('#gallery-translations').textContent);
   const bar = document.querySelector('#global-issue-filters'), grid = document.querySelector('#comparison-grid');
   const dialog = document.querySelector('#comparison-dialog');
-  let limit = 8, matches = [], returnTo;
+  let limit = 8, matches = [], returnTo, viewerSequence = [], viewerIndex = 0;
   const en = () => document.documentElement.lang === 'en';
   const t = (ar, english) => en() ? english : ar;
   const translated = value => en() ? dictionary[value] || value : value;
@@ -55,14 +56,47 @@
   }
   zoomLabels();
   addEventListener('resize', () => { if (dialog.open) for (const panel of zoomPanels.values()) zoomTo(panel, panel.zoom); });
-  function open(pair, button) {
-    returnTo = button;
+  const description = make('section', null, 'comparison-description');
+  description.id = 'comparison-description'; dialog.append(description);
+  const navigation = make('div', null, 'comparison-navigation');
+  const previous = make('button'), next = make('button'), position = make('output');
+  previous.type = next.type = 'button'; previous.id = 'comparison-previous'; next.id = 'comparison-next';
+  navigation.append(previous, position, next); dialog.querySelector('.comparison-dialog-toolbar').after(navigation);
+  for (const lang of ['ar', 'en']) {
+    const original = make('a'); original.id = 'comparison-original-' + lang; original.target = '_blank'; original.rel = 'noopener';
+    zoomPanels.get(lang).viewport.parentElement.append(original);
+  }
+  function showPair(pair) {
     document.querySelector('#comparison-dialog-caption').textContent = caption(pair);
     for (const lang of ['ar', 'en']) {
       const img = document.querySelector('#comparison-' + lang); img.src = pair[lang]; img.alt = caption(pair) + ' — ' + (lang === 'ar' ? 'Arabic' : 'English');
+      const original = document.querySelector('#comparison-original-' + lang); original.href = pair[lang]; original.textContent = t('افتح / نزّل الأصل', 'Open / download original');
     }
-    dialog.showModal(); for (const panel of zoomPanels.values()) zoomTo(panel, 1); document.querySelector('#comparison-close').focus();
+    description.replaceChildren(make('h3', t('المشاكل والوصف', 'Issues and descriptions')));
+    const source = [...document.querySelectorAll('.screen-card')].find(card => card.querySelector('.pic').dataset.src === pair.ar);
+    if (source) {
+      for (const selector of ['.shot-tags', '.shot-evidence-status', '.issue-annotations', '.evidence-caveat']) {
+        const element = source.querySelector(selector); if (element) description.append(element.cloneNode(true));
+      }
+    }
+    previous.textContent = t('المقارنة السابقة', 'Previous comparison'); next.textContent = t('المقارنة التالية', 'Next comparison');
+    previous.disabled = next.disabled = viewerSequence.length < 2;
+    position.textContent = t(`مقارنة ${viewerIndex + 1} من ${viewerSequence.length}`, `Comparison ${viewerIndex + 1} of ${viewerSequence.length}`);
+    for (const panel of zoomPanels.values()) zoomTo(panel, 1);
   }
+  function open(pair, button, sequence = matches) {
+    returnTo = button; viewerSequence = sequence.length ? sequence : [pair]; viewerIndex = Math.max(0, viewerSequence.indexOf(pair));
+    dialog.showModal(); showPair(pair); document.querySelector('#comparison-close').focus();
+  }
+  function move(offset) { viewerIndex = (viewerIndex + offset + viewerSequence.length) % viewerSequence.length; showPair(viewerSequence[viewerIndex]); dialog.scrollTop = 0; }
+  previous.addEventListener('click', () => move(-1)); next.addEventListener('click', () => move(1));
+  const pairForCard = card => { const path = card.querySelector('.pic').dataset.src; const stage = Number(card.closest('article.stage').dataset.stageNumber); return viewerPairs.find(pair => pair.stage === stage && (pair.ar === path || pair.en === path)); };
+  document.addEventListener('gallery:open-image', event => {
+    const pair = pairForCard(event.detail.card); if (!pair) return;
+    event.preventDefault();
+    const sequence = [...new Set(event.detail.cards.map(pairForCard).filter(Boolean))];
+    open(pair, event.detail.target, sequence);
+  });
   function close() { dialog.close(); returnTo?.focus({preventScroll: true}); }
   document.querySelector('#comparison-close').addEventListener('click', close);
   dialog.addEventListener('cancel', event => { event.preventDefault(); close(); });

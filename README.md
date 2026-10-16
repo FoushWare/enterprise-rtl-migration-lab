@@ -39,3 +39,7 @@ Issue-card clicks now open the comparison results inside the browse panel, not a
 ## Per-stage code and PR evidence
 
 Each stage has a collapsed code/PR explanation with nested file/commit inventories and a bounded verbatim Git excerpt. Associations were verified using GitHub’s commit-associated-PR API: stages 3–11 belong to consolidated PR #4, final delivery to PR #5, and the shared starting commit has no associated PR. A consolidated PR is explicitly distinguished from a stage-specific PR. File inventories use exact checkpoint endpoint diffs; stage two shares stage one’s commit and has no source delta. Code excerpts are preserved verbatim across UI-language changes and link to full GitHub context. See stage-code-history.json for the reviewed metadata.
+
+## Paired stage-image viewer
+
+Stage screenshots with documented counterparts now open the paired viewer too: Arabic and English remain side by side, with independent zoom and the original issue descriptions below both images. Pair navigation follows the current stage’s matching captures. In addition to the 720 recreated pairs, 34 original Phase 2A pairs were matched by commit, app, state, normalized route, viewport and capture type; original bytes remain untouched. Unmatched English-only baseline or report images retain a single-image view with an explicit missing-counterpart notice.
