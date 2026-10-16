@@ -1,0 +1,685 @@
+{
+  "schemaVersion": 1,
+  "meaning": "Issue-family annotations describe historical defects and relevant visible UI regions, not scanner approvals or new per-screenshot measurements. LTR references and reports are not labelled as confirmed RTL defects.",
+  "categories": [
+    {
+      "id": "css",
+      "label": "CSS / Layout — التخطيط والمسافات"
+    },
+    {
+      "id": "charts",
+      "label": "Charts / SVG — الرسوم والبيانات"
+    },
+    {
+      "id": "icons",
+      "label": "Icons — الأيقونات والأسهم"
+    },
+    {
+      "id": "mui",
+      "label": "MUI / Runtime — المكوّنات واتجاه التشغيل"
+    },
+    {
+      "id": "bidi",
+      "label": "Bidi — سياق النص ثنائي الاتجاه"
+    },
+    {
+      "id": "brand",
+      "label": "Branding — تكوين العلامة"
+    },
+    {
+      "id": "evidence",
+      "label": "Reports / Evidence — تقارير وأدلة"
+    }
+  ],
+  "statuses": [
+    {
+      "id": "ltr-reference",
+      "label": "مرجع إنجليزي LTR — ليس عيب RTL"
+    },
+    {
+      "id": "before-fix",
+      "label": "قبل معالجة السبب التاريخي"
+    },
+    {
+      "id": "partial",
+      "label": "معالجة جزئية — ما زال جزء يحتاج فحصًا"
+    },
+    {
+      "id": "source-remediated",
+      "label": "السبب معالَج في المصدر — راجع النتيجة"
+    },
+    {
+      "id": "needs-review",
+      "label": "مراجعة مطلوبة — ليست مشكلة مؤكدة"
+    },
+    {
+      "id": "documentary",
+      "label": "تقرير / دليل — ليس لقطة عيب"
+    }
+  ],
+  "issues": [
+    {
+      "id": "RTL-01",
+      "titleAr": "هندسة الشريط الجانبي",
+      "titleEn": "Sidebar geometry",
+      "categories": [
+        "css"
+      ],
+      "severity": "Minor",
+      "problemAr": "الشريط والمساحة المحجوزة والمحدد النشط وحركة الموبايل تفضل ناحية اليسار بدل بداية القراءة العربية.",
+      "expectedAr": "الشريط يمين في العربي ويسار في الإنجليزي، مع حافة ومساحة وحركة متناسقة.",
+      "whereAr": "الشريط الجانبي، حافته ومكان المحتوى بجانبه.",
+      "source": "libs/design-system/src/styles.css",
+      "owner": "Shared CSS + SidebarFrame",
+      "historicalEvidenceUrl": "https://github.com/FoushWare/enterprise-rtl-migration-lab/blob/61491d7f6dd359033c4a9e80b556d3b3e2446305/docs/phase-2a-observed-issues.md#rtl-01--navigation-remains-on-the-physical-left-minor-manual-review"
+    },
+    {
+      "id": "RTL-02",
+      "titleAr": "اتجاه شهور رسم الإيرادات",
+      "titleEn": "Revenue chronology",
+      "categories": [
+        "css",
+        "charts"
+      ],
+      "severity": "Major",
+      "problemAr": "الشهور تتحرك من اليمين لليسار بينما منحنى الإيرادات ثابت؛ نقطة أكتوبر قد تظهر فوق مايو.",
+      "expectedAr": "مايو في اليسار وأكتوبر في اليمين، بدون عكس المنحنى أو الأرقام.",
+      "whereAr": "شهور رسم الإيرادات أسفل المنحنى والمحور الرقمي الأيسر.",
+      "source": "libs/design-system/src/styles.css",
+      "owner": "Revenue chart CSS + fixed SVG",
+      "historicalEvidenceUrl": "https://github.com/FoushWare/enterprise-rtl-migration-lab/blob/61491d7f6dd359033c4a9e80b556d3b3e2446305/docs/phase-2a-observed-issues.md#rtl-02--revenue-months-disagree-with-plotted-chronology-major-manual-review"
+    },
+    {
+      "id": "RTL-03",
+      "titleAr": "تداخل أيقونة KPI مع العنوان",
+      "titleEn": "KPI icon clearance",
+      "categories": [
+        "css",
+        "icons"
+      ],
+      "severity": "Major",
+      "problemAr": "الأيقونة المثبتة أعلى اليمين ممكن تغطي حروف عنوان البطاقة العربية.",
+      "expectedAr": "الأيقونة عند نهاية القراءة، مع عدم تقاطعها مع حروف العنوان؛ سهم النمو لا ينعكس.",
+      "whereAr": "عناوين وأيقونات بطاقات مؤشرات الفواتير، وليس بطاقات المشتريات.",
+      "source": "libs/design-system/src/styles.css",
+      "owner": "KPI icon logical positioning",
+      "historicalEvidenceUrl": "https://github.com/FoushWare/enterprise-rtl-migration-lab/blob/61491d7f6dd359033c4a9e80b556d3b3e2446305/docs/phase-2a-observed-issues.md#rtl-03--kpi-icons-obscure-arabic-labels-major-manual-review"
+    },
+    {
+      "id": "RTL-04",
+      "titleAr": "هندسة حقول الإدخال",
+      "titleEn": "Form controls",
+      "categories": [
+        "mui"
+      ],
+      "severity": "Minor",
+      "problemAr": "اتجاه المستند وحده لا يضبط عنوان الحقل والـ notch والنص المساعد وسهم الاختيار المولّد من MUI.",
+      "expectedAr": "الهندسة تتبع اللغة مع الحفاظ على القيم والتركيز؛ لا نفرض سياسة مؤشر RTL على كل رقم أو بريد.",
+      "whereAr": "عنوان الحقل وإطاره والنص المساعد وسهم قائمة الاختيار.",
+      "source": "libs/design-system/src/index.tsx",
+      "owner": "MUI theme + Emotion cache",
+      "historicalEvidenceUrl": "https://github.com/FoushWare/enterprise-rtl-migration-lab/blob/61491d7f6dd359033c4a9e80b556d3b3e2446305/docs/phase-2a-observed-issues.md#rtl-04--fields-retain-ltr-label-notch-helper-and-select-icon-geometry-minor-runtime-configuration"
+    },
+    {
+      "id": "RTL-05",
+      "titleAr": "خلوص عنوان النافذة وزر الإغلاق",
+      "titleEn": "Dialog title clearance",
+      "categories": [
+        "mui",
+        "css"
+      ],
+      "severity": "Major",
+      "problemAr": "زر الإغلاق الموجود في نفس جهة بداية العنوان العربي ممكن يغطي حروف العنوان.",
+      "expectedAr": "العنوان وزر الإغلاق منفصلان، مع بقاء ترتيب الأزرار والتركيز والإغلاق صحيحًا.",
+      "whereAr": "حروف عنوان النافذة وأيقونة ×، لا حدود صندوق العنوان فقط.",
+      "source": "libs/design-system/src/index.tsx",
+      "owner": "Shared Modal + runtime styling",
+      "historicalEvidenceUrl": "https://github.com/FoushWare/enterprise-rtl-migration-lab/blob/61491d7f6dd359033c4a9e80b556d3b3e2446305/docs/phase-2a-observed-issues.md#rtl-05--dialog-close-button-collides-with-the-title-major-manual-review-and-runtime-configuration"
+    },
+    {
+      "id": "RTL-06",
+      "titleAr": "محاذاة عناوين وخلايا الجداول",
+      "titleEn": "Table alignment",
+      "categories": [
+        "mui"
+      ],
+      "severity": "Minor",
+      "problemAr": "عناوين الأعمدة العربية تفضل بمحاذاة يسار رغم اتجاه الجدول RTL.",
+      "expectedAr": "محاذاة النص تتفق مع دوره واتجاه القراءة، بدون عكس ترتيب البيانات أو فرض محاذاة واحدة على كل الأرقام.",
+      "whereAr": "عناوين وخلايا الجدول، ومع الموبايل طرفا منطقة التمرير.",
+      "source": "libs/design-system/src/index.tsx",
+      "owner": "Shared DataTable + MUI TableCell",
+      "historicalEvidenceUrl": "https://github.com/FoushWare/enterprise-rtl-migration-lab/blob/61491d7f6dd359033c4a9e80b556d3b3e2446305/docs/phase-2a-observed-issues.md#rtl-06--arabic-table-headings-remain-physically-left-aligned-minor-runtime-configuration-and-manual-alignment-policy"
+    },
+    {
+      "id": "RTL-07",
+      "titleAr": "معنى اتجاه أسهم التنقل",
+      "titleEn": "Navigation progression",
+      "categories": [
+        "icons"
+      ],
+      "severity": "Minor",
+      "problemAr": "سهم الانتقال للأمام يفضل يشير يمين في العربي؛ اتجاه الأيقونة مختلف عن صحة الرابط نفسه.",
+      "expectedAr": "تقدم التنقل يسار في العربي ويمين في الإنجليزي؛ أسهم النمو والروابط الخارجية والقوائم لا تنعكس تلقائيًا.",
+      "whereAr": "أسهم فتح الفاتورة وعرض الكل والتنقل بين التطبيقين؛ pagination له معالجة MUI منفصلة.",
+      "source": "apps/invoicing/src/components/InvoiceTable.tsx",
+      "owner": "Icon semantics + MUI pagination",
+      "historicalEvidenceUrl": "https://github.com/FoushWare/enterprise-rtl-migration-lab/blob/61491d7f6dd359033c4a9e80b556d3b3e2446305/docs/phase-2a-observed-issues.md#rtl-07--navigation-arrows-retain-ltr-progression-minor-manual-review-pagination-also-requires-runtime-configuration"
+    },
+    {
+      "id": "RTL-08",
+      "titleAr": "سياق النص ثنائي الاتجاه Bidi",
+      "titleEn": "Bidirectional text context",
+      "categories": [
+        "bidi"
+      ],
+      "severity": "Minor",
+      "problemAr": "خلط العربي مع اسم لاتيني أو عنوان أو مبلغ قد ينقل علامة الدولار أو النقطة بصريًا عند حدود النص. القيم المخزنة لا تنعكس.",
+      "expectedAr": "عزل حدود النص بـ bdi أو اتجاه مناسب، مع الحفاظ على الأحرف المنسوخة والقيم وتنسيق en-US.",
+      "whereAr": "المبلغ داخل جملة التأكيد، وأسماء العملاء وعناوينهم وعلامات الترقيم.",
+      "source": "apps/invoicing/src/pages/CreateInvoice.tsx",
+      "owner": "Semantic bidi boundaries; not CSS alignment",
+      "historicalEvidenceUrl": "https://github.com/FoushWare/enterprise-rtl-migration-lab/blob/61491d7f6dd359033c4a9e80b556d3b3e2446305/docs/phase-2a-observed-issues.md#rtl-08--unisolated-opposite-direction-content-changes-token-presentation-minor-manual-bidi-policy"
+    },
+    {
+      "id": "RTL-09",
+      "titleAr": "تركيب العلامة atlas.",
+      "titleEn": "Brand composition",
+      "categories": [
+        "brand",
+        "css"
+      ],
+      "severity": "Minor",
+      "problemAr": "اتجاه flex الموروث ممكن ينقل الرمز بعد الكلمة والنقطة قبلها؛ ده تغيير تركيب وليس عكس شكل الحروف.",
+      "expectedAr": "الرمز ثم atlas ثم النقطة بترتيب LTR داخل جزيرة مستقلة؛ التنقل المحيط يظل عربيًا.",
+      "whereAr": "العلامة أعلى الشريط الجانبي المفتوح.",
+      "source": "libs/design-system/src/styles.css",
+      "owner": "Complete brand direction island",
+      "historicalEvidenceUrl": "https://github.com/FoushWare/enterprise-rtl-migration-lab/blob/61491d7f6dd359033c4a9e80b556d3b3e2446305/docs/phase-2a-observed-issues.md#rtl-09--latin-brand-composition-is-reordered-minor-manual-branding-policy"
+    }
+  ],
+  "checkpoints": {
+    "2fe522fad44bb8f79b3f15190227b8b94b7d9469": {
+      "flags": {
+        "sidebarLogical": false,
+        "chartIsland": false,
+        "kpiLogical": false,
+        "rtlRuntime": false,
+        "brandIsland": false,
+        "invoiceArrow": false,
+        "sidebarArrow": false,
+        "dashboardArrow": false,
+        "confirmationBidi": false,
+        "customerBidi": false
+      },
+      "sourceDigests": {
+        "libs/design-system/src/styles.css": "7f75a3e295d7ffe023d1e5893f8902d16f25937630445039c8000bf3bb889ed1",
+        "libs/design-system/src/index.tsx": "7151324efbd8944c7a620d890af57f8bbd895fc628078751a1fbdbc3fcbf7136",
+        "apps/invoicing/src/components/InvoiceTable.tsx": "15e86d469cf7011e4503b532f64f4c20fc2897e01a16fcfd7abd37dfed3756d6",
+        "apps/invoicing/src/pages/CreateInvoice.tsx": "d9318e09ecd0fd7d1c1ec8e54940462244c029727b7492d1ba21a470d788f07d",
+        "apps/invoicing/src/pages/Customers.tsx": "40af5330fd3f5c25707e744f8ed8908bd2aa87968f22cd5da3e438270c74fc2f"
+      }
+    },
+    "61491d7f6dd359033c4a9e80b556d3b3e2446305": {
+      "flags": {
+        "sidebarLogical": false,
+        "chartIsland": false,
+        "kpiLogical": false,
+        "rtlRuntime": false,
+        "brandIsland": false,
+        "invoiceArrow": false,
+        "sidebarArrow": false,
+        "dashboardArrow": false,
+        "confirmationBidi": false,
+        "customerBidi": false
+      },
+      "sourceDigests": {
+        "libs/design-system/src/styles.css": "7f75a3e295d7ffe023d1e5893f8902d16f25937630445039c8000bf3bb889ed1",
+        "libs/design-system/src/index.tsx": "7c2fc659a5eadff7b3b4e93ae895ce8e9fc307110b6577cd8921fd44da7f78ac",
+        "apps/invoicing/src/components/InvoiceTable.tsx": "42259ec2b8c9e6574ff8a113c3ed66388dc2fc194b2434eda3bd687b365393e5",
+        "apps/invoicing/src/pages/CreateInvoice.tsx": "4820f8011552c6127134279253fd32be2b2f7f7032f2863980cc642042efce4f",
+        "apps/invoicing/src/pages/Customers.tsx": "8e66b4fba4ccca9634522f4f5853f11c60317af9f7b6288c37c3eb90b164f894"
+      }
+    },
+    "0de6d609cbfb9aae662d1cb7c9589c38592bb21b": {
+      "flags": {
+        "sidebarLogical": false,
+        "chartIsland": false,
+        "kpiLogical": false,
+        "rtlRuntime": false,
+        "brandIsland": false,
+        "invoiceArrow": false,
+        "sidebarArrow": false,
+        "dashboardArrow": false,
+        "confirmationBidi": false,
+        "customerBidi": false
+      },
+      "sourceDigests": {
+        "libs/design-system/src/styles.css": "7f75a3e295d7ffe023d1e5893f8902d16f25937630445039c8000bf3bb889ed1",
+        "libs/design-system/src/index.tsx": "7c2fc659a5eadff7b3b4e93ae895ce8e9fc307110b6577cd8921fd44da7f78ac",
+        "apps/invoicing/src/components/InvoiceTable.tsx": "42259ec2b8c9e6574ff8a113c3ed66388dc2fc194b2434eda3bd687b365393e5",
+        "apps/invoicing/src/pages/CreateInvoice.tsx": "4820f8011552c6127134279253fd32be2b2f7f7032f2863980cc642042efce4f",
+        "apps/invoicing/src/pages/Customers.tsx": "8e66b4fba4ccca9634522f4f5853f11c60317af9f7b6288c37c3eb90b164f894"
+      }
+    },
+    "9c2df15f1df50ea101150b48f6d31249678a9b0f": {
+      "flags": {
+        "sidebarLogical": false,
+        "chartIsland": false,
+        "kpiLogical": false,
+        "rtlRuntime": false,
+        "brandIsland": false,
+        "invoiceArrow": false,
+        "sidebarArrow": false,
+        "dashboardArrow": false,
+        "confirmationBidi": false,
+        "customerBidi": false
+      },
+      "sourceDigests": {
+        "libs/design-system/src/styles.css": "7f75a3e295d7ffe023d1e5893f8902d16f25937630445039c8000bf3bb889ed1",
+        "libs/design-system/src/index.tsx": "7c2fc659a5eadff7b3b4e93ae895ce8e9fc307110b6577cd8921fd44da7f78ac",
+        "apps/invoicing/src/components/InvoiceTable.tsx": "42259ec2b8c9e6574ff8a113c3ed66388dc2fc194b2434eda3bd687b365393e5",
+        "apps/invoicing/src/pages/CreateInvoice.tsx": "4820f8011552c6127134279253fd32be2b2f7f7032f2863980cc642042efce4f",
+        "apps/invoicing/src/pages/Customers.tsx": "8e66b4fba4ccca9634522f4f5853f11c60317af9f7b6288c37c3eb90b164f894"
+      }
+    },
+    "05138f1c5f68db92bcd94afe11e63fd83322f8cb": {
+      "flags": {
+        "sidebarLogical": false,
+        "chartIsland": false,
+        "kpiLogical": false,
+        "rtlRuntime": false,
+        "brandIsland": false,
+        "invoiceArrow": false,
+        "sidebarArrow": false,
+        "dashboardArrow": false,
+        "confirmationBidi": false,
+        "customerBidi": false
+      },
+      "sourceDigests": {
+        "libs/design-system/src/styles.css": "7f75a3e295d7ffe023d1e5893f8902d16f25937630445039c8000bf3bb889ed1",
+        "libs/design-system/src/index.tsx": "7c2fc659a5eadff7b3b4e93ae895ce8e9fc307110b6577cd8921fd44da7f78ac",
+        "apps/invoicing/src/components/InvoiceTable.tsx": "42259ec2b8c9e6574ff8a113c3ed66388dc2fc194b2434eda3bd687b365393e5",
+        "apps/invoicing/src/pages/CreateInvoice.tsx": "4820f8011552c6127134279253fd32be2b2f7f7032f2863980cc642042efce4f",
+        "apps/invoicing/src/pages/Customers.tsx": "8e66b4fba4ccca9634522f4f5853f11c60317af9f7b6288c37c3eb90b164f894"
+      }
+    },
+    "85f4dde02142f305b434c815a39015a4c5eaafec": {
+      "flags": {
+        "sidebarLogical": false,
+        "chartIsland": false,
+        "kpiLogical": false,
+        "rtlRuntime": false,
+        "brandIsland": false,
+        "invoiceArrow": false,
+        "sidebarArrow": false,
+        "dashboardArrow": false,
+        "confirmationBidi": false,
+        "customerBidi": false
+      },
+      "sourceDigests": {
+        "libs/design-system/src/styles.css": "26845725b7b6008be85a91186c4cbc2c830be77ee2a6a8384b75a0ec82d7d836",
+        "libs/design-system/src/index.tsx": "7c2fc659a5eadff7b3b4e93ae895ce8e9fc307110b6577cd8921fd44da7f78ac",
+        "apps/invoicing/src/components/InvoiceTable.tsx": "42259ec2b8c9e6574ff8a113c3ed66388dc2fc194b2434eda3bd687b365393e5",
+        "apps/invoicing/src/pages/CreateInvoice.tsx": "4820f8011552c6127134279253fd32be2b2f7f7032f2863980cc642042efce4f",
+        "apps/invoicing/src/pages/Customers.tsx": "8e66b4fba4ccca9634522f4f5853f11c60317af9f7b6288c37c3eb90b164f894"
+      }
+    },
+    "1098eb782b2d61eb8b17b146e4f01867820b76ff": {
+      "flags": {
+        "sidebarLogical": false,
+        "chartIsland": false,
+        "kpiLogical": false,
+        "rtlRuntime": true,
+        "brandIsland": false,
+        "invoiceArrow": false,
+        "sidebarArrow": false,
+        "dashboardArrow": false,
+        "confirmationBidi": false,
+        "customerBidi": false
+      },
+      "sourceDigests": {
+        "libs/design-system/src/styles.css": "26845725b7b6008be85a91186c4cbc2c830be77ee2a6a8384b75a0ec82d7d836",
+        "libs/design-system/src/index.tsx": "7ab550cb2ad95ac3fa0728bd324d26cef06c013bbe2d1f148a81aa01b98de8d8",
+        "apps/invoicing/src/components/InvoiceTable.tsx": "42259ec2b8c9e6574ff8a113c3ed66388dc2fc194b2434eda3bd687b365393e5",
+        "apps/invoicing/src/pages/CreateInvoice.tsx": "4820f8011552c6127134279253fd32be2b2f7f7032f2863980cc642042efce4f",
+        "apps/invoicing/src/pages/Customers.tsx": "8e66b4fba4ccca9634522f4f5853f11c60317af9f7b6288c37c3eb90b164f894"
+      }
+    },
+    "767e70f525dac6e3a12aa6eb827fdcc73e498da7": {
+      "flags": {
+        "sidebarLogical": true,
+        "chartIsland": true,
+        "kpiLogical": true,
+        "rtlRuntime": true,
+        "brandIsland": true,
+        "invoiceArrow": true,
+        "sidebarArrow": true,
+        "dashboardArrow": true,
+        "confirmationBidi": true,
+        "customerBidi": true
+      },
+      "sourceDigests": {
+        "libs/design-system/src/styles.css": "ba481659663db6f661048a700912773f820be82dc667cc9912d2876da8433837",
+        "libs/design-system/src/index.tsx": "6493f544a7858be20d078b74f0c51ab957890230da9a66160318d93ebc2384ab",
+        "apps/invoicing/src/components/InvoiceTable.tsx": "fc53fd82d9334231a1ed6e704b72193af3c9d1f1503d4a240f62c016d3bd6c1c",
+        "apps/invoicing/src/pages/CreateInvoice.tsx": "ee8a794fe2093fc8ae5f5b3de96d6eff40e2420eb55c2f705878e925ca84433e",
+        "apps/invoicing/src/pages/Customers.tsx": "1b18a873da93b232823dec222670d38fdf2c977f11489064968830f634427c02"
+      }
+    },
+    "0f8f4c443eb118ba3904ed2f902f86040c71ba54": {
+      "flags": {
+        "sidebarLogical": true,
+        "chartIsland": true,
+        "kpiLogical": true,
+        "rtlRuntime": true,
+        "brandIsland": true,
+        "invoiceArrow": true,
+        "sidebarArrow": true,
+        "dashboardArrow": true,
+        "confirmationBidi": true,
+        "customerBidi": true
+      },
+      "sourceDigests": {
+        "libs/design-system/src/styles.css": "ba481659663db6f661048a700912773f820be82dc667cc9912d2876da8433837",
+        "libs/design-system/src/index.tsx": "6493f544a7858be20d078b74f0c51ab957890230da9a66160318d93ebc2384ab",
+        "apps/invoicing/src/components/InvoiceTable.tsx": "fc53fd82d9334231a1ed6e704b72193af3c9d1f1503d4a240f62c016d3bd6c1c",
+        "apps/invoicing/src/pages/CreateInvoice.tsx": "ee8a794fe2093fc8ae5f5b3de96d6eff40e2420eb55c2f705878e925ca84433e",
+        "apps/invoicing/src/pages/Customers.tsx": "1b18a873da93b232823dec222670d38fdf2c977f11489064968830f634427c02"
+      }
+    },
+    "de7f7676e15b2f9d45bee634885cd6266b9a541e": {
+      "flags": {
+        "sidebarLogical": true,
+        "chartIsland": true,
+        "kpiLogical": true,
+        "rtlRuntime": true,
+        "brandIsland": true,
+        "invoiceArrow": true,
+        "sidebarArrow": true,
+        "dashboardArrow": true,
+        "confirmationBidi": true,
+        "customerBidi": true
+      },
+      "sourceDigests": {
+        "libs/design-system/src/styles.css": "ba481659663db6f661048a700912773f820be82dc667cc9912d2876da8433837",
+        "libs/design-system/src/index.tsx": "6493f544a7858be20d078b74f0c51ab957890230da9a66160318d93ebc2384ab",
+        "apps/invoicing/src/components/InvoiceTable.tsx": "fc53fd82d9334231a1ed6e704b72193af3c9d1f1503d4a240f62c016d3bd6c1c",
+        "apps/invoicing/src/pages/CreateInvoice.tsx": "ee8a794fe2093fc8ae5f5b3de96d6eff40e2420eb55c2f705878e925ca84433e",
+        "apps/invoicing/src/pages/Customers.tsx": "1b18a873da93b232823dec222670d38fdf2c977f11489064968830f634427c02"
+      }
+    },
+    "b127325a14ad3bf8e70aede2a2e29b9dae638355": {
+      "flags": {
+        "sidebarLogical": true,
+        "chartIsland": true,
+        "kpiLogical": true,
+        "rtlRuntime": true,
+        "brandIsland": true,
+        "invoiceArrow": true,
+        "sidebarArrow": true,
+        "dashboardArrow": true,
+        "confirmationBidi": true,
+        "customerBidi": true
+      },
+      "sourceDigests": {
+        "libs/design-system/src/styles.css": "ba481659663db6f661048a700912773f820be82dc667cc9912d2876da8433837",
+        "libs/design-system/src/index.tsx": "6493f544a7858be20d078b74f0c51ab957890230da9a66160318d93ebc2384ab",
+        "apps/invoicing/src/components/InvoiceTable.tsx": "fc53fd82d9334231a1ed6e704b72193af3c9d1f1503d4a240f62c016d3bd6c1c",
+        "apps/invoicing/src/pages/CreateInvoice.tsx": "ee8a794fe2093fc8ae5f5b3de96d6eff40e2420eb55c2f705878e925ca84433e",
+        "apps/invoicing/src/pages/Customers.tsx": "1b18a873da93b232823dec222670d38fdf2c977f11489064968830f634427c02"
+      }
+    }
+  },
+  "summary": [
+    {
+      "stage": 1,
+      "screenshots": 86,
+      "byIssue": {
+        "RTL-04": 58,
+        "RTL-05": 6,
+        "RTL-08": 12,
+        "RTL-06": 29,
+        "RTL-07": 44,
+        "RTL-01": 42,
+        "RTL-09": 42,
+        "RTL-02": 5,
+        "RTL-03": 5
+      },
+      "byStatus": {
+        "ltr-reference": 86
+      }
+    },
+    {
+      "stage": 2,
+      "screenshots": 71,
+      "byIssue": {
+        "RTL-04": 47,
+        "RTL-05": 4,
+        "RTL-08": 8,
+        "RTL-06": 22,
+        "RTL-07": 29,
+        "RTL-01": 27,
+        "RTL-09": 27,
+        "RTL-02": 3,
+        "RTL-03": 3
+      },
+      "byStatus": {
+        "ltr-reference": 69,
+        "documentary": 2
+      }
+    },
+    {
+      "stage": 3,
+      "screenshots": 206,
+      "byIssue": {
+        "RTL-04": 140,
+        "RTL-05": 16,
+        "RTL-08": 28,
+        "RTL-06": 68,
+        "RTL-07": 88,
+        "RTL-01": 80,
+        "RTL-09": 80,
+        "RTL-02": 10,
+        "RTL-03": 10
+      },
+      "byStatus": {
+        "before-fix": 98,
+        "needs-review": 5,
+        "ltr-reference": 103
+      }
+    },
+    {
+      "stage": 4,
+      "screenshots": 139,
+      "byIssue": {
+        "RTL-04": 94,
+        "RTL-05": 8,
+        "RTL-08": 16,
+        "RTL-06": 44,
+        "RTL-07": 58,
+        "RTL-01": 54,
+        "RTL-09": 54,
+        "RTL-02": 6,
+        "RTL-03": 6
+      },
+      "byStatus": {
+        "before-fix": 64,
+        "needs-review": 5,
+        "ltr-reference": 69,
+        "documentary": 1
+      }
+    },
+    {
+      "stage": 5,
+      "screenshots": 139,
+      "byIssue": {
+        "RTL-04": 94,
+        "RTL-05": 8,
+        "RTL-08": 16,
+        "RTL-06": 44,
+        "RTL-07": 58,
+        "RTL-01": 54,
+        "RTL-09": 54,
+        "RTL-02": 6,
+        "RTL-03": 6
+      },
+      "byStatus": {
+        "before-fix": 64,
+        "needs-review": 5,
+        "ltr-reference": 69,
+        "documentary": 1
+      }
+    },
+    {
+      "stage": 6,
+      "screenshots": 140,
+      "byIssue": {
+        "RTL-04": 94,
+        "RTL-05": 8,
+        "RTL-08": 16,
+        "RTL-06": 44,
+        "RTL-07": 58,
+        "RTL-01": 54,
+        "RTL-09": 54,
+        "RTL-02": 6,
+        "RTL-03": 6
+      },
+      "byStatus": {
+        "before-fix": 64,
+        "needs-review": 5,
+        "ltr-reference": 69,
+        "documentary": 2
+      }
+    },
+    {
+      "stage": 7,
+      "screenshots": 147,
+      "byIssue": {
+        "RTL-04": 96,
+        "RTL-05": 8,
+        "RTL-08": 16,
+        "RTL-06": 48,
+        "RTL-07": 66,
+        "RTL-01": 62,
+        "RTL-09": 62,
+        "RTL-02": 8,
+        "RTL-03": 8
+      },
+      "byStatus": {
+        "before-fix": 68,
+        "needs-review": 5,
+        "ltr-reference": 73,
+        "documentary": 1
+      }
+    },
+    {
+      "stage": 8,
+      "screenshots": 147,
+      "byIssue": {
+        "RTL-04": 96,
+        "RTL-05": 8,
+        "RTL-08": 16,
+        "RTL-06": 48,
+        "RTL-07": 66,
+        "RTL-01": 62,
+        "RTL-09": 62,
+        "RTL-02": 8,
+        "RTL-03": 8
+      },
+      "byStatus": {
+        "before-fix": 39,
+        "source-remediated": 60,
+        "needs-review": 5,
+        "partial": 6,
+        "ltr-reference": 73,
+        "documentary": 1
+      }
+    },
+    {
+      "stage": 9,
+      "screenshots": 161,
+      "byIssue": {
+        "RTL-04": 104,
+        "RTL-05": 10,
+        "RTL-08": 18,
+        "RTL-06": 54,
+        "RTL-07": 78,
+        "RTL-01": 74,
+        "RTL-09": 74,
+        "RTL-02": 8,
+        "RTL-03": 8
+      },
+      "byStatus": {
+        "source-remediated": 75,
+        "needs-review": 5,
+        "ltr-reference": 80,
+        "documentary": 1
+      }
+    },
+    {
+      "stage": 10,
+      "screenshots": 140,
+      "byIssue": {
+        "RTL-04": 94,
+        "RTL-05": 8,
+        "RTL-08": 16,
+        "RTL-06": 44,
+        "RTL-07": 58,
+        "RTL-01": 54,
+        "RTL-09": 54,
+        "RTL-02": 6,
+        "RTL-03": 6
+      },
+      "byStatus": {
+        "source-remediated": 64,
+        "needs-review": 5,
+        "ltr-reference": 69,
+        "documentary": 2
+      }
+    },
+    {
+      "stage": 11,
+      "screenshots": 140,
+      "byIssue": {
+        "RTL-04": 94,
+        "RTL-05": 8,
+        "RTL-08": 16,
+        "RTL-06": 44,
+        "RTL-07": 58,
+        "RTL-01": 54,
+        "RTL-09": 54,
+        "RTL-02": 6,
+        "RTL-03": 6
+      },
+      "byStatus": {
+        "source-remediated": 64,
+        "needs-review": 5,
+        "ltr-reference": 69,
+        "documentary": 2
+      }
+    },
+    {
+      "stage": 12,
+      "screenshots": 161,
+      "byIssue": {
+        "RTL-04": 104,
+        "RTL-05": 10,
+        "RTL-08": 18,
+        "RTL-06": 54,
+        "RTL-07": 78,
+        "RTL-01": 74,
+        "RTL-09": 74,
+        "RTL-02": 8,
+        "RTL-03": 8
+      },
+      "byStatus": {
+        "source-remediated": 75,
+        "needs-review": 5,
+        "ltr-reference": 80,
+        "documentary": 1
+      }
+    }
+  ],
+  "evidenceDefinition": "https://github.com/FoushWare/enterprise-rtl-migration-lab/blob/61491d7f6dd359033c4a9e80b556d3b3e2446305/docs/phase-2a-observed-issues.md"
+}

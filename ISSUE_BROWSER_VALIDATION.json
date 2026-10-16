@@ -1,0 +1,171 @@
+{
+  "success": true,
+  "cases": [
+    {
+      "filters": {
+        "issue": "RTL-01"
+      },
+      "matched": 691
+    },
+    {
+      "filters": {
+        "issue": "RTL-02"
+      },
+      "matched": 80
+    },
+    {
+      "filters": {
+        "issue": "RTL-03"
+      },
+      "matched": 80
+    },
+    {
+      "filters": {
+        "issue": "RTL-04"
+      },
+      "matched": 1115
+    },
+    {
+      "filters": {
+        "issue": "RTL-05"
+      },
+      "matched": 102
+    },
+    {
+      "filters": {
+        "issue": "RTL-06"
+      },
+      "matched": 543
+    },
+    {
+      "filters": {
+        "issue": "RTL-07"
+      },
+      "matched": 739
+    },
+    {
+      "filters": {
+        "issue": "RTL-08"
+      },
+      "matched": 196
+    },
+    {
+      "filters": {
+        "issue": "RTL-09"
+      },
+      "matched": 691
+    },
+    {
+      "filters": {
+        "category": "css"
+      },
+      "matched": 839
+    },
+    {
+      "filters": {
+        "category": "charts"
+      },
+      "matched": 80
+    },
+    {
+      "filters": {
+        "category": "icons"
+      },
+      "matched": 761
+    },
+    {
+      "filters": {
+        "category": "mui"
+      },
+      "matched": 1400
+    },
+    {
+      "filters": {
+        "category": "bidi"
+      },
+      "matched": 196
+    },
+    {
+      "filters": {
+        "category": "brand"
+      },
+      "matched": 691
+    },
+    {
+      "filters": {
+        "category": "evidence"
+      },
+      "matched": 124
+    },
+    {
+      "filters": {
+        "status": "ltr-reference"
+      },
+      "matched": 909
+    },
+    {
+      "filters": {
+        "status": "before-fix"
+      },
+      "matched": 397
+    },
+    {
+      "filters": {
+        "status": "partial"
+      },
+      "matched": 6
+    },
+    {
+      "filters": {
+        "status": "source-remediated"
+      },
+      "matched": 338
+    },
+    {
+      "filters": {
+        "status": "needs-review"
+      },
+      "matched": 50
+    },
+    {
+      "filters": {
+        "status": "documentary"
+      },
+      "matched": 14
+    },
+    {
+      "filters": {
+        "issue": "RTL-04",
+        "status": "before-fix"
+      },
+      "matched": 259
+    },
+    {
+      "filters": {
+        "issue": "RTL-01",
+        "category": "icons"
+      },
+      "matched": 0
+    },
+    {
+      "filters": {
+        "issue": "RTL-08",
+        "category": "bidi",
+        "status": "source-remediated"
+      },
+      "matched": 34
+    }
+  ],
+  "cardAnnotations": 1689,
+  "completeImageReferences": 1677,
+  "localFilterCombination": true,
+  "issueBadge": true,
+  "correlatedFilters": true,
+  "emptyFeedback": true,
+  "reset": true,
+  "lightbox": true,
+  "shareableFilters": true,
+  "desktop": true,
+  "mobileNoOverflow": true,
+  "pageErrors": []
+}
