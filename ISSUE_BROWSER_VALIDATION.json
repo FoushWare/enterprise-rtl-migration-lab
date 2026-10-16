@@ -161,6 +161,7 @@
   "localFilterCombination": true,
   "issueBadge": true,
   "correlatedFilters": true,
+  "unrelatedHeroesHidden": true,
   "emptyFeedback": true,
   "reset": true,
   "lightbox": true,
