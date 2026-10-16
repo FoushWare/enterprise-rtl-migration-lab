@@ -110,6 +110,8 @@
       dot.setAttribute('aria-disabled', String(unavailable));
       dot.classList.toggle('unavailable', unavailable);
     }
+    const selectedIssue = globalBar.querySelector('[data-filter="issue"]').value;
+    document.querySelectorAll('[data-issue-pick]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.issuePick === selectedIssue)));
     updateGlobalCount(); updateUrl(); updateReadingPosition();
   }
   function clearBar(bar) { bar.querySelectorAll('select,input').forEach(control => { control.value = ''; }); }
@@ -125,8 +127,21 @@
   }
   document.querySelectorAll('[data-issue-pick]').forEach(button => button.addEventListener('click', () => {
     clearAll(); globalBar.querySelector('[data-filter="issue"]').value = button.dataset.issuePick; applyAll();
-    document.querySelector('#browse-title').scrollIntoView({behavior: reducedMotion() ? 'instant' : 'smooth', block: 'start'});
+    const firstMatch = chapters.find(chapter => chapter.matches.length > 0);
+    if (firstMatch) {
+      const destination = firstMatch.element.querySelector('.stage-gallery-heading');
+      destination.tabIndex = -1;
+      destination.focus({preventScroll: true});
+      destination.scrollIntoView({behavior: reducedMotion() ? 'instant' : 'smooth', block: 'start'});
+      const url = new URL(location.href); url.hash = firstMatch.element.id;
+      try { history.replaceState(null, '', url); } catch { /* Offline gallery remains usable. */ }
+    }
   }));
+  document.querySelectorAll('.issue-key article').forEach(card => {
+    card.addEventListener('click', event => {
+      if (!event.target.closest('button,a,summary')) card.querySelector('[data-issue-pick]')?.click();
+    });
+  });
   for (const chapter of chapters) {
     chapter.element.querySelector('.reset-local').addEventListener('click', () => { clearBar(chapter.bar); applyAll(); });
     chapter.element.querySelector('.show-more').addEventListener('click', () => {
