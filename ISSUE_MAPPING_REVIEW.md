@@ -54,3 +54,7 @@ The catalog uses the source of each screenshot, not just an assumed stage number
 The historical evidence document is linked at its original Phase 2A commit. Existing historical finding IDs, issue bindings and severity definitions are not rewritten or retired by this annotation layer. The per-card descriptions and filter counts are **gallery metadata only**.
 
 All 1,608 PNG files retain their original hashes. There are no screenshot overlays, fabricated bounding boxes, replacement screenshots or changed visual baselines.
+
+## Presentation clarity
+
+Friendly Arabic display names and neutral topic chips are presentation aids. Original technical titles, issue IDs, severity, evidence links and source checkpoint metadata are retained. “اعرف أكتر” reveals full annotations. Pagination changes initial visibility only; filters operate on all stage references. Source-remediated status remains distinct from a new measured visual result.

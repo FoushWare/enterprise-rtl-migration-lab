@@ -1,0 +1,15 @@
+{
+  "stages": 12,
+  "imageReferences": 1677,
+  "uniqueImages": 1608,
+  "allImageHashesUnchanged": true,
+  "manifestByteIdenticalToPreviousPublication": true,
+  "historicalIssueDefinitionsAndSeveritiesUnchanged": true,
+  "sourceEvidenceUnchanged": true,
+  "duplicateHeroImagesRemoved": 12,
+  "initialPageSize": 12,
+  "railDestinations": 12,
+  "duplicateElementIds": 0,
+  "externalAssetsResolve": true,
+  "reducedMotionSupported": true
+}

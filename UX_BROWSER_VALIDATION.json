@@ -1,0 +1,45 @@
+{
+  "browser": "156.0.8078.4",
+  "protocol": "file",
+  "results": [
+    {
+      "width": 390,
+      "modal": true,
+      "imageDecode": true,
+      "next": true,
+      "zoom": true,
+      "escape": true,
+      "focusReturn": true,
+      "details": true,
+      "horizontalOverflow": false
+    },
+    {
+      "width": 900,
+      "modal": true,
+      "imageDecode": true,
+      "next": true,
+      "zoom": true,
+      "escape": true,
+      "focusReturn": true,
+      "details": true,
+      "horizontalOverflow": false
+    },
+    {
+      "width": 1440,
+      "modal": true,
+      "imageDecode": true,
+      "next": true,
+      "zoom": true,
+      "escape": true,
+      "focusReturn": true,
+      "details": true,
+      "horizontalOverflow": false
+    }
+  ],
+  "pagination": true,
+  "fullInventoryFilter": true,
+  "deepLink": true,
+  "stageNavigation": true,
+  "reducedMotion": true,
+  "errors": []
+}

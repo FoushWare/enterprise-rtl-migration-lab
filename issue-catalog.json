@@ -4,64 +4,90 @@
   "categories": [
     {
       "id": "css",
-      "label": "CSS / Layout — التخطيط والمسافات"
+      "label": "ترتيب العناصر والمسافات",
+      "technicalLabel": "CSS / Layout — التخطيط والمسافات",
+      "labelEn": "CSS / Layout"
     },
     {
       "id": "charts",
-      "label": "Charts / SVG — الرسوم والبيانات"
+      "label": "الرسوم البيانية",
+      "technicalLabel": "Charts / SVG — الرسوم والبيانات",
+      "labelEn": "Charts / SVG"
     },
     {
       "id": "icons",
-      "label": "Icons — الأيقونات والأسهم"
+      "label": "الأيقونات والأسهم",
+      "technicalLabel": "Icons — الأيقونات والأسهم",
+      "labelEn": "Icons"
     },
     {
       "id": "mui",
-      "label": "MUI / Runtime — المكوّنات واتجاه التشغيل"
+      "label": "الحقول والنوافذ والجداول",
+      "technicalLabel": "MUI / Runtime — المكوّنات واتجاه التشغيل",
+      "labelEn": "MUI / Runtime"
     },
     {
       "id": "bidi",
-      "label": "Bidi — سياق النص ثنائي الاتجاه"
+      "label": "النص العربي والإنجليزي المختلط",
+      "technicalLabel": "Bidi — سياق النص ثنائي الاتجاه",
+      "labelEn": "Bidirectional text"
     },
     {
       "id": "brand",
-      "label": "Branding — تكوين العلامة"
+      "label": "الشعار وترتيب أجزائه",
+      "technicalLabel": "Branding — تكوين العلامة",
+      "labelEn": "Branding"
     },
     {
       "id": "evidence",
-      "label": "Reports / Evidence — تقارير وأدلة"
+      "label": "التقارير وصور الكود",
+      "technicalLabel": "Reports / Evidence — تقارير وأدلة",
+      "labelEn": "Reports / Evidence"
     }
   ],
   "statuses": [
     {
       "id": "ltr-reference",
-      "label": "مرجع إنجليزي LTR — ليس عيب RTL"
+      "label": "صورة إنجليزية للمقارنة",
+      "technicalLabel": "مرجع إنجليزي LTR — ليس عيب RTL",
+      "descriptionAr": "دي مش صورة لعيب عربي؛ بنستخدمها عشان نعرف شكل الواجهة الأصلي."
     },
     {
       "id": "before-fix",
-      "label": "قبل معالجة السبب التاريخي"
+      "label": "قبل إصلاح السبب",
+      "technicalLabel": "قبل معالجة السبب التاريخي",
+      "descriptionAr": "المصدر هنا لسه فيه السبب التاريخي. الوصف يساعدك تفحص الصورة؛ مش كل حالة اتقاست من جديد."
     },
     {
       "id": "partial",
-      "label": "معالجة جزئية — ما زال جزء يحتاج فحصًا"
+      "label": "جزء اتعالج وجزء لسه",
+      "technicalLabel": "معالجة جزئية — ما زال جزء يحتاج فحصًا",
+      "descriptionAr": "بعض التعديلات موجودة، لكن مش كل العناصر المرتبطة بالمشكلة اتعالجت في الكوميت ده."
     },
     {
       "id": "source-remediated",
-      "label": "السبب معالَج في المصدر — راجع النتيجة"
+      "label": "التعديل موجود في الكود",
+      "technicalLabel": "السبب معالَج في المصدر — راجع النتيجة",
+      "descriptionAr": "ده دليل على وجود المعالجة في المصدر، مش ضمان إن كل الحالات اختُبرت بصريًا من جديد."
     },
     {
       "id": "needs-review",
-      "label": "مراجعة مطلوبة — ليست مشكلة مؤكدة"
+      "label": "محتاج مراجعة",
+      "technicalLabel": "مراجعة مطلوبة — ليست مشكلة مؤكدة",
+      "descriptionAr": "مفيش دليل كفاية عشان نسمي المحتوى الظاهر عيبًا مؤكدًا."
     },
     {
       "id": "documentary",
-      "label": "تقرير / دليل — ليس لقطة عيب"
+      "label": "تقرير أو دليل",
+      "technicalLabel": "تقرير / دليل — ليس لقطة عيب",
+      "descriptionAr": "دي صورة من تقرير أو من الكود، وليست لقطة لعيب في واجهة المستخدم."
     }
   ],
   "issues": [
     {
       "id": "RTL-01",
-      "titleAr": "هندسة الشريط الجانبي",
-      "titleEn": "Sidebar geometry",
+      "titleAr": "القائمة الجانبية في الناحية الغلط",
+      "titleEn": "Sidebar on the wrong side",
       "categories": [
         "css"
       ],
@@ -71,12 +97,16 @@
       "whereAr": "الشريط الجانبي، حافته ومكان المحتوى بجانبه.",
       "source": "libs/design-system/src/styles.css",
       "owner": "Shared CSS + SidebarFrame",
-      "historicalEvidenceUrl": "https://github.com/FoushWare/enterprise-rtl-migration-lab/blob/61491d7f6dd359033c4a9e80b556d3b3e2446305/docs/phase-2a-observed-issues.md#rtl-01--navigation-remains-on-the-physical-left-minor-manual-review"
+      "historicalEvidenceUrl": "https://github.com/FoushWare/enterprise-rtl-migration-lab/blob/61491d7f6dd359033c4a9e80b556d3b3e2446305/docs/phase-2a-observed-issues.md#rtl-01--navigation-remains-on-the-physical-left-minor-manual-review",
+      "technicalTitleAr": "هندسة الشريط الجانبي",
+      "technicalTitleEn": "Sidebar geometry",
+      "shortLabelAr": "مكان القائمة الجانبية",
+      "exampleAr": "القائمة المفروض تبقى يمين في العربي ويسار في الإنجليزي، والمحتوى يبعد عنها بنفس المسافة."
     },
     {
       "id": "RTL-02",
-      "titleAr": "اتجاه شهور رسم الإيرادات",
-      "titleEn": "Revenue chronology",
+      "titleAr": "الشهور مش ماشية مع اتجاه الرسم",
+      "titleEn": "Chart labels out of order",
       "categories": [
         "css",
         "charts"
@@ -87,12 +117,16 @@
       "whereAr": "شهور رسم الإيرادات أسفل المنحنى والمحور الرقمي الأيسر.",
       "source": "libs/design-system/src/styles.css",
       "owner": "Revenue chart CSS + fixed SVG",
-      "historicalEvidenceUrl": "https://github.com/FoushWare/enterprise-rtl-migration-lab/blob/61491d7f6dd359033c4a9e80b556d3b3e2446305/docs/phase-2a-observed-issues.md#rtl-02--revenue-months-disagree-with-plotted-chronology-major-manual-review"
+      "historicalEvidenceUrl": "https://github.com/FoushWare/enterprise-rtl-migration-lab/blob/61491d7f6dd359033c4a9e80b556d3b3e2446305/docs/phase-2a-observed-issues.md#rtl-02--revenue-months-disagree-with-plotted-chronology-major-manual-review",
+      "technicalTitleAr": "اتجاه شهور رسم الإيرادات",
+      "technicalTitleEn": "Revenue chronology",
+      "shortLabelAr": "ترتيب شهور الرسم",
+      "exampleAr": "تلاقي اسم مايو تحت نقطة أكتوبر لأن ترتيب الشهور اتقلب، لكن الرسم نفسه ما اتقلبش."
     },
     {
       "id": "RTL-03",
-      "titleAr": "تداخل أيقونة KPI مع العنوان",
-      "titleEn": "KPI icon clearance",
+      "titleAr": "الأيقونة مغطّية عنوان الكارت",
+      "titleEn": "Icon overlaps the card label",
       "categories": [
         "css",
         "icons"
@@ -103,12 +137,16 @@
       "whereAr": "عناوين وأيقونات بطاقات مؤشرات الفواتير، وليس بطاقات المشتريات.",
       "source": "libs/design-system/src/styles.css",
       "owner": "KPI icon logical positioning",
-      "historicalEvidenceUrl": "https://github.com/FoushWare/enterprise-rtl-migration-lab/blob/61491d7f6dd359033c4a9e80b556d3b3e2446305/docs/phase-2a-observed-issues.md#rtl-03--kpi-icons-obscure-arabic-labels-major-manual-review"
+      "historicalEvidenceUrl": "https://github.com/FoushWare/enterprise-rtl-migration-lab/blob/61491d7f6dd359033c4a9e80b556d3b3e2446305/docs/phase-2a-observed-issues.md#rtl-03--kpi-icons-obscure-arabic-labels-major-manual-review",
+      "technicalTitleAr": "تداخل أيقونة KPI مع العنوان",
+      "technicalTitleEn": "KPI icon clearance",
+      "shortLabelAr": "وضوح عنوان كارت المؤشرات",
+      "exampleAr": "الأيقونة بتاخد مكان أول حروف العنوان العربي، فجزء منه ما بيبانش."
     },
     {
       "id": "RTL-04",
-      "titleAr": "هندسة حقول الإدخال",
-      "titleEn": "Form controls",
+      "titleAr": "عنوان الحقل وسهم الاختيار مش في مكانهم",
+      "titleEn": "Field labels and select arrows",
       "categories": [
         "mui"
       ],
@@ -118,12 +156,16 @@
       "whereAr": "عنوان الحقل وإطاره والنص المساعد وسهم قائمة الاختيار.",
       "source": "libs/design-system/src/index.tsx",
       "owner": "MUI theme + Emotion cache",
-      "historicalEvidenceUrl": "https://github.com/FoushWare/enterprise-rtl-migration-lab/blob/61491d7f6dd359033c4a9e80b556d3b3e2446305/docs/phase-2a-observed-issues.md#rtl-04--fields-retain-ltr-label-notch-helper-and-select-icon-geometry-minor-runtime-configuration"
+      "historicalEvidenceUrl": "https://github.com/FoushWare/enterprise-rtl-migration-lab/blob/61491d7f6dd359033c4a9e80b556d3b3e2446305/docs/phase-2a-observed-issues.md#rtl-04--fields-retain-ltr-label-notch-helper-and-select-icon-geometry-minor-runtime-configuration",
+      "technicalTitleAr": "هندسة حقول الإدخال",
+      "technicalTitleEn": "Form controls",
+      "shortLabelAr": "شكل حقول الإدخال",
+      "exampleAr": "الواجهة عربية، لكن اسم الحقل وإطاره وسهم الاختيار لسه واخدين شكل النسخة الإنجليزية."
     },
     {
       "id": "RTL-05",
-      "titleAr": "خلوص عنوان النافذة وزر الإغلاق",
-      "titleEn": "Dialog title clearance",
+      "titleAr": "زر الإغلاق داخل على عنوان النافذة",
+      "titleEn": "Close button overlaps the title",
       "categories": [
         "mui",
         "css"
@@ -134,12 +176,16 @@
       "whereAr": "حروف عنوان النافذة وأيقونة ×، لا حدود صندوق العنوان فقط.",
       "source": "libs/design-system/src/index.tsx",
       "owner": "Shared Modal + runtime styling",
-      "historicalEvidenceUrl": "https://github.com/FoushWare/enterprise-rtl-migration-lab/blob/61491d7f6dd359033c4a9e80b556d3b3e2446305/docs/phase-2a-observed-issues.md#rtl-05--dialog-close-button-collides-with-the-title-major-manual-review-and-runtime-configuration"
+      "historicalEvidenceUrl": "https://github.com/FoushWare/enterprise-rtl-migration-lab/blob/61491d7f6dd359033c4a9e80b556d3b3e2446305/docs/phase-2a-observed-issues.md#rtl-05--dialog-close-button-collides-with-the-title-major-manual-review-and-runtime-configuration",
+      "technicalTitleAr": "خلوص عنوان النافذة وزر الإغلاق",
+      "technicalTitleEn": "Dialog title clearance",
+      "shortLabelAr": "العنوان وزر الإغلاق",
+      "exampleAr": "علامة × بتظهر فوق حروف العنوان بدل ما يبقى بينهم مساحة واضحة."
     },
     {
       "id": "RTL-06",
-      "titleAr": "محاذاة عناوين وخلايا الجداول",
-      "titleEn": "Table alignment",
+      "titleAr": "عناوين الجدول مش ماشية مع العربي",
+      "titleEn": "Table headings and alignment",
       "categories": [
         "mui"
       ],
@@ -149,12 +195,16 @@
       "whereAr": "عناوين وخلايا الجدول، ومع الموبايل طرفا منطقة التمرير.",
       "source": "libs/design-system/src/index.tsx",
       "owner": "Shared DataTable + MUI TableCell",
-      "historicalEvidenceUrl": "https://github.com/FoushWare/enterprise-rtl-migration-lab/blob/61491d7f6dd359033c4a9e80b556d3b3e2446305/docs/phase-2a-observed-issues.md#rtl-06--arabic-table-headings-remain-physically-left-aligned-minor-runtime-configuration-and-manual-alignment-policy"
+      "historicalEvidenceUrl": "https://github.com/FoushWare/enterprise-rtl-migration-lab/blob/61491d7f6dd359033c4a9e80b556d3b3e2446305/docs/phase-2a-observed-issues.md#rtl-06--arabic-table-headings-remain-physically-left-aligned-minor-runtime-configuration-and-manual-alignment-policy",
+      "technicalTitleAr": "محاذاة عناوين وخلايا الجداول",
+      "technicalTitleEn": "Table alignment",
+      "shortLabelAr": "محاذاة عناوين الجدول",
+      "exampleAr": "عنوان العمود متزقوق لليسار رغم إن القراءة بالعربي بتبدأ من اليمين."
     },
     {
       "id": "RTL-07",
-      "titleAr": "معنى اتجاه أسهم التنقل",
-      "titleEn": "Navigation progression",
+      "titleAr": "السهم بيشاور عكس اتجاه التنقّل",
+      "titleEn": "Navigation arrow direction",
       "categories": [
         "icons"
       ],
@@ -164,12 +214,16 @@
       "whereAr": "أسهم فتح الفاتورة وعرض الكل والتنقل بين التطبيقين؛ pagination له معالجة MUI منفصلة.",
       "source": "apps/invoicing/src/components/InvoiceTable.tsx",
       "owner": "Icon semantics + MUI pagination",
-      "historicalEvidenceUrl": "https://github.com/FoushWare/enterprise-rtl-migration-lab/blob/61491d7f6dd359033c4a9e80b556d3b3e2446305/docs/phase-2a-observed-issues.md#rtl-07--navigation-arrows-retain-ltr-progression-minor-manual-review-pagination-also-requires-runtime-configuration"
+      "historicalEvidenceUrl": "https://github.com/FoushWare/enterprise-rtl-migration-lab/blob/61491d7f6dd359033c4a9e80b556d3b3e2446305/docs/phase-2a-observed-issues.md#rtl-07--navigation-arrows-retain-ltr-progression-minor-manual-review-pagination-also-requires-runtime-configuration",
+      "technicalTitleAr": "معنى اتجاه أسهم التنقل",
+      "technicalTitleEn": "Navigation progression",
+      "shortLabelAr": "اتجاه أسهم التنقّل",
+      "exampleAr": "السهم بيشاور يمين في العربي رغم إن الإحساس بالتقدّم بيكون لليسار؛ الرابط نفسه ممكن يكون شغّال صح."
     },
     {
       "id": "RTL-08",
-      "titleAr": "سياق النص ثنائي الاتجاه Bidi",
-      "titleEn": "Bidirectional text context",
+      "titleAr": "علامات الترقيم بتتحرّك في النص المختلط",
+      "titleEn": "Mixed text and punctuation",
       "categories": [
         "bidi"
       ],
@@ -179,12 +233,16 @@
       "whereAr": "المبلغ داخل جملة التأكيد، وأسماء العملاء وعناوينهم وعلامات الترقيم.",
       "source": "apps/invoicing/src/pages/CreateInvoice.tsx",
       "owner": "Semantic bidi boundaries; not CSS alignment",
-      "historicalEvidenceUrl": "https://github.com/FoushWare/enterprise-rtl-migration-lab/blob/61491d7f6dd359033c4a9e80b556d3b3e2446305/docs/phase-2a-observed-issues.md#rtl-08--unisolated-opposite-direction-content-changes-token-presentation-minor-manual-bidi-policy"
+      "historicalEvidenceUrl": "https://github.com/FoushWare/enterprise-rtl-migration-lab/blob/61491d7f6dd359033c4a9e80b556d3b3e2446305/docs/phase-2a-observed-issues.md#rtl-08--unisolated-opposite-direction-content-changes-token-presentation-minor-manual-bidi-policy",
+      "technicalTitleAr": "سياق النص ثنائي الاتجاه Bidi",
+      "technicalTitleEn": "Bidirectional text context",
+      "shortLabelAr": "النص المختلط وعلامات الترقيم",
+      "exampleAr": "لما العربي ييجي جنب اسم إنجليزي أو مبلغ، النقطة أو علامة الدولار ممكن تظهر في الناحية الغلط."
     },
     {
       "id": "RTL-09",
-      "titleAr": "تركيب العلامة atlas.",
-      "titleEn": "Brand composition",
+      "titleAr": "ترتيب أجزاء الشعار اتغيّر",
+      "titleEn": "Brand elements out of order",
       "categories": [
         "brand",
         "css"
@@ -195,7 +253,11 @@
       "whereAr": "العلامة أعلى الشريط الجانبي المفتوح.",
       "source": "libs/design-system/src/styles.css",
       "owner": "Complete brand direction island",
-      "historicalEvidenceUrl": "https://github.com/FoushWare/enterprise-rtl-migration-lab/blob/61491d7f6dd359033c4a9e80b556d3b3e2446305/docs/phase-2a-observed-issues.md#rtl-09--latin-brand-composition-is-reordered-minor-manual-branding-policy"
+      "historicalEvidenceUrl": "https://github.com/FoushWare/enterprise-rtl-migration-lab/blob/61491d7f6dd359033c4a9e80b556d3b3e2446305/docs/phase-2a-observed-issues.md#rtl-09--latin-brand-composition-is-reordered-minor-manual-branding-policy",
+      "technicalTitleAr": "تركيب العلامة atlas.",
+      "technicalTitleEn": "Brand composition",
+      "shortLabelAr": "ترتيب أجزاء الشعار",
+      "exampleAr": "الرمز والكلمة والنقطة اتغيّر ترتيبهم، مع إن شكل الشعار المفروض يفضل ثابت في اللغتين."
     }
   ],
   "checkpoints": {
@@ -681,5 +743,6 @@
       }
     }
   ],
-  "evidenceDefinition": "https://github.com/FoushWare/enterprise-rtl-migration-lab/blob/61491d7f6dd359033c4a9e80b556d3b3e2446305/docs/phase-2a-observed-issues.md"
+  "evidenceDefinition": "https://github.com/FoushWare/enterprise-rtl-migration-lab/blob/61491d7f6dd359033c4a9e80b556d3b3e2446305/docs/phase-2a-observed-issues.md",
+  "displayVersion": 2
 }
