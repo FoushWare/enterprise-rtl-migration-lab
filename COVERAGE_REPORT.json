@@ -1,0 +1,110 @@
+{
+  "stages": [
+    {
+      "stage": 1,
+      "commit": "2fe522fad44bb8f79b3f15190227b8b94b7d9469",
+      "newReferences": 69,
+      "originalReferences": 17,
+      "totalReferences": 86,
+      "appTreeSha256": "9f4e36e77ffb36affd66b77022b37ce87ffbd84a8cfe6a86b3c0871bfe53e4fa"
+    },
+    {
+      "stage": 2,
+      "commit": "2fe522fad44bb8f79b3f15190227b8b94b7d9469",
+      "newReferences": 69,
+      "originalReferences": 2,
+      "totalReferences": 71,
+      "appTreeSha256": "9f4e36e77ffb36affd66b77022b37ce87ffbd84a8cfe6a86b3c0871bfe53e4fa"
+    },
+    {
+      "stage": 3,
+      "commit": "61491d7f6dd359033c4a9e80b556d3b3e2446305",
+      "newReferences": 138,
+      "originalReferences": 68,
+      "totalReferences": 206,
+      "appTreeSha256": "ca168f985f9caf4fd1788df5f36af53221f9e20376f908b45a308d3da6d00f78"
+    },
+    {
+      "stage": 4,
+      "commit": "0de6d609cbfb9aae662d1cb7c9589c38592bb21b",
+      "newReferences": 138,
+      "originalReferences": 1,
+      "totalReferences": 139,
+      "appTreeSha256": "ca168f985f9caf4fd1788df5f36af53221f9e20376f908b45a308d3da6d00f78"
+    },
+    {
+      "stage": 5,
+      "commit": "9c2df15f1df50ea101150b48f6d31249678a9b0f",
+      "newReferences": 138,
+      "originalReferences": 1,
+      "totalReferences": 139,
+      "appTreeSha256": "ca168f985f9caf4fd1788df5f36af53221f9e20376f908b45a308d3da6d00f78"
+    },
+    {
+      "stage": 6,
+      "commit": "05138f1c5f68db92bcd94afe11e63fd83322f8cb",
+      "newReferences": 138,
+      "originalReferences": 2,
+      "totalReferences": 140,
+      "appTreeSha256": "ca168f985f9caf4fd1788df5f36af53221f9e20376f908b45a308d3da6d00f78"
+    },
+    {
+      "stage": 7,
+      "commit": "85f4dde02142f305b434c815a39015a4c5eaafec",
+      "newReferences": 138,
+      "originalReferences": 9,
+      "totalReferences": 147,
+      "appTreeSha256": "7a935c3e2177cc7ce9a85a5a3b415cec1797998bcef75fa96c12c4972341a60a"
+    },
+    {
+      "stage": 8,
+      "commit": "1098eb782b2d61eb8b17b146e4f01867820b76ff",
+      "newReferences": 138,
+      "originalReferences": 9,
+      "totalReferences": 147,
+      "appTreeSha256": "abceffe7fff80e98caa16ba7d338de632bb71a53fa75b215b6e90ed74d8f649f"
+    },
+    {
+      "stage": 9,
+      "commit": "767e70f525dac6e3a12aa6eb827fdcc73e498da7",
+      "newReferences": 138,
+      "originalReferences": 23,
+      "totalReferences": 161,
+      "appTreeSha256": "2a7c167137b08b7d1f2b7b9bcdd910525df49462980469ca663b796004597814"
+    },
+    {
+      "stage": 10,
+      "commit": "0f8f4c443eb118ba3904ed2f902f86040c71ba54",
+      "newReferences": 138,
+      "originalReferences": 2,
+      "totalReferences": 140,
+      "appTreeSha256": "2a7c167137b08b7d1f2b7b9bcdd910525df49462980469ca663b796004597814"
+    },
+    {
+      "stage": 11,
+      "commit": "de7f7676e15b2f9d45bee634885cd6266b9a541e",
+      "newReferences": 138,
+      "originalReferences": 2,
+      "totalReferences": 140,
+      "appTreeSha256": "2a7c167137b08b7d1f2b7b9bcdd910525df49462980469ca663b796004597814"
+    },
+    {
+      "stage": 12,
+      "commit": "b127325a14ad3bf8e70aede2a2e29b9dae638355",
+      "newReferences": 138,
+      "originalReferences": 23,
+      "totalReferences": 161,
+      "appTreeSha256": "2a7c167137b08b7d1f2b7b9bcdd910525df49462980469ca663b796004597814"
+    }
+  ],
+  "imageReferences": 1677,
+  "uniqueImages": 1608,
+  "newUniqueCaptures": 1449,
+  "limitations": [
+    "New screenshots use current Chrome 156 with exact historical sources and lockfiles, not an emulation of historical browser versions.",
+    "Development captures only. Print is CSS media emulation.",
+    "69 representative states per available language; not every possible data record, workflow or breakpoint.",
+    "Stages 01 and 02 use the same commit; English only.",
+    "Original images and detailed stage narratives are preserved."
+  ]
+}

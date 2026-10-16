@@ -1,0 +1,67 @@
+{
+  "fileProtocol": true,
+  "results": [
+    {
+      "stage": 1,
+      "filteredImages": 9,
+      "lightbox": true
+    },
+    {
+      "stage": 2,
+      "filteredImages": 9,
+      "lightbox": true
+    },
+    {
+      "stage": 3,
+      "filteredImages": 9,
+      "lightbox": true
+    },
+    {
+      "stage": 4,
+      "filteredImages": 9,
+      "lightbox": true
+    },
+    {
+      "stage": 5,
+      "filteredImages": 9,
+      "lightbox": true
+    },
+    {
+      "stage": 6,
+      "filteredImages": 9,
+      "lightbox": true
+    },
+    {
+      "stage": 7,
+      "filteredImages": 10,
+      "lightbox": true
+    },
+    {
+      "stage": 8,
+      "filteredImages": 10,
+      "lightbox": true
+    },
+    {
+      "stage": 9,
+      "filteredImages": 10,
+      "lightbox": true
+    },
+    {
+      "stage": 10,
+      "filteredImages": 9,
+      "lightbox": true
+    },
+    {
+      "stage": 11,
+      "filteredImages": 9,
+      "lightbox": true
+    },
+    {
+      "stage": 12,
+      "filteredImages": 10,
+      "lightbox": true
+    }
+  ],
+  "mobileOverflow": false,
+  "errors": []
+}

@@ -1,0 +1,4 @@
+افك ضغط الملف بالكامل، ثم افتح index.html. كل مرحلة فيها الصور الأصلية والجديدة. افتح تفاصيل المرحلة واستخدم فلاتر التطبيق واللغة والموبايل/الديسكتوب والبحث. اضغط الصورة للتكبير والتنقل.
+
+All image paths resolve from package root. See manifest.json, COVERAGE_REPORT.json and expanded-capture-receipts.json for exact commits, routes, states, screenshots and capture provenance.
+Original screenshot files are unchanged; newly recreated views live in expanded/. Stages 01/02 share one English commit. Later stages include both languages. No historical screenshot is overwritten. New captures use development servers with exact historical lockfiles. Print views use CSS media emulation. This covers route templates and representative meaningful UI states, not every possible record or interaction. No production code changed.
