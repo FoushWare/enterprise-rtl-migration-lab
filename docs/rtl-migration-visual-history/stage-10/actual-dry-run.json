@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "kind": "rtl-codemod-plan",
+  "commit": "0f8f4c443eb118ba3904ed2f902f86040c71ba54",
+  "policyDigest": "b13e9be2c08963927824d05d1102ec737d621a103e6d7db5a9004d93fee9d4b2",
+  "inputDigest": "0a317d5e6f70623f9ef185f0449c255f219696737df292050cb7e5d9c3e59ed9",
+  "eligibleIds": [],
+  "selectedIds": [],
+  "files": []
+}

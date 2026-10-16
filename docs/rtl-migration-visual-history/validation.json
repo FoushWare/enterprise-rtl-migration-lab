@@ -1,0 +1,22 @@
+{
+  "validatedAt": "2026-10-16T11:07:18.596116+00:00",
+  "stages": 12,
+  "evidenceImages": 159,
+  "reused": 85,
+  "newlyCaptured": 60,
+  "reportCards": 14,
+  "allLocalLinksExist": true,
+  "allCommitUrlsVerifiedByGitHub": true,
+  "protectedFilesVerified": 78,
+  "onlyNewDocumentationPaths": true,
+  "historicalApplicationCapturesUnavailable": [],
+  "nonVisualStagesUseSourceCards": [
+    2,
+    4,
+    5,
+    6,
+    10,
+    11
+  ],
+  "bidiSeedLimitationsExplicit": true
+}

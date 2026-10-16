@@ -1,0 +1,38 @@
+0001  # Phase 4C.2 — Controlled CSS logical properties pilot
+0002
+0003  Project: Migrating Enterprise React Apps to RTL Without Breaking LTR. Verification date: 12 October 2026.
+0004
+0005  Recommendation: **APPROVE WITH CONDITIONS** for the two-property implementation and measured spacing. Closure is not ready while one unchanged scanner test asserts the pre-pilot live report. Review and separately authorize an appropriate source-independent historical/report expectation test before committing; this stage does not alter tests or archived reports.
+0006
+0007  ## Repository baseline, authority and Before reference
+0008
+0009  Branch feat/phase-3-rtl-scanner; exact Before committed HEAD **05138f1c5f68db92bcd94afe11e63fd83322f8cb**. Preflight found no staged or modified files; only the pre-existing untracked docs/phase-4c1-semantic-review.md. That document was read and preserved byte-for-byte. Relevant Stage 4A pilot, ownership, migration, regression, roadmap and policy prerequisites and Stage 4B review were inspected. CSS ownership remains custom-css; no new pipeline, competing rules or runtime changes were present.
+0010
+0011  Human authorization in the Phase 4C.2 request permits exactly two manual replacements. It excludes KPI spacing and all other CSS/runtime/chart/icon/content changes. No config approval or AUTO_CANDIDATE entry was needed or added.
+0012
+0013  Before route set (only accurate when serving the exact Before checkpoint):
+0014
+0015  - Invoicing: http://127.0.0.1:4200/, /invoices, /invoices/INV-2026-1048.
+0016  - Procurement: http://127.0.0.1:4201/, /orders/PO-2026-402.
+0017  - Arabic: append ?demo=unmigrated-rtl&lang=ar to each route. English: normal routes without query.
+0018
+0019  Fresh Before measurements were collected before editing in this session. After measurements use the same URLs and viewport/state matrix on the updated source. The live Arabic Unmigrated RTL demo now includes these two spacing changes; it no longer exhibits these exact former missing gaps. All historical Phase 2A evidence remains immutable.
+0020
+0021  For future side-by-side reproducibility, a separately approved detached worktree at the Before SHA can be placed outside the tracked repository, with dependencies independently prepared and invoicing/procurement served on unused ports such as 4300/4301 via explicit Vite port overrides. After stays on 4200/4201. Never reset the active branch, copy a tree into tracked source, or run both revisions on the same ports. No second checkout/worktree, infrastructure or feature flag was created here. The same URL path/query semantics apply at the chosen Before origins.
+0022
+0023  ## Exact implementation
+0024
+0025  Only libs/design-system/src/styles.css changes:
+0026
+0027  | Source | Finding removed by the pilot | Before | After |
+0028  | --- | --- | --- | --- |
+0029  | 385:3, .status-dot | RTL.CSS.PHYSICAL:5c1ae10d9ddc0c6daf3c5945 | margin-right: 6px; | margin-inline-end: 6px; |
+0030  | 299:3, .chart-legend i | RTL.CSS.PHYSICAL:911c43329429945ea8519fad | margin-right: 7px; | margin-inline-end: 7px; |
+0031
+0032  Selectors, declaration order, values, formatting, specificity and all surrounding rules are preserved. Physical declarations were replaced, not layered. The .kpi-note b declaration at 266:3 remains margin-right:5px. No codemod was run.
+0033
+0034  ## Measured layout comparison
+0035
+0036  Method: existing local servers, installed Chromium channel chromium, fresh en-US/UTC contexts, 1440×1000 and 390×844. Five routes, each default English and Arabic, at both widths: 20 states. Computed styles, DOM order, element/adjacent-text ranges and line fragments were collected read-only. Mobile status targets were scrolled into view before After measurements; all measured target boxes were inside the horizontal viewport. Temporary measurements and test outputs are outside the repository. No baseline/documentary images were regenerated and no new screenshots were required.
+0037
+0038  | Candidate | English Before → After (left/right margins; exterior gap) | Arabic Before → After (left/right margins; exterior gap) |

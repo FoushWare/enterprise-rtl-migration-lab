@@ -1,0 +1,8 @@
+
+ RUN  v5.0.3 /private/tmp/atlas-history-safety
+
+
+ Test Files  1 passed (1)
+      Tests  59 passed (59)
+   Start at  13:57:58
+   Duration  641ms (import 47%, tests 29%, transform 24%)
