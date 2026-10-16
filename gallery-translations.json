@@ -658,5 +658,17 @@
   "المرحلة 11: التحقق والاختبارات الآلية": "Stage 11: Verification and CI",
   "اذهب إلى المرحلة 12: تجميع التسليم النهائي": "Go to stage 12: Final delivery",
   "المرحلة 12: تجميع التسليم النهائي": "Stage 12: Final delivery",
-  "<style>.gallery figure[hidden]{display:block!important}#stage-rail,.stage-pagination,.browse-panel,.stage-filter-panel{display:none!important}</style><p>التصفية والتنقل التفاعلي محتاجين JavaScript. الصور نفسها متاحة في كل مرحلة.</p>": "<style>.gallery figure[hidden]{display:block!important}#stage-rail,.stage-pagination,.browse-panel,.stage-filter-panel{display:none!important}</style><p>Interactive filtering and navigation require JavaScript. Images remain available in each stage.</p>"
+  "<style>.gallery figure[hidden]{display:block!important}#stage-rail,.stage-pagination,.browse-panel,.stage-filter-panel{display:none!important}</style><p>التصفية والتنقل التفاعلي محتاجين JavaScript. الصور نفسها متاحة في كل مرحلة.</p>": "<style>.gallery figure[hidden]{display:block!important}#stage-rail,.stage-pagination,.browse-panel,.stage-filter-panel{display:none!important}</style><p>Interactive filtering and navigation require JavaScript. Images remain available in each stage.</p>",
+  "مقارنة صور المشكلة": "Issue image comparisons",
+  "اختار مشكلة من الكروت أو الفلتر. هنا تظهر صورتها العربية وبجانبها نفس الصفحة والحالة بالإنجليزي، من نفس الكوميت ومقاس الشاشة.": "Choose an issue card or filter. Its Arabic image appears beside the same page and state in English, from the same commit and viewport.",
+  "النتائج الافتراضية من قبل الإصلاح أو المعالجة الجزئية. الربط يعتمد على المصدر والدليل التاريخي، مش قياس جديد لكل عيب. المراحل الـ12 تحت تفضل مستقلة.": "Default results show before-fix or partly addressed source. Associations use source and historical evidence, not fresh measurements of every defect. The 12 stages below remain independent.",
+  "اعرض مقارنات أكتر": "Show more comparisons",
+  "مقارنة العربي والإنجليزي": "Compare Arabic and English",
+  "العربية — موضع المشكلة": "Arabic — issue area",
+  "الإنجليزية — للمقارنة": "English — reference",
+  "اختار واحدة من المشاكل التسعة لعرض المقارنات هنا.": "Choose one of the nine issues to see comparisons here.",
+  "مفيش أزواج مطابقة للاختيارات دي. جرّب تغيير الفلاتر.": "No exact comparison pairs match these selections. Try changing the filters.",
+  "افتح المقارنة بالحجم الكامل": "Open full-size comparison",
+  "ابحث في مقارنات المشكلة": "Search this issue’s comparisons",
+  "المقارنات بتظهر هنا بشكل مستقل. تصفّح المراحل الـ12 تحت من غير ما اختيار المشكلة يخفي صورها.": "Comparisons appear here independently. Browse the 12 stages below without the issue selection hiding their images."
 }

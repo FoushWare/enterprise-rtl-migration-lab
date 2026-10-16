@@ -31,3 +31,7 @@ Current UX validation is recorded in UX_STATIC_VALIDATION.json and UX_BROWSER_VA
 The header language buttons translate the gallery interface, stage descriptions, issue explanations, filters, image captions, accessibility labels and viewer controls. The page changes between RTL and LTR. Selection is remembered locally and can be shared with `?ui=en` or `?ui=ar`. Screenshot language filters remain independent. Historical image pixels, source metadata and issue definitions are unchanged. English search includes translated titles and original English capture descriptions. The gallery remains self-contained and works offline without a translation service.
 
 See BILINGUAL_VALIDATION.json for bilingual and responsive checks.
+
+## Independent issue comparisons
+
+Issue-card clicks now open the comparison results inside the browse panel, not a historical stage. Global issue/category/status/search controls apply to these comparisons; stage-local controls remain independent. Default results include before-fix and partly addressed Arabic evidence, paired with English captures from the same commit, application, route, state, viewport, media and capture collection. Explicit status selection can inspect other source states. There are 720 exact metadata pairs with no missing counterparts; this is not a claim of 720 independently measured defects. Both images can be opened together in a full-size dialog. Historical screenshots and the manifest remain unchanged.

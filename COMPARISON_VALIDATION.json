@@ -1,0 +1,228 @@
+{
+  "pairCount": 720,
+  "missingPairs": 0,
+  "results": [
+    {
+      "width": 1440,
+      "lang": "ar",
+      "issue": "RTL-01",
+      "comparisons": 8
+    },
+    {
+      "width": 1440,
+      "lang": "ar",
+      "issue": "RTL-02",
+      "comparisons": 8
+    },
+    {
+      "width": 1440,
+      "lang": "ar",
+      "issue": "RTL-03",
+      "comparisons": 8
+    },
+    {
+      "width": 1440,
+      "lang": "ar",
+      "issue": "RTL-04",
+      "comparisons": 8
+    },
+    {
+      "width": 1440,
+      "lang": "ar",
+      "issue": "RTL-05",
+      "comparisons": 8
+    },
+    {
+      "width": 1440,
+      "lang": "ar",
+      "issue": "RTL-06",
+      "comparisons": 8
+    },
+    {
+      "width": 1440,
+      "lang": "ar",
+      "issue": "RTL-07",
+      "comparisons": 8
+    },
+    {
+      "width": 1440,
+      "lang": "ar",
+      "issue": "RTL-08",
+      "comparisons": 8
+    },
+    {
+      "width": 1440,
+      "lang": "ar",
+      "issue": "RTL-09",
+      "comparisons": 8
+    },
+    {
+      "width": 1440,
+      "lang": "en",
+      "issue": "RTL-01",
+      "comparisons": 8
+    },
+    {
+      "width": 1440,
+      "lang": "en",
+      "issue": "RTL-02",
+      "comparisons": 8
+    },
+    {
+      "width": 1440,
+      "lang": "en",
+      "issue": "RTL-03",
+      "comparisons": 8
+    },
+    {
+      "width": 1440,
+      "lang": "en",
+      "issue": "RTL-04",
+      "comparisons": 8
+    },
+    {
+      "width": 1440,
+      "lang": "en",
+      "issue": "RTL-05",
+      "comparisons": 8
+    },
+    {
+      "width": 1440,
+      "lang": "en",
+      "issue": "RTL-06",
+      "comparisons": 8
+    },
+    {
+      "width": 1440,
+      "lang": "en",
+      "issue": "RTL-07",
+      "comparisons": 8
+    },
+    {
+      "width": 1440,
+      "lang": "en",
+      "issue": "RTL-08",
+      "comparisons": 8
+    },
+    {
+      "width": 1440,
+      "lang": "en",
+      "issue": "RTL-09",
+      "comparisons": 8
+    },
+    {
+      "width": 390,
+      "lang": "ar",
+      "issue": "RTL-01",
+      "comparisons": 8
+    },
+    {
+      "width": 390,
+      "lang": "ar",
+      "issue": "RTL-02",
+      "comparisons": 8
+    },
+    {
+      "width": 390,
+      "lang": "ar",
+      "issue": "RTL-03",
+      "comparisons": 8
+    },
+    {
+      "width": 390,
+      "lang": "ar",
+      "issue": "RTL-04",
+      "comparisons": 8
+    },
+    {
+      "width": 390,
+      "lang": "ar",
+      "issue": "RTL-05",
+      "comparisons": 8
+    },
+    {
+      "width": 390,
+      "lang": "ar",
+      "issue": "RTL-06",
+      "comparisons": 8
+    },
+    {
+      "width": 390,
+      "lang": "ar",
+      "issue": "RTL-07",
+      "comparisons": 8
+    },
+    {
+      "width": 390,
+      "lang": "ar",
+      "issue": "RTL-08",
+      "comparisons": 8
+    },
+    {
+      "width": 390,
+      "lang": "ar",
+      "issue": "RTL-09",
+      "comparisons": 8
+    },
+    {
+      "width": 390,
+      "lang": "en",
+      "issue": "RTL-01",
+      "comparisons": 8
+    },
+    {
+      "width": 390,
+      "lang": "en",
+      "issue": "RTL-02",
+      "comparisons": 8
+    },
+    {
+      "width": 390,
+      "lang": "en",
+      "issue": "RTL-03",
+      "comparisons": 8
+    },
+    {
+      "width": 390,
+      "lang": "en",
+      "issue": "RTL-04",
+      "comparisons": 8
+    },
+    {
+      "width": 390,
+      "lang": "en",
+      "issue": "RTL-05",
+      "comparisons": 8
+    },
+    {
+      "width": 390,
+      "lang": "en",
+      "issue": "RTL-06",
+      "comparisons": 8
+    },
+    {
+      "width": 390,
+      "lang": "en",
+      "issue": "RTL-07",
+      "comparisons": 8
+    },
+    {
+      "width": 390,
+      "lang": "en",
+      "issue": "RTL-08",
+      "comparisons": 8
+    },
+    {
+      "width": 390,
+      "lang": "en",
+      "issue": "RTL-09",
+      "comparisons": 8
+    }
+  ],
+  "stageInventoryUnchanged": true,
+  "modalBothImages": true,
+  "escape": true,
+  "more": true,
+  "bilingual": true,
+  "errors": []
+}

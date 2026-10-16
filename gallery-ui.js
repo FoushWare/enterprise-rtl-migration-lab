@@ -85,13 +85,13 @@
     const global = filters(globalBar);
     for (const chapter of chapters) {
       const local = filters(chapter.bar);
-      const semantic = [...global.values, ...local.values].filter(item => ['category', 'issue', 'status'].includes(item.key));
+      const semantic = [...local.values].filter(item => ['category', 'issue', 'status'].includes(item.key));
       chapter.limit = pageSize;
       chapter.matches = chapter.cards.filter(card => {
         card.matchingAnnotations = card.annotations.filter(annotation => annotationMatches(annotation, semantic));
         const match = card.matchingAnnotations.length > 0
           && local.values.filter(item => !['category', 'issue', 'status'].includes(item.key)).every(item => card.element.dataset[item.key] === item.value)
-          && [global.query, local.query].every(query => !query || card.search.includes(query));
+          && [local.query].every(query => !query || card.search.includes(query));
         for (const note of card.element.querySelectorAll('.issue-item')) {
           note.hidden = semantic.length > 0 && !card.matchingAnnotations.some(annotation => annotation.issueId === note.dataset.noteIssue && annotation.status === note.dataset.noteStatus);
         }
@@ -113,6 +113,7 @@
     const selectedIssue = globalBar.querySelector('[data-filter="issue"]').value;
     document.querySelectorAll('[data-issue-pick]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.issuePick === selectedIssue)));
     updateGlobalCount(); updateUrl(); updateReadingPosition();
+    document.dispatchEvent(new CustomEvent('gallery:filters-change'));
   }
   function clearBar(bar) { bar.querySelectorAll('select,input').forEach(control => { control.value = ''; }); }
   function clearAll() { clearBar(globalBar); chapters.forEach(chapter => clearBar(chapter.bar)); }
@@ -126,16 +127,13 @@
     bar.addEventListener('change', () => { clearTimeout(searchTimer); applyAll(); });
   }
   document.querySelectorAll('[data-issue-pick]').forEach(button => button.addEventListener('click', () => {
-    clearAll(); globalBar.querySelector('[data-filter="issue"]').value = button.dataset.issuePick; applyAll();
-    const firstMatch = chapters.find(chapter => chapter.matches.length > 0);
-    if (firstMatch) {
-      const destination = firstMatch.element.querySelector('.stage-gallery-heading');
-      destination.tabIndex = -1;
-      destination.focus({preventScroll: true});
-      destination.scrollIntoView({behavior: reducedMotion() ? 'instant' : 'smooth', block: 'start'});
-      const url = new URL(location.href); url.hash = firstMatch.element.id;
-      try { history.replaceState(null, '', url); } catch { /* Offline gallery remains usable. */ }
-    }
+    clearBar(globalBar); globalBar.querySelector('[data-filter="issue"]').value = button.dataset.issuePick; applyAll();
+    const destination = document.querySelector('#issue-comparisons');
+    destination.tabIndex = -1;
+    destination.focus({preventScroll: true});
+    destination.scrollIntoView({behavior: reducedMotion() ? 'instant' : 'smooth', block: 'start'});
+    const url = new URL(location.href); url.hash = 'issue-comparisons';
+    try { history.replaceState(null, '', url); } catch { /* Offline gallery remains usable. */ }
   }));
   document.querySelectorAll('.issue-key article').forEach(card => {
     card.addEventListener('click', event => {
