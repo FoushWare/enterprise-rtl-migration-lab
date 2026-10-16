@@ -25,3 +25,9 @@ Friendly Arabic names lead; RTL-01–RTL-09 remain secondary references. Each ca
 The twelve-stage navigation provides destination tooltips on hover/focus, keyboard navigation, a current-stage marker and a compact mobile rail. Motion respects reduced-motion preferences. The accessible image viewer includes all matching stage images, focus return and Escape dismissal.
 
 Current UX validation is recorded in UX_STATIC_VALIDATION.json and UX_BROWSER_VALIDATION.json. There are 1,677 gallery cards; twelve redundant stage hero previews were removed without removing any screenshot. Earlier validation reports describe earlier presentation checkpoints.
+
+## Arabic / English switch
+
+The header language buttons translate the gallery interface, stage descriptions, issue explanations, filters, image captions, accessibility labels and viewer controls. The page changes between RTL and LTR. Selection is remembered locally and can be shared with `?ui=en` or `?ui=ar`. Screenshot language filters remain independent. Historical image pixels, source metadata and issue definitions are unchanged. English search includes translated titles and original English capture descriptions. The gallery remains self-contained and works offline without a translation service.
+
+See BILINGUAL_VALIDATION.json for bilingual and responsive checks.

@@ -4,3 +4,7 @@
 
 @media(min-width:1100px){#stage-rail .rail-heading,#stage-rail #rail-preview{display:none}}
 .story-simple h4{font-size:15px;margin:14px 0 5px}.story-simple p{font-size:14px}
+/* Gallery UI language is independent of the language shown inside historical images. */
+.gallery-language{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:24px}.gallery-language button{min-height:42px;padding:8px 16px;border:1px solid #9ab5cd;background:transparent;color:#fff}.gallery-language button[aria-pressed="true"]{background:#fff;color:#183d62;font-weight:700}.language-note{font-size:12px;color:#d8e5f1;margin-inline-start:8px}
+html[dir="ltr"] .term-en,html[dir="ltr"] .stage-name-en,html[dir="ltr"] .issue-chip{text-align:left}html[dir="ltr"] #reading-progress{transform-origin:left}html[dir="ltr"] .dot-tooltip{direction:ltr}html[dir="ltr"] #lightbox-title{margin:0 12px 0 0}html[dir="ltr"] #count{margin-left:auto;margin-right:0}
+@media(max-width:650px){html[dir="ltr"] .commit{text-align:right}.language-note{width:100%;margin-inline-start:0}}

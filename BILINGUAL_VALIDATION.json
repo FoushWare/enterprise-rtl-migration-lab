@@ -1,0 +1,43 @@
+{
+  "passed": true,
+  "allStaticLabelsTranslated": true,
+  "dynamicLabelsTranslated": true,
+  "cycles": 5,
+  "filtersPreserved": true,
+  "languagePersistence": true,
+  "englishSearch": true,
+  "imageReferences": 1677,
+  "widths": [
+    {
+      "width": 390,
+      "lang": "ar",
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "lang": "en",
+      "overflow": false
+    },
+    {
+      "width": 900,
+      "lang": "ar",
+      "overflow": false
+    },
+    {
+      "width": 900,
+      "lang": "en",
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "lang": "ar",
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "lang": "en",
+      "overflow": false
+    }
+  ],
+  "errors": []
+}
