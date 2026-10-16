@@ -57,7 +57,7 @@
   zoomLabels();
   addEventListener('resize', () => { if (dialog.open) for (const panel of zoomPanels.values()) zoomTo(panel, panel.zoom); });
   const description = make('section', null, 'comparison-description');
-  description.id = 'comparison-description'; dialog.append(description);
+  description.id = 'comparison-description'; description.tabIndex = 0; description.setAttribute('role', 'region'); description.setAttribute('aria-labelledby', 'comparison-description-title'); dialog.append(description);
   const navigation = make('div', null, 'comparison-navigation');
   const previous = make('button'), next = make('button'), position = make('output');
   previous.type = next.type = 'button'; previous.id = 'comparison-previous'; next.id = 'comparison-next';
@@ -72,7 +72,7 @@
       const img = document.querySelector('#comparison-' + lang); img.src = pair[lang]; img.alt = caption(pair) + ' — ' + (lang === 'ar' ? 'Arabic' : 'English');
       const original = document.querySelector('#comparison-original-' + lang); original.href = pair[lang]; original.textContent = t('افتح / نزّل الأصل', 'Open / download original');
     }
-    description.replaceChildren(make('h3', t('المشاكل والوصف', 'Issues and descriptions')));
+    const descriptionTitle = make('h3', t('المشاكل والوصف', 'Issues and descriptions')); descriptionTitle.id = 'comparison-description-title'; description.replaceChildren(descriptionTitle); description.scrollTop = 0;
     const source = [...document.querySelectorAll('.screen-card')].find(card => card.querySelector('.pic').dataset.src === pair.ar);
     if (source) {
       for (const selector of ['.shot-tags', '.shot-evidence-status', '.issue-annotations', '.evidence-caveat']) {
