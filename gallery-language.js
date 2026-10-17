@@ -1,6 +1,7 @@
 'use strict';
 (() => {
   const dictionary = JSON.parse(document.querySelector('#gallery-translations').textContent);
+  dictionary['استكشف معمارية الـRTL Scanner'] = 'Explore RTL Scanner architecture';
   dictionary['لغة المعرض، مش لغة الصور'] = 'Gallery language, not screenshot language';
   const textSources = new WeakMap(), attributeSources = new WeakMap(), cache = new Map();
   const arabic = /[\u0600-\u06ff]/;
