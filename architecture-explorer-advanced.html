@@ -276,5 +276,49 @@ $('#about').innerHTML='<h2>الدليل، مش التخمين</h2><p>الـfunct
  globalThis.addEventListener('simplelessonchange',render);render();
 })();
 
+// Commands invoke the real CLI; the browser only replays verified data.
+(() => {
+ const m=D.codeMap,r=D.simulation;if(!m)return;
+ const recipe=`# Run from the repository root (with project dependencies installed).
+npm run rtl:scan:build
+DEMO_ROOT=$(mktemp -d)
+mkdir -p "$DEMO_ROOT/apps/demo/src" "$DEMO_ROOT/libs"
+printf '%s\\n' '{"sourceRoot":"apps/demo/src"}' > "$DEMO_ROOT/apps/demo/project.json"
+printf '%s' '<!doctype html><html><body></body></html>' > "$DEMO_ROOT/apps/demo/index.html"
+git show ${m.revision}:tools/rtl-scanner/tests/fixtures/detection.css > "$DEMO_ROOT/apps/demo/src/button.css"
+printf '%s' '{"schemaVersion":1,"generatedStyleOwner":"unknown","ownership":{"css":"custom-css"},"approvals":[],"exceptions":[],"issueBindings":[],"dynamicExceptions":[],"roles":[]}' > "$DEMO_ROOT/rtl-scanner.config.json"
+npm run rtl:scan -- --root "$DEMO_ROOT" --format json
+# Keep DEMO_ROOT for the Markdown command below.
+npm run rtl:scan -- --root "$DEMO_ROOT" --format markdown`;
+ const steps=[
+ ['cli.ts',null,'CLI → scan(root)',['يفهم --root و--format، وبعدها يبدأ scan.','Parses --root and --format, then starts scan.']],
+ ['scan.ts','walk','scan → walk',['يجمع ملفات المصدر. بعد الاكتشاف، scan تنادي loadPolicy ثم validatePolicy قبل استخراج الأدلة.','Discovers source files. After discovery, scan calls loadPolicy and validatePolicy before extraction.']],
+ ['policy.ts','loadPolicy','loadPolicy → validatePolicy',['يقرأ سياسة المثال ويتحقق من شكلها؛ ملف JSON بيانات، مش برنامج بيتنفّذ.','Reads and validates the fixture policy. JSON is data, not executable code.']],
+ ['css.ts','extractCss','scan → extractCss → fact',['بعد قراءة HTML، يحلّل CSS ويسجل الست declarations كأدلة؛ مش بيعدّل CSS.','After HTML extraction, parses CSS and records its six declarations as evidence; does not modify CSS.']],
+ ['rules.ts','detect','classifyDiagnostics → detect → auditPolicy → detect',['يصنّف التشخيصات، يعمل مرور القواعد الأول، يراجع السياسة، وبعدها مرور القواعد النهائي.','Classifies diagnostics, runs anchor rules, audits policy, then runs final rules.']],
+ ['report.ts','json','scan → Report → json → stdout',['يجمع التقرير ويطبعه؛ exitCode يحدد نجاح الأمر. وجود ملاحظات لوحده مش معناه كود خروج 1.','Assembles and prints the report; exitCode determines command success. Findings alone do not imply exit code 1.']]
+ ];
+ const style=document.createElement('style');style.textContent=`#command-lab{margin:24px 0;padding:20px;border:2px solid #bed7e4;border-radius:16px;background:#f5fafc;font-size:18px}#command-lab>summary{font-size:22px;font-weight:750;cursor:pointer}#command-lab button{padding:10px 15px;border:1px solid #8eb6ca;background:white;color:#154e6b;border-radius:9px}#command-lab pre{padding:18px;background:#102b40;color:#eff8ff;border-radius:10px;font-size:15px;line-height:1.8;max-height:330px;overflow:auto}#command-flow{display:flex;flex-wrap:wrap;gap:8px;direction:ltr;align-items:center;margin:18px 0}#command-flow button[aria-current=step]{background:#126960;color:white;box-shadow:0 0 0 3px #94d5bd}#command-flow span{font-size:25px;color:#176c67}#command-detail{background:white;border:1px solid #c2d8e5;border-radius:12px;padding:18px;margin:16px 0}#command-notice{padding:12px;border-inline-start:4px solid #268678;background:#e3f3ed;margin-top:12px}#command-lab h4{margin:16px 0 8px}#command-lab a{overflow-wrap:anywhere}`;document.head.append(style);
+ let active=0;
+ function render(){const root=$('#simple-guide .sg-card');if(!root)return;$('#command-lab')?.remove();const ar=globalThis.simpleLesson.language==='ar',t=(a,b)=>ar?a:b;
+ const section=document.createElement('details');section.id='command-lab';section.innerHTML=`<summary>${t('الكوماند بيعمل إيه؟ جرّبه وتتبّع الرحلة','What does the command do? Try it and follow the flow')}</summary><p>${t('الأمر ده يشغّل الرحلة كاملة في التيرمنال. الأزرار هنا بتعرض تسجيل متحقق منه، مش بتشغّل Node داخل المتصفح.','This command runs the whole pipeline in your terminal. These buttons replay verified data; they do not execute Node in the browser.')}</p>${code('npm run rtl:scan -- --root "$DEMO_ROOT" --format json')}<details><summary>${t('أول مرة؟ انسخ تجهيز المثال وتشغيله كامل','First time? Copy the complete fixture setup and run')}</summary><p>${t('من مجلد المشروع بعد تثبيت اعتمادياته. الملف الأصلي من الكوميت المثبت؛ الملفات المؤقتة خارج المشروع. المثال كله 6 أدلة و3 ملاحظات، مش فحص التطبيق الكامل.','Run from the repository root with dependencies installed. Uses the pinned committed fixture and temporary files outside the repository. This fixture has 6 facts and 3 findings; it is not the full application scan.')}</p>${code(recipe)}<button id="copy-fixture">${t('انسخ الأوامر','Copy commands')}</button></details><button id="command-start">${t('اعرض التشغيل المسجّل','Replay verified run')}</button><div id="command-flow" aria-label="${t('مسار التنفيذ','Execution flow')}"></div><div id="command-notice" role="status" aria-live="polite"></div><div id="command-detail"></div><div class="row"><button id="command-prev">${t('السابق','Previous')}</button><button id="command-next">${t('التالي','Next')}</button></div><details><summary>${t('أوامر إضافية: فحص المشروع والاختبارات','More commands: project scan and tests')}</summary>${code('npm run rtl:scan -- --format json\nnpm run rtl:scan -- --format markdown\nnpm run rtl:scan:test\nnpm run rtl:scan:typecheck')}<p>${t('أوامر المشروع تفحص apps وlibs الحالية؛ أرقامها تختلف عن المثال. خيار --fail-on-findings يرجع 1 عند وجود ملاحظات actionable، و2 عند فحص غير مكتمل. لا يصلح الملفات.','Project commands scan current apps and libs, so counts differ from the fixture. --fail-on-findings returns 1 for actionable findings and 2 for an incomplete scan. It does not fix files.')}</p></details>`;
+ root.insertBefore(section,root.querySelector('.sg-nav'));
+ function paint(){const s=steps[active],f=m.functions.find(f=>f.name===s[1]&&f.path.endsWith('/'+s[0]));let calls=m.events.filter(e=>e.event==='enter'&&e.id===f?.id),enter=active===4?calls.at(-1):calls[0],ret=enter&&m.events.find(e=>e.event==='return'&&e.call===enter.call);let input=enter?.args,output=ret?.value;
+ if(active===0){input={argv:['--root','<temporary fixture root>','--format','json']};output={calls:'scan(root)',format:'json'};}
+ if(active===1)output=ret?.sideEffects||output;
+ if(active===5){input={evidence:r.report.evidence.length,findings:r.report.findings.length,complete:r.report.complete};output={stdout:'JSON report',exitCode:m.exitCode};}
+ $('#command-flow').innerHTML=steps.map((x,i)=>(i?'<span aria-hidden="true">→</span>':'')+`<button data-command-node="${i}" aria-current="${i===active?'step':'false'}">${i+1}. ${esc(x[1]||'CLI')}</button>`).join('');
+ $('#command-notice').textContent=t('إنت هنا: ','You are here: ')+(active+1)+' / '+steps.length+' — '+s[2];
+ const file=m.files.find(x=>x.name===s[0]);const src=f?.code||file?.source;
+ $('#command-detail').innerHTML=`<h3><bdi>${esc(s[2])}</bdi></h3><p>${esc(s[3][ar?0:1])}</p><a target="_blank" rel="noopener" href="https://github.com/FoushWare/enterprise-rtl-migration-lab/blob/${m.revision}/tools/rtl-scanner/src/${s[0]}#L${f?.line||1}"><bdi>src/${s[0]}:${f?.line||1}</bdi></a><p>${active===0||active===5?t('المسار موثّق من المصدر؛ النتيجة النهائية مطابقة لتشغيل CLI الحقيقي.','Source-verified path; final result matches real CLI execution.'):t('المدخلات والنتيجة من الاستدعاء المسجّل.','Inputs and result from the recorded call.')}</p><h4>${t('المدخلات','Inputs')}</h4>${code(input)}<h4>${t('النتيجة / التأثير','Output / side effects')}</h4>${code(output)}<details><summary>${t('كود الدالة الحقيقي','Actual function source')}</summary>${code(src)}</details>`;
+ $('#command-prev').disabled=active===0;$('#command-next').disabled=active===steps.length-1;
+ section.querySelectorAll('[data-command-node]').forEach(b=>b.onclick=()=>{active=Number(b.dataset.commandNode);paint()});
+ }
+ $('#command-start').onclick=()=>{active=0;paint()};$('#command-prev').onclick=()=>{active=Math.max(0,active-1);paint()};$('#command-next').onclick=()=>{active=Math.min(steps.length-1,active+1);paint()};
+ $('#copy-fixture').onclick=async()=>{try{await navigator.clipboard.writeText(recipe);$('#command-notice').textContent=t('تم نسخ أوامر المثال. شغّلها في التيرمنال من مجلد المشروع.','Commands copied. Run them in your terminal from the repository root.')}catch{$('#command-notice').textContent=t('النسخ غير متاح هنا؛ حدّد الأوامر وانسخها يدويًا.','Clipboard unavailable here; select and copy the commands manually.')}};paint();
+ }
+ globalThis.addEventListener('simplelessonchange',render);render();
+})();
+
 renderGraph();walk();fnDetails(M.functions.find(f=>f.name==='fact'&&base(f.path)==='model.ts').id);
 </script></html>
