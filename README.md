@@ -47,3 +47,7 @@ Stage screenshots with documented counterparts now open the paired viewer too: A
 ## Grouped captures
 
 Within a stage, captures with the same source commit, application, state, normalized route, viewport and print mode now share a single card. Arabic is the default representative where available; the language and collection filters still select their matching capture. Original and recreated alternatives remain accessible inside a disclosure on that card. Documentary cards stay distinct. Comparison results use the same identity grouping. No manifest records or image files were deleted. The current unfiltered presentation has 869 representative cards across the twelve stages while retaining all 1,677 original stage references.
+
+## Per-issue inspection thumbnails
+
+Each paired-view issue description now includes Arabic and English thumbnails from the same original capture pair. Reviewed 1440px historical layouts use broad CSS-clipped inspection areas for the relevant region; they are not exact measured defect boxes. Unknown layouts, mobile and print views show full context. Selecting a thumbnail focuses that language’s large image on the inspection area. No derivative screenshot files, new captures, annotations on original pixels or historical evidence replacements are created.

@@ -79,6 +79,9 @@
         const element = source.querySelector(selector); if (element) description.append(element.cloneNode(true));
       }
     }
+    for (const note of description.querySelectorAll('.issue-item')) {
+      document.dispatchEvent(new CustomEvent('gallery:render-issue-focus', {detail: {pair, issue: note.dataset.noteIssue, node: note}}));
+    }
     previous.textContent = t('المقارنة السابقة', 'Previous comparison'); next.textContent = t('المقارنة التالية', 'Next comparison');
     previous.disabled = next.disabled = viewerSequence.length < 2;
     position.textContent = t(`مقارنة ${viewerIndex + 1} من ${viewerSequence.length}`, `Comparison ${viewerIndex + 1} of ${viewerSequence.length}`);
@@ -96,6 +99,20 @@
     event.preventDefault();
     const sequence = [...new Set(event.detail.cards.map(pairForCard).filter(Boolean))];
     open(pair, event.detail.target, sequence);
+  });
+  document.addEventListener('gallery:focus-region', event => {
+    if (!dialog.open) return;
+    const panel = zoomPanels.get(event.detail.lang), rect = event.detail.rect;
+    if (!rect || !panel.image.naturalWidth) zoomTo(panel, 1);
+    else {
+      const fit = Math.min(panel.image.naturalWidth, panel.viewport.clientWidth - 16, (panel.viewport.clientHeight - 16) * panel.image.naturalWidth / panel.image.naturalHeight);
+      const target = Math.min((panel.viewport.clientWidth - 16) / rect.w, (panel.viewport.clientHeight - 16) / rect.h);
+      zoomTo(panel, target / fit);
+      const scale = parseFloat(panel.image.style.width) / panel.image.naturalWidth;
+      panel.viewport.scrollLeft = Math.max(0, rect.x * scale - (panel.viewport.clientWidth - rect.w * scale) / 2);
+      panel.viewport.scrollTop = Math.max(0, rect.y * scale - (panel.viewport.clientHeight - rect.h * scale) / 2);
+    }
+    panel.viewport.focus({preventScroll: true});
   });
   function close() { dialog.close(); returnTo?.focus({preventScroll: true}); }
   document.querySelector('#comparison-close').addEventListener('click', close);
