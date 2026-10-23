@@ -1,0 +1,386 @@
+[
+  {
+    "path": ".storybook/main.ts",
+    "executableOutputEquivalent": true,
+    "changed": false,
+    "formattingSkipped": false
+  },
+  {
+    "path": "apps/invoicing/src/App.tsx",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "apps/invoicing/src/components/InvoiceTable.tsx",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "apps/invoicing/src/components/InvoiceUi.tsx",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "apps/invoicing/src/main.tsx",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "apps/invoicing/src/pages/CreateInvoice.tsx",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "apps/invoicing/src/pages/Customers.tsx",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "apps/invoicing/src/pages/Dashboard.tsx",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "apps/invoicing/src/pages/InvoiceDetails.tsx",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "apps/invoicing/src/pages/Invoices.tsx",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "apps/invoicing/src/pages/Settings.tsx",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "apps/invoicing/vite.config.ts",
+    "executableOutputEquivalent": true,
+    "changed": false,
+    "formattingSkipped": false
+  },
+  {
+    "path": "apps/procurement/src/App.tsx",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "apps/procurement/src/main.tsx",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "apps/procurement/vite.config.ts",
+    "executableOutputEquivalent": true,
+    "changed": false,
+    "formattingSkipped": false
+  },
+  {
+    "path": "eslint.config.mjs",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "libs/design-system/src/StatusBadge.stories.tsx",
+    "executableOutputEquivalent": true,
+    "changed": false,
+    "formattingSkipped": false
+  },
+  {
+    "path": "libs/design-system/src/index.tsx",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "libs/design-system/src/runtime.tsx",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "libs/shared/src/i18n.tsx",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": true
+  },
+  {
+    "path": "libs/shared/src/index.ts",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "libs/shared/src/translations.ts",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "playwright.config.ts",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "playwright.production.config.ts",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "scripts/capture-phase2a.mjs",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "scripts/verify-rtl-protections.mjs",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "tests/e2e/baseline.spec.ts",
+    "executableOutputEquivalent": true,
+    "changed": false,
+    "formattingSkipped": false
+  },
+  {
+    "path": "tests/e2e/bidi-boundaries.spec.ts",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "tests/e2e/brand-direction.spec.ts",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "tests/e2e/chart-direction.spec.ts",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "tests/e2e/dashboard-navigation-arrow.spec.ts",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "tests/e2e/demo.spec.ts",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "tests/e2e/forms-dialogs-tables.spec.ts",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "tests/e2e/invoice-navigation-arrow.spec.ts",
+    "executableOutputEquivalent": true,
+    "changed": false,
+    "formattingSkipped": true
+  },
+  {
+    "path": "tests/e2e/kpi-direction.spec.ts",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "tests/e2e/sidebar-navigation-arrow.spec.ts",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "tests/runtime-foundation.test.tsx",
+    "executableOutputEquivalent": true,
+    "changed": false,
+    "formattingSkipped": true
+  },
+  {
+    "path": "tests/setup.ts",
+    "executableOutputEquivalent": true,
+    "changed": false,
+    "formattingSkipped": false
+  },
+  {
+    "path": "tests/shared.test.tsx",
+    "executableOutputEquivalent": true,
+    "changed": false,
+    "formattingSkipped": false
+  },
+  {
+    "path": "tools/rtl-codemod/cli.mjs",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "tools/rtl-codemod/codemod.mjs",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false,
+    "verification": "Canonical emitted JavaScript equality also verified with TypeScript and esbuild; chained-call line wrapping is non-semantic."
+  },
+  {
+    "path": "tools/rtl-codemod/codemod.test.mjs",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "tools/rtl-codemod/vitest.config.ts",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "tools/rtl-scanner/src/cli.ts",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "tools/rtl-scanner/src/coverage.ts",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "tools/rtl-scanner/src/css.ts",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "tools/rtl-scanner/src/html.ts",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "tools/rtl-scanner/src/model.ts",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "tools/rtl-scanner/src/policy-audit.ts",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "tools/rtl-scanner/src/policy-validation.ts",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "tools/rtl-scanner/src/policy.ts",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "tools/rtl-scanner/src/report.ts",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "tools/rtl-scanner/src/rules.ts",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "tools/rtl-scanner/src/runtime-direction.ts",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "tools/rtl-scanner/src/scan.ts",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "tools/rtl-scanner/src/typescript.ts",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "tools/rtl-scanner/vitest.config.ts",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "vitest.config.ts",
+    "executableOutputEquivalent": true,
+    "changed": true,
+    "formattingSkipped": false
+  },
+  {
+    "path": "tools/rtl-scanner/tests/detection.test.ts",
+    "changed": true,
+    "executableOutputEquivalent": true,
+    "formattingSkipped": false,
+    "baselineRef": "317996b23889d8b76bec90f19f44976e7de437fb"
+  },
+  {
+    "path": "tools/rtl-scanner/tests/foundation.test.ts",
+    "changed": true,
+    "executableOutputEquivalent": true,
+    "formattingSkipped": false,
+    "baselineRef": "317996b23889d8b76bec90f19f44976e7de437fb"
+  },
+  {
+    "path": "tools/rtl-scanner/tests/integration.test.ts",
+    "changed": true,
+    "executableOutputEquivalent": true,
+    "formattingSkipped": false,
+    "baselineRef": "317996b23889d8b76bec90f19f44976e7de437fb"
+  },
+  {
+    "path": "tools/rtl-scanner/tests/policy.test.ts",
+    "changed": true,
+    "executableOutputEquivalent": true,
+    "formattingSkipped": false,
+    "baselineRef": "317996b23889d8b76bec90f19f44976e7de437fb"
+  },
+  {
+    "path": "tools/rtl-scanner/tests/runtime-direction.test.ts",
+    "changed": true,
+    "executableOutputEquivalent": true,
+    "formattingSkipped": false,
+    "baselineRef": "317996b23889d8b76bec90f19f44976e7de437fb"
+  }
+]

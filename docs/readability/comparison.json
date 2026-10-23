@@ -1,0 +1,3915 @@
+{
+  "baseline": "b127325a14ad3bf8e70aede2a2e29b9dae638355",
+  "executableFilesVerified": 54,
+  "evidence": {
+    "before": 440,
+    "after": 440
+  },
+  "findings": {
+    "before": 42,
+    "after": 42
+  },
+  "diagnostics": {
+    "before": 9,
+    "after": 9,
+    "allNonblocking": true
+  },
+  "metrics": {
+    "byCategory": {
+      "INFORMATIONAL": 1,
+      "INTENTIONAL_LTR": 2,
+      "MANUAL_REVIEW": 36,
+      "RUNTIME_CONFIG": 3
+    },
+    "bySeverity": {
+      "Info": 3,
+      "Major": 1,
+      "Minor": 38
+    },
+    "byConfidence": {
+      "High": 17,
+      "Medium": 25
+    },
+    "uniqueAffectedFiles": 12,
+    "referenceCaseIds": [
+      "RTL-01",
+      "RTL-02",
+      "RTL-04",
+      "RTL-05",
+      "RTL-06",
+      "RTL-07",
+      "RTL-08",
+      "RTL-09"
+    ]
+  },
+  "findingsByRule": {
+    "RTL.BIDI.ISOLATION": 13,
+    "RTL.BRAND.ISLAND": 1,
+    "RTL.CHART.LABEL_FLOW": 1,
+    "RTL.CSS.PHYSICAL": 12,
+    "RTL.DOCUMENT.INITIAL": 2,
+    "RTL.DOCUMENT.RUNTIME": 1,
+    "RTL.FORM.DIRECTION": 1,
+    "RTL.GEOMETRY.EDGE": 1,
+    "RTL.GEOMETRY.ORDER": 2,
+    "RTL.ICON.LITERAL": 1,
+    "RTL.ICON.PROGRESSION": 3,
+    "RTL.RUNTIME.LOCALE": 1,
+    "RTL.RUNTIME.PAGINATION": 1,
+    "RTL.TABLE.ALIGNMENT": 2
+  },
+  "complete": true,
+  "evidenceIdChanges": 0,
+  "findingIdChanges": 0,
+  "policyScopeChanges": 0,
+  "inputDigest": {
+    "before": "0a317d5e6f70623f9ef185f0449c255f219696737df292050cb7e5d9c3e59ed9",
+    "after": "aeeda4ce3534a64d6f982e1d621ff6a3b5c221e942145fffa5b2c475b3e2fd47"
+  },
+  "policyDigest": {
+    "before": "b13e9be2c08963927824d05d1102ec737d621a103e6d7db5a9004d93fee9d4b2",
+    "after": "c382439717211c2f51bec5c683c3ca92b50cd34cd6d77bb37cb1b3ef673c9dab"
+  },
+  "sourceMetadataChanges": [
+    {
+      "kind": "evidence",
+      "index": 2,
+      "id": "1fc9d8ca6dd7e00308420266f7e4a2a93304cef652e681bc5668d6b4a38a6f42",
+      "path": "apps/invoicing/src/components/InvoiceTable.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 1064,
+          "line": 31,
+          "column": 21
+        },
+        "end": {
+          "offset": 1073,
+          "line": 31,
+          "column": 30
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 1292,
+          "line": 36,
+          "column": 21
+        },
+        "end": {
+          "offset": 1301,
+          "line": 36,
+          "column": 30
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 3,
+      "id": "cae208e0837239c0801ca082980a9440a8f112a02140a0d9aeb1f75fd2adc6b2",
+      "path": "apps/invoicing/src/components/InvoiceTable.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 1095,
+          "line": 32,
+          "column": 21
+        },
+        "end": {
+          "offset": 1105,
+          "line": 32,
+          "column": 31
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 1323,
+          "line": 37,
+          "column": 21
+        },
+        "end": {
+          "offset": 1333,
+          "line": 37,
+          "column": 31
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 4,
+      "id": "4020cfabaab9bcfcad023f0eb7b444e5a637b69edf0d609076a3ed31f7043bc1",
+      "path": "apps/invoicing/src/components/InvoiceTable.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 1127,
+          "line": 33,
+          "column": 21
+        },
+        "end": {
+          "offset": 1150,
+          "line": 33,
+          "column": 44
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 1355,
+          "line": 38,
+          "column": 21
+        },
+        "end": {
+          "offset": 1378,
+          "line": 38,
+          "column": 44
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 5,
+      "id": "36d72b8a99487b183597f1b8f5546eff42826d90ba972230785fe129a5e9198b",
+      "path": "apps/invoicing/src/components/InvoiceTable.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 1172,
+          "line": 34,
+          "column": 21
+        },
+        "end": {
+          "offset": 1186,
+          "line": 34,
+          "column": 35
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 1400,
+          "line": 39,
+          "column": 21
+        },
+        "end": {
+          "offset": 1414,
+          "line": 39,
+          "column": 35
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 6,
+      "id": "9cba21cd43fb71f1c456993c6403eaf94c70601af036280522d82f03d89d82d6",
+      "path": "apps/invoicing/src/components/InvoiceTable.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 1208,
+          "line": 35,
+          "column": 21
+        },
+        "end": {
+          "offset": 1220,
+          "line": 35,
+          "column": 33
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 1436,
+          "line": 40,
+          "column": 21
+        },
+        "end": {
+          "offset": 1448,
+          "line": 40,
+          "column": 33
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 7,
+      "id": "cbbd9645ce27d035a8401b416b7e428f977dea13352eaaa7ee69acfdf6decb60",
+      "path": "apps/invoicing/src/components/InvoiceTable.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 1242,
+          "line": 36,
+          "column": 21
+        },
+        "end": {
+          "offset": 1261,
+          "line": 36,
+          "column": 40
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 1470,
+          "line": 41,
+          "column": 21
+        },
+        "end": {
+          "offset": 1489,
+          "line": 41,
+          "column": 40
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 8,
+      "id": "32869cf5037c74759f509f79dfeb84bfffe2289a939313afeb0cf4541aa3e221",
+      "path": "apps/invoicing/src/components/InvoiceTable.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 2472,
+          "line": 78,
+          "column": 34
+        },
+        "end": {
+          "offset": 2484,
+          "line": 78,
+          "column": 46
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 2729,
+          "line": 86,
+          "column": 34
+        },
+        "end": {
+          "offset": 2741,
+          "line": 86,
+          "column": 46
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 9,
+      "id": "f05e60a9be9bc2433fb95fc3c40c60a082d02143d4d6f1fa7d7e5f7a9fd7d57e",
+      "path": "apps/invoicing/src/components/InvoiceTable.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 2486,
+          "line": 78,
+          "column": 48
+        },
+        "end": {
+          "offset": 2502,
+          "line": 78,
+          "column": 64
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 2743,
+          "line": 86,
+          "column": 48
+        },
+        "end": {
+          "offset": 2759,
+          "line": 86,
+          "column": 64
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 10,
+      "id": "e469f5f435999a80100f787e4fce58d523900ac1a986eafdbd2924f14b114071",
+      "path": "apps/invoicing/src/components/InvoiceTable.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 2565,
+          "line": 80,
+          "column": 37
+        },
+        "end": {
+          "offset": 2577,
+          "line": 80,
+          "column": 49
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 2822,
+          "line": 88,
+          "column": 37
+        },
+        "end": {
+          "offset": 2834,
+          "line": 88,
+          "column": 49
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 11,
+      "id": "f96e114e86ac03639ce1fc127f4d41cadabdc13d6bbfb2898bec3eccaa2e2512",
+      "path": "apps/invoicing/src/components/InvoiceTable.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 2579,
+          "line": 80,
+          "column": 51
+        },
+        "end": {
+          "offset": 2595,
+          "line": 80,
+          "column": 67
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 2836,
+          "line": 88,
+          "column": 51
+        },
+        "end": {
+          "offset": 2852,
+          "line": 88,
+          "column": 67
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 12,
+      "id": "f454978c856931e31acd082a3ccc5b0a635ae6b95d3a5d48edcbcc55ac3af966",
+      "path": "apps/invoicing/src/pages/CreateInvoice.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 6824,
+          "line": 205,
+          "column": 51
+        },
+        "end": {
+          "offset": 6850,
+          "line": 205,
+          "column": 77
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 7624,
+          "line": 222,
+          "column": 51
+        },
+        "end": {
+          "offset": 7650,
+          "line": 222,
+          "column": 77
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 13,
+      "id": "ac0aff3c3f2c6864af2b519788242da7b4ad54625bf84c7724a19ba6c346c39a",
+      "path": "apps/invoicing/src/pages/Customers.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 782,
+          "line": 22,
+          "column": 15
+        },
+        "end": {
+          "offset": 795,
+          "line": 22,
+          "column": 28
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 973,
+          "line": 28,
+          "column": 15
+        },
+        "end": {
+          "offset": 986,
+          "line": 28,
+          "column": 28
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 14,
+      "id": "672bbd9223564e1487a07e652c83f65f4b4d45e48e20fa7ed3c0bfad50c19c3d",
+      "path": "apps/invoicing/src/pages/Customers.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 797,
+          "line": 22,
+          "column": 30
+        },
+        "end": {
+          "offset": 812,
+          "line": 22,
+          "column": 45
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 988,
+          "line": 28,
+          "column": 30
+        },
+        "end": {
+          "offset": 1003,
+          "line": 28,
+          "column": 45
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 15,
+      "id": "64210cbf121f5aeac25f0e330cc48df066b81ca6a967b034f9f820e10ab91578",
+      "path": "apps/invoicing/src/pages/Customers.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 1068,
+          "line": 29,
+          "column": 29
+        },
+        "end": {
+          "offset": 1091,
+          "line": 29,
+          "column": 52
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 1259,
+          "line": 35,
+          "column": 29
+        },
+        "end": {
+          "offset": 1282,
+          "line": 35,
+          "column": 52
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 16,
+      "id": "5d78aaab6cf508b0afde0be5bc171ac062c0d6200ad9186623bcc6fc2f6429c7",
+      "path": "apps/invoicing/src/pages/Customers.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 1093,
+          "line": 29,
+          "column": 54
+        },
+        "end": {
+          "offset": 1107,
+          "line": 29,
+          "column": 68
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 1284,
+          "line": 35,
+          "column": 54
+        },
+        "end": {
+          "offset": 1298,
+          "line": 35,
+          "column": 68
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 17,
+      "id": "20eed2386decd1f1229a5cf449fccf3e3a35b2874198a6efe277b14f542e0f95",
+      "path": "apps/invoicing/src/pages/Dashboard.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 1336,
+          "line": 27,
+          "column": 21
+        },
+        "end": {
+          "offset": 1358,
+          "line": 27,
+          "column": 43
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 1711,
+          "line": 35,
+          "column": 21
+        },
+        "end": {
+          "offset": 1733,
+          "line": 35,
+          "column": 43
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 18,
+      "id": "f99632d61a562a516fbebf8218797a6e3c7b608bd28303e06c0ed2758a4ad7a1",
+      "path": "apps/invoicing/src/pages/Dashboard.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 1360,
+          "line": 27,
+          "column": 45
+        },
+        "end": {
+          "offset": 1376,
+          "line": 27,
+          "column": 61
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 1735,
+          "line": 35,
+          "column": 45
+        },
+        "end": {
+          "offset": 1751,
+          "line": 35,
+          "column": 61
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 19,
+      "id": "4443a54641b09df0ccbab5b642935cb0b454131c25bd6f64b927e8a14133bab5",
+      "path": "apps/invoicing/src/pages/Dashboard.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 1378,
+          "line": 27,
+          "column": 63
+        },
+        "end": {
+          "offset": 1393,
+          "line": 27,
+          "column": 78
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 1753,
+          "line": 35,
+          "column": 63
+        },
+        "end": {
+          "offset": 1768,
+          "line": 35,
+          "column": 78
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 20,
+      "id": "22971a4118cd684efeddfe9d6de31673d9fdd9893bd20f927e74ce8b2af2ddfa",
+      "path": "apps/invoicing/src/pages/Dashboard.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 5636,
+          "line": 151,
+          "column": 17
+        },
+        "end": {
+          "offset": 5990,
+          "line": 151,
+          "column": 371
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 6100,
+          "line": 165,
+          "column": 17
+        },
+        "end": {
+          "offset": 6454,
+          "line": 165,
+          "column": 371
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 21,
+      "id": "7460f34228a12bc9cdd0a87c5fa6d50e26bba59f3a22039f79094e87f12e433e",
+      "path": "apps/invoicing/src/pages/Dashboard.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 6695,
+          "line": 171,
+          "column": 31
+        },
+        "end": {
+          "offset": 6720,
+          "line": 171,
+          "column": 56
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 7159,
+          "line": 185,
+          "column": 31
+        },
+        "end": {
+          "offset": 7184,
+          "line": 185,
+          "column": 56
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 22,
+      "id": "7a673cdd7e42f87dcacb677fa6f09934c910a3273453942b7daa42b227c6d8e4",
+      "path": "apps/invoicing/src/pages/Dashboard.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 6924,
+          "line": 178,
+          "column": 23
+        },
+        "end": {
+          "offset": 6941,
+          "line": 178,
+          "column": 40
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 7388,
+          "line": 192,
+          "column": 23
+        },
+        "end": {
+          "offset": 7405,
+          "line": 192,
+          "column": 40
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 23,
+      "id": "57b3a2f8327886b80d97dd7b8b35087e4f913c8cc34994fecc6957a950c93ef0",
+      "path": "apps/invoicing/src/pages/Dashboard.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 6965,
+          "line": 179,
+          "column": 23
+        },
+        "end": {
+          "offset": 6980,
+          "line": 179,
+          "column": 38
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 7429,
+          "line": 193,
+          "column": 23
+        },
+        "end": {
+          "offset": 7444,
+          "line": 193,
+          "column": 38
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 24,
+      "id": "505d6c9187c23c50da1a2558fc6c9df3feafdedd5ff12f6d041bd971c6de775d",
+      "path": "apps/invoicing/src/pages/Dashboard.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 7004,
+          "line": 180,
+          "column": 23
+        },
+        "end": {
+          "offset": 7018,
+          "line": 180,
+          "column": 37
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 7468,
+          "line": 194,
+          "column": 23
+        },
+        "end": {
+          "offset": 7482,
+          "line": 194,
+          "column": 37
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 25,
+      "id": "fd16ea3c8a06e03c55c318269f901a5179b84f8a463fe4c0a058953fb439be2f",
+      "path": "apps/invoicing/src/pages/Dashboard.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 7672,
+          "line": 201,
+          "column": 36
+        },
+        "end": {
+          "offset": 7684,
+          "line": 201,
+          "column": 48
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 8136,
+          "line": 215,
+          "column": 36
+        },
+        "end": {
+          "offset": 8148,
+          "line": 215,
+          "column": 48
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 26,
+      "id": "662fbd2f7afbc4712c389046338344579311c77b3781223e2414588aab8690a7",
+      "path": "apps/invoicing/src/pages/Dashboard.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 7686,
+          "line": 201,
+          "column": 50
+        },
+        "end": {
+          "offset": 7699,
+          "line": 201,
+          "column": 63
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 8150,
+          "line": 215,
+          "column": 50
+        },
+        "end": {
+          "offset": 8163,
+          "line": 215,
+          "column": 63
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 27,
+      "id": "29a89bf32badb2f333e9f5e5a8ad075455d3385db8cc5ed0cd6156379166afe4",
+      "path": "apps/invoicing/src/pages/Invoices.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 1559,
+          "line": 46,
+          "column": 19
+        },
+        "end": {
+          "offset": 1569,
+          "line": 46,
+          "column": 29
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 1847,
+          "line": 54,
+          "column": 19
+        },
+        "end": {
+          "offset": 1857,
+          "line": 54,
+          "column": 29
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 28,
+      "id": "eba6dedd2e71ef8009c0b0ed2f6def1b6f026400d7ed49a2ff2508cc573c62ba",
+      "path": "apps/invoicing/src/pages/Invoices.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 1881,
+          "line": 56,
+          "column": 43
+        },
+        "end": {
+          "offset": 1899,
+          "line": 56,
+          "column": 61
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 2169,
+          "line": 64,
+          "column": 43
+        },
+        "end": {
+          "offset": 2187,
+          "line": 64,
+          "column": 61
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 29,
+      "id": "ad71e891004a9a8c17c7cdcb563ac2735097c6eca26064b1579e5fdba70bd41c",
+      "path": "apps/invoicing/src/pages/Settings.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 2789,
+          "line": 83,
+          "column": 43
+        },
+        "end": {
+          "offset": 2804,
+          "line": 83,
+          "column": 58
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 2999,
+          "line": 91,
+          "column": 43
+        },
+        "end": {
+          "offset": 3014,
+          "line": 91,
+          "column": 58
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 32,
+      "id": "997dded770cdb93ce7fa9fabd79c2bd8e62230ce66c3cb816d16aa2564389443",
+      "path": "apps/procurement/src/App.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 1547,
+          "line": 49,
+          "column": 19
+        },
+        "end": {
+          "offset": 1557,
+          "line": 49,
+          "column": 29
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 1759,
+          "line": 54,
+          "column": 19
+        },
+        "end": {
+          "offset": 1769,
+          "line": 54,
+          "column": 29
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 33,
+      "id": "eb2e3fd76216f652bad19c7acee8a5c816155051a17dd943aa5ee92fc2263f8d",
+      "path": "apps/procurement/src/App.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 2357,
+          "line": 75,
+          "column": 34
+        },
+        "end": {
+          "offset": 2369,
+          "line": 75,
+          "column": 46
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 2569,
+          "line": 80,
+          "column": 34
+        },
+        "end": {
+          "offset": 2581,
+          "line": 80,
+          "column": 46
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 34,
+      "id": "6bd59348e8ba76d24df1c04f70a6c395b84628b87dfb99c81938842c760c46ef",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 2219,
+          "line": 76,
+          "column": 9
+        },
+        "end": {
+          "offset": 2248,
+          "line": 76,
+          "column": 38
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 3162,
+          "line": 96,
+          "column": 9
+        },
+        "end": {
+          "offset": 3191,
+          "line": 96,
+          "column": 38
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 35,
+      "id": "b07344cd832a5ba17f90c75cc8df00ddd4ca4336ae3709fb609d2a98633978f0",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 2258,
+          "line": 77,
+          "column": 9
+        },
+        "end": {
+          "offset": 2282,
+          "line": 77,
+          "column": 33
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 3201,
+          "line": 97,
+          "column": 9
+        },
+        "end": {
+          "offset": 3225,
+          "line": 97,
+          "column": 33
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 36,
+      "id": "bbc1507006253c9740bb40e3e9acc35d8c57eb08e3cefd1e0fc313879a68554f",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 2292,
+          "line": 78,
+          "column": 9
+        },
+        "end": {
+          "offset": 2307,
+          "line": 78,
+          "column": 24
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 3235,
+          "line": 98,
+          "column": 9
+        },
+        "end": {
+          "offset": 3250,
+          "line": 98,
+          "column": 24
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 37,
+      "id": "0e4e3533cd4f1b868d107f6a74e18c047fcc5d441c88b93790b59927e74c3312",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 2317,
+          "line": 79,
+          "column": 9
+        },
+        "end": {
+          "offset": 2329,
+          "line": 79,
+          "column": 21
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 3260,
+          "line": 99,
+          "column": 9
+        },
+        "end": {
+          "offset": 3272,
+          "line": 99,
+          "column": 21
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 38,
+      "id": "30494060a904d1eef056aa6115eae9265fa3dfbf86d4a1fabcb7d8c88ef5a8a5",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 2339,
+          "line": 80,
+          "column": 9
+        },
+        "end": {
+          "offset": 2349,
+          "line": 80,
+          "column": 19
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 3282,
+          "line": 100,
+          "column": 9
+        },
+        "end": {
+          "offset": 3292,
+          "line": 100,
+          "column": 19
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 39,
+      "id": "d51ae1f4560ed338027deadc477f153b2876a798a1da4a32a96bd78612cf9ea7",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 2810,
+          "line": 106,
+          "column": 17
+        },
+        "end": {
+          "offset": 2830,
+          "line": 106,
+          "column": 37
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 3987,
+          "line": 131,
+          "column": 17
+        },
+        "end": {
+          "offset": 4007,
+          "line": 131,
+          "column": 37
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 40,
+      "id": "3d1612ea00f52e4e39270d3cc51e17120fa0b3bb67300d8351b86a915461b1ee",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 2832,
+          "line": 106,
+          "column": 39
+        },
+        "end": {
+          "offset": 2841,
+          "line": 106,
+          "column": 48
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 4009,
+          "line": 131,
+          "column": 39
+        },
+        "end": {
+          "offset": 4018,
+          "line": 131,
+          "column": 48
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 41,
+      "id": "7905d884d0acbff44c8036f0f0c1ea0812aebcdec1bbea86a2d99754c83b804f",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 2843,
+          "line": 106,
+          "column": 50
+        },
+        "end": {
+          "offset": 2850,
+          "line": 106,
+          "column": 57
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 4020,
+          "line": 131,
+          "column": 50
+        },
+        "end": {
+          "offset": 4027,
+          "line": 131,
+          "column": 57
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 42,
+      "id": "d2fde19edb6c0c6fe4828d0f975cc9223524a46cd55cf8ed0e734ad28c717a7b",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 3014,
+          "line": 112,
+          "column": 40
+        },
+        "end": {
+          "offset": 3024,
+          "line": 112,
+          "column": 50
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 4191,
+          "line": 137,
+          "column": 40
+        },
+        "end": {
+          "offset": 4201,
+          "line": 137,
+          "column": 50
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 43,
+      "id": "36b143e0bcf478b52462593e98d3324e7db719e411c0b56d0434a228b002249e",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 4281,
+          "line": 170,
+          "column": 3
+        },
+        "end": {
+          "offset": 4297,
+          "line": 170,
+          "column": 19
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 5916,
+          "line": 205,
+          "column": 3
+        },
+        "end": {
+          "offset": 5932,
+          "line": 205,
+          "column": 19
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 44,
+      "id": "8c94cb1e08ab7707113d69ad1147ad0902fc83b22693125eefdd79563c752fa6",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 4300,
+          "line": 171,
+          "column": 3
+        },
+        "end": {
+          "offset": 4322,
+          "line": 171,
+          "column": 25
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 5935,
+          "line": 206,
+          "column": 3
+        },
+        "end": {
+          "offset": 5957,
+          "line": 206,
+          "column": 25
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 45,
+      "id": "3271b9bf912d9f0e29dd0953bc0e8c7fd3c01479043b44de68f84bdf5f231a6d",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 4325,
+          "line": 172,
+          "column": 3
+        },
+        "end": {
+          "offset": 4332,
+          "line": 172,
+          "column": 10
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 5960,
+          "line": 207,
+          "column": 3
+        },
+        "end": {
+          "offset": 5967,
+          "line": 207,
+          "column": 10
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 46,
+      "id": "a6e335ee33ff6b872a90f769f914fb05dd357dbc305f2b826c5aa61fb7c63e43",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 4335,
+          "line": 173,
+          "column": 3
+        },
+        "end": {
+          "offset": 4345,
+          "line": 173,
+          "column": 13
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 5970,
+          "line": 208,
+          "column": 3
+        },
+        "end": {
+          "offset": 5980,
+          "line": 208,
+          "column": 13
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 47,
+      "id": "71215ee9b1bf5eef2c6286963878ca060695206b3d3987c6f9dc6e8372722211",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 4348,
+          "line": 174,
+          "column": 3
+        },
+        "end": {
+          "offset": 4361,
+          "line": 174,
+          "column": 16
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 5983,
+          "line": 209,
+          "column": 3
+        },
+        "end": {
+          "offset": 5996,
+          "line": 209,
+          "column": 16
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 48,
+      "id": "58beae5072f0d15d7bb3b2d21fc30acf3518ca13ef184ee1ebe05a26e56f1db1",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 4364,
+          "line": 175,
+          "column": 3
+        },
+        "end": {
+          "offset": 4381,
+          "line": 175,
+          "column": 20
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 5999,
+          "line": 210,
+          "column": 3
+        },
+        "end": {
+          "offset": 6016,
+          "line": 210,
+          "column": 20
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 49,
+      "id": "9ef5fd6fce40c0f8e17d883fe9fd62183abe38694f488aedad54c8d4435a5554",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 4384,
+          "line": 176,
+          "column": 3
+        },
+        "end": {
+          "offset": 4421,
+          "line": 176,
+          "column": 40
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 6019,
+          "line": 211,
+          "column": 3
+        },
+        "end": {
+          "offset": 6056,
+          "line": 211,
+          "column": 40
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 50,
+      "id": "7719b8d62d0df12af2b0711d01ccad96bd5e70419319a78ab36968ee731702f2",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 4424,
+          "line": 177,
+          "column": 3
+        },
+        "end": {
+          "offset": 4443,
+          "line": 177,
+          "column": 22
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 6059,
+          "line": 212,
+          "column": 3
+        },
+        "end": {
+          "offset": 6078,
+          "line": 212,
+          "column": 22
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 51,
+      "id": "ebbb339b9957f95f0c7712936c925d59d5786cc633582369e2e3750003f33015",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 4446,
+          "line": 178,
+          "column": 3
+        },
+        "end": {
+          "offset": 4458,
+          "line": 178,
+          "column": 15
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 6081,
+          "line": 213,
+          "column": 3
+        },
+        "end": {
+          "offset": 6093,
+          "line": 213,
+          "column": 15
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 52,
+      "id": "a1e21de8a7046a7de680ed5ceeaaac6a9995c3c2afc6794d319586ee373ea390",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 4461,
+          "line": 179,
+          "column": 3
+        },
+        "end": {
+          "offset": 4475,
+          "line": 179,
+          "column": 17
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 6096,
+          "line": 214,
+          "column": 3
+        },
+        "end": {
+          "offset": 6110,
+          "line": 214,
+          "column": 17
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 53,
+      "id": "7b3324e40582a1a2c054255e1c5aeb05962b744d0ca126efeaeb9ff4af8a9220",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 4478,
+          "line": 180,
+          "column": 3
+        },
+        "end": {
+          "offset": 4501,
+          "line": 180,
+          "column": 26
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 6113,
+          "line": 215,
+          "column": 3
+        },
+        "end": {
+          "offset": 6136,
+          "line": 215,
+          "column": 26
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 54,
+      "id": "2a891502e53b5cae3198effbce5549ca8c9f08b5f202cb023b60314ff3754acf",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 4550,
+          "line": 182,
+          "column": 19
+        },
+        "end": {
+          "offset": 4579,
+          "line": 182,
+          "column": 48
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 6185,
+          "line": 217,
+          "column": 19
+        },
+        "end": {
+          "offset": 6214,
+          "line": 217,
+          "column": 48
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 55,
+      "id": "bec7eb48070732847dd4606aafc361f8f2f81e80b9bf2ba7be2b637c274781c7",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 4638,
+          "line": 184,
+          "column": 21
+        },
+        "end": {
+          "offset": 4666,
+          "line": 184,
+          "column": 49
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 6273,
+          "line": 219,
+          "column": 21
+        },
+        "end": {
+          "offset": 6301,
+          "line": 219,
+          "column": 49
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 56,
+      "id": "55786446f2664dfca4a3de992fefdc81a50b88fd89cbfd9bd7c04117438dcd8b",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 4709,
+          "line": 187,
+          "column": 21
+        },
+        "end": {
+          "offset": 4734,
+          "line": 187,
+          "column": 46
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 6344,
+          "line": 222,
+          "column": 21
+        },
+        "end": {
+          "offset": 6369,
+          "line": 222,
+          "column": 46
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 57,
+      "id": "d9b849112eff9e20e963c9883d51c0ddafa340762de68356d305a1c3a59dd016",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 5456,
+          "line": 216,
+          "column": 13
+        },
+        "end": {
+          "offset": 5465,
+          "line": 216,
+          "column": 22
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 7325,
+          "line": 256,
+          "column": 13
+        },
+        "end": {
+          "offset": 7334,
+          "line": 256,
+          "column": 22
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 58,
+      "id": "4daefdb5564b64349b685792a3dd81216edd053ec9beea8f226b85f058824548",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 5479,
+          "line": 217,
+          "column": 13
+        },
+        "end": {
+          "offset": 5489,
+          "line": 217,
+          "column": 23
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 7348,
+          "line": 257,
+          "column": 13
+        },
+        "end": {
+          "offset": 7358,
+          "line": 257,
+          "column": 23
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 59,
+      "id": "2309e060557e8a1b9b7885d68f574575739c52dee35590c4e226b7b689651354",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 5503,
+          "line": 218,
+          "column": 13
+        },
+        "end": {
+          "offset": 5521,
+          "line": 218,
+          "column": 31
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 7372,
+          "line": 258,
+          "column": 13
+        },
+        "end": {
+          "offset": 7390,
+          "line": 258,
+          "column": 31
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 60,
+      "id": "c70739ac5d5c59086581aa92e6c2dbbd504e9a11a337c03551d9491c9a97851e",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 5535,
+          "line": 219,
+          "column": 13
+        },
+        "end": {
+          "offset": 5551,
+          "line": 219,
+          "column": 29
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 7404,
+          "line": 259,
+          "column": 13
+        },
+        "end": {
+          "offset": 7420,
+          "line": 259,
+          "column": 29
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 61,
+      "id": "90c72a70f80baf7f2953124f4dceb3362d28bad9ca0a27504a66159b455bbc33",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 5565,
+          "line": 220,
+          "column": 13
+        },
+        "end": {
+          "offset": 5577,
+          "line": 220,
+          "column": 25
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 7434,
+          "line": 260,
+          "column": 13
+        },
+        "end": {
+          "offset": 7446,
+          "line": 260,
+          "column": 25
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 62,
+      "id": "a04e8d4105ac24d6fb5a4f717891077238dd47c256abb9dac842a8221d718746",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 6687,
+          "line": 254,
+          "column": 31
+        },
+        "end": {
+          "offset": 6699,
+          "line": 254,
+          "column": 43
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 8640,
+          "line": 301,
+          "column": 31
+        },
+        "end": {
+          "offset": 8652,
+          "line": 301,
+          "column": 43
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 63,
+      "id": "84ef9fdd6fd695262ea08f7e56d20956a74645f1682675e2cd7e5131510c2ea2",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 6701,
+          "line": 254,
+          "column": 45
+        },
+        "end": {
+          "offset": 6719,
+          "line": 254,
+          "column": 63
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 8654,
+          "line": 301,
+          "column": 45
+        },
+        "end": {
+          "offset": 8672,
+          "line": 301,
+          "column": 63
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 64,
+      "id": "2bba11864b44bc4294b7207e00cb42a8872ef50ff46650734d62a0d8dacd50e9",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 7088,
+          "line": 264,
+          "column": 15
+        },
+        "end": {
+          "offset": 7097,
+          "line": 264,
+          "column": 24
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 9041,
+          "line": 311,
+          "column": 15
+        },
+        "end": {
+          "offset": 9050,
+          "line": 311,
+          "column": 24
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 65,
+      "id": "c55cec2b0474cc1178208a73ca6cfb14b1950c990ad7888fef190feea69b70d9",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 7113,
+          "line": 265,
+          "column": 15
+        },
+        "end": {
+          "offset": 7123,
+          "line": 265,
+          "column": 25
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 9066,
+          "line": 312,
+          "column": 15
+        },
+        "end": {
+          "offset": 9076,
+          "line": 312,
+          "column": 25
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 66,
+      "id": "04ff8bdb30f271352ea24cf4d9a14ae88c801a03fdb7f1ac79df3a2662a31373",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 7139,
+          "line": 266,
+          "column": 15
+        },
+        "end": {
+          "offset": 7157,
+          "line": 266,
+          "column": 33
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 9092,
+          "line": 313,
+          "column": 15
+        },
+        "end": {
+          "offset": 9110,
+          "line": 313,
+          "column": 33
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 67,
+      "id": "e5b0cdb21b61802ea149e5ca95aa911167714d641ca6d3ae2b561872979bb94d",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 7173,
+          "line": 267,
+          "column": 15
+        },
+        "end": {
+          "offset": 7189,
+          "line": 267,
+          "column": 31
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 9126,
+          "line": 314,
+          "column": 15
+        },
+        "end": {
+          "offset": 9142,
+          "line": 314,
+          "column": 31
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 68,
+      "id": "2f79b230c36fad6d856d16a9bb0ff362da14af263f9cb2ae7e554a7e5dd23b14",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 7205,
+          "line": 268,
+          "column": 15
+        },
+        "end": {
+          "offset": 7217,
+          "line": 268,
+          "column": 27
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 9158,
+          "line": 315,
+          "column": 15
+        },
+        "end": {
+          "offset": 9170,
+          "line": 315,
+          "column": 27
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 69,
+      "id": "29bea82e260ead2d5ee8a0a430a13466f2492a1e6d6412b36ae3da9574beed5a",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 8034,
+          "line": 305,
+          "column": 23
+        },
+        "end": {
+          "offset": 8046,
+          "line": 305,
+          "column": 35
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 10219,
+          "line": 357,
+          "column": 23
+        },
+        "end": {
+          "offset": 10231,
+          "line": 357,
+          "column": 35
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 70,
+      "id": "8b4e37f58ce6324da8b2b5eb5308b6a27e70592d6619349542230a10efa9f400",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 8048,
+          "line": 305,
+          "column": 37
+        },
+        "end": {
+          "offset": 8064,
+          "line": 305,
+          "column": 53
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 10233,
+          "line": 357,
+          "column": 37
+        },
+        "end": {
+          "offset": 10249,
+          "line": 357,
+          "column": 53
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 71,
+      "id": "860c4f8a71a026600efb7887adfeea4263c7e3ef82b39410e23dd326e6dbae78",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 8495,
+          "line": 318,
+          "column": 13
+        },
+        "end": {
+          "offset": 8504,
+          "line": 318,
+          "column": 22
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 10680,
+          "line": 370,
+          "column": 13
+        },
+        "end": {
+          "offset": 10689,
+          "line": 370,
+          "column": 22
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 72,
+      "id": "0e34b5cf2fbafe2d6d52d2ece2a526be92b07d1c42f1ffc04700436dd9b79444",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 8518,
+          "line": 319,
+          "column": 13
+        },
+        "end": {
+          "offset": 8528,
+          "line": 319,
+          "column": 23
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 10703,
+          "line": 371,
+          "column": 13
+        },
+        "end": {
+          "offset": 10713,
+          "line": 371,
+          "column": 23
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 73,
+      "id": "a6cecc8882e7c4d1e8e7548e28cfc66907c28864fff2c93c848e8c20b55b1663",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 8542,
+          "line": 320,
+          "column": 13
+        },
+        "end": {
+          "offset": 8554,
+          "line": 320,
+          "column": 25
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 10727,
+          "line": 372,
+          "column": 13
+        },
+        "end": {
+          "offset": 10739,
+          "line": 372,
+          "column": 25
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 74,
+      "id": "540428f709c6acaae4b13543c2be91ddc6052443399342942a41e00412b57fb9",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 8568,
+          "line": 321,
+          "column": 13
+        },
+        "end": {
+          "offset": 8586,
+          "line": 321,
+          "column": 31
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 10753,
+          "line": 373,
+          "column": 13
+        },
+        "end": {
+          "offset": 10771,
+          "line": 373,
+          "column": 31
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 75,
+      "id": "68dece862f89799811bfd642a9e33be2f3ca0eb054a980067f75a42b071ac265",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 8600,
+          "line": 322,
+          "column": 13
+        },
+        "end": {
+          "offset": 8616,
+          "line": 322,
+          "column": 29
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 10785,
+          "line": 374,
+          "column": 13
+        },
+        "end": {
+          "offset": 10801,
+          "line": 374,
+          "column": 29
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 84,
+      "id": "9a594b91eb9e5b9b4c785e5d610818690118b67a765d041edfc64a330ce3c0eb",
+      "path": "libs/design-system/src/runtime.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 1988,
+          "line": 62,
+          "column": 33
+        },
+        "end": {
+          "offset": 2008,
+          "line": 62,
+          "column": 53
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 2158,
+          "line": 66,
+          "column": 33
+        },
+        "end": {
+          "offset": 2178,
+          "line": 66,
+          "column": 53
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 85,
+      "id": "a48581f39558ed46458dedf7a0754d46b115744a4576fe5eb915ba85d664aa9e",
+      "path": "libs/design-system/src/runtime.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 2136,
+          "line": 67,
+          "column": 17
+        },
+        "end": {
+          "offset": 2158,
+          "line": 67,
+          "column": 39
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 2306,
+          "line": 71,
+          "column": 17
+        },
+        "end": {
+          "offset": 2328,
+          "line": 71,
+          "column": 39
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 86,
+      "id": "956dbec8395fe4fab29df73ae86d519b1ee0ebc0c4374e0b02c03691a0e04781",
+      "path": "libs/design-system/src/runtime.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 2160,
+          "line": 67,
+          "column": 41
+        },
+        "end": {
+          "offset": 2180,
+          "line": 67,
+          "column": 61
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 2330,
+          "line": 71,
+          "column": 41
+        },
+        "end": {
+          "offset": 2350,
+          "line": 71,
+          "column": 61
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 87,
+      "id": "1a4c87cb4eb1909dc3804ea10069730131dcf1e0a5311b4dd1e8317a27f4bedc",
+      "path": "libs/design-system/src/runtime.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 2210,
+          "line": 69,
+          "column": 11
+        },
+        "end": {
+          "offset": 2222,
+          "line": 69,
+          "column": 23
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 2380,
+          "line": 73,
+          "column": 11
+        },
+        "end": {
+          "offset": 2392,
+          "line": 73,
+          "column": 23
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 88,
+      "id": "5531274823f03e7459808f91f9362818b8c2c38eeb45d88b65d3e63d89f68972",
+      "path": "libs/design-system/src/runtime.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 2234,
+          "line": 70,
+          "column": 11
+        },
+        "end": {
+          "offset": 2249,
+          "line": 70,
+          "column": 26
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 2404,
+          "line": 74,
+          "column": 11
+        },
+        "end": {
+          "offset": 2419,
+          "line": 74,
+          "column": 26
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 89,
+      "id": "d7b4537bbcac3c815b21ceb7fbfb440699e37203a1c6d46017a87d5a1aebd5e3",
+      "path": "libs/design-system/src/runtime.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 2261,
+          "line": 71,
+          "column": 11
+        },
+        "end": {
+          "offset": 2277,
+          "line": 71,
+          "column": 27
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 2431,
+          "line": 75,
+          "column": 11
+        },
+        "end": {
+          "offset": 2447,
+          "line": 75,
+          "column": 27
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 90,
+      "id": "6cd70ca50f346593c75c612a803a595da001aaa6e63f53b4b1de8c48a6dc5cd7",
+      "path": "libs/design-system/src/runtime.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 2289,
+          "line": 72,
+          "column": 11
+        },
+        "end": {
+          "offset": 2310,
+          "line": 72,
+          "column": 32
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 2459,
+          "line": 76,
+          "column": 11
+        },
+        "end": {
+          "offset": 2480,
+          "line": 76,
+          "column": 32
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "evidence",
+      "index": 91,
+      "id": "25f99f547bb86932344f18c5e675c1f5622689eaeeb495207ec2b28ded3b073b",
+      "path": "libs/design-system/src/runtime.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 2322,
+          "line": 73,
+          "column": 11
+        },
+        "end": {
+          "offset": 2343,
+          "line": 73,
+          "column": 32
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 2492,
+          "line": 77,
+          "column": 11
+        },
+        "end": {
+          "offset": 2513,
+          "line": 77,
+          "column": 32
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "findings",
+      "index": 1,
+      "id": "RTL.BIDI.ISOLATION:741d2ce2aec3a86cf2db37ea",
+      "path": "apps/invoicing/src/components/InvoiceTable.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 760,
+          "line": 19,
+          "column": 15
+        },
+        "end": {
+          "offset": 766,
+          "line": 19,
+          "column": 21
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 988,
+          "line": 24,
+          "column": 15
+        },
+        "end": {
+          "offset": 994,
+          "line": 24,
+          "column": 21
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "findings",
+      "index": 2,
+      "id": "RTL.BIDI.ISOLATION:ee65b3a5436494c134055362",
+      "path": "apps/invoicing/src/components/InvoiceTable.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 1407,
+          "line": 42,
+          "column": 27
+        },
+        "end": {
+          "offset": 1415,
+          "line": 42,
+          "column": 35
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 1635,
+          "line": 47,
+          "column": 27
+        },
+        "end": {
+          "offset": 1643,
+          "line": 47,
+          "column": 35
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "findings",
+      "index": 3,
+      "id": "RTL.BIDI.ISOLATION:c37e1290384b5b026d3550c4",
+      "path": "apps/invoicing/src/components/InvoiceTable.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 1450,
+          "line": 43,
+          "column": 26
+        },
+        "end": {
+          "offset": 1459,
+          "line": 43,
+          "column": 35
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 1678,
+          "line": 48,
+          "column": 26
+        },
+        "end": {
+          "offset": 1687,
+          "line": 48,
+          "column": 35
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "findings",
+      "index": 4,
+      "id": "RTL.BIDI.ISOLATION:af648a829cee9b32c0bd2fb8",
+      "path": "apps/invoicing/src/components/InvoiceTable.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 2000,
+          "line": 64,
+          "column": 38
+        },
+        "end": {
+          "offset": 2029,
+          "line": 64,
+          "column": 67
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 2228,
+          "line": 69,
+          "column": 38
+        },
+        "end": {
+          "offset": 2257,
+          "line": 69,
+          "column": 67
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "findings",
+      "index": 5,
+      "id": "RTL.ICON.PROGRESSION:237172da962fe4d0605ddd83",
+      "path": "apps/invoicing/src/components/InvoiceTable.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 2455,
+          "line": 78,
+          "column": 17
+        },
+        "end": {
+          "offset": 2508,
+          "line": 78,
+          "column": 70
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 2712,
+          "line": 86,
+          "column": 17
+        },
+        "end": {
+          "offset": 2765,
+          "line": 86,
+          "column": 70
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "findings",
+      "index": 6,
+      "id": "RTL.ICON.PROGRESSION:07d33024c457dfcdc175bd85",
+      "path": "apps/invoicing/src/components/InvoiceTable.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 2545,
+          "line": 80,
+          "column": 17
+        },
+        "end": {
+          "offset": 2601,
+          "line": 80,
+          "column": 73
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 2802,
+          "line": 88,
+          "column": 17
+        },
+        "end": {
+          "offset": 2858,
+          "line": 88,
+          "column": 73
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "findings",
+      "index": 7,
+      "id": "RTL.BIDI.ISOLATION:20d0455279e243edca7d306d",
+      "path": "apps/invoicing/src/pages/CreateInvoice.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 3156,
+          "line": 110,
+          "column": 19
+        },
+        "end": {
+          "offset": 3164,
+          "line": 110,
+          "column": 27
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 3868,
+          "line": 121,
+          "column": 19
+        },
+        "end": {
+          "offset": 3876,
+          "line": 121,
+          "column": 27
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "findings",
+      "index": 8,
+      "id": "RTL.CHART.LABEL_FLOW:caa8a6652446209dc2fc98cf",
+      "path": "apps/invoicing/src/pages/Dashboard.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 3355,
+          "line": 87,
+          "column": 13
+        },
+        "end": {
+          "offset": 3538,
+          "line": 91,
+          "column": 14
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 3786,
+          "line": 99,
+          "column": 13
+        },
+        "end": {
+          "offset": 4002,
+          "line": 105,
+          "column": 14
+        }
+      },
+      "originalFormattingChanged": true,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "findings",
+      "index": 9,
+      "id": "RTL.CSS.PHYSICAL:adebba7d3ad0dda9b7b8d423",
+      "path": "apps/invoicing/src/pages/Dashboard.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 7004,
+          "line": 180,
+          "column": 23
+        },
+        "end": {
+          "offset": 7018,
+          "line": 180,
+          "column": 37
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 7468,
+          "line": 194,
+          "column": 23
+        },
+        "end": {
+          "offset": 7482,
+          "line": 194,
+          "column": 37
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "findings",
+      "index": 10,
+      "id": "RTL.ICON.LITERAL:aa0a8bc3f6ca19eae5b56a82",
+      "path": "apps/invoicing/src/pages/Dashboard.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 7520,
+          "line": 197,
+          "column": 47
+        },
+        "end": {
+          "offset": 7541,
+          "line": 197,
+          "column": 68
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 7984,
+          "line": 211,
+          "column": 47
+        },
+        "end": {
+          "offset": 8005,
+          "line": 211,
+          "column": 68
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "findings",
+      "index": 11,
+      "id": "RTL.BIDI.ISOLATION:9f05797020b15bb1031f12fe",
+      "path": "apps/invoicing/src/pages/InvoiceDetails.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 1143,
+          "line": 38,
+          "column": 17
+        },
+        "end": {
+          "offset": 1151,
+          "line": 38,
+          "column": 25
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 1410,
+          "line": 45,
+          "column": 17
+        },
+        "end": {
+          "offset": 1418,
+          "line": 45,
+          "column": 25
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "findings",
+      "index": 12,
+      "id": "RTL.BIDI.ISOLATION:13dfdcf2817c6da7fa0b7930",
+      "path": "apps/invoicing/src/pages/InvoiceDetails.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 1235,
+          "line": 41,
+          "column": 15
+        },
+        "end": {
+          "offset": 1246,
+          "line": 41,
+          "column": 26
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 1502,
+          "line": 48,
+          "column": 15
+        },
+        "end": {
+          "offset": 1513,
+          "line": 48,
+          "column": 26
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "findings",
+      "index": 13,
+      "id": "RTL.BIDI.ISOLATION:31882b621bb69ff054bca7a7",
+      "path": "apps/invoicing/src/pages/InvoiceDetails.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 1282,
+          "line": 43,
+          "column": 15
+        },
+        "end": {
+          "offset": 1291,
+          "line": 43,
+          "column": 24
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 1549,
+          "line": 50,
+          "column": 15
+        },
+        "end": {
+          "offset": 1558,
+          "line": 50,
+          "column": 24
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "findings",
+      "index": 14,
+      "id": "RTL.BIDI.ISOLATION:e7869ece999321c7e9e1d86e",
+      "path": "apps/invoicing/src/pages/InvoiceDetails.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 2189,
+          "line": 70,
+          "column": 19
+        },
+        "end": {
+          "offset": 2218,
+          "line": 70,
+          "column": 48
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 2497,
+          "line": 80,
+          "column": 19
+        },
+        "end": {
+          "offset": 2526,
+          "line": 80,
+          "column": 48
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "findings",
+      "index": 15,
+      "id": "RTL.CSS.PHYSICAL:01b8d7fcb0e0dd788a73af31",
+      "path": "apps/invoicing/src/pages/Invoices.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 1881,
+          "line": 56,
+          "column": 43
+        },
+        "end": {
+          "offset": 1899,
+          "line": 56,
+          "column": 61
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 2169,
+          "line": 64,
+          "column": 43
+        },
+        "end": {
+          "offset": 2187,
+          "line": 64,
+          "column": 61
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "findings",
+      "index": 16,
+      "id": "RTL.RUNTIME.PAGINATION:c2bdfb11861582e5c386e851",
+      "path": "apps/invoicing/src/pages/Invoices.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 2339,
+          "line": 66,
+          "column": 11
+        },
+        "end": {
+          "offset": 2695,
+          "line": 72,
+          "column": 13
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 2705,
+          "line": 79,
+          "column": 11
+        },
+        "end": {
+          "offset": 3185,
+          "line": 92,
+          "column": 13
+        }
+      },
+      "originalFormattingChanged": true,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "findings",
+      "index": 18,
+      "id": "RTL.BIDI.ISOLATION:862b107afb21edf9840ac703",
+      "path": "apps/procurement/src/App.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 2180,
+          "line": 68,
+          "column": 19
+        },
+        "end": {
+          "offset": 2186,
+          "line": 68,
+          "column": 25
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 2392,
+          "line": 73,
+          "column": 19
+        },
+        "end": {
+          "offset": 2398,
+          "line": 73,
+          "column": 25
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "findings",
+      "index": 19,
+      "id": "RTL.BIDI.ISOLATION:95f0d5216f0155c798f82986",
+      "path": "apps/procurement/src/App.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 2671,
+          "line": 84,
+          "column": 55
+        },
+        "end": {
+          "offset": 2688,
+          "line": 84,
+          "column": 72
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 2883,
+          "line": 89,
+          "column": 55
+        },
+        "end": {
+          "offset": 2900,
+          "line": 89,
+          "column": 72
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "findings",
+      "index": 20,
+      "id": "RTL.BIDI.ISOLATION:3267dc7e6b7ff0e147b62518",
+      "path": "apps/procurement/src/App.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 3183,
+          "line": 105,
+          "column": 15
+        },
+        "end": {
+          "offset": 3193,
+          "line": 105,
+          "column": 25
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 3550,
+          "line": 114,
+          "column": 15
+        },
+        "end": {
+          "offset": 3560,
+          "line": 114,
+          "column": 25
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "findings",
+      "index": 21,
+      "id": "RTL.BIDI.ISOLATION:0ae599d0017719ece2087ae9",
+      "path": "apps/procurement/src/App.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 3869,
+          "line": 125,
+          "column": 19
+        },
+        "end": {
+          "offset": 3890,
+          "line": 125,
+          "column": 40
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 4228,
+          "line": 134,
+          "column": 19
+        },
+        "end": {
+          "offset": 4249,
+          "line": 134,
+          "column": 40
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "findings",
+      "index": 22,
+      "id": "RTL.FORM.DIRECTION:c3038155faae0e23f50372db",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 1415,
+          "line": 41,
+          "column": 3
+        },
+        "end": {
+          "offset": 1449,
+          "line": 41,
+          "column": 37
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 1890,
+          "line": 51,
+          "column": 3
+        },
+        "end": {
+          "offset": 1924,
+          "line": 51,
+          "column": 37
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "findings",
+      "index": 23,
+      "id": "RTL.GEOMETRY.EDGE:4a19b0ffbf510d5d3715c64c",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 2832,
+          "line": 106,
+          "column": 39
+        },
+        "end": {
+          "offset": 2841,
+          "line": 106,
+          "column": 48
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 4009,
+          "line": 131,
+          "column": 39
+        },
+        "end": {
+          "offset": 4018,
+          "line": 131,
+          "column": 48
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "findings",
+      "index": 24,
+      "id": "RTL.TABLE.ALIGNMENT:9e76dea095ca377d5e42c677",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 3690,
+          "line": 147,
+          "column": 15
+        },
+        "end": {
+          "offset": 3715,
+          "line": 147,
+          "column": 40
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 5325,
+          "line": 182,
+          "column": 15
+        },
+        "end": {
+          "offset": 5350,
+          "line": 182,
+          "column": 40
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "findings",
+      "index": 25,
+      "id": "RTL.TABLE.ALIGNMENT:11f232d9438044cfba290f21",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 3946,
+          "line": 155,
+          "column": 17
+        },
+        "end": {
+          "offset": 3971,
+          "line": 155,
+          "column": 42
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 5581,
+          "line": 190,
+          "column": 17
+        },
+        "end": {
+          "offset": 5606,
+          "line": 190,
+          "column": 42
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "findings",
+      "index": 26,
+      "id": "RTL.GEOMETRY.ORDER:0b23a5f6f4bc3966eb9e0efc",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 4550,
+          "line": 182,
+          "column": 19
+        },
+        "end": {
+          "offset": 4579,
+          "line": 182,
+          "column": 48
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 6185,
+          "line": 217,
+          "column": 19
+        },
+        "end": {
+          "offset": 6214,
+          "line": 217,
+          "column": 48
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "findings",
+      "index": 27,
+      "id": "RTL.GEOMETRY.ORDER:1226abd54e967deed14a4a6c",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 4638,
+          "line": 184,
+          "column": 21
+        },
+        "end": {
+          "offset": 4666,
+          "line": 184,
+          "column": 49
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 6273,
+          "line": 219,
+          "column": 21
+        },
+        "end": {
+          "offset": 6301,
+          "line": 219,
+          "column": 49
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "findings",
+      "index": 28,
+      "id": "RTL.BRAND.ISLAND:b2139ad57eaf0ae87a66743e",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 5225,
+          "line": 209,
+          "column": 7
+        },
+        "end": {
+          "offset": 5267,
+          "line": 209,
+          "column": 49
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 7094,
+          "line": 249,
+          "column": 7
+        },
+        "end": {
+          "offset": 7136,
+          "line": 249,
+          "column": 49
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "findings",
+      "index": 29,
+      "id": "RTL.ICON.PROGRESSION:f4c175932dd9a0c9123c55f5",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 6667,
+          "line": 254,
+          "column": 11
+        },
+        "end": {
+          "offset": 6725,
+          "line": 254,
+          "column": 69
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 8620,
+          "line": 301,
+          "column": 11
+        },
+        "end": {
+          "offset": 8678,
+          "line": 301,
+          "column": 69
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "findings",
+      "index": 30,
+      "id": "RTL.CSS.PHYSICAL:a82eeae5e376b962d817b8b2",
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 6701,
+          "line": 254,
+          "column": 45
+        },
+        "end": {
+          "offset": 6719,
+          "line": 254,
+          "column": 63
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 8654,
+          "line": 301,
+          "column": 45
+        },
+        "end": {
+          "offset": 8672,
+          "line": 301,
+          "column": 63
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "findings",
+      "index": 31,
+      "id": "RTL.DOCUMENT.RUNTIME:1f3bd0fab5211f473ef82db4",
+      "path": "libs/design-system/src/runtime.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 2749,
+          "line": 86,
+          "column": 5
+        },
+        "end": {
+          "offset": 2813,
+          "line": 86,
+          "column": 69
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 3475,
+          "line": 104,
+          "column": 5
+        },
+        "end": {
+          "offset": 3539,
+          "line": 104,
+          "column": 69
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "findings",
+      "index": 41,
+      "id": "RTL.RUNTIME.LOCALE:9356c0da9bea9ff5056b08b3",
+      "path": "libs/shared/src/index.ts",
+      "previousRange": {
+        "start": {
+          "offset": 2796,
+          "line": 118,
+          "column": 3
+        },
+        "end": {
+          "offset": 2900,
+          "line": 122,
+          "column": 5
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 3699,
+          "line": 137,
+          "column": 3
+        },
+        "end": {
+          "offset": 3803,
+          "line": 141,
+          "column": 5
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "diagnostics",
+      "index": 0,
+      "id": null,
+      "path": "apps/invoicing/src/components/InvoiceTable.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 1136,
+          "line": 33,
+          "column": 30
+        },
+        "end": {
+          "offset": 1150,
+          "line": 33,
+          "column": 44
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 1364,
+          "line": 38,
+          "column": 30
+        },
+        "end": {
+          "offset": 1378,
+          "line": 38,
+          "column": 44
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "diagnostics",
+      "index": 1,
+      "id": null,
+      "path": "apps/invoicing/src/components/InvoiceTable.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 1179,
+          "line": 34,
+          "column": 28
+        },
+        "end": {
+          "offset": 1186,
+          "line": 34,
+          "column": 35
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 1407,
+          "line": 39,
+          "column": 28
+        },
+        "end": {
+          "offset": 1414,
+          "line": 39,
+          "column": 35
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "diagnostics",
+      "index": 2,
+      "id": null,
+      "path": "apps/invoicing/src/pages/Customers.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 1077,
+          "line": 29,
+          "column": 38
+        },
+        "end": {
+          "offset": 1091,
+          "line": 29,
+          "column": 52
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 1268,
+          "line": 35,
+          "column": 38
+        },
+        "end": {
+          "offset": 1282,
+          "line": 35,
+          "column": 52
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "diagnostics",
+      "index": 3,
+      "id": null,
+      "path": "apps/invoicing/src/pages/Customers.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 1100,
+          "line": 29,
+          "column": 61
+        },
+        "end": {
+          "offset": 1107,
+          "line": 29,
+          "column": 68
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 1291,
+          "line": 35,
+          "column": 61
+        },
+        "end": {
+          "offset": 1298,
+          "line": 35,
+          "column": 68
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "diagnostics",
+      "index": 4,
+      "id": null,
+      "path": "apps/invoicing/src/pages/Dashboard.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 2500,
+          "line": 63,
+          "column": 23
+        },
+        "end": {
+          "offset": 2521,
+          "line": 63,
+          "column": 44
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 2903,
+          "line": 73,
+          "column": 23
+        },
+        "end": {
+          "offset": 2924,
+          "line": 73,
+          "column": 44
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "diagnostics",
+      "index": 5,
+      "id": null,
+      "path": "apps/invoicing/src/pages/Dashboard.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 5648,
+          "line": 151,
+          "column": 29
+        },
+        "end": {
+          "offset": 5990,
+          "line": 151,
+          "column": 371
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 6112,
+          "line": 165,
+          "column": 29
+        },
+        "end": {
+          "offset": 6454,
+          "line": 165,
+          "column": 371
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "diagnostics",
+      "index": 6,
+      "id": null,
+      "path": "apps/invoicing/src/pages/Dashboard.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 6707,
+          "line": 171,
+          "column": 43
+        },
+        "end": {
+          "offset": 6720,
+          "line": 171,
+          "column": 56
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 7171,
+          "line": 185,
+          "column": 43
+        },
+        "end": {
+          "offset": 7184,
+          "line": 185,
+          "column": 56
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "diagnostics",
+      "index": 7,
+      "id": null,
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 2231,
+          "line": 76,
+          "column": 21
+        },
+        "end": {
+          "offset": 2248,
+          "line": 76,
+          "column": 38
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 3174,
+          "line": 96,
+          "column": 21
+        },
+        "end": {
+          "offset": 3191,
+          "line": 96,
+          "column": 38
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    },
+    {
+      "kind": "diagnostics",
+      "index": 8,
+      "id": null,
+      "path": "libs/design-system/src/index.tsx",
+      "previousRange": {
+        "start": {
+          "offset": 2265,
+          "line": 77,
+          "column": 16
+        },
+        "end": {
+          "offset": 2282,
+          "line": 77,
+          "column": 33
+        }
+      },
+      "nextRange": {
+        "start": {
+          "offset": 3208,
+          "line": 97,
+          "column": 16
+        },
+        "end": {
+          "offset": 3225,
+          "line": 97,
+          "column": 33
+        }
+      },
+      "originalFormattingChanged": false,
+      "reason": "Comments/formatting shifted source coordinates; executable output and semantic fields verified."
+    }
+  ]
+}
