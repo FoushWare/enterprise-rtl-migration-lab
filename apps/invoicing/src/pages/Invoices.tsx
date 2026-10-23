@@ -5,6 +5,12 @@ import { Card, FormField } from "@atlas/design-system";
 import { customerFor, type Invoice } from "@atlas/shared";
 import { Heading, CreateButton } from "../components/InvoiceUi";
 import { InvoiceTable } from "../components/InvoiceTable";
+/**
+ * Filter the supplied invoice collection for the list page.
+ * Search and status selection affect the visible rows, not the stored invoices.
+ * @param invoices - The shared collection owned by App.
+ * @returns Search controls and the matching invoice table.
+ */
 export function Invoices({ invoices }: { invoices: Invoice[] }) {
   const { t, label, language } = useLocale();
   const [search, setSearch] = useState(""),
@@ -21,7 +27,9 @@ export function Invoices({ invoices }: { invoices: Invoice[] }) {
     <>
       <Heading
         title={t("Invoices")}
-        description={t("Manage your invoices, track payments, and keep business moving.")}
+        description={t(
+          "Manage your invoices, track payments, and keep business moving.",
+        )}
         action={<CreateButton />}
       />
       <Card>
@@ -54,18 +62,30 @@ export function Invoices({ invoices }: { invoices: Invoice[] }) {
             )}
           </FormField>
           <span className="hint" style={{ marginLeft: "auto" }}>
-            {filtered.length}{" "}{t("invoices")}</span>
+            {filtered.length} {t("invoices")}
+          </span>
         </div>
         <InvoiceTable invoices={filtered.slice((page - 1) * 8, page * 8)} />
         <div className="pagination">
           <span>
             {filtered.length
-              ? t("{start}–{end} of {count}", { start: (page - 1) * 8 + 1, end: Math.min(page * 8, filtered.length), count: filtered.length })
+              ? t("{start}–{end} of {count}", {
+                  start: (page - 1) * 8 + 1,
+                  end: Math.min(page * 8, filtered.length),
+                  count: filtered.length,
+                })
               : t("0 results")}
           </span>
           <Pagination
             size="small"
-            getItemAriaLabel={language === "ar" ? (type, number) => type === "page" ? t("Go to page {page}", { page: number ?? 1 }) : label(`Go to ${type} page`) : undefined}
+            getItemAriaLabel={
+              language === "ar"
+                ? (type, number) =>
+                    type === "page"
+                      ? t("Go to page {page}", { page: number ?? 1 })
+                      : label(`Go to ${type} page`)
+                : undefined
+            }
             page={page}
             count={Math.max(1, Math.ceil(filtered.length / 8))}
             onChange={(_, p) => setPage(p)}

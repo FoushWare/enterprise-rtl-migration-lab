@@ -8,6 +8,12 @@ import AccountBalanceWalletOutlined from "@mui/icons-material/AccountBalanceWall
 import ScheduleOutlined from "@mui/icons-material/ScheduleOutlined";
 import ReceiptLongOutlined from "@mui/icons-material/ReceiptLongOutlined";
 import TrendingUp from "@mui/icons-material/TrendingUp";
+/**
+ * Summarize the supplied invoices with totals, payment states, and recent activity.
+ * The revenue path is illustrative; payment counts and amounts come from invoice data.
+ * @param invoices - The collection loaded by App; this view does not fetch or persist it.
+ * @returns The overview page with localized labels and isolated numeric content.
+ */
 export function Dashboard({ invoices }: { invoices: Invoice[] }) {
   const { t, demoHref, label: translateLabel } = useLocale();
   const paid = invoices.filter((i) => i.status === "Paid"),
@@ -19,14 +25,18 @@ export function Dashboard({ invoices }: { invoices: Invoice[] }) {
     <>
       <Heading
         title={t("Overview")}
-        description={t("Welcome back, Alex. Here’s how your business is doing today.")}
+        description={t(
+          "Welcome back, Alex. Here’s how your business is doing today.",
+        )}
         action={
           <div className="heading-actions">
             <Button
               variant="outlined"
               sx={{ borderColor: "#e0e5ee", color: "#707a8e", bgcolor: "#fff" }}
               onClick={() => window.print()}
-            >{t("Print report")}</Button>
+            >
+              {t("Print report")}
+            </Button>
             <CreateButton />
           </div>
         }
@@ -81,13 +91,17 @@ export function Dashboard({ invoices }: { invoices: Invoice[] }) {
               <p>{t("Your revenue performance over time")}</p>
             </div>
             <span className="chart-legend">
-              <i />{t("Revenue · USD")}</span>
+              <i />
+              {t("Revenue · USD")}
+            </span>
           </div>
           <div className="chart-wrap">
             <svg
               viewBox="0 0 600 215"
               role="img"
-              aria-label={t("Revenue increased from May to October, from 24,000 to 61,000 US dollars")}
+              aria-label={t(
+                "Revenue increased from May to October, from 24,000 to 61,000 US dollars",
+              )}
             >
               <defs>
                 <linearGradient id="revenue-fill" x1="0" y1="0" x2="0" y2="1">
@@ -198,7 +212,11 @@ export function Dashboard({ invoices }: { invoices: Invoice[] }) {
         </div>
         <InvoiceTable invoices={invoices.slice(0, 5)} />
       </Card>
-      <p className="hint" style={{ fontSize: 10, marginTop: 16 }}>{t("Revenue trend and comparisons are illustrative demo figures. Invoice balances include USD invoices only; counts include all currencies.")}</p>
+      <p className="hint" style={{ fontSize: 10, marginTop: 16 }}>
+        {t(
+          "Revenue trend and comparisons are illustrative demo figures. Invoice balances include USD invoices only; counts include all currencies.",
+        )}
+      </p>
     </>
   );
 }

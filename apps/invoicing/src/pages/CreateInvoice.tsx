@@ -14,6 +14,13 @@ import {
   type LineItem,
 } from "@atlas/shared";
 import { Heading } from "../components/InvoiceUi";
+/**
+ * Collect invoice fields and line items, then persist through the mock API.
+ * The success callback updates App before navigation; validation and duplicate errors
+ * remain in this form rather than changing the shared collection.
+ * @param onCreated - Receives the successfully persisted invoice.
+ * @returns The invoice form and its current validation or submission state.
+ */
 export function CreateInvoice({
   onCreated,
 }: {
@@ -32,6 +39,8 @@ export function CreateInvoice({
     [confirm, setConfirm] = useState(false),
     [saving, setSaving] = useState(false),
     [error, setError] = useState("");
+  // ISO date-only strings sort chronologically without timezone conversion.
+  // Require finite positive quantities/rates before showing confirmation.
   const valid =
     !!customer &&
     !!date &&
@@ -45,6 +54,7 @@ export function CreateInvoice({
         Number.isFinite(i.rate) &&
         i.rate > 0,
     );
+  /** Update one line item, coercing numeric fields while retaining description text. */
   function update(index: number, key: keyof LineItem, value: string) {
     setItems(
       items.map((i, n) =>
@@ -54,6 +64,7 @@ export function CreateInvoice({
       ),
     );
   }
+  /** Persist first, notify App only on success, then open the created detail route. */
   async function save() {
     setSaving(true);
     try {
@@ -178,7 +189,9 @@ export function CreateInvoice({
                 value={item.rate}
                 onChange={(e) => update(index, "rate", e.target.value)}
                 error={errors && item.rate <= 0}
-                helperText={errors && item.rate <= 0 ? t("Must be positive") : ""}
+                helperText={
+                  errors && item.rate <= 0 ? t("Must be positive") : ""
+                }
               />
               <IconButton
                 aria-label={t("Remove item {number}", { number: index + 1 })}
@@ -195,15 +208,25 @@ export function CreateInvoice({
             onClick={() =>
               setItems([...items, { description: "", quantity: 1, rate: 0 }])
             }
-          >{t("Add line item")}</Button>
+          >
+            {t("Add line item")}
+          </Button>
           <div className="form-total">
             <span>{t("Total")}</span>
-            <strong><bdi dir="ltr">{money(total({ items }), currency)}</bdi></strong>
+            <strong>
+              <bdi dir="ltr">{money(total({ items }), currency)}</bdi>
+            </strong>
           </div>
         </Card>
         {error && <Alert severity="error">{error}</Alert>}
         <div className="heading-actions" style={{ justifyContent: "flex-end" }}>
-          <Button component={Link} to={demoHref("/invoices")} variant="outlined">{t("Cancel")}</Button>
+          <Button
+            component={Link}
+            to={demoHref("/invoices")}
+            variant="outlined"
+          >
+            {t("Cancel")}
+          </Button>
           <Button type="submit">{t("Review invoice")}</Button>
         </div>
       </form>
@@ -217,16 +240,33 @@ export function CreateInvoice({
               variant="outlined"
               disabled={saving}
               onClick={() => setConfirm(false)}
-            >{t("Keep editing")}</Button>
+            >
+              {t("Keep editing")}
+            </Button>
             <Button disabled={saving} onClick={save}>
               {saving ? t("Saving…") : t("Create invoice")}
             </Button>
           </>
         }
       >
-        <p>{t("Create an invoice for")}{" "}
-          <strong><bdi dir="auto">{customers.find((c) => c.id === customer)?.name}</bdi></strong>{" "}{t("totaling")}{" "}<strong><bdi dir="ltr">{money(total({ items }), currency)}</bdi></strong>{t("?")}</p>
-        <p className="hint">{t("The invoice will be saved to this demo workspace as Pending. No email is sent.")}</p>
+        <p>
+          {t("Create an invoice for")}{" "}
+          <strong>
+            <bdi dir="auto">
+              {customers.find((c) => c.id === customer)?.name}
+            </bdi>
+          </strong>{" "}
+          {t("totaling")}{" "}
+          <strong>
+            <bdi dir="ltr">{money(total({ items }), currency)}</bdi>
+          </strong>
+          {t("?")}
+        </p>
+        <p className="hint">
+          {t(
+            "The invoice will be saved to this demo workspace as Pending. No email is sent.",
+          )}
+        </p>
       </Modal>
     </>
   );

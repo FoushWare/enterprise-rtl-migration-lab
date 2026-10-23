@@ -34,12 +34,27 @@ import styled from "@emotion/styled";
 import type { Status } from "@atlas/shared";
 import "./styles.css";
 export { Provider, theme } from "./runtime";
+/**
+ * Forward the existing polymorphic MUI button props without introducing a new style owner.
+ * @param props - The component contract declared immediately below.
+ * @returns The shared presentation component used by the applications.
+ */
 export const Button = <C extends React.ElementType = "button">(
   props: ButtonProps<C, { component?: C }>,
 ) => <MuiButton variant="contained" {...props} />;
+/**
+ * Wrap the MUI text field with the established full-width default and caller props.
+ * @param props - The component contract declared immediately below.
+ * @returns The shared presentation component used by the applications.
+ */
 export const FormField = (props: TextFieldProps) => (
   <TextField fullWidth {...props} />
 );
+/**
+ * Present children in the shared card container while retaining caller class names.
+ * @param props - The component contract declared immediately below.
+ * @returns The shared presentation component used by the applications.
+ */
 export function Card({
   children,
   className = "",
@@ -53,6 +68,11 @@ export function Card({
     </Paper>
   );
 }
+/**
+ * Translate a business status for display and select its existing visual treatment.
+ * @param props - The component contract declared immediately below.
+ * @returns The shared presentation component used by the applications.
+ */
 export function StatusBadge({ status }: { status: Status }) {
   const { label } = useLocale();
   const colors: Record<Status, [string, string]> = {
@@ -82,6 +102,11 @@ export function StatusBadge({ status }: { status: Status }) {
     />
   );
 }
+/**
+ * Wrap the MUI dialog with the existing title, close action, and content structure.
+ * @param props - The component contract declared immediately below.
+ * @returns The shared presentation component used by the applications.
+ */
 export function Modal({
   title,
   open,
@@ -113,6 +138,11 @@ export function Modal({
     </Dialog>
   );
 }
+/**
+ * Present an empty or missing-route message without adding application state.
+ * @param props - The component contract declared immediately below.
+ * @returns The shared presentation component used by the applications.
+ */
 export function EmptyState({
   title,
   description,
@@ -128,6 +158,11 @@ export function EmptyState({
     </div>
   );
 }
+/**
+ * Render typed rows using caller-supplied column renderers and stable row keys.
+ * @param props - The component contract declared immediately below.
+ * @returns The shared presentation component used by the applications.
+ */
 export function DataTable<T>({
   columns,
   rows,
@@ -194,6 +229,11 @@ const links = [
   ["/customers", "Customers", PeopleOutline],
   ["/settings", "Settings", SettingsOutlined],
 ] as const;
+/**
+ * Render application navigation and cross-application links for the current locale.
+ * @param props - The component contract declared immediately below.
+ * @returns The shared presentation component used by the applications.
+ */
 export function Sidebar({
   procurement,
   open,
@@ -237,7 +277,12 @@ export function Sidebar({
             ] as const)
           : links
         ).map(([path, label, Icon]) => (
-          <NavLink end={path === "/"} to={demoHref(path)} key={path} onClick={onClose}>
+          <NavLink
+            end={path === "/"}
+            to={demoHref(path)}
+            key={path}
+            onClick={onClose}
+          >
             <Icon fontSize="small" />
             {translateLabel(label)}
           </NavLink>
@@ -247,7 +292,9 @@ export function Sidebar({
         <div className="nav-label">{t("YOUR APPLICATIONS")}</div>
         <a
           className="app-link"
-          href={demoHref(procurement ? "http://localhost:4200" : "http://localhost:4201")}
+          href={demoHref(
+            procurement ? "http://localhost:4200" : "http://localhost:4201",
+          )}
         >
           <ShoppingBagOutlined fontSize="small" />
           {t(procurement ? "Invoicing" : "Procurement")}
@@ -279,6 +326,11 @@ export function Sidebar({
     </SidebarFrame>
   );
 }
+/**
+ * Render the shell title, existing header controls, and mobile navigation action.
+ * @param props - The component contract declared immediately below.
+ * @returns The shared presentation component used by the applications.
+ */
 export function Header({
   title,
   onMenu,
@@ -328,6 +380,11 @@ export function Header({
     </header>
   );
 }
+/**
+ * Compose responsive navigation, header, demo controls, and route content.
+ * @param props - The component contract declared immediately below.
+ * @returns The shared presentation component used by the applications.
+ */
 export function AppShell({
   children,
   title,
@@ -357,7 +414,10 @@ export function AppShell({
         <DemoControls />
         <Header title={title} onMenu={() => setOpen(true)} />
         <main>{children}</main>
-        <footer>{t("© 2026 Atlas Invoice")}<span>{t("All systems operational")}{" "}<i />
+        <footer>
+          {t("© 2026 Atlas Invoice")}
+          <span>
+            {t("All systems operational")} <i />
           </span>
         </footer>
       </div>

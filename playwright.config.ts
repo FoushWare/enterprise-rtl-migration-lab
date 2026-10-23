@@ -1,3 +1,8 @@
+/**
+ * Exercise both Vite applications under fixed browser locale, timezone, and viewport.
+ * Visual comparisons deliberately allow zero differing pixels; do not relax this
+ * tolerance to conceal direction or native-control rendering differences.
+ */
 import { defineConfig } from "@playwright/test";
 export default defineConfig({
   testDir: "./tests/e2e",

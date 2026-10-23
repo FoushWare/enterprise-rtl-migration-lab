@@ -3,6 +3,10 @@ import { useState } from "react";
 import { Alert, FormControlLabel, Switch } from "@mui/material";
 import { Card, Button, FormField } from "@atlas/design-system";
 import { Heading } from "../components/InvoiceUi";
+/**
+ * Present the existing workspace settings and local interaction state.
+ * @returns The settings view; displayed organization details are demo data.
+ */
 export function Settings() {
   const { t } = useLocale();
   const initial = JSON.parse(
@@ -77,10 +81,16 @@ export function Settings() {
             label={t("Enable payment reminder preference")}
           />
           <p className="hint">{t("English · United States · LTR")}</p>
-          <p className="hint">{t("Preferences are stored locally. Reminder delivery is not connected in this demo.")}</p>
+          <p className="hint">
+            {t(
+              "Preferences are stored locally. Reminder delivery is not connected in this demo.",
+            )}
+          </p>
         </Card>
         {saved && (
-          <Alert severity="success" sx={{ marginBottom: 2 }}>{t("Settings saved")}</Alert>
+          <Alert severity="success" sx={{ marginBottom: 2 }}>
+            {t("Settings saved")}
+          </Alert>
         )}
         <Button type="submit">{t("Save changes")}</Button>
       </form>
