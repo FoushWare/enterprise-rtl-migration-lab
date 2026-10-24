@@ -329,7 +329,7 @@ for (const width of widths) {
       await expect(page.getByRole("listbox")).toBeHidden();
     }
   });
-  test(`dialogs preserve glyph clearance and focus at ${width}px`, async ({
+  test(`invoice dialog preserves glyph clearance and focus at ${width}px`, async ({
     page,
   }) => {
     await page.setViewportSize({ width, height: 1000 });
@@ -373,7 +373,16 @@ for (const width of widths) {
     await expect(
       page.getByLabel(copy.en.description, { exact: true }),
     ).toHaveValue("ورشة استراتيجية");
+  });
+  // Invoice review never saves data. The old full-document navigation already
+  // discarded its local form state, so Customers has an independent setup.
+  test(`customer dialogs preserve glyph clearance, focus and filter at ${width}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 1000 });
     await page.goto(`/customers${query("en")}`);
+    // Keep these phases together: the six-customer loop ends in Arabic, which
+    // supplies the original starting locale/filter state for all five round trips.
     for (const language of ["en", "ar"] as const) {
       await switchLanguage(page, language);
       const buttons = page.getByRole("button", {
