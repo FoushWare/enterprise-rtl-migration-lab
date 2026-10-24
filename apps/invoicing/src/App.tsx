@@ -9,6 +9,12 @@ import { InvoiceDetails } from "./pages/InvoiceDetails";
 import { CreateInvoice } from "./pages/CreateInvoice";
 import { Customers } from "./pages/Customers";
 import { Settings } from "./pages/Settings";
+/**
+ * Own the invoice collection shared by the dashboard, list, and detail routes.
+ * The mock API hydrates state once; creation prepends the returned invoice without
+ * reloading the workspace. Route titles are translated independently of business data.
+ * @returns The application shell, loading message, or matched invoice route.
+ */
 export default function App() {
   const { t, label } = useLocale();
   const [invoices, setInvoices] = useState<Invoice[]>([]),

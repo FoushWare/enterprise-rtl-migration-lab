@@ -1,7 +1,7 @@
 {
   "referenceCommit": "8041f4c9c4411adb0247c3061727086c9d0735b7",
   "hashes": {
-    "apps/invoicing/src/pages/Dashboard.tsx": "7253ee7538e849c08f884147bf4dfb0cd5fe3fa6f91a822b181970186909ed1e",
+    "apps/invoicing/src/pages/Dashboard.tsx": "dc4d9b2fdd342f118bf608b65d189fad4d8646126de4ba3272b863852e390810",
     "docs/phase-3-rtl-findings.json": "ba990cf34f1a3e44317549829ef90793a6dabafada36feeb5d19460e7dbd9737",
     "docs/phase-3-rtl-findings.md": "e22879500f08c9f73179a778dde7e68ab8b44b1f718cf75afb0e69163d52c2ac",
     "docs/screenshots/phase-2a/confirmation-desktop-ar.png": "54b1c43ed78829d31ec96b7adbaf4e26a8268545fcd282f24dd49598be10d2e4",
@@ -72,7 +72,7 @@
     "docs/screenshots/phase-2a/settings-desktop-en.png": "d443d65394ef8b080a28c56b800a1171f3694e44c3c892bd02882ad99599fb9b",
     "docs/screenshots/phase-2a/settings-mobile-ar.png": "ad9dc8002a9e39fdaea42a6f69bd03984fcbc21cc697a3f512a40036d79a04a9",
     "docs/screenshots/phase-2a/settings-mobile-en.png": "ec333cd697e721d3e25c1c5cf51edff3dc2bbd49f8d25364a7300003c7bb3223",
-    "libs/design-system/src/index.tsx": "6493f544a7858be20d078b74f0c51ab957890230da9a66160318d93ebc2384ab",
+    "libs/design-system/src/index.tsx": "b77b19bb35af470adffd881edde6032163a73845e171b203d72b10bebe82769e",
     "tests/e2e/baseline.spec.ts-snapshots/create-invoice-ltr-darwin.png": "916e312a2937d60c6c65d546e8152f94db4cb8407f1c5918a81c40b998fcda9b",
     "tests/e2e/baseline.spec.ts-snapshots/customers-ltr-darwin.png": "7ab9001ab8e2349500a21409cd21bc398b873806e34b7db42a774fa956a0f2f6",
     "tests/e2e/baseline.spec.ts-snapshots/invoices-ltr-darwin.png": "23574c948b596080f77968bb6fddd00cd5ebcb6b4974e1d9dd6c6337c75e9c85",
@@ -86,21 +86,21 @@
       "property": "background",
       "valueDigest": "7d03ad09a710291004e50b4386689321d97ae307fe9c8a504f3d0f3ecc7c2b3f",
       "reason": "Reviewed source expression changes only angular status color-stop proportions, not reading-direction properties; donut geometry remains a manual visual concern.",
-      "sourceDigest": "7253ee7538e849c08f884147bf4dfb0cd5fe3fa6f91a822b181970186909ed1e"
+      "sourceDigest": "dc4d9b2fdd342f118bf608b65d189fad4d8646126de4ba3272b863852e390810"
     },
     {
       "path": "apps/invoicing/src/pages/Dashboard.tsx",
       "property": "background",
       "valueDigest": "a9ed8dcac59fe6abe3c4e1cdeed3177f6edc02176e580dea3459acde89fec45a",
       "reason": "Legend color comes from the reviewed local status-color tuple; no directional background-position input.",
-      "sourceDigest": "7253ee7538e849c08f884147bf4dfb0cd5fe3fa6f91a822b181970186909ed1e"
+      "sourceDigest": "dc4d9b2fdd342f118bf608b65d189fad4d8646126de4ba3272b863852e390810"
     },
     {
       "path": "libs/design-system/src/index.tsx",
       "property": "background",
       "valueDigest": "3c7f9c16a09ca1ac96b83240c6703118c78de201885e7d3f9bcd03c8434fab39",
       "reason": "Reviewed status-color dictionary contains literal color values only.",
-      "sourceDigest": "6493f544a7858be20d078b74f0c51ab957890230da9a66160318d93ebc2384ab"
+      "sourceDigest": "b77b19bb35af470adffd881edde6032163a73845e171b203d72b10bebe82769e"
     }
   ],
   "exceptions": [

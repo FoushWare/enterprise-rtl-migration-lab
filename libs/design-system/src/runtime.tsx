@@ -42,6 +42,10 @@ export const theme = createTheme({
   },
 });
 
+/**
+ * Mirror the English theme configuration with an RTL direction owner for MUI.
+ * Keeping visual tokens equal avoids unrelated differences when language changes.
+ */
 export const rtlTheme = createTheme({
   direction: "rtl",
   palette: {
@@ -77,17 +81,34 @@ export const rtlTheme = createTheme({
   },
 });
 
+/**
+ * Keep Emotion caches at module scope so rerenders and language toggles reuse
+ * stable cache identities. Prefixing precedes the RTL plugin only in the RTL cache.
+ */
 const ltrCache = createCache({ key: "css", stylisPlugins: [prefixer] });
-const rtlCache = createCache({ key: "atlas-rtl", stylisPlugins: [prefixer, rtlPlugin] });
+const rtlCache = createCache({
+  key: "atlas-rtl",
+  stylisPlugins: [prefixer, rtlPlugin],
+});
+/**
+ * Synchronize document direction, Emotion transformation, and the MUI theme.
+ * The layout effect updates the root before paint; plain stylesheets and inline style
+ * attributes still require their own direction-aware rules.
+ * @param children - The application content beneath LocaleProvider.
+ * @returns Nested cache and theme providers with the existing CssBaseline.
+ */
 export function Provider({ children }: { children: ReactNode }) {
   const { language } = useLocale();
   useLayoutEffect(() => {
     document.documentElement.lang = language === "ar" ? "ar-EG" : "en";
     document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
   }, [language]);
-  return <CacheProvider value={language === "ar" ? rtlCache : ltrCache}>
-    <ThemeProvider theme={language === "ar" ? rtlTheme : theme}>
-      <CssBaseline />{children}
-    </ThemeProvider>
-  </CacheProvider>;
+  return (
+    <CacheProvider value={language === "ar" ? rtlCache : ltrCache}>
+      <ThemeProvider theme={language === "ar" ? rtlTheme : theme}>
+        <CssBaseline />
+        {children}
+      </ThemeProvider>
+    </CacheProvider>
+  );
 }

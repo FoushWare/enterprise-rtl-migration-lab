@@ -5,6 +5,11 @@ import ArrowForward from "@mui/icons-material/ArrowForward";
 import ArrowBack from "@mui/icons-material/ArrowBack";
 import { DataTable, StatusBadge } from "@atlas/design-system";
 import { customerFor, money, total, type Invoice } from "@atlas/shared";
+/**
+ * Render invoice rows using shared customer, total, and currency helpers.
+ * @param invoices - The collection selected by the parent view.
+ * @returns A table whose detail links preserve the locale demonstration query.
+ */
 export function InvoiceTable({ invoices }: { invoices: Invoice[] }) {
   const { t, demoHref, language } = useLocale();
   return (
@@ -64,7 +69,10 @@ export function InvoiceTable({ invoices }: { invoices: Invoice[] }) {
             <span className="amount">{money(total(i), i.currency)}</span>
           ),
         },
-        { label: t("STATUS"), render: (i) => <StatusBadge status={i.status} /> },
+        {
+          label: t("STATUS"),
+          render: (i) => <StatusBadge status={i.status} />,
+        },
         {
           label: "",
           render: (i) => (

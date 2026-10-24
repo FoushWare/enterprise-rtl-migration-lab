@@ -5,6 +5,11 @@ import "./demo.css";
 
 type Language = "en" | "ar";
 type Params = Record<string, string | number>;
+/**
+ * Build a key translator with named placeholder substitution.
+ * @param language - Arabic selects the dictionary; English uses the source key.
+ * @returns A translation function that retains unresolved placeholders.
+ */
 function translator(language: Language) {
   return (key: TranslationKey, params: Params = {}) => {
     const text = language === "ar" ? arabic[key] : key;
@@ -20,8 +25,20 @@ const LocaleContext = createContext({
   demoHref: (href: string) => href,
   setLanguage: (() => {}) as (language: Language) => void,
 });
+/**
+ * Read the locale, translation, navigation, and language-switching context.
+ * @returns The nearest LocaleProvider value, or the English context defaults.
+ */
 export const useLocale = () => useContext(LocaleContext);
 
+/**
+ * Derive the opt-in language from the current route query and expose translators.
+ * Arabic requires both demo=unmigrated-rtl and lang=ar; lang alone remains English.
+ * Language changes preserve pathname and hash. The historical query name is retained
+ * for existing links, even though the runtime now supports the migrated RTL layout.
+ * @param children - Both applications share this provider beneath BrowserRouter.
+ * @returns The locale context around the application.
+ */
 export function LocaleProvider({ children }: { children: ReactNode }) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -29,6 +46,11 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
   const demo = query.get("demo") === "unmigrated-rtl";
   const language: Language = demo && query.get("lang") === "ar" ? "ar" : "en";
   const t = translator(language);
+/**
+ * Preserve demonstration parameters on internal and HTTP navigation targets.
+ * @param href - Original link; mail, telephone, and fragment links pass through.
+ * @returns The existing link or its query-preserving counterpart.
+ */
   function demoHref(href: string) {
     if (!demo || /^(mailto:|tel:|#)/.test(href)) return href;
     const url = new URL(href, window.location.origin);
@@ -53,6 +75,10 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
   );
 }
 
+/**
+ * Show the language selector only within the opt-in demonstration.
+ * @returns The existing selector/banner, or null outside demonstration mode.
+ */
 export function DemoControls() {
   const { demo, language, setLanguage } = useLocale();
   if (!demo) return null;

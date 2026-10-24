@@ -11,6 +11,11 @@ import {
   EmptyState,
 } from "@atlas/design-system";
 import { purchaseOrders, money, total } from "@atlas/shared";
+/**
+ * Filter the purchase-order fixtures by the selected business status.
+ * Summary amounts use the same total and money helpers as Invoicing.
+ * @returns The procurement overview and filtered order table.
+ */
 function Orders() {
   const { t, demoHref, label: translateLabel } = useLocale();
   const [status, setStatus] = useState("All statuses");
@@ -93,6 +98,10 @@ function Orders() {
     </>
   );
 }
+/**
+ * Look up the URL order ID in the shared purchase-order fixtures.
+ * @returns The matching order and line items, or the existing not-found state.
+ */
 function Details() {
   const { t } = useLocale();
   const { id } = useParams();
@@ -104,7 +113,7 @@ function Details() {
           <div className="eyebrow">{t("PURCHASE ORDER")}</div>
           <h1>{order.id}</h1>
           <p>
-            {order.supplier}{" "}{t("· Ordered")}{" "}{order.date}
+            {order.supplier} {t("· Ordered")} {order.date}
           </p>
         </div>
         <StatusBadge status={order.status} />
@@ -133,12 +142,18 @@ function Details() {
     />
   );
 }
+/**
+ * Connect procurement routes to the shared shell and locale context.
+ * @returns The order list, order detail, settings, or fallback route.
+ */
 export default function App() {
   const { t } = useLocale();
   const location = useLocation();
   return (
     <AppShell
-      title={t(location.pathname === "/settings" ? "Settings" : "Purchase orders")}
+      title={t(
+        location.pathname === "/settings" ? "Settings" : "Purchase orders",
+      )}
       procurement
     >
       <Routes>
@@ -149,7 +164,9 @@ export default function App() {
           element={
             <Card className="card-pad">
               <h1>{t("Procurement settings")}</h1>
-              <p className="hint">{t("Atlas Company · USD · English · United States")}</p>
+              <p className="hint">
+                {t("Atlas Company · USD · English · United States")}
+              </p>
               <p>{t("Approval is required for orders over $5,000.")}</p>
             </Card>
           }

@@ -1,0 +1,26 @@
+[
+  {
+    "path": "apps/invoicing/src/pages/Dashboard.tsx",
+    "property": "background",
+    "context": "Dashboard/div",
+    "valueDigestUnchanged": "7d03ad09a710291004e50b4386689321d97ae307fe9c8a504f3d0f3ecc7c2b3f",
+    "previous": "7253ee7538e849c08f884147bf4dfb0cd5fe3fa6f91a822b181970186909ed1e",
+    "next": "dc4d9b2fdd342f118bf608b65d189fad4d8646126de4ba3272b863852e390810"
+  },
+  {
+    "path": "apps/invoicing/src/pages/Dashboard.tsx",
+    "property": "background",
+    "context": "Dashboard/i",
+    "valueDigestUnchanged": "a9ed8dcac59fe6abe3c4e1cdeed3177f6edc02176e580dea3459acde89fec45a",
+    "previous": "7253ee7538e849c08f884147bf4dfb0cd5fe3fa6f91a822b181970186909ed1e",
+    "next": "dc4d9b2fdd342f118bf608b65d189fad4d8646126de4ba3272b863852e390810"
+  },
+  {
+    "path": "libs/design-system/src/index.tsx",
+    "property": "background",
+    "context": "StatusBadge/Chip",
+    "valueDigestUnchanged": "3c7f9c16a09ca1ac96b83240c6703118c78de201885e7d3f9bcd03c8434fab39",
+    "previous": "6493f544a7858be20d078b74f0c51ab957890230da9a66160318d93ebc2384ab",
+    "next": "b77b19bb35af470adffd881edde6032163a73845e171b203d72b10bebe82769e"
+  }
+]

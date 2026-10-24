@@ -1,3 +1,7 @@
+/**
+ * Run shared/application behavior tests in jsdom with the repository test setup.
+ * Scanner and codemod suites have separate configurations for their Node workflows.
+ */
 import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 import { resolve } from "node:path";

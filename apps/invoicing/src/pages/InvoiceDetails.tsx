@@ -9,6 +9,11 @@ import {
 } from "@atlas/design-system";
 import { customerFor, money, total, type Invoice } from "@atlas/shared";
 import { Heading } from "../components/InvoiceUi";
+/**
+ * Resolve the route invoice ID against the collection already loaded by App.
+ * @param invoices - Available invoices, including newly created records.
+ * @returns The invoice document or a not-found state; amounts use shared helpers.
+ */
 export function InvoiceDetails({ invoices }: { invoices: Invoice[] }) {
   const { t } = useLocale();
   const { id } = useParams();
@@ -27,7 +32,9 @@ export function InvoiceDetails({ invoices }: { invoices: Invoice[] }) {
         title={i.id}
         description={t("Invoice for {name}", { name: c.name })}
         action={
-          <Button variant="outlined" onClick={() => window.print()}>{t("Print invoice")}</Button>
+          <Button variant="outlined" onClick={() => window.print()}>
+            {t("Print invoice")}
+          </Button>
         }
       />
       <Card className="card-pad">
@@ -58,7 +65,10 @@ export function InvoiceDetails({ invoices }: { invoices: Invoice[] }) {
           columns={[
             { label: t("DESCRIPTION"), render: (item) => item.description },
             { label: t("QUANTITY"), render: (item) => item.quantity },
-            { label: t("RATE"), render: (item) => money(item.rate, i.currency) },
+            {
+              label: t("RATE"),
+              render: (item) => money(item.rate, i.currency),
+            },
             {
               label: t("AMOUNT"),
               render: (item) => money(item.rate * item.quantity, i.currency),
