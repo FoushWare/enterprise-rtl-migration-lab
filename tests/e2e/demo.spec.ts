@@ -115,6 +115,12 @@ test("Arabic filters and pagination keep canonical values and routes", async ({
   await page.getByRole("button", { name: "الانتقال إلى الصفحة 2" }).click();
   await expect(page.getByText("9–16 من 24")).toBeVisible();
   await page.getByRole("combobox", { name: /^الحالة/ }).click();
+  // Grow can briefly look stable at its initial scale before expanding. MUI sets
+  // the menu paper's transform to none only after entering; wait before aiming.
+  await expect(page.getByRole("listbox").locator("..")).toHaveCSS(
+    "transform",
+    "none",
+  );
   await page.getByRole("option", { name: "قيد الانتظار", exact: true }).click();
   await expect(page.locator("tbody tr")).toHaveCount(4);
   await page.getByLabel("البحث عن الفواتير").fill("missing");
