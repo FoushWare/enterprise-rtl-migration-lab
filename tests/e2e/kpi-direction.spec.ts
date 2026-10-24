@@ -1,4 +1,4 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect, type Page } from "../fixtures/e2e";
 const widths = [390, 899, 900, 901, 1100, 1101, 1440];
 async function kpis(page: Page) {
   await expect(page.locator(".kpi-icon")).toHaveCount(4);

@@ -15,6 +15,9 @@ export default defineConfig({
     locale: "en-US",
     timezoneId: "UTC",
     colorScheme: "light",
+    // Keep built-in evidence only for failures, including the first attempt.
+    trace: "retain-on-failure",
+    screenshot: "only-on-failure",
   },
   expect: { toHaveScreenshot: { maxDiffPixels: 0 } },
   webServer: [

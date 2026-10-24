@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "../fixtures/e2e";
 
 for (const width of [390, 899, 900, 901, 1100, 1101, 1440]) {
   test(`Dashboard progression glyph preserves navigation at ${width}px`, async ({
