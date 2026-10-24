@@ -5,6 +5,7 @@
 import { exitCode } from './coverage.js';
 import { scan } from './scan.js';
 import { json, markdown } from './report.js';
+import { summary, supportsSummaryColor } from './summary.js';
 let root = process.cwd();
 let format = 'json';
 let gate = false;
@@ -22,12 +23,31 @@ try {
     if (!value || value.startsWith('--'))
       throw new Error('Missing option value');
     if (key === '--root') root = value;
-    else if (key === '--format' && ['json', 'markdown'].includes(value))
+    else if (
+      key === '--format' &&
+      ['json', 'markdown', 'summary'].includes(value)
+    )
       format = value;
     else throw new Error('Unknown option or format');
   }
+  const started = performance.now();
   const r = await scan(root);
-  process.stdout.write(format === 'markdown' ? markdown(r) : json(r));
+  const durationMs = performance.now() - started;
+  // Preserve the JSON default for both terminals and pipes: existing consumers
+  // may parse stdout. Only the explicit summary format receives decoration/time.
+  process.stdout.write(
+    format === 'summary'
+      ? summary(r, {
+          durationMs,
+          color: supportsSummaryColor(
+            Boolean(process.stdout.isTTY),
+            process.env,
+          ),
+        })
+      : format === 'markdown'
+        ? markdown(r)
+        : json(r),
+  );
   process.exitCode = exitCode(
     r.complete,
     r.findings.filter(
