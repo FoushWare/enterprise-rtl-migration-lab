@@ -1,0 +1,22 @@
+diff --git a/libs/design-system/src/styles.css b/libs/design-system/src/styles.css
+index f6605f3..966ca3a 100644
+--- a/libs/design-system/src/styles.css
++++ b/libs/design-system/src/styles.css
+@@ -296,7 +296,7 @@ footer i {
+   height: 7px;
+   background: #5662dc;
+   border-radius: 50%;
+-  margin-right: 7px;
++  margin-inline-end: 7px;
+ }
+ .breakdown {
+   padding: 0 24px 22px;
+@@ -382,7 +382,7 @@ footer i {
+ }
+ .status-dot {
+   font-size: 7px;
+-  margin-right: 6px;
++  margin-inline-end: 6px;
+ }
+ .toolbar {
+   padding: 20px 24px;

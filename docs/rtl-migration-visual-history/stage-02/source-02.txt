@@ -1,0 +1,41 @@
+0038  export const theme = createTheme({
+0039    direction: "ltr",
+0040    palette: {
+0041      primary: { main: "#4c58d6" },
+0042      background: { default: "#f7f8fb" },
+0043      text: { primary: "#202738", secondary: "#7a8294" },
+0044    },
+0045    typography: {
+0046      fontFamily:
+0047        'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+0048      button: { textTransform: "none", fontWeight: 600 },
+0049      h4: { fontWeight: 700, fontSize: "1.8rem", letterSpacing: "-.7px" },
+0050    },
+0051    shape: { borderRadius: 10 },
+0052    components: {
+0053      MuiButton: {
+0054        defaultProps: { disableElevation: true },
+0055        styleOverrides: { root: { padding: "10px 18px" } },
+0056      },
+0057      MuiTextField: { defaultProps: { size: "small" } },
+0058      MuiTableCell: {
+0059        styleOverrides: {
+0060          root: { borderColor: "#edf0f5", padding: "17px 20px" },
+0061          head: {
+0062            fontSize: 11,
+0063            fontWeight: 700,
+0064            color: "#80889a",
+0065            letterSpacing: ".6px",
+0066            background: "#fafbfc",
+0067          },
+0068        },
+0069      },
+0070    },
+0071  });
+0072  export function Provider({ children }: { children: ReactNode }) {
+0073    return (
+0074      <ThemeProvider theme={theme}>
+0075        <CssBaseline />
+0076        {children}
+0077      </ThemeProvider>
+0078    );

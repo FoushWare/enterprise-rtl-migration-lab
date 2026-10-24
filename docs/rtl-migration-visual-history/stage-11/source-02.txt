@@ -1,0 +1,55 @@
+0001  name: English LTR baseline
+0002  on: [push, pull_request]
+0003  jobs:
+0004    verify:
+0005      runs-on: macos-latest
+0006      steps:
+0007        - uses: actions/checkout@v4
+0008        - uses: actions/setup-node@v4
+0009          with:
+0010            node-version: 22
+0011            cache: npm
+0012        - run: npm ci
+0013        - run: npm run lint
+0014        - run: npm run typecheck
+0015        - run: npm run rtl:verify:protected
+0016        - run: npm run rtl:scan:typecheck
+0017        - run: npm run rtl:scan:build
+0018        - run: npm run rtl:scan:test
+0019        - run: npm run rtl:scan
+0020        - run: npm run rtl:codemod:test
+0021        - run: npm run rtl:codemod -- --dry-run
+0022        - run: npm run build -- --skip-nx-cache
+0023        - run: npm test
+0024        - run: npx playwright install chromium --no-shell
+0025        - name: Match protected native-date baseline region
+0026          shell: bash
+0027          run: |
+0028            set -euo pipefail
+0029            test "$RUNNER_ENVIRONMENT" = github-hosted
+0030            cat > "$RUNNER_TEMP/native-date-region.py" <<'PY'
+0031            import json
+0032            import os
+0033            from pathlib import Path
+0034            import plistlib
+0035            import subprocess
+0036            import sys
+0037
+0038            if sys.platform != 'darwin' or os.environ.get('GITHUB_ACTIONS') != 'true' or os.environ.get('RUNNER_ENVIRONMENT') != 'github-hosted':
+0039                raise SystemExit('Preference changes require a disposable GitHub-hosted macOS runner')
+0040            snapshot = Path(os.environ['RUNNER_TEMP']) / 'native-date-region-original.json'
+0041            if sys.argv[1] == 'prepare':
+0042                if snapshot.exists():
+0043                    raise SystemExit('Refusing to overwrite original region snapshot')
+0044                preferences = plistlib.loads(subprocess.check_output(['defaults', 'export', 'NSGlobalDomain', '-']))
+0045                original = {'present': 'AppleLocale' in preferences, 'value': preferences.get('AppleLocale')}
+0046                if original['present'] and not isinstance(original['value'], str):
+0047                    raise SystemExit('Unsupported original AppleLocale type')
+0048                snapshot.write_text(json.dumps(original))
+0049                subprocess.run(['defaults', 'write', 'NSGlobalDomain', 'AppleLocale', '-string', 'en_EG'], check=True)
+0050                if subprocess.check_output(['defaults', 'read', 'NSGlobalDomain', 'AppleLocale'], text=True).strip() != 'en_EG':
+0051                    raise SystemExit('Native date region readback failed')
+0052                print('CI-only AppleLocale=en_EG; application/browser locale and baselines unchanged')
+0053            elif sys.argv[1] == 'restore':
+0054                if snapshot.exists():
+0055                    original = json.loads(snapshot.read_text())

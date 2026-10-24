@@ -1,0 +1,41 @@
+<!doctype html><meta charset="utf-8"><title>Source evidence</title><style>body{margin:0;background:#0c1626;color:#e6edf5;font:18px Arial;padding:45px}small{color:#d4d991}h1{font-size:26px}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:16px/1.65 monospace;background:#142338;padding:24px;border-left:4px solid #d4d991}footer{color:#9eafc3;font-size:14px}</style><small>STAGE 02 · REPORT / SOURCE EVIDENCE · NOT AN APPLICATION SCREENSHOT</small><h1>libs/design-system/src/index.tsx:38–78</h1><p>2fe522fad44bb8f79b3f15190227b8b94b7d9469</p><pre>0038  export const theme = createTheme({
+0039    direction: &quot;ltr&quot;,
+0040    palette: {
+0041      primary: { main: &quot;#4c58d6&quot; },
+0042      background: { default: &quot;#f7f8fb&quot; },
+0043      text: { primary: &quot;#202738&quot;, secondary: &quot;#7a8294&quot; },
+0044    },
+0045    typography: {
+0046      fontFamily:
+0047        &#x27;Inter, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif&#x27;,
+0048      button: { textTransform: &quot;none&quot;, fontWeight: 600 },
+0049      h4: { fontWeight: 700, fontSize: &quot;1.8rem&quot;, letterSpacing: &quot;-.7px&quot; },
+0050    },
+0051    shape: { borderRadius: 10 },
+0052    components: {
+0053      MuiButton: {
+0054        defaultProps: { disableElevation: true },
+0055        styleOverrides: { root: { padding: &quot;10px 18px&quot; } },
+0056      },
+0057      MuiTextField: { defaultProps: { size: &quot;small&quot; } },
+0058      MuiTableCell: {
+0059        styleOverrides: {
+0060          root: { borderColor: &quot;#edf0f5&quot;, padding: &quot;17px 20px&quot; },
+0061          head: {
+0062            fontSize: 11,
+0063            fontWeight: 700,
+0064            color: &quot;#80889a&quot;,
+0065            letterSpacing: &quot;.6px&quot;,
+0066            background: &quot;#fafbfc&quot;,
+0067          },
+0068        },
+0069      },
+0070    },
+0071  });
+0072  export function Provider({ children }: { children: ReactNode }) {
+0073    return (
+0074      &lt;ThemeProvider theme={theme}&gt;
+0075        &lt;CssBaseline /&gt;
+0076        {children}
+0077      &lt;/ThemeProvider&gt;
+0078    );</pre><footer>Exact Git source excerpt. No reconstructed UI or invented terminal output. <a style="color:#d4d991" href="https://github.com/FoushWare/enterprise-rtl-migration-lab/blob/2fe522fad44bb8f79b3f15190227b8b94b7d9469/libs/design-system/src/index.tsx#L38">Original source</a></footer>

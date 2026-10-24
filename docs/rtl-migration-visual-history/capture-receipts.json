@@ -1,0 +1,2138 @@
+{
+  "captures": [
+    {
+      "stage": 7,
+      "path": "stage-07/invoicing-overview-en.png",
+      "type": "recreated",
+      "sourceCommit": "85f4dde02142f305b434c815a39015a4c5eaafec",
+      "captureDate": "2026-10-16T11:03:57.872Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/",
+      "application": "invoicing",
+      "language": "en",
+      "url": "http://127.0.0.1:4570/?demo=unmigrated-rtl&lang=en",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render"
+      ],
+      "runtime": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "css-global",
+          "css"
+        ],
+        "emotionStyleTagCount": 166
+      },
+      "descriptionEn": "invoicing: overview, en; recreated from exact historical source",
+      "descriptionAr": "invoicing: overview، en؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 7,
+      "path": "stage-07/procurement-orders-en.png",
+      "type": "recreated",
+      "sourceCommit": "85f4dde02142f305b434c815a39015a4c5eaafec",
+      "captureDate": "2026-10-16T11:03:58.810Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/",
+      "application": "procurement",
+      "language": "en",
+      "url": "http://127.0.0.1:4571/?demo=unmigrated-rtl&lang=en",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render"
+      ],
+      "runtime": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "css-global",
+          "css"
+        ],
+        "emotionStyleTagCount": 153
+      },
+      "descriptionEn": "procurement: orders, en; recreated from exact historical source",
+      "descriptionAr": "procurement: orders، en؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 7,
+      "path": "stage-07/invoicing-mobile-navigation-en.png",
+      "type": "recreated",
+      "sourceCommit": "85f4dde02142f305b434c815a39015a4c5eaafec",
+      "captureDate": "2026-10-16T11:04:00.194Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "route": "/",
+      "application": "invoicing",
+      "language": "en",
+      "url": "http://127.0.0.1:4570/?demo=unmigrated-rtl&lang=en",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render",
+        "Open navigation before capture"
+      ],
+      "runtime": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 390,
+        "viewportWidth": 390,
+        "emotionKeys": [
+          "css-global",
+          "css"
+        ],
+        "emotionStyleTagCount": 179
+      },
+      "descriptionEn": "invoicing: mobile-navigation, en; recreated from exact historical source",
+      "descriptionAr": "invoicing: mobile-navigation، en؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 7,
+      "path": "stage-07/procurement-mobile-navigation-en.png",
+      "type": "recreated",
+      "sourceCommit": "85f4dde02142f305b434c815a39015a4c5eaafec",
+      "captureDate": "2026-10-16T11:04:01.597Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "route": "/",
+      "application": "procurement",
+      "language": "en",
+      "url": "http://127.0.0.1:4571/?demo=unmigrated-rtl&lang=en",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render",
+        "Open navigation before capture"
+      ],
+      "runtime": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 390,
+        "viewportWidth": 390,
+        "emotionKeys": [
+          "css-global",
+          "css"
+        ],
+        "emotionStyleTagCount": 166
+      },
+      "descriptionEn": "procurement: mobile-navigation, en; recreated from exact historical source",
+      "descriptionAr": "procurement: mobile-navigation، en؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 7,
+      "path": "stage-07/invoicing-overview-ar.png",
+      "type": "recreated",
+      "sourceCommit": "85f4dde02142f305b434c815a39015a4c5eaafec",
+      "captureDate": "2026-10-16T11:04:02.624Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/",
+      "application": "invoicing",
+      "language": "ar",
+      "url": "http://127.0.0.1:4570/?demo=unmigrated-rtl&lang=ar",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render"
+      ],
+      "runtime": {
+        "lang": "ar-EG",
+        "dir": "rtl",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "css-global",
+          "css"
+        ],
+        "emotionStyleTagCount": 166
+      },
+      "descriptionEn": "invoicing: overview, ar; recreated from exact historical source",
+      "descriptionAr": "invoicing: overview، ar؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 7,
+      "path": "stage-07/procurement-orders-ar.png",
+      "type": "recreated",
+      "sourceCommit": "85f4dde02142f305b434c815a39015a4c5eaafec",
+      "captureDate": "2026-10-16T11:04:03.735Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/",
+      "application": "procurement",
+      "language": "ar",
+      "url": "http://127.0.0.1:4571/?demo=unmigrated-rtl&lang=ar",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render"
+      ],
+      "runtime": {
+        "lang": "ar-EG",
+        "dir": "rtl",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "css-global",
+          "css"
+        ],
+        "emotionStyleTagCount": 153
+      },
+      "descriptionEn": "procurement: orders, ar; recreated from exact historical source",
+      "descriptionAr": "procurement: orders، ar؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 7,
+      "path": "stage-07/invoicing-mobile-navigation-ar.png",
+      "type": "recreated",
+      "sourceCommit": "85f4dde02142f305b434c815a39015a4c5eaafec",
+      "captureDate": "2026-10-16T11:04:05.215Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "route": "/",
+      "application": "invoicing",
+      "language": "ar",
+      "url": "http://127.0.0.1:4570/?demo=unmigrated-rtl&lang=ar",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render",
+        "Open navigation before capture"
+      ],
+      "runtime": {
+        "lang": "ar-EG",
+        "dir": "rtl",
+        "scrollWidth": 390,
+        "viewportWidth": 390,
+        "emotionKeys": [
+          "css-global",
+          "css"
+        ],
+        "emotionStyleTagCount": 179
+      },
+      "descriptionEn": "invoicing: mobile-navigation, ar; recreated from exact historical source",
+      "descriptionAr": "invoicing: mobile-navigation، ar؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 7,
+      "path": "stage-07/procurement-mobile-navigation-ar.png",
+      "type": "recreated",
+      "sourceCommit": "85f4dde02142f305b434c815a39015a4c5eaafec",
+      "captureDate": "2026-10-16T11:04:06.618Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "route": "/",
+      "application": "procurement",
+      "language": "ar",
+      "url": "http://127.0.0.1:4571/?demo=unmigrated-rtl&lang=ar",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render",
+        "Open navigation before capture"
+      ],
+      "runtime": {
+        "lang": "ar-EG",
+        "dir": "rtl",
+        "scrollWidth": 390,
+        "viewportWidth": 390,
+        "emotionKeys": [
+          "css-global",
+          "css"
+        ],
+        "emotionStyleTagCount": 166
+      },
+      "descriptionEn": "procurement: mobile-navigation, ar; recreated from exact historical source",
+      "descriptionAr": "procurement: mobile-navigation، ar؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 8,
+      "path": "stage-08/invoicing-overview-en.png",
+      "type": "recreated",
+      "sourceCommit": "1098eb782b2d61eb8b17b146e4f01867820b76ff",
+      "captureDate": "2026-10-16T11:04:10.660Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/",
+      "application": "invoicing",
+      "language": "en",
+      "url": "http://127.0.0.1:4580/?demo=unmigrated-rtl&lang=en",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render"
+      ],
+      "runtime": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "css-global",
+          "css"
+        ],
+        "emotionStyleTagCount": 166
+      },
+      "descriptionEn": "invoicing: overview, en; recreated from exact historical source",
+      "descriptionAr": "invoicing: overview، en؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 8,
+      "path": "stage-08/procurement-orders-en.png",
+      "type": "recreated",
+      "sourceCommit": "1098eb782b2d61eb8b17b146e4f01867820b76ff",
+      "captureDate": "2026-10-16T11:04:11.685Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/",
+      "application": "procurement",
+      "language": "en",
+      "url": "http://127.0.0.1:4581/?demo=unmigrated-rtl&lang=en",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render"
+      ],
+      "runtime": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "css-global",
+          "css"
+        ],
+        "emotionStyleTagCount": 153
+      },
+      "descriptionEn": "procurement: orders, en; recreated from exact historical source",
+      "descriptionAr": "procurement: orders، en؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 8,
+      "path": "stage-08/invoicing-mobile-navigation-en.png",
+      "type": "recreated",
+      "sourceCommit": "1098eb782b2d61eb8b17b146e4f01867820b76ff",
+      "captureDate": "2026-10-16T11:04:13.088Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "route": "/",
+      "application": "invoicing",
+      "language": "en",
+      "url": "http://127.0.0.1:4580/?demo=unmigrated-rtl&lang=en",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render",
+        "Open navigation before capture"
+      ],
+      "runtime": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 390,
+        "viewportWidth": 390,
+        "emotionKeys": [
+          "css-global",
+          "css"
+        ],
+        "emotionStyleTagCount": 179
+      },
+      "descriptionEn": "invoicing: mobile-navigation, en; recreated from exact historical source",
+      "descriptionAr": "invoicing: mobile-navigation، en؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 8,
+      "path": "stage-08/procurement-mobile-navigation-en.png",
+      "type": "recreated",
+      "sourceCommit": "1098eb782b2d61eb8b17b146e4f01867820b76ff",
+      "captureDate": "2026-10-16T11:04:14.455Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "route": "/",
+      "application": "procurement",
+      "language": "en",
+      "url": "http://127.0.0.1:4581/?demo=unmigrated-rtl&lang=en",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render",
+        "Open navigation before capture"
+      ],
+      "runtime": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 390,
+        "viewportWidth": 390,
+        "emotionKeys": [
+          "css-global",
+          "css"
+        ],
+        "emotionStyleTagCount": 166
+      },
+      "descriptionEn": "procurement: mobile-navigation, en; recreated from exact historical source",
+      "descriptionAr": "procurement: mobile-navigation، en؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 8,
+      "path": "stage-08/invoicing-overview-ar.png",
+      "type": "recreated",
+      "sourceCommit": "1098eb782b2d61eb8b17b146e4f01867820b76ff",
+      "captureDate": "2026-10-16T11:04:15.432Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/",
+      "application": "invoicing",
+      "language": "ar",
+      "url": "http://127.0.0.1:4580/?demo=unmigrated-rtl&lang=ar",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render"
+      ],
+      "runtime": {
+        "lang": "ar-EG",
+        "dir": "rtl",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "atlas-rtl-global",
+          "atlas-rtl"
+        ],
+        "emotionStyleTagCount": 166
+      },
+      "descriptionEn": "invoicing: overview, ar; recreated from exact historical source",
+      "descriptionAr": "invoicing: overview، ar؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 8,
+      "path": "stage-08/procurement-orders-ar.png",
+      "type": "recreated",
+      "sourceCommit": "1098eb782b2d61eb8b17b146e4f01867820b76ff",
+      "captureDate": "2026-10-16T11:04:16.395Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/",
+      "application": "procurement",
+      "language": "ar",
+      "url": "http://127.0.0.1:4581/?demo=unmigrated-rtl&lang=ar",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render"
+      ],
+      "runtime": {
+        "lang": "ar-EG",
+        "dir": "rtl",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "atlas-rtl-global",
+          "atlas-rtl"
+        ],
+        "emotionStyleTagCount": 153
+      },
+      "descriptionEn": "procurement: orders, ar; recreated from exact historical source",
+      "descriptionAr": "procurement: orders، ar؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 8,
+      "path": "stage-08/invoicing-mobile-navigation-ar.png",
+      "type": "recreated",
+      "sourceCommit": "1098eb782b2d61eb8b17b146e4f01867820b76ff",
+      "captureDate": "2026-10-16T11:04:17.768Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "route": "/",
+      "application": "invoicing",
+      "language": "ar",
+      "url": "http://127.0.0.1:4580/?demo=unmigrated-rtl&lang=ar",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render",
+        "Open navigation before capture"
+      ],
+      "runtime": {
+        "lang": "ar-EG",
+        "dir": "rtl",
+        "scrollWidth": 390,
+        "viewportWidth": 390,
+        "emotionKeys": [
+          "atlas-rtl-global",
+          "atlas-rtl"
+        ],
+        "emotionStyleTagCount": 179
+      },
+      "descriptionEn": "invoicing: mobile-navigation, ar; recreated from exact historical source",
+      "descriptionAr": "invoicing: mobile-navigation، ar؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 8,
+      "path": "stage-08/procurement-mobile-navigation-ar.png",
+      "type": "recreated",
+      "sourceCommit": "1098eb782b2d61eb8b17b146e4f01867820b76ff",
+      "captureDate": "2026-10-16T11:04:19.097Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "route": "/",
+      "application": "procurement",
+      "language": "ar",
+      "url": "http://127.0.0.1:4581/?demo=unmigrated-rtl&lang=ar",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render",
+        "Open navigation before capture"
+      ],
+      "runtime": {
+        "lang": "ar-EG",
+        "dir": "rtl",
+        "scrollWidth": 390,
+        "viewportWidth": 390,
+        "emotionKeys": [
+          "atlas-rtl-global",
+          "atlas-rtl"
+        ],
+        "emotionStyleTagCount": 166
+      },
+      "descriptionEn": "procurement: mobile-navigation, ar; recreated from exact historical source",
+      "descriptionAr": "procurement: mobile-navigation، ar؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 9,
+      "path": "stage-09/invoicing-overview-en.png",
+      "type": "recreated",
+      "sourceCommit": "767e70f525dac6e3a12aa6eb827fdcc73e498da7",
+      "captureDate": "2026-10-16T11:04:22.913Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/",
+      "application": "invoicing",
+      "language": "en",
+      "url": "http://127.0.0.1:4590/?demo=unmigrated-rtl&lang=en",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render"
+      ],
+      "runtime": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "css-global",
+          "css"
+        ],
+        "emotionStyleTagCount": 166
+      },
+      "descriptionEn": "invoicing: overview, en; recreated from exact historical source",
+      "descriptionAr": "invoicing: overview، en؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 9,
+      "path": "stage-09/procurement-orders-en.png",
+      "type": "recreated",
+      "sourceCommit": "767e70f525dac6e3a12aa6eb827fdcc73e498da7",
+      "captureDate": "2026-10-16T11:04:23.834Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/",
+      "application": "procurement",
+      "language": "en",
+      "url": "http://127.0.0.1:4591/?demo=unmigrated-rtl&lang=en",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render"
+      ],
+      "runtime": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "css-global",
+          "css"
+        ],
+        "emotionStyleTagCount": 153
+      },
+      "descriptionEn": "procurement: orders, en; recreated from exact historical source",
+      "descriptionAr": "procurement: orders، en؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 9,
+      "path": "stage-09/invoicing-invoices-en.png",
+      "type": "recreated",
+      "sourceCommit": "767e70f525dac6e3a12aa6eb827fdcc73e498da7",
+      "captureDate": "2026-10-16T11:04:24.793Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/invoices",
+      "application": "invoicing",
+      "language": "en",
+      "url": "http://127.0.0.1:4590/invoices?demo=unmigrated-rtl&lang=en",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render"
+      ],
+      "runtime": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "css-global",
+          "css"
+        ],
+        "emotionStyleTagCount": 264
+      },
+      "descriptionEn": "invoicing: invoices, en; recreated from exact historical source",
+      "descriptionAr": "invoicing: invoices، en؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 9,
+      "path": "stage-09/invoicing-invoice-detail-en.png",
+      "type": "recreated",
+      "sourceCommit": "767e70f525dac6e3a12aa6eb827fdcc73e498da7",
+      "captureDate": "2026-10-16T11:04:25.817Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/invoices/INV-2026-1048",
+      "application": "invoicing",
+      "language": "en",
+      "url": "http://127.0.0.1:4590/invoices/INV-2026-1048?demo=unmigrated-rtl&lang=en",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render"
+      ],
+      "runtime": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "css-global",
+          "css"
+        ],
+        "emotionStyleTagCount": 75
+      },
+      "descriptionEn": "invoicing: invoice-detail, en; recreated from exact historical source",
+      "descriptionAr": "invoicing: invoice-detail، en؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 9,
+      "path": "stage-09/invoicing-create-en.png",
+      "type": "recreated",
+      "sourceCommit": "767e70f525dac6e3a12aa6eb827fdcc73e498da7",
+      "captureDate": "2026-10-16T11:04:26.769Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/invoices/new",
+      "application": "invoicing",
+      "language": "en",
+      "url": "http://127.0.0.1:4590/invoices/new?demo=unmigrated-rtl&lang=en",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render"
+      ],
+      "runtime": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "css-global",
+          "css"
+        ],
+        "emotionStyleTagCount": 223
+      },
+      "descriptionEn": "invoicing: create, en; recreated from exact historical source",
+      "descriptionAr": "invoicing: create، en؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 9,
+      "path": "stage-09/invoicing-customer-dialog-en.png",
+      "type": "recreated",
+      "sourceCommit": "767e70f525dac6e3a12aa6eb827fdcc73e498da7",
+      "captureDate": "2026-10-16T11:04:27.793Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/customers",
+      "application": "invoicing",
+      "language": "en",
+      "url": "http://127.0.0.1:4590/customers?demo=unmigrated-rtl&lang=en",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render",
+        "View first existing customer; do not edit"
+      ],
+      "runtime": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "css-global",
+          "css"
+        ],
+        "emotionStyleTagCount": 147
+      },
+      "descriptionEn": "invoicing: customer-dialog, en; recreated from exact historical source",
+      "descriptionAr": "invoicing: customer-dialog، en؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 9,
+      "path": "stage-09/invoicing-settings-en.png",
+      "type": "recreated",
+      "sourceCommit": "767e70f525dac6e3a12aa6eb827fdcc73e498da7",
+      "captureDate": "2026-10-16T11:04:28.677Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/settings",
+      "application": "invoicing",
+      "language": "en",
+      "url": "http://127.0.0.1:4590/settings?demo=unmigrated-rtl&lang=en",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render"
+      ],
+      "runtime": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "css-global",
+          "css"
+        ],
+        "emotionStyleTagCount": 165
+      },
+      "descriptionEn": "invoicing: settings, en; recreated from exact historical source",
+      "descriptionAr": "invoicing: settings، en؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 9,
+      "path": "stage-09/procurement-order-detail-en.png",
+      "type": "recreated",
+      "sourceCommit": "767e70f525dac6e3a12aa6eb827fdcc73e498da7",
+      "captureDate": "2026-10-16T11:04:29.561Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/orders/PO-2026-401",
+      "application": "procurement",
+      "language": "en",
+      "url": "http://127.0.0.1:4591/orders/PO-2026-401?demo=unmigrated-rtl&lang=en",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render"
+      ],
+      "runtime": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "css-global",
+          "css"
+        ],
+        "emotionStyleTagCount": 52
+      },
+      "descriptionEn": "procurement: order-detail, en; recreated from exact historical source",
+      "descriptionAr": "procurement: order-detail، en؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 9,
+      "path": "stage-09/procurement-procurement-settings-en.png",
+      "type": "recreated",
+      "sourceCommit": "767e70f525dac6e3a12aa6eb827fdcc73e498da7",
+      "captureDate": "2026-10-16T11:04:30.412Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/settings",
+      "application": "procurement",
+      "language": "en",
+      "url": "http://127.0.0.1:4591/settings?demo=unmigrated-rtl&lang=en",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render"
+      ],
+      "runtime": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "css-global",
+          "css"
+        ],
+        "emotionStyleTagCount": 29
+      },
+      "descriptionEn": "procurement: procurement-settings, en; recreated from exact historical source",
+      "descriptionAr": "procurement: procurement-settings، en؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 9,
+      "path": "stage-09/invoicing-mobile-navigation-en.png",
+      "type": "recreated",
+      "sourceCommit": "767e70f525dac6e3a12aa6eb827fdcc73e498da7",
+      "captureDate": "2026-10-16T11:04:31.736Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "route": "/",
+      "application": "invoicing",
+      "language": "en",
+      "url": "http://127.0.0.1:4590/?demo=unmigrated-rtl&lang=en",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render",
+        "Open navigation before capture"
+      ],
+      "runtime": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 390,
+        "viewportWidth": 390,
+        "emotionKeys": [
+          "css-global",
+          "css"
+        ],
+        "emotionStyleTagCount": 179
+      },
+      "descriptionEn": "invoicing: mobile-navigation, en; recreated from exact historical source",
+      "descriptionAr": "invoicing: mobile-navigation، en؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 9,
+      "path": "stage-09/procurement-mobile-navigation-en.png",
+      "type": "recreated",
+      "sourceCommit": "767e70f525dac6e3a12aa6eb827fdcc73e498da7",
+      "captureDate": "2026-10-16T11:04:33.181Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "route": "/",
+      "application": "procurement",
+      "language": "en",
+      "url": "http://127.0.0.1:4591/?demo=unmigrated-rtl&lang=en",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render",
+        "Open navigation before capture"
+      ],
+      "runtime": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 390,
+        "viewportWidth": 390,
+        "emotionKeys": [
+          "css-global",
+          "css"
+        ],
+        "emotionStyleTagCount": 166
+      },
+      "descriptionEn": "procurement: mobile-navigation, en; recreated from exact historical source",
+      "descriptionAr": "procurement: mobile-navigation، en؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 9,
+      "path": "stage-09/invoicing-overview-ar.png",
+      "type": "recreated",
+      "sourceCommit": "767e70f525dac6e3a12aa6eb827fdcc73e498da7",
+      "captureDate": "2026-10-16T11:04:34.344Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/",
+      "application": "invoicing",
+      "language": "ar",
+      "url": "http://127.0.0.1:4590/?demo=unmigrated-rtl&lang=ar",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render"
+      ],
+      "runtime": {
+        "lang": "ar-EG",
+        "dir": "rtl",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "atlas-rtl-global",
+          "atlas-rtl"
+        ],
+        "emotionStyleTagCount": 166
+      },
+      "descriptionEn": "invoicing: overview, ar; recreated from exact historical source",
+      "descriptionAr": "invoicing: overview، ar؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 9,
+      "path": "stage-09/procurement-orders-ar.png",
+      "type": "recreated",
+      "sourceCommit": "767e70f525dac6e3a12aa6eb827fdcc73e498da7",
+      "captureDate": "2026-10-16T11:04:35.328Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/",
+      "application": "procurement",
+      "language": "ar",
+      "url": "http://127.0.0.1:4591/?demo=unmigrated-rtl&lang=ar",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render"
+      ],
+      "runtime": {
+        "lang": "ar-EG",
+        "dir": "rtl",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "atlas-rtl-global",
+          "atlas-rtl"
+        ],
+        "emotionStyleTagCount": 153
+      },
+      "descriptionEn": "procurement: orders, ar; recreated from exact historical source",
+      "descriptionAr": "procurement: orders، ar؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 9,
+      "path": "stage-09/invoicing-invoices-ar.png",
+      "type": "recreated",
+      "sourceCommit": "767e70f525dac6e3a12aa6eb827fdcc73e498da7",
+      "captureDate": "2026-10-16T11:04:36.311Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/invoices",
+      "application": "invoicing",
+      "language": "ar",
+      "url": "http://127.0.0.1:4590/invoices?demo=unmigrated-rtl&lang=ar",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render"
+      ],
+      "runtime": {
+        "lang": "ar-EG",
+        "dir": "rtl",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "atlas-rtl-global",
+          "atlas-rtl"
+        ],
+        "emotionStyleTagCount": 264
+      },
+      "descriptionEn": "invoicing: invoices, ar; recreated from exact historical source",
+      "descriptionAr": "invoicing: invoices، ar؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 9,
+      "path": "stage-09/invoicing-invoice-detail-ar.png",
+      "type": "recreated",
+      "sourceCommit": "767e70f525dac6e3a12aa6eb827fdcc73e498da7",
+      "captureDate": "2026-10-16T11:04:37.404Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/invoices/INV-2026-1048",
+      "application": "invoicing",
+      "language": "ar",
+      "url": "http://127.0.0.1:4590/invoices/INV-2026-1048?demo=unmigrated-rtl&lang=ar",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render"
+      ],
+      "runtime": {
+        "lang": "ar-EG",
+        "dir": "rtl",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "atlas-rtl-global",
+          "atlas-rtl"
+        ],
+        "emotionStyleTagCount": 75
+      },
+      "descriptionEn": "invoicing: invoice-detail, ar; recreated from exact historical source",
+      "descriptionAr": "invoicing: invoice-detail، ar؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 9,
+      "path": "stage-09/invoicing-create-ar.png",
+      "type": "recreated",
+      "sourceCommit": "767e70f525dac6e3a12aa6eb827fdcc73e498da7",
+      "captureDate": "2026-10-16T11:04:38.366Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/invoices/new",
+      "application": "invoicing",
+      "language": "ar",
+      "url": "http://127.0.0.1:4590/invoices/new?demo=unmigrated-rtl&lang=ar",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render"
+      ],
+      "runtime": {
+        "lang": "ar-EG",
+        "dir": "rtl",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "atlas-rtl-global",
+          "atlas-rtl"
+        ],
+        "emotionStyleTagCount": 223
+      },
+      "descriptionEn": "invoicing: create, ar; recreated from exact historical source",
+      "descriptionAr": "invoicing: create، ar؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 9,
+      "path": "stage-09/invoicing-customer-dialog-ar.png",
+      "type": "recreated",
+      "sourceCommit": "767e70f525dac6e3a12aa6eb827fdcc73e498da7",
+      "captureDate": "2026-10-16T11:04:39.400Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/customers",
+      "application": "invoicing",
+      "language": "ar",
+      "url": "http://127.0.0.1:4590/customers?demo=unmigrated-rtl&lang=ar",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render",
+        "View first existing customer; do not edit"
+      ],
+      "runtime": {
+        "lang": "ar-EG",
+        "dir": "rtl",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "atlas-rtl-global",
+          "atlas-rtl"
+        ],
+        "emotionStyleTagCount": 147
+      },
+      "descriptionEn": "invoicing: customer-dialog, ar; recreated from exact historical source",
+      "descriptionAr": "invoicing: customer-dialog، ar؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 9,
+      "path": "stage-09/invoicing-settings-ar.png",
+      "type": "recreated",
+      "sourceCommit": "767e70f525dac6e3a12aa6eb827fdcc73e498da7",
+      "captureDate": "2026-10-16T11:04:40.345Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/settings",
+      "application": "invoicing",
+      "language": "ar",
+      "url": "http://127.0.0.1:4590/settings?demo=unmigrated-rtl&lang=ar",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render"
+      ],
+      "runtime": {
+        "lang": "ar-EG",
+        "dir": "rtl",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "atlas-rtl-global",
+          "atlas-rtl"
+        ],
+        "emotionStyleTagCount": 165
+      },
+      "descriptionEn": "invoicing: settings, ar; recreated from exact historical source",
+      "descriptionAr": "invoicing: settings، ar؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 9,
+      "path": "stage-09/procurement-order-detail-ar.png",
+      "type": "recreated",
+      "sourceCommit": "767e70f525dac6e3a12aa6eb827fdcc73e498da7",
+      "captureDate": "2026-10-16T11:04:41.264Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/orders/PO-2026-401",
+      "application": "procurement",
+      "language": "ar",
+      "url": "http://127.0.0.1:4591/orders/PO-2026-401?demo=unmigrated-rtl&lang=ar",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render"
+      ],
+      "runtime": {
+        "lang": "ar-EG",
+        "dir": "rtl",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "atlas-rtl-global",
+          "atlas-rtl"
+        ],
+        "emotionStyleTagCount": 52
+      },
+      "descriptionEn": "procurement: order-detail, ar; recreated from exact historical source",
+      "descriptionAr": "procurement: order-detail، ar؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 9,
+      "path": "stage-09/procurement-procurement-settings-ar.png",
+      "type": "recreated",
+      "sourceCommit": "767e70f525dac6e3a12aa6eb827fdcc73e498da7",
+      "captureDate": "2026-10-16T11:04:42.134Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/settings",
+      "application": "procurement",
+      "language": "ar",
+      "url": "http://127.0.0.1:4591/settings?demo=unmigrated-rtl&lang=ar",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render"
+      ],
+      "runtime": {
+        "lang": "ar-EG",
+        "dir": "rtl",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "atlas-rtl-global",
+          "atlas-rtl"
+        ],
+        "emotionStyleTagCount": 29
+      },
+      "descriptionEn": "procurement: procurement-settings, ar; recreated from exact historical source",
+      "descriptionAr": "procurement: procurement-settings، ar؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 9,
+      "path": "stage-09/invoicing-mobile-navigation-ar.png",
+      "type": "recreated",
+      "sourceCommit": "767e70f525dac6e3a12aa6eb827fdcc73e498da7",
+      "captureDate": "2026-10-16T11:04:43.490Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "route": "/",
+      "application": "invoicing",
+      "language": "ar",
+      "url": "http://127.0.0.1:4590/?demo=unmigrated-rtl&lang=ar",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render",
+        "Open navigation before capture"
+      ],
+      "runtime": {
+        "lang": "ar-EG",
+        "dir": "rtl",
+        "scrollWidth": 390,
+        "viewportWidth": 390,
+        "emotionKeys": [
+          "atlas-rtl-global",
+          "atlas-rtl"
+        ],
+        "emotionStyleTagCount": 179
+      },
+      "descriptionEn": "invoicing: mobile-navigation, ar; recreated from exact historical source",
+      "descriptionAr": "invoicing: mobile-navigation، ar؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 9,
+      "path": "stage-09/procurement-mobile-navigation-ar.png",
+      "type": "recreated",
+      "sourceCommit": "767e70f525dac6e3a12aa6eb827fdcc73e498da7",
+      "captureDate": "2026-10-16T11:04:44.832Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "route": "/",
+      "application": "procurement",
+      "language": "ar",
+      "url": "http://127.0.0.1:4591/?demo=unmigrated-rtl&lang=ar",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render",
+        "Open navigation before capture"
+      ],
+      "runtime": {
+        "lang": "ar-EG",
+        "dir": "rtl",
+        "scrollWidth": 390,
+        "viewportWidth": 390,
+        "emotionKeys": [
+          "atlas-rtl-global",
+          "atlas-rtl"
+        ],
+        "emotionStyleTagCount": 166
+      },
+      "descriptionEn": "procurement: mobile-navigation, ar; recreated from exact historical source",
+      "descriptionAr": "procurement: mobile-navigation، ar؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 12,
+      "path": "stage-12/invoicing-overview-en.png",
+      "type": "recreated",
+      "sourceCommit": "b127325a14ad3bf8e70aede2a2e29b9dae638355",
+      "captureDate": "2026-10-16T11:04:48.652Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/",
+      "application": "invoicing",
+      "language": "en",
+      "url": "http://127.0.0.1:4620/?demo=unmigrated-rtl&lang=en",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render"
+      ],
+      "runtime": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "css-global",
+          "css"
+        ],
+        "emotionStyleTagCount": 166
+      },
+      "descriptionEn": "invoicing: overview, en; recreated from exact historical source",
+      "descriptionAr": "invoicing: overview، en؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 12,
+      "path": "stage-12/procurement-orders-en.png",
+      "type": "recreated",
+      "sourceCommit": "b127325a14ad3bf8e70aede2a2e29b9dae638355",
+      "captureDate": "2026-10-16T11:04:49.647Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/",
+      "application": "procurement",
+      "language": "en",
+      "url": "http://127.0.0.1:4621/?demo=unmigrated-rtl&lang=en",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render"
+      ],
+      "runtime": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "css-global",
+          "css"
+        ],
+        "emotionStyleTagCount": 153
+      },
+      "descriptionEn": "procurement: orders, en; recreated from exact historical source",
+      "descriptionAr": "procurement: orders، en؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 12,
+      "path": "stage-12/invoicing-invoices-en.png",
+      "type": "recreated",
+      "sourceCommit": "b127325a14ad3bf8e70aede2a2e29b9dae638355",
+      "captureDate": "2026-10-16T11:04:50.662Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/invoices",
+      "application": "invoicing",
+      "language": "en",
+      "url": "http://127.0.0.1:4620/invoices?demo=unmigrated-rtl&lang=en",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render"
+      ],
+      "runtime": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "css-global",
+          "css"
+        ],
+        "emotionStyleTagCount": 264
+      },
+      "descriptionEn": "invoicing: invoices, en; recreated from exact historical source",
+      "descriptionAr": "invoicing: invoices، en؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 12,
+      "path": "stage-12/invoicing-invoice-detail-en.png",
+      "type": "recreated",
+      "sourceCommit": "b127325a14ad3bf8e70aede2a2e29b9dae638355",
+      "captureDate": "2026-10-16T11:04:51.629Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/invoices/INV-2026-1048",
+      "application": "invoicing",
+      "language": "en",
+      "url": "http://127.0.0.1:4620/invoices/INV-2026-1048?demo=unmigrated-rtl&lang=en",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render"
+      ],
+      "runtime": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "css-global",
+          "css"
+        ],
+        "emotionStyleTagCount": 75
+      },
+      "descriptionEn": "invoicing: invoice-detail, en; recreated from exact historical source",
+      "descriptionAr": "invoicing: invoice-detail، en؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 12,
+      "path": "stage-12/invoicing-create-en.png",
+      "type": "recreated",
+      "sourceCommit": "b127325a14ad3bf8e70aede2a2e29b9dae638355",
+      "captureDate": "2026-10-16T11:04:52.572Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/invoices/new",
+      "application": "invoicing",
+      "language": "en",
+      "url": "http://127.0.0.1:4620/invoices/new?demo=unmigrated-rtl&lang=en",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render"
+      ],
+      "runtime": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "css-global",
+          "css"
+        ],
+        "emotionStyleTagCount": 223
+      },
+      "descriptionEn": "invoicing: create, en; recreated from exact historical source",
+      "descriptionAr": "invoicing: create، en؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 12,
+      "path": "stage-12/invoicing-customer-dialog-en.png",
+      "type": "recreated",
+      "sourceCommit": "b127325a14ad3bf8e70aede2a2e29b9dae638355",
+      "captureDate": "2026-10-16T11:04:53.593Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/customers",
+      "application": "invoicing",
+      "language": "en",
+      "url": "http://127.0.0.1:4620/customers?demo=unmigrated-rtl&lang=en",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render",
+        "View first existing customer; do not edit"
+      ],
+      "runtime": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "css-global",
+          "css"
+        ],
+        "emotionStyleTagCount": 147
+      },
+      "descriptionEn": "invoicing: customer-dialog, en; recreated from exact historical source",
+      "descriptionAr": "invoicing: customer-dialog، en؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 12,
+      "path": "stage-12/invoicing-settings-en.png",
+      "type": "recreated",
+      "sourceCommit": "b127325a14ad3bf8e70aede2a2e29b9dae638355",
+      "captureDate": "2026-10-16T11:04:54.506Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/settings",
+      "application": "invoicing",
+      "language": "en",
+      "url": "http://127.0.0.1:4620/settings?demo=unmigrated-rtl&lang=en",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render"
+      ],
+      "runtime": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "css-global",
+          "css"
+        ],
+        "emotionStyleTagCount": 165
+      },
+      "descriptionEn": "invoicing: settings, en; recreated from exact historical source",
+      "descriptionAr": "invoicing: settings، en؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 12,
+      "path": "stage-12/procurement-order-detail-en.png",
+      "type": "recreated",
+      "sourceCommit": "b127325a14ad3bf8e70aede2a2e29b9dae638355",
+      "captureDate": "2026-10-16T11:04:55.413Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/orders/PO-2026-401",
+      "application": "procurement",
+      "language": "en",
+      "url": "http://127.0.0.1:4621/orders/PO-2026-401?demo=unmigrated-rtl&lang=en",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render"
+      ],
+      "runtime": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "css-global",
+          "css"
+        ],
+        "emotionStyleTagCount": 52
+      },
+      "descriptionEn": "procurement: order-detail, en; recreated from exact historical source",
+      "descriptionAr": "procurement: order-detail، en؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 12,
+      "path": "stage-12/procurement-procurement-settings-en.png",
+      "type": "recreated",
+      "sourceCommit": "b127325a14ad3bf8e70aede2a2e29b9dae638355",
+      "captureDate": "2026-10-16T11:04:56.319Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/settings",
+      "application": "procurement",
+      "language": "en",
+      "url": "http://127.0.0.1:4621/settings?demo=unmigrated-rtl&lang=en",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render"
+      ],
+      "runtime": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "css-global",
+          "css"
+        ],
+        "emotionStyleTagCount": 29
+      },
+      "descriptionEn": "procurement: procurement-settings, en; recreated from exact historical source",
+      "descriptionAr": "procurement: procurement-settings، en؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 12,
+      "path": "stage-12/invoicing-mobile-navigation-en.png",
+      "type": "recreated",
+      "sourceCommit": "b127325a14ad3bf8e70aede2a2e29b9dae638355",
+      "captureDate": "2026-10-16T11:04:57.710Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "route": "/",
+      "application": "invoicing",
+      "language": "en",
+      "url": "http://127.0.0.1:4620/?demo=unmigrated-rtl&lang=en",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render",
+        "Open navigation before capture"
+      ],
+      "runtime": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 390,
+        "viewportWidth": 390,
+        "emotionKeys": [
+          "css-global",
+          "css"
+        ],
+        "emotionStyleTagCount": 179
+      },
+      "descriptionEn": "invoicing: mobile-navigation, en; recreated from exact historical source",
+      "descriptionAr": "invoicing: mobile-navigation، en؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 12,
+      "path": "stage-12/procurement-mobile-navigation-en.png",
+      "type": "recreated",
+      "sourceCommit": "b127325a14ad3bf8e70aede2a2e29b9dae638355",
+      "captureDate": "2026-10-16T11:04:59.035Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "route": "/",
+      "application": "procurement",
+      "language": "en",
+      "url": "http://127.0.0.1:4621/?demo=unmigrated-rtl&lang=en",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render",
+        "Open navigation before capture"
+      ],
+      "runtime": {
+        "lang": "en",
+        "dir": "ltr",
+        "scrollWidth": 390,
+        "viewportWidth": 390,
+        "emotionKeys": [
+          "css-global",
+          "css"
+        ],
+        "emotionStyleTagCount": 166
+      },
+      "descriptionEn": "procurement: mobile-navigation, en; recreated from exact historical source",
+      "descriptionAr": "procurement: mobile-navigation، en؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 12,
+      "path": "stage-12/invoicing-overview-ar.png",
+      "type": "recreated",
+      "sourceCommit": "b127325a14ad3bf8e70aede2a2e29b9dae638355",
+      "captureDate": "2026-10-16T11:05:00.002Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/",
+      "application": "invoicing",
+      "language": "ar",
+      "url": "http://127.0.0.1:4620/?demo=unmigrated-rtl&lang=ar",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render"
+      ],
+      "runtime": {
+        "lang": "ar-EG",
+        "dir": "rtl",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "atlas-rtl-global",
+          "atlas-rtl"
+        ],
+        "emotionStyleTagCount": 166
+      },
+      "descriptionEn": "invoicing: overview, ar; recreated from exact historical source",
+      "descriptionAr": "invoicing: overview، ar؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 12,
+      "path": "stage-12/procurement-orders-ar.png",
+      "type": "recreated",
+      "sourceCommit": "b127325a14ad3bf8e70aede2a2e29b9dae638355",
+      "captureDate": "2026-10-16T11:05:01.005Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/",
+      "application": "procurement",
+      "language": "ar",
+      "url": "http://127.0.0.1:4621/?demo=unmigrated-rtl&lang=ar",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render"
+      ],
+      "runtime": {
+        "lang": "ar-EG",
+        "dir": "rtl",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "atlas-rtl-global",
+          "atlas-rtl"
+        ],
+        "emotionStyleTagCount": 153
+      },
+      "descriptionEn": "procurement: orders, ar; recreated from exact historical source",
+      "descriptionAr": "procurement: orders، ar؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 12,
+      "path": "stage-12/invoicing-invoices-ar.png",
+      "type": "recreated",
+      "sourceCommit": "b127325a14ad3bf8e70aede2a2e29b9dae638355",
+      "captureDate": "2026-10-16T11:05:02.009Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/invoices",
+      "application": "invoicing",
+      "language": "ar",
+      "url": "http://127.0.0.1:4620/invoices?demo=unmigrated-rtl&lang=ar",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render"
+      ],
+      "runtime": {
+        "lang": "ar-EG",
+        "dir": "rtl",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "atlas-rtl-global",
+          "atlas-rtl"
+        ],
+        "emotionStyleTagCount": 264
+      },
+      "descriptionEn": "invoicing: invoices, ar; recreated from exact historical source",
+      "descriptionAr": "invoicing: invoices، ar؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 12,
+      "path": "stage-12/invoicing-invoice-detail-ar.png",
+      "type": "recreated",
+      "sourceCommit": "b127325a14ad3bf8e70aede2a2e29b9dae638355",
+      "captureDate": "2026-10-16T11:05:02.938Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/invoices/INV-2026-1048",
+      "application": "invoicing",
+      "language": "ar",
+      "url": "http://127.0.0.1:4620/invoices/INV-2026-1048?demo=unmigrated-rtl&lang=ar",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render"
+      ],
+      "runtime": {
+        "lang": "ar-EG",
+        "dir": "rtl",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "atlas-rtl-global",
+          "atlas-rtl"
+        ],
+        "emotionStyleTagCount": 75
+      },
+      "descriptionEn": "invoicing: invoice-detail, ar; recreated from exact historical source",
+      "descriptionAr": "invoicing: invoice-detail، ar؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 12,
+      "path": "stage-12/invoicing-create-ar.png",
+      "type": "recreated",
+      "sourceCommit": "b127325a14ad3bf8e70aede2a2e29b9dae638355",
+      "captureDate": "2026-10-16T11:05:03.968Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/invoices/new",
+      "application": "invoicing",
+      "language": "ar",
+      "url": "http://127.0.0.1:4620/invoices/new?demo=unmigrated-rtl&lang=ar",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render"
+      ],
+      "runtime": {
+        "lang": "ar-EG",
+        "dir": "rtl",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "atlas-rtl-global",
+          "atlas-rtl"
+        ],
+        "emotionStyleTagCount": 223
+      },
+      "descriptionEn": "invoicing: create, ar; recreated from exact historical source",
+      "descriptionAr": "invoicing: create، ar؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 12,
+      "path": "stage-12/invoicing-customer-dialog-ar.png",
+      "type": "recreated",
+      "sourceCommit": "b127325a14ad3bf8e70aede2a2e29b9dae638355",
+      "captureDate": "2026-10-16T11:05:05.086Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/customers",
+      "application": "invoicing",
+      "language": "ar",
+      "url": "http://127.0.0.1:4620/customers?demo=unmigrated-rtl&lang=ar",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render",
+        "View first existing customer; do not edit"
+      ],
+      "runtime": {
+        "lang": "ar-EG",
+        "dir": "rtl",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "atlas-rtl-global",
+          "atlas-rtl"
+        ],
+        "emotionStyleTagCount": 147
+      },
+      "descriptionEn": "invoicing: customer-dialog, ar; recreated from exact historical source",
+      "descriptionAr": "invoicing: customer-dialog، ar؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 12,
+      "path": "stage-12/invoicing-settings-ar.png",
+      "type": "recreated",
+      "sourceCommit": "b127325a14ad3bf8e70aede2a2e29b9dae638355",
+      "captureDate": "2026-10-16T11:05:06.011Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/settings",
+      "application": "invoicing",
+      "language": "ar",
+      "url": "http://127.0.0.1:4620/settings?demo=unmigrated-rtl&lang=ar",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render"
+      ],
+      "runtime": {
+        "lang": "ar-EG",
+        "dir": "rtl",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "atlas-rtl-global",
+          "atlas-rtl"
+        ],
+        "emotionStyleTagCount": 165
+      },
+      "descriptionEn": "invoicing: settings, ar; recreated from exact historical source",
+      "descriptionAr": "invoicing: settings، ar؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 12,
+      "path": "stage-12/procurement-order-detail-ar.png",
+      "type": "recreated",
+      "sourceCommit": "b127325a14ad3bf8e70aede2a2e29b9dae638355",
+      "captureDate": "2026-10-16T11:05:06.897Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/orders/PO-2026-401",
+      "application": "procurement",
+      "language": "ar",
+      "url": "http://127.0.0.1:4621/orders/PO-2026-401?demo=unmigrated-rtl&lang=ar",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render"
+      ],
+      "runtime": {
+        "lang": "ar-EG",
+        "dir": "rtl",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "atlas-rtl-global",
+          "atlas-rtl"
+        ],
+        "emotionStyleTagCount": 52
+      },
+      "descriptionEn": "procurement: order-detail, ar; recreated from exact historical source",
+      "descriptionAr": "procurement: order-detail، ar؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 12,
+      "path": "stage-12/procurement-procurement-settings-ar.png",
+      "type": "recreated",
+      "sourceCommit": "b127325a14ad3bf8e70aede2a2e29b9dae638355",
+      "captureDate": "2026-10-16T11:05:07.776Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "route": "/settings",
+      "application": "procurement",
+      "language": "ar",
+      "url": "http://127.0.0.1:4621/settings?demo=unmigrated-rtl&lang=ar",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render"
+      ],
+      "runtime": {
+        "lang": "ar-EG",
+        "dir": "rtl",
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "emotionKeys": [
+          "atlas-rtl-global",
+          "atlas-rtl"
+        ],
+        "emotionStyleTagCount": 29
+      },
+      "descriptionEn": "procurement: procurement-settings, ar; recreated from exact historical source",
+      "descriptionAr": "procurement: procurement-settings، ar؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 12,
+      "path": "stage-12/invoicing-mobile-navigation-ar.png",
+      "type": "recreated",
+      "sourceCommit": "b127325a14ad3bf8e70aede2a2e29b9dae638355",
+      "captureDate": "2026-10-16T11:05:09.111Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "route": "/",
+      "application": "invoicing",
+      "language": "ar",
+      "url": "http://127.0.0.1:4620/?demo=unmigrated-rtl&lang=ar",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render",
+        "Open navigation before capture"
+      ],
+      "runtime": {
+        "lang": "ar-EG",
+        "dir": "rtl",
+        "scrollWidth": 390,
+        "viewportWidth": 390,
+        "emotionKeys": [
+          "atlas-rtl-global",
+          "atlas-rtl"
+        ],
+        "emotionStyleTagCount": 179
+      },
+      "descriptionEn": "invoicing: mobile-navigation, ar; recreated from exact historical source",
+      "descriptionAr": "invoicing: mobile-navigation، ar؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    },
+    {
+      "stage": 12,
+      "path": "stage-12/procurement-mobile-navigation-ar.png",
+      "type": "recreated",
+      "sourceCommit": "b127325a14ad3bf8e70aede2a2e29b9dae638355",
+      "captureDate": "2026-10-16T11:05:10.459Z",
+      "browserVersion": "156.0.8078.4",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "route": "/",
+      "application": "procurement",
+      "language": "ar",
+      "url": "http://127.0.0.1:4621/?demo=unmigrated-rtl&lang=ar",
+      "steps": [
+        "Fresh ephemeral browser context; no persisted storage",
+        "Open route with historically supported demo/language query",
+        "Wait for h1, document fonts and initial render",
+        "Open navigation before capture"
+      ],
+      "runtime": {
+        "lang": "ar-EG",
+        "dir": "rtl",
+        "scrollWidth": 390,
+        "viewportWidth": 390,
+        "emotionKeys": [
+          "atlas-rtl-global",
+          "atlas-rtl"
+        ],
+        "emotionStyleTagCount": 166
+      },
+      "descriptionEn": "procurement: mobile-navigation, ar; recreated from exact historical source",
+      "descriptionAr": "procurement: mobile-navigation، ar؛ لقطة مُعاد إنتاجها من المصدر التاريخي المحدد"
+    }
+  ],
+  "receipts": [
+    {
+      "stage": 7,
+      "commit": "85f4dde02142f305b434c815a39015a4c5eaafec",
+      "node": "v24.6.0",
+      "packageManager": "npm 11.5.1",
+      "installation": "npm ci --ignore-scripts --offline --no-audit --no-fund; committed lockfile; no manifest edits",
+      "scripts": [
+        "npm run dev -- --port=4570",
+        "npm run dev:procurement -- --port=4571"
+      ],
+      "sourceRootVerifiedByServedMainModule": "/private/tmp/atlas-history-css",
+      "ports": [
+        4570,
+        4571
+      ],
+      "trackedChangesAfter": "",
+      "startupVerified": true
+    },
+    {
+      "stage": 8,
+      "commit": "1098eb782b2d61eb8b17b146e4f01867820b76ff",
+      "node": "v24.6.0",
+      "packageManager": "npm 11.5.1",
+      "installation": "npm ci --ignore-scripts --offline --no-audit --no-fund; committed lockfile; no manifest edits",
+      "scripts": [
+        "npm run dev -- --port=4580",
+        "npm run dev:procurement -- --port=4581"
+      ],
+      "sourceRootVerifiedByServedMainModule": "/private/tmp/atlas-history-runtime",
+      "ports": [
+        4580,
+        4581
+      ],
+      "trackedChangesAfter": "",
+      "startupVerified": true
+    },
+    {
+      "stage": 9,
+      "commit": "767e70f525dac6e3a12aa6eb827fdcc73e498da7",
+      "node": "v24.6.0",
+      "packageManager": "npm 11.5.1",
+      "installation": "npm ci --ignore-scripts --offline --no-audit --no-fund; committed lockfile; no manifest edits",
+      "scripts": [
+        "npm run dev -- --port=4590",
+        "npm run dev:procurement -- --port=4591"
+      ],
+      "sourceRootVerifiedByServedMainModule": "/private/tmp/atlas-history-ui",
+      "ports": [
+        4590,
+        4591
+      ],
+      "trackedChangesAfter": "",
+      "startupVerified": true
+    },
+    {
+      "stage": 12,
+      "commit": "b127325a14ad3bf8e70aede2a2e29b9dae638355",
+      "node": "v24.6.0",
+      "packageManager": "npm 11.5.1",
+      "installation": "npm ci --ignore-scripts --offline --no-audit --no-fund; committed lockfile; no manifest edits",
+      "scripts": [
+        "npm run dev -- --port=4620",
+        "npm run dev:procurement -- --port=4621"
+      ],
+      "sourceRootVerifiedByServedMainModule": "/private/tmp/atlas-history-final",
+      "ports": [
+        4620,
+        4621
+      ],
+      "trackedChangesAfter": "",
+      "startupVerified": true
+    }
+  ]
+}

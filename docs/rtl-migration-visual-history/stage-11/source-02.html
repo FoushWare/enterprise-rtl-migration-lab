@@ -1,0 +1,55 @@
+<!doctype html><meta charset="utf-8"><title>Source evidence</title><style>body{margin:0;background:#0c1626;color:#e6edf5;font:18px Arial;padding:45px}small{color:#d4d991}h1{font-size:26px}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:16px/1.65 monospace;background:#142338;padding:24px;border-left:4px solid #d4d991}footer{color:#9eafc3;font-size:14px}</style><small>STAGE 11 · REPORT / SOURCE EVIDENCE · NOT AN APPLICATION SCREENSHOT</small><h1>.github/workflows/ci.yml:1–55</h1><p>de7f7676e15b2f9d45bee634885cd6266b9a541e</p><pre>0001  name: English LTR baseline
+0002  on: [push, pull_request]
+0003  jobs:
+0004    verify:
+0005      runs-on: macos-latest
+0006      steps:
+0007        - uses: actions/checkout@v4
+0008        - uses: actions/setup-node@v4
+0009          with:
+0010            node-version: 22
+0011            cache: npm
+0012        - run: npm ci
+0013        - run: npm run lint
+0014        - run: npm run typecheck
+0015        - run: npm run rtl:verify:protected
+0016        - run: npm run rtl:scan:typecheck
+0017        - run: npm run rtl:scan:build
+0018        - run: npm run rtl:scan:test
+0019        - run: npm run rtl:scan
+0020        - run: npm run rtl:codemod:test
+0021        - run: npm run rtl:codemod -- --dry-run
+0022        - run: npm run build -- --skip-nx-cache
+0023        - run: npm test
+0024        - run: npx playwright install chromium --no-shell
+0025        - name: Match protected native-date baseline region
+0026          shell: bash
+0027          run: |
+0028            set -euo pipefail
+0029            test &quot;$RUNNER_ENVIRONMENT&quot; = github-hosted
+0030            cat &gt; &quot;$RUNNER_TEMP/native-date-region.py&quot; &lt;&lt;&#x27;PY&#x27;
+0031            import json
+0032            import os
+0033            from pathlib import Path
+0034            import plistlib
+0035            import subprocess
+0036            import sys
+0037
+0038            if sys.platform != &#x27;darwin&#x27; or os.environ.get(&#x27;GITHUB_ACTIONS&#x27;) != &#x27;true&#x27; or os.environ.get(&#x27;RUNNER_ENVIRONMENT&#x27;) != &#x27;github-hosted&#x27;:
+0039                raise SystemExit(&#x27;Preference changes require a disposable GitHub-hosted macOS runner&#x27;)
+0040            snapshot = Path(os.environ[&#x27;RUNNER_TEMP&#x27;]) / &#x27;native-date-region-original.json&#x27;
+0041            if sys.argv[1] == &#x27;prepare&#x27;:
+0042                if snapshot.exists():
+0043                    raise SystemExit(&#x27;Refusing to overwrite original region snapshot&#x27;)
+0044                preferences = plistlib.loads(subprocess.check_output([&#x27;defaults&#x27;, &#x27;export&#x27;, &#x27;NSGlobalDomain&#x27;, &#x27;-&#x27;]))
+0045                original = {&#x27;present&#x27;: &#x27;AppleLocale&#x27; in preferences, &#x27;value&#x27;: preferences.get(&#x27;AppleLocale&#x27;)}
+0046                if original[&#x27;present&#x27;] and not isinstance(original[&#x27;value&#x27;], str):
+0047                    raise SystemExit(&#x27;Unsupported original AppleLocale type&#x27;)
+0048                snapshot.write_text(json.dumps(original))
+0049                subprocess.run([&#x27;defaults&#x27;, &#x27;write&#x27;, &#x27;NSGlobalDomain&#x27;, &#x27;AppleLocale&#x27;, &#x27;-string&#x27;, &#x27;en_EG&#x27;], check=True)
+0050                if subprocess.check_output([&#x27;defaults&#x27;, &#x27;read&#x27;, &#x27;NSGlobalDomain&#x27;, &#x27;AppleLocale&#x27;], text=True).strip() != &#x27;en_EG&#x27;:
+0051                    raise SystemExit(&#x27;Native date region readback failed&#x27;)
+0052                print(&#x27;CI-only AppleLocale=en_EG; application/browser locale and baselines unchanged&#x27;)
+0053            elif sys.argv[1] == &#x27;restore&#x27;:
+0054                if snapshot.exists():
+0055                    original = json.loads(snapshot.read_text())</pre><footer>Exact Git source excerpt. No reconstructed UI or invented terminal output. <a style="color:#d4d991" href="https://github.com/FoushWare/enterprise-rtl-migration-lab/blob/de7f7676e15b2f9d45bee634885cd6266b9a541e/.github/workflows/ci.yml#L1">Original source</a></footer>
