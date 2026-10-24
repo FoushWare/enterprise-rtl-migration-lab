@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "../fixtures/e2e";
 const query = "?demo=unmigrated-rtl&lang=ar";
 const notice = "Unmigrated RTL — demonstration only";
 for (const app of ["invoicing", "procurement"] as const) {

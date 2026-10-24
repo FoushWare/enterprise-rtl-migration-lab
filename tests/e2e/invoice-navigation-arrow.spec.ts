@@ -1,4 +1,4 @@
-import { test, expect, type Locator, type Page } from "@playwright/test";
+import { test, expect, type Locator, type Page } from "../fixtures/e2e";
 
 const widths = [390, 899, 900, 901, 1100, 1101, 1440];
 type Language = "en" | "ar";

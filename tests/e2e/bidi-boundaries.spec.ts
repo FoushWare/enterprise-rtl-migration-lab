@@ -1,4 +1,4 @@
-import { test, expect, type Locator } from "@playwright/test";
+import { test, expect, type Locator } from "../fixtures/e2e";
 
 async function glyphs(element: Locator) {
   return element.evaluate((node) => {

@@ -1,4 +1,4 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect, type Page } from "../fixtures/e2e";
 const months = {
   en: ["May", "Jun", "Jul", "Aug", "Sep", "Oct"],
   ar: ["مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر"],
