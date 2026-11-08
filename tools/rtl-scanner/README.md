@@ -1,6 +1,11 @@
 # Enterprise RTL Scanner — Conservative Detection
 
-For **Migrating Enterprise React Apps to RTL Without Breaking LTR**. Foundation was committed separately at `406b7cd`; Stage 3 adds risk detection, not remediation. No fixes, codemods, RTL plugins, runtime changes or dashboard exist.
+## Source snippet security boundary
+
+The Phase 1 source-snippet engine reads only files referenced by findings, validates repository-relative paths and rejects symlinked ancestors/files, and opens regular files with `O_NOFOLLOW` where supported. It verifies device/inode/size before and after the descriptor read and checks finding ranges against the scanner's JavaScript UTF-16 offsets, line, column, and original text. Snippets are generation-time reads, not live views or authoritative full-file snapshots; same-size mutations outside a finding range are not fully detectable, and range matching does not prove complete scan-snapshot identity.
+
+The `lstat` validation followed by descriptor open cannot eliminate every concurrent parent-directory replacement race. The approved scan root and its ancestors must therefore be trusted against hostile concurrent replacement; `O_NOFOLLOW` protects the opened final file, not all ancestor directories. Platforms without `O_NOFOLLOW` fail closed. Embedded source remains potentially sensitive and must be treated as opt-in data.
+For **Migrating Enterprise React Apps to RTL Without Breaking LTR**. Foundation was committed separately at `406b7cd`; the scanner adds risk detection and a static, self-contained analysis dashboard, not remediation. No fixes, codemods, RTL plugins, or runtime changes are included.
 
 ```sh
 npm run rtl:scan:typecheck
@@ -10,7 +15,9 @@ node dist/tools/rtl-scanner/cli.js --format json > /tmp/atlas-rtl.json
 node dist/tools/rtl-scanner/cli.js --format markdown > /tmp/atlas-rtl.md
 ```
 
-Build writes ignored `dist/tools/rtl-scanner`. Direct scanning is separate, uses only reads, and writes solely to stdout. `npm run rtl:scan -- --format json` also works but npm prints a script banner; use direct node for machine-readable stdout. Options: `--root repository`, `--format json|markdown`, optional `--fail-on-findings`.
+Build writes ignored `dist/tools/rtl-scanner`. Direct scanning is separate, uses only reads, and writes solely to stdout. `npm run rtl:scan -- --format json` also works but npm prints a script banner; use direct node for machine-readable stdout. Options: `--root repository`, `--format json|markdown|markdown-structured|dashboard`, optional `--fail-on-findings`. `--embed-source-snippets` is accepted only with `--format dashboard --output-dir`; it adds verified, bounded source windows to the HTML dashboard and displays a privacy warning. Dashboard output is a self-contained LTR HTML file with a responsive file/finding explorer, source preview, copy-location actions, search, severity/category filters, schema-backed summaries, and automatic dark theme support; with `--output-dir` it publishes `rtl-report.json`, `rtl-report.md`, `rtl-report-structured.md`, and `rtl-report-dashboard.html` using the same no-overwrite hard-link publisher. Source embedding affects only the HTML artifact.
+
+Publication validates a trusted, already-existing external directory and its ancestors immediately before same-directory hard-link publication. This reduces, but cannot eliminate, a TOCTOU race if a malicious actor replaces a validated directory between the final validation and the link call; identity-verified rollback remains the fail-closed cleanup mechanism.
 
 Exit codes:
 
@@ -39,7 +46,7 @@ Rules cover physical edges/spacing/borders/corners, asymmetric or unresolved sho
 
 Coverage remains deliberately bounded: no complete type/import/route graph, computed cascade, generated vendor CSS evaluation, full CSS value grammar, native date/caret inspection or font-dependent collision proof. Re-exported providers, namespaces, unknown wrappers, escaped templates and interpolation can remain unsupported. Cache absence is explicitly scoped to analyzed imports/providers; global document RTL correctly reaches ordinary body-mounted portals, so no portal failure is invented. Custom-property values are not resolved across the cascade, and dynamic background positioning stays incomplete unless a source-pinned review exception establishes its non-directional role.
 
-See [actual findings](../../docs/phase-3-rtl-findings.md) and [detection review/matrix](../../docs/phase-3-detection-review.md). The nine reference cases have static risk evidence, not nine independently proved visual failures. Stop after Stage 3; human approval is required before Stage 4 integration or any transformation/runtime remediation.
+See [actual findings](../../docs/phase-3-rtl-findings.md) and [detection review/matrix](../../docs/phase-3-detection-review.md). The nine reference cases have static risk evidence, not nine independently proved visual failures. The dashboard is a read-only presentation of this evidence; human approval is required before any transformation/runtime remediation.
 
 Application attribution is source-path based for app files. Shared findings carry an empty application list to indicate unresolved reachability, not an unaffected library; the reviewed reference-case matrix supplies known application context. Runtime cache presence with unresolved cache/plugin configuration remains blocking, rather than being accepted as proof of RTL support.
 

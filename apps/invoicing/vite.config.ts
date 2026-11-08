@@ -4,7 +4,7 @@ import { resolve } from "node:path";
 import tsconfigPaths from "vite-tsconfig-paths";
 export default defineConfig({
   root: __dirname,
-  cacheDir: "../../node_modules/.vite/invoicing",
+  cacheDir: process.env.RTL_VITE_CACHE_DIR ?? "../../node_modules/.vite/invoicing",
   plugins: [
     react(),
     tsconfigPaths({ projects: [resolve(__dirname, "../../tsconfig.json")] }),
