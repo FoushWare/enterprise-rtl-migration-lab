@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import type { Finding, Report } from './model.js';
 
 export type FindingReconciliation = 'New' | 'Changed' | 'Resolved' | 'Stale' | 'Unresolved';
-export interface ScanManifest { readonly scanId: string; readonly inputDigest: string; readonly policyDigest: string; readonly timestamp: string; readonly findings: readonly Finding[] }
+export interface ScanManifest { readonly scanId: string; readonly inputDigest: string; readonly policyDigest: string; readonly timestamp: string; readonly findings: readonly Finding[]; readonly sourceCoverage?: { readonly complete: boolean; readonly filesAnalyzed: number; readonly filesExpected?: number } }
 export interface ReconciledFinding { readonly findingId: string; readonly currentId?: string; readonly status: FindingReconciliation; readonly confidence: 'Exact' | 'Structural' | 'Ambiguous' }
 
 const structuralKey = (f: Finding) => `${f.ruleId}|${f.path}|${f.sourceMechanism}|${f.context}|${f.original}`;
@@ -22,6 +22,6 @@ export function reconcileScans(previous: ScanManifest | null, current: ScanManif
     else if (matches.length > 1) result.push({ findingId: f.id, currentId: f.id, status: 'Stale', confidence: 'Ambiguous' });
     else result.push({ findingId: f.id, currentId: f.id, status: 'New', confidence: 'Exact' });
   }
-  for (const f of previous.findings) if (!seen.has(f.id)) result.push({ findingId: f.id, status: 'Resolved', confidence: 'Exact' });
+  for (const f of previous.findings) if (!seen.has(f.id)) result.push({ findingId: f.id, status: current.sourceCoverage?.complete === false ? 'Stale' : 'Resolved', confidence: 'Exact' });
   return result;
 }
