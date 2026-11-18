@@ -1,0 +1,31 @@
+// Standalone disposable Nx-shaped scanner target. No Atlas source, routes, providers or fixtures.
+import {spawn,execFileSync} from 'node:child_process';
+import {mkdtempSync,realpathSync,mkdirSync,writeFileSync,readFileSync,symlinkSync,rmSync} from 'node:fs';
+import {join,resolve} from 'node:path';
+import {tmpdir} from 'node:os';
+import {createServer} from 'node:net';
+const repo=process.cwd(),workspace=mkdtempSync(join(realpathSync(tmpdir()),'rtl-independent-')),project=join(workspace,'project'),state=join(workspace,'state'),dashboard=join(workspace,'dashboard');
+for(const dir of ['apps/lab/src','libs', '../state/backups','../dashboard'])mkdirSync(join(project,dir),{recursive:true});
+const put=(path,text)=>writeFileSync(join(project,path),text);
+put('package.json',JSON.stringify({type:'module',scripts:{typecheck:'tsc --noEmit',build:'vite build --config apps/lab/vite.config.ts'},dependencies:{react:'*','react-dom':'*'}}));
+put('nx.json','{}');put('apps/lab/project.json',JSON.stringify({sourceRoot:'apps/lab/src'}));
+put('tsconfig.json',JSON.stringify({compilerOptions:{target:'ES2022',module:'ESNext',moduleResolution:'Bundler',jsx:'react-jsx',strict:true,skipLibCheck:true,esModuleInterop:true},include:['apps/lab/src']}));
+put('rtl-scanner.config.json',JSON.stringify({schemaVersion:1,generatedStyleOwner:'unknown',ownership:{css:'custom-css','react-inline':'custom-inline'},approvals:[],exceptions:[],issueBindings:[],dynamicExceptions:[],roles:[]}));
+put('apps/lab/vite.config.ts',`import {defineConfig} from 'vite';import {fileURLToPath} from 'node:url';export default defineConfig({root:fileURLToPath(new URL('.',import.meta.url))});`);
+put('apps/lab/index.html','<html dir="ltr"><body><div id="root"></div><script type="module" src="/src/peculiar.tsx"></script></body></html>');
+put('apps/lab/src/peculiar.tsx',`import React from 'react';import {createRoot} from 'react-dom/client';import './nobody-knows.css';document.documentElement.dir=new URLSearchParams(location.search).get('dir')==='rtl'?'rtl':'ltr';const person={email:'test@example.test',name:'ليلى Laila'};function Demo(){return <main><div className="space">Space</div><div className="align">Alignment</div><div id="parent" style={{position:'relative',width:200,height:50}}><div className="offset">Anchor</div></div><div className="border">Border</div><svg className="next" viewBox="0 0 24 24"><path d="M1 1L23 12L1 23Z"/></svg><p id="copy">({person.email}) {person.name}</p><div id="inline" style={{paddingLeft:13,textAlign:'right'}}>Inline</div></main>};createRoot(document.getElementById('root')!).render(<Demo/>);`);
+put('apps/lab/src/nobody-knows.css',`.space{margin-left:12px}.align{text-align:left}.offset{position:absolute;left:8px;top:0;width:40px;height:30px}.border{border-right:2px solid blue;border-bottom-left-radius:7px}.next{/* rtl-icon: progression-right */display:inline-block;width:24px;height:24px}.overlap{/* rtl-icon: progression-right */display:inline-block;margin-left:2px}`);
+symlinkSync(join(repo,'node_modules'),join(project,'node_modules'),'dir');
+execFileSync(process.execPath,[join(repo,'dist/tools/rtl-scanner/cli.js'),'--root',project,'--format','dashboard','--embed-source-snippets','--output-dir',dashboard],{stdio:'ignore'});
+for(const port of [4200,4215,4318,4320])await new Promise((resolveReady,reject)=>{const server=createServer();server.once('error',()=>reject(Error('Port '+port+' occupied; no unrelated process was stopped.')));server.listen(port,'127.0.0.1',()=>server.close(resolveReady))});
+const env={...process.env,RTL_PROJECT_ROOT:project,RTL_REVIEW_STORE_PATH:join(state,'review-records-v1.json'),RTL_EVIDENCE_STORE_PATH:join(state,'review-evidence-v1.json'),RTL_MANUAL_CHANGE_STORE_PATH:join(state,'manual-changes-v1.json'),RTL_SCAN_MANIFEST_STORE_PATH:join(state,'scan-manifests-v1.json'),RTL_AUDIT_STORE_PATH:join(state,'apply-audit-v1.json'),RTL_APPLY_BACKUP_ROOT:join(state,'backups')};
+const services=[spawn(process.execPath,[join(repo,'dist/tools/rtl-scanner/preview-companion.js')],{env,stdio:'inherit'}),spawn('python3',['-m','http.server','4320','--bind','127.0.0.1'],{cwd:dashboard,stdio:['ignore','ignore','inherit']}),spawn(process.execPath,[join(repo,'node_modules/vite/bin/vite.js'),'--config',join(project,'apps/lab/vite.config.ts'),'--host','127.0.0.1','--port','4200','--strictPort'],{cwd:project,stdio:'inherit'})];
+const environment=join(workspace,'environment.json');writeFileSync(environment,JSON.stringify({project,state,dashboard,supervisorPid:process.pid,dashboardUrl:'http://127.0.0.1:4320/rtl-report-dashboard.html'}));
+let tests,stopping=false;
+async function stop(){if(stopping)return;stopping=true;for(const c of [tests,...services])if(c&&c.exitCode===null){const done=new Promise(r=>c.once('exit',r));c.kill('SIGTERM');await done}try{const store=JSON.parse(readFileSync(join(state,'backups/review-workflows-v1.json'),'utf8'));for(const w of store.workflows)if(w.root===project&&w.session?.candidateRoot?.startsWith(join(realpathSync(tmpdir()),'rtl-review-')))rmSync(w.session.candidateRoot,{recursive:true,force:true})}catch{}rmSync(workspace,{recursive:true,force:true})}
+process.on('SIGTERM',()=>void stop());process.on('SIGINT',()=>void stop());
+try{
+ for(const url of ['http://127.0.0.1:4318/health','http://127.0.0.1:4320/rtl-report-dashboard.html','http://127.0.0.1:4200/']){let ready=false;for(let i=0;i<100;i++){try{const r=await fetch(url);if(r.ok){ready=true;break}}catch{}await new Promise(r=>setTimeout(r,100))}if(!ready)throw Error('Service unavailable '+url)}
+ const health=await fetch('http://127.0.0.1:4318/health').then(r=>r.json());if(health.projectRoot!==project)throw Error('DISPOSABLE_COMPANION_ROOT_MISMATCH');
+ const output=resolve('test-results/independent-expansion-'+new Date().toISOString().replaceAll(':','-'));tests=spawn(process.execPath,['node_modules/@playwright/test/cli.js','test','--config=playwright.manual-preview.config.ts','tests/e2e/independent-expansion.spec.ts','--output='+output],{env:{...process.env,RTL_MANUAL_ENVIRONMENT:environment},stdio:'inherit'});process.exitCode=await new Promise(r=>tests.once('exit',code=>r(code??1)));console.log('INDEPENDENT_EVIDENCE',output);
+}finally{await stop()}

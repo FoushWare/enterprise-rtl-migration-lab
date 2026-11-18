@@ -7,7 +7,7 @@ import type { PatchRequest, ReviewIdentity, ReviewStatus } from './review-sessio
 import { validateReviewIdentity } from './review-session.js';
 
 export const EVIDENCE_STORE_VERSION = 1 as const;
-export const DEFAULT_EVIDENCE_STORE_PATH = join(homedir(), '.rtl-migration-analyzer', 'review-evidence-v1.json');
+export const DEFAULT_EVIDENCE_STORE_PATH = process.env.RTL_EVIDENCE_STORE_PATH || join(homedir(), '.rtl-migration-analyzer', 'review-evidence-v1.json');
 export interface EvidenceSnapshot extends ReviewIdentity {
   readonly snapshotId: string;
   readonly candidatePatchIdentity: { readonly path: string; readonly expectedSha256: string; readonly replacementSha256: string };

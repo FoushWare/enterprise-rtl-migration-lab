@@ -4,7 +4,7 @@ import { mkdtemp, readFile, rm, symlink, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { createServer } from 'node:http';
-import { applyReviewPatch, assertPortAvailable, clearReviewRecords, createReviewSession, getReviewRecord, REVIEW_FINDING_ID, REVIEW_SOURCE, runtimeCacheDir, saveReviewRecord, validatePatch, validateReviewIdentity, validateReviewPath } from '../src/review-session.js';
+import { applyReviewPatch, assertPortAvailable, clearReviewRecords, createReviewSession, getReviewRecord, reviewSessionComparison, REVIEW_FINDING_ID, REVIEW_SOURCE, runtimeCacheDir, saveReviewRecord, validatePatch, validateReviewIdentity, validateReviewPath } from '../src/review-session.js';
 import { recoverCandidateSessionId } from '../src/review-approval.js';
 
 const sha = (value: string) => createHash('sha256').update(value).digest('hex');
@@ -73,6 +73,47 @@ describe('review session isolation', () => {
       const next = await applyReviewPatch(session, { findingId: REVIEW_FINDING_ID, path: REVIEW_SOURCE, startOffset: 6, endOffset: 14, expectedSha256: sha('original'), replacement: 'changed' });
       expect(await readFile(source, 'utf8')).toBe(original);
       expect(await readFile(join(next.candidateRoot, REVIEW_SOURCE), 'utf8')).toBe('const changed = true;\n');
+      await (await import('../src/review-session.js')).disposeReviewSession(next);
+    } finally { await rm(root, { recursive: true, force: true }); }
+  });
+  it('derives a comparison from the targeted repeated expression, not the first occurrence', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'rtl-review-diff-repeat-'));
+    try {
+      await (await import('node:fs/promises')).mkdir(join(root, 'apps/invoicing/src/components'), { recursive: true });
+      const original = 'const first = {i.id};\nconst second = {i.id};\n';
+      const source = join(root, REVIEW_SOURCE); await writeFile(source, original);
+      const session = await createReviewSession(root); const startOffset = original.lastIndexOf('{i.id}');
+      const next = await applyReviewPatch(session, { findingId: REVIEW_FINDING_ID, path: REVIEW_SOURCE, startOffset, endOffset: startOffset + 6, expectedSha256: sha('{i.id}'), replacement: '<bdi dir="auto">{i.id}</bdi>' });
+      const comparison = await reviewSessionComparison(next);
+      expect(comparison.state).toBe('ready'); expect(comparison.before).toBe('{i.id}'); expect(comparison.after).toBe('<bdi dir="auto">{i.id}</bdi>');
+      expect(comparison.beforeLocation).toEqual({ line: 2, column: 16 }); expect(comparison.afterLocation).toEqual({ line: 2, column: 16 });
+      await (await import('../src/review-session.js')).disposeReviewSession(next);
+    } finally { await rm(root, { recursive: true, force: true }); }
+  });
+  it('tracks multiline replacements and their candidate location', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'rtl-review-diff-multiline-'));
+    try {
+      await (await import('node:fs/promises')).mkdir(join(root, 'apps/invoicing/src/components'), { recursive: true });
+      const original = 'const first = 1;\nconst target = token;\nconst last = 3;\n';
+      const source = join(root, REVIEW_SOURCE); await writeFile(source, original);
+      const session = await createReviewSession(root); const before = 'token'; const startOffset = original.indexOf(before);
+      const replacement = 'tokenStart\n  tokenEnd';
+      const next = await applyReviewPatch(session, { findingId: REVIEW_FINDING_ID, path: REVIEW_SOURCE, startOffset, endOffset: startOffset + before.length, expectedSha256: sha(before), replacement });
+      const comparison = await reviewSessionComparison(next);
+      expect(comparison.state).toBe('ready'); expect(comparison.before).toBe(before); expect(comparison.after).toBe(replacement); expect(comparison.beforeLocation?.line).toBe(2); expect(comparison.afterLocation?.line).toBe(2);
+      await (await import('../src/review-session.js')).disposeReviewSession(next);
+    } finally { await rm(root, { recursive: true, force: true }); }
+  });
+  it('returns an explicit stale state when the original correspondence changes', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'rtl-review-diff-stale-'));
+    try {
+      await (await import('node:fs/promises')).mkdir(join(root, 'apps/invoicing/src/components'), { recursive: true });
+      const original = 'const target = token;\n'; const source = join(root, REVIEW_SOURCE); await writeFile(source, original);
+      const session = await createReviewSession(root); const startOffset = original.indexOf('token');
+      const next = await applyReviewPatch(session, { findingId: REVIEW_FINDING_ID, path: REVIEW_SOURCE, startOffset, endOffset: startOffset + 5, expectedSha256: sha('token'), replacement: 'changed' });
+      await writeFile(source, original.replace('token', 'edited'));
+      const comparison = await reviewSessionComparison(next);
+      expect(comparison.state).toBe('stale'); expect(comparison.reason).toBe('STALE_ORIGINAL_SOURCE');
       await (await import('../src/review-session.js')).disposeReviewSession(next);
     } finally { await rm(root, { recursive: true, force: true }); }
   });

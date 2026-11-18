@@ -1,21 +1,8 @@
-# Project handoff
+# RTL Analyzer preview state presentation handoff
 
-**Snapshot checked:** 2026-10-30. This is a record of the files inspected for Project Memory Phase 1, not proof of current production approval or active work status.
+**Verified: 2026-11-18. CONTINUE fix complete; Ahmed manual acceptance [ ].** The [existing completion plan](../rtl-analyzer-v3/manual-review-completion-plan.md#preview-state-presentation-consistency--2026-11-18) owns pre-edit browser reproduction/root causes, task-only diffs, exact screenshots/logs, current services and short English acceptance steps. Earlier lifecycle decisions/evidence remain historical.
 
-## Verified in this inspection
-
-- Root docs describe the Nx workspace, Invoicing and Procurement apps, shared libraries, English LTR baseline, and opt-in Phase 2A RTL demonstration. See [README](../../README.md) and [architecture](../architecture.md).
-- Production knowledge is versioned across multiple `assets/` roots and `video-assets/`; the [production map](PRODUCTION-MAP.md) links the inspected roots and evidence.
-- The inspected RTL Production V5 README labels that package **Draft – Pending Review** and says Scene 02/Master are rendered while Scene 03 is preparation only. This label is copied from that document; recheck before treating it as current.
-- Existing source maps and scene QA reports are linked rather than copied into memory.
-
-## Needs verification before the next production task
-
-1. Identify the explicitly requested scene/version and inspect its README, manifest/timeline, source media, QA report, and approval record.
-2. Check live app/server availability separately; documentation does not prove a server is running.
-3. Confirm current Git/worktree status before any change. At this snapshot, `assets/` and `video-assets/` appeared as untracked paths; preserve them and recheck their contents/status before acting.
-4. Confirm the relevant app source/commands and output path before recording or rendering.
-
-## Suggested next step
-
-For a new task, begin at [the memory index](README.md), follow only the map for the requested scope, then verify the linked source. Update this handoff only after establishing a new, task-specific state.
+- Production changes are confined to [context target reconciliation](../../tools/rtl-scanner/src/dashboard-contextual-preview.ts), [embedded view recovery](../../tools/rtl-scanner/src/dashboard-embedded-preview.ts), [workflow status](../../tools/rtl-scanner/src/dashboard-review-workflow.ts), and the existing [Technical history view](../../tools/rtl-scanner/src/dashboard-review-details.ts). Selection is identity-scoped and verified against current target labels; unavailable views clear cached options, and workflow/session changes replace the view. Rollback feedback is dismissible and retires on explicit advancement. Applied/incomplete-Apply statuses stay short; historical context/decisions/validation/receipts/backups remain in Review details. No backend/identity guard relaxed, no automatic approval/source Apply, no redesign or Mocking/Next.js support.
+- **375 scanner tests, 19 distinct Chromium cases and one focused partial-recovery rerun passed**, plus scanner/workspace typechecks and app builds. [Both-workflow behavioral coverage](../../tests/e2e/preview-ui-state.spec.ts) verifies actual second-target/All selection, highlight, context/reload/isolation, notes/fullscreen, approval/validation/Apply/rollback/rescan, compact Decision/history, dismissal, and fresh Pending/Not run. Current plan separates GUI regression evidence from the extra desktop native-confirmation recovery; personal acceptance remains unchecked.
+- Live [dashboard](http://127.0.0.1:4320/rtl-report-dashboard.html?finding=RTL.CSS.PHYSICAL%3Ae382b9aea738a8b457207d30) uses **new external Field Notes integration target VaXLnk**, two synthetic contacts, own npm install. One-by-one is left fresh after rollback: 0 accepted, Pending/Not run, correct two-target selectors, source restored. The other mode retains explicitly advanced test state. [Final gate](../../test-results/preview-ui-audit/final-gate.json): supervisor **96064**, Companion **96065**, HTTP **96096**, original **96160** on 4215, current candidate **96525** on 4202; another owned runtime is retained on 4206. Recheck commands/root before signaling. Normal supervisor shutdown retains target/history/candidates; plan gives resume command.
+- Prior active **LuVAGQ** source and workflow/decision/validation/receipt state are [preserved](../../test-results/preview-ui-audit/active-project-preservation.json) except intentional runtime shutdown metadata; all candidate directories remain. LpzYej and other older evidence/targets remain offline. Older 8zGU2i supervisor **44347** is dormant: never invoke its old destructive cleanup. Preserve all preexisting dirty/untracked changes and historical assets. No real-world-project acceptance or release is claimed.
