@@ -81,7 +81,7 @@ export const arabic = {
   "Recent invoices": "أحدث الفواتير",
   "A quick look at your latest billing activity":
     "نظرة سريعة على أحدث نشاط للفواتير",
-  "View all invoices →": "عرض جميع الفواتير ←",
+  "View all invoices →": "عرض جميع الفواتير →",
   "Revenue trend and comparisons are illustrative demo figures. Invoice balances include USD invoices only; counts include all currencies.":
     "اتجاه الإيرادات والمقارنات أرقام توضيحية تجريبية. تشمل الأرصدة فواتير USD فقط؛ وتشمل الأعداد جميع العملات.",
   Settings: "الإعدادات",

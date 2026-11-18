@@ -214,7 +214,7 @@ export function CreateInvoice({
           <div className="form-total">
             <span>{t("Total")}</span>
             <strong>
-              <bdi dir="ltr">{money(total({ items }), currency)}</bdi>
+              {money(total({ items }), currency)}
             </strong>
           </div>
         </Card>
@@ -251,14 +251,10 @@ export function CreateInvoice({
       >
         <p>
           {t("Create an invoice for")}{" "}
-          <strong>
-            <bdi dir="auto">
-              {customers.find((c) => c.id === customer)?.name}
-            </bdi>
-          </strong>{" "}
+          <strong>{customers.find((c) => c.id === customer)?.name}</strong>{" "}
           {t("totaling")}{" "}
           <strong>
-            <bdi dir="ltr">{money(total({ items }), currency)}</bdi>
+            {money(total({ items }), currency)}
           </strong>
           {t("?")}
         </p>

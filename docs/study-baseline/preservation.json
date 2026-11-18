@@ -1,0 +1,11 @@
+{
+  "tooling-unchanged": true,
+  "business-data-unchanged": true,
+  "documentation-unchanged": true,
+  "protected-source-mismatches": [
+    "libs/design-system/src/index.tsx"
+  ],
+  "historical-evidence-unchanged": true,
+  "stashOID": "808e8b3cb8533c5ced0f27adb6965fb66ce591fa",
+  "releaseCommit": "910133cc332af96268d19fc6563608434b2c321c"
+}

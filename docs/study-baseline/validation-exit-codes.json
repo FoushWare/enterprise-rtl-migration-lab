@@ -1,0 +1,13 @@
+{
+  "typecheck": 0,
+  "scanner-typecheck": 0,
+  "lint": 0,
+  "build": 0,
+  "scanner-tests": 1,
+  "codemod-tests": 0,
+  "app-tests": 1,
+  "protection": 1,
+  "codemod-dry-run": 2,
+  "scanner-json": 2,
+  "scanner-summary": 2
+}

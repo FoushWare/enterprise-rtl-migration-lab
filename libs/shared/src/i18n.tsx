@@ -1,4 +1,4 @@
-import { createContext, useContext, type ReactNode } from "react";
+import { createContext, useContext, useLayoutEffect, type ReactNode } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { arabic, type TranslationKey } from "./translations";
 import "./demo.css";
@@ -46,6 +46,11 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
   const demo = query.get("demo") === "unmigrated-rtl";
   const language: Language = demo && query.get("lang") === "ar" ? "ar" : "en";
   const t = translator(language);
+  // Historical demo behavior: document RTL is active while MUI stays LTR.
+  useLayoutEffect(() => {
+    document.documentElement.lang = language === "ar" ? "ar-EG" : "en";
+    document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
+  }, [language]);
 /**
  * Preserve demonstration parameters on internal and HTTP navigation targets.
  * @param href - Original link; mail, telephone, and fragment links pass through.

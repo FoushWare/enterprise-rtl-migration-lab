@@ -1,7 +1,4 @@
-/**
- * Mount the invoicing application with routing before locale resolution, then shared
- * direction/theme providers. Provider order is part of the runtime RTL contract.
- */
+/** Mount invoicing with the historical LTR provider outside router/locale resolution. */
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
@@ -10,12 +7,12 @@ import App from "./App";
 import { LocaleProvider } from "@atlas/shared";
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <LocaleProvider>
-        <Provider>
+    <Provider>
+      <BrowserRouter>
+        <LocaleProvider>
           <App />
-        </Provider>
-      </LocaleProvider>
-    </BrowserRouter>
+        </LocaleProvider>
+      </BrowserRouter>
+    </Provider>
   </React.StrictMode>,
 );

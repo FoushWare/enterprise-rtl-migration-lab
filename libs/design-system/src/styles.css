@@ -13,7 +13,6 @@ input {
   font: inherit;
 }
 .brand {
-  direction: ltr;
   display: flex;
   align-items: center;
   font-size: 32px;
@@ -77,15 +76,12 @@ nav a,
   font-size: 13px;
   color: #777f90;
 }
-html[dir="rtl"] .app-link > svg:last-child {
-  transform: scaleX(-1);
-}
 nav a.active {
   background: #edf0ff;
   color: #4c58d6;
   font-weight: 650;
-  border-inline-start: 3px solid #4c58d6;
-  padding-inline-start: 11px;
+  border-left: 3px solid #4c58d6;
+  padding-left: 11px;
 }
 .sidebar-bottom {
   margin-top: auto;
@@ -115,7 +111,7 @@ nav a.active {
   font-size: 11px;
 }
 .app-main {
-  margin-inline-start: 238px;
+  margin-left: 238px;
 }
 .header {
   height: 76px;
@@ -242,7 +238,7 @@ footer i {
 }
 .kpi-icon {
   position: absolute;
-  inset-inline-end: 20px;
+  right: 20px;
   top: 20px;
   background: #f2f3fb;
   border-radius: 8px;
@@ -276,7 +272,6 @@ footer i {
   margin-bottom: 24px;
 }
 .chart-wrap {
-  direction: ltr;
   padding: 0 24px 18px;
 }
 .chart-wrap svg {
@@ -291,10 +286,6 @@ footer i {
   font-size: 9px;
   color: #949cad;
 }
-html[dir="rtl"] .chart-labels span {
-  direction: rtl;
-  unicode-bidi: isolate;
-}
 .chart-legend {
   font-size: 10px;
   color: #8b93a4;
@@ -305,7 +296,7 @@ html[dir="rtl"] .chart-labels span {
   height: 7px;
   background: #5662dc;
   border-radius: 50%;
-  margin-inline-end: 7px;
+  margin-right: 7px;
 }
 .breakdown {
   padding: 0 24px 22px;
@@ -391,7 +382,7 @@ html[dir="rtl"] .chart-labels span {
 }
 .status-dot {
   font-size: 7px;
-  margin-inline-end: 6px;
+  margin-right: 6px;
 }
 .toolbar {
   padding: 20px 24px;
@@ -508,7 +499,7 @@ html[dir="rtl"] .chart-labels span {
 }
 @media (max-width: 900px) {
   .app-main {
-    margin-inline-start: 0;
+    margin-left: 0;
   }
   .mobile-menu.MuiIconButton-root {
     display: inline-flex;
@@ -567,7 +558,7 @@ html[dir="rtl"] .chart-labels span {
     display: none !important;
   }
   .app-main {
-    margin-inline-start: 0;
+    margin-left: 0;
   }
   body {
     background: #fff;
@@ -581,23 +572,4 @@ html[dir="rtl"] .chart-labels span {
   .charts {
     grid-template-columns: 1.9fr 1fr;
   }
-}
-
-/* Keep each title's text direction while retaining Arabic reading-start alignment.
-   The shared title API is string-only; this avoids changing its protected source. */
-html[dir="rtl"] .MuiDialogTitle-root {
-  unicode-bidi: plaintext;
-  text-align: right;
-}
-
-/* Canonical en-US amounts and numeric KPI values keep their token order.
-   This does not set direction on human labels, editable inputs or containers. */
-.amount,
-.form-total strong,
-.kpi-value {
-  direction: ltr;
-  unicode-bidi: isolate;
-}
-html[dir="rtl"] .kpi-value {
-  text-align: right;
 }

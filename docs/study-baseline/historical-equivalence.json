@@ -1,0 +1,46 @@
+[
+  {
+    "file": "apps/invoicing/src/components/InvoiceTable.tsx",
+    "normalizedExecutableMatchesHistorical": true
+  },
+  {
+    "file": "apps/invoicing/src/main.tsx",
+    "normalizedExecutableMatchesHistorical": true
+  },
+  {
+    "file": "apps/invoicing/src/pages/CreateInvoice.tsx",
+    "normalizedExecutableMatchesHistorical": true
+  },
+  {
+    "file": "apps/invoicing/src/pages/Customers.tsx",
+    "normalizedExecutableMatchesHistorical": true
+  },
+  {
+    "file": "apps/procurement/src/main.tsx",
+    "normalizedExecutableMatchesHistorical": true
+  },
+  {
+    "file": "libs/shared/src/i18n.tsx",
+    "normalizedExecutableMatchesHistorical": true
+  },
+  {
+    "file": "libs/shared/src/translations.ts",
+    "normalizedExecutableMatchesHistorical": true
+  },
+  {
+    "symbol": "theme",
+    "normalizedExecutableMatchesHistorical": true
+  },
+  {
+    "symbol": "Provider",
+    "normalizedExecutableMatchesHistorical": true
+  },
+  {
+    "symbol": "SidebarFrame",
+    "normalizedExecutableMatchesHistorical": true
+  },
+  {
+    "file": "libs/design-system/src/styles.css",
+    "bytesMatchHistorical": true
+  }
+]

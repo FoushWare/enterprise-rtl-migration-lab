@@ -1,0 +1,57 @@
+{
+  "dir": "rtl",
+  "kpi": [
+    {
+      "glyphOverlap": true,
+      "text": "إجمالي الإيرادات (USD)"
+    },
+    {
+      "glyphOverlap": true,
+      "text": "المستحقات (USD)"
+    },
+    {
+      "glyphOverlap": true,
+      "text": "المتأخرات (USD)"
+    },
+    {
+      "glyphOverlap": true,
+      "text": "إجمالي الفواتير"
+    }
+  ],
+  "lang": "ar-EG",
+  "months": [
+    {
+      "text": "مايو",
+      "x": 1190.265625
+    },
+    {
+      "text": "يونيو",
+      "x": 1094.2265625
+    },
+    {
+      "text": "يوليو",
+      "x": 998.125
+    },
+    {
+      "text": "أغسطس",
+      "x": 887.828125
+    },
+    {
+      "text": "سبتمبر",
+      "x": 783.6484375
+    },
+    {
+      "text": "أكتوبر",
+      "x": 684.0390625
+    }
+  ],
+  "sidebar": {
+    "width": 238,
+    "x": 0
+  },
+  "url": "http://localhost:4200/?demo=unmigrated-rtl&lang=ar",
+  "viewport": {
+    "height": 720,
+    "width": 1280
+  }
+}

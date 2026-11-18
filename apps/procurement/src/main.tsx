@@ -1,7 +1,4 @@
-/**
- * Mount procurement with the same router, locale, and styling provider order as
- * invoicing so application navigation retains one direction contract.
- */
+/** Mount procurement with the historical LTR provider outside router/locale resolution. */
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
@@ -10,12 +7,12 @@ import App from "./App";
 import { LocaleProvider } from "@atlas/shared";
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <LocaleProvider>
-        <Provider>
+    <Provider>
+      <BrowserRouter>
+        <LocaleProvider>
           <App />
-        </Provider>
-      </LocaleProvider>
-    </BrowserRouter>
+        </LocaleProvider>
+      </BrowserRouter>
+    </Provider>
   </React.StrictMode>,
 );

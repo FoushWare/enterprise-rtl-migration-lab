@@ -1,0 +1,406 @@
+[
+  {
+    "app": "invoicing",
+    "lang": "en",
+    "dir": "ltr",
+    "aside": {
+      "x": 0,
+      "y": 0,
+      "width": 238,
+      "height": 1000,
+      "right": 238
+    },
+    "main": {
+      "x": 238,
+      "y": 0,
+      "width": 1202,
+      "height": 1501.875,
+      "right": 1440
+    },
+    "kpis": [
+      {
+        "label": "Total revenue (USD)",
+        "icon": {
+          "x": 490,
+          "y": 300,
+          "width": 32,
+          "height": 32,
+          "right": 522
+        },
+        "glyphs": [
+          {
+            "x": 297,
+            "y": 301,
+            "right": 402.53125,
+            "bottom": 314
+          }
+        ],
+        "overlap": false
+      },
+      {
+        "label": "Outstanding (USD)",
+        "icon": {
+          "x": 777,
+          "y": 300,
+          "width": 32,
+          "height": 32,
+          "right": 809
+        },
+        "glyphs": [
+          {
+            "x": 584,
+            "y": 301,
+            "right": 683.28125,
+            "bottom": 314
+          }
+        ],
+        "overlap": false
+      },
+      {
+        "label": "Overdue (USD)",
+        "icon": {
+          "x": 1064,
+          "y": 300,
+          "width": 32,
+          "height": 32,
+          "right": 1096
+        },
+        "glyphs": [
+          {
+            "x": 871,
+            "y": 301,
+            "right": 950.453125,
+            "bottom": 314
+          }
+        ],
+        "overlap": false
+      },
+      {
+        "label": "Total invoices",
+        "icon": {
+          "x": 1351,
+          "y": 300,
+          "width": 32,
+          "height": 32,
+          "right": 1383
+        },
+        "glyphs": [
+          {
+            "x": 1158,
+            "y": 301,
+            "right": 1229.328125,
+            "bottom": 314
+          }
+        ],
+        "overlap": false
+      }
+    ],
+    "chart": [
+      {
+        "text": "May",
+        "x": 339,
+        "y": 753,
+        "width": 18.046875,
+        "height": 13.5,
+        "right": 357.046875
+      },
+      {
+        "text": "Jun",
+        "x": 464.65625,
+        "y": 753,
+        "width": 15.859375,
+        "height": 13.5,
+        "right": 480.515625
+      },
+      {
+        "text": "Jul",
+        "x": 588.109375,
+        "y": 753,
+        "width": 12.875,
+        "height": 13.5,
+        "right": 600.984375
+      },
+      {
+        "text": "Aug",
+        "x": 708.59375,
+        "y": 753,
+        "width": 17.09375,
+        "height": 13.5,
+        "right": 725.6875
+      },
+      {
+        "text": "Sep",
+        "x": 833.28125,
+        "y": 753,
+        "width": 16.875,
+        "height": 13.5,
+        "right": 850.15625
+      },
+      {
+        "text": "Oct",
+        "x": 957.765625,
+        "y": 753,
+        "width": 15.84375,
+        "height": 13.5,
+        "right": 973.609375
+      }
+    ],
+    "selectIcon": null,
+    "label": null
+  },
+  {
+    "app": "invoicing",
+    "lang": "ar",
+    "dir": "rtl",
+    "aside": {
+      "x": 0,
+      "y": 0,
+      "width": 238,
+      "height": 1000,
+      "right": 238
+    },
+    "main": {
+      "x": 238,
+      "y": 0,
+      "width": 1202,
+      "height": 1501.875,
+      "right": 1440
+    },
+    "kpis": [
+      {
+        "label": "إجمالي الإيرادات (USD)",
+        "icon": {
+          "x": 1351,
+          "y": 300,
+          "width": 32,
+          "height": 32,
+          "right": 1383
+        },
+        "glyphs": [
+          {
+            "x": 1276.484375,
+            "y": 301,
+            "right": 1280.75,
+            "bottom": 314
+          },
+          {
+            "x": 1280.75,
+            "y": 301,
+            "right": 1304.0625,
+            "bottom": 314
+          },
+          {
+            "x": 1304.0625,
+            "y": 301,
+            "right": 1381,
+            "bottom": 314
+          }
+        ],
+        "overlap": true
+      },
+      {
+        "label": "المستحقات (USD)",
+        "icon": {
+          "x": 1064,
+          "y": 300,
+          "width": 32,
+          "height": 32,
+          "right": 1096
+        },
+        "glyphs": [
+          {
+            "x": 1008.515625,
+            "y": 301,
+            "right": 1012.78125,
+            "bottom": 314
+          },
+          {
+            "x": 1012.78125,
+            "y": 301,
+            "right": 1036.09375,
+            "bottom": 314
+          },
+          {
+            "x": 1036.09375,
+            "y": 301,
+            "right": 1094,
+            "bottom": 314
+          }
+        ],
+        "overlap": true
+      },
+      {
+        "label": "المتأخرات (USD)",
+        "icon": {
+          "x": 777,
+          "y": 300,
+          "width": 32,
+          "height": 32,
+          "right": 809
+        },
+        "glyphs": [
+          {
+            "x": 729.046875,
+            "y": 301,
+            "right": 733.3125,
+            "bottom": 314
+          },
+          {
+            "x": 733.3125,
+            "y": 301,
+            "right": 756.625,
+            "bottom": 314
+          },
+          {
+            "x": 756.625,
+            "y": 301,
+            "right": 807,
+            "bottom": 314
+          }
+        ],
+        "overlap": true
+      },
+      {
+        "label": "إجمالي الفواتير",
+        "icon": {
+          "x": 490,
+          "y": 300,
+          "width": 32,
+          "height": 32,
+          "right": 522
+        },
+        "glyphs": [
+          {
+            "x": 456.671875,
+            "y": 301,
+            "right": 520,
+            "bottom": 314
+          }
+        ],
+        "overlap": true
+      }
+    ],
+    "chart": [
+      {
+        "text": "مايو",
+        "x": 1365.265625,
+        "y": 753,
+        "width": 13.734375,
+        "height": 13.5,
+        "right": 1379
+      },
+      {
+        "text": "يونيو",
+        "x": 1246.296875,
+        "y": 753,
+        "width": 16.234375,
+        "height": 13.5,
+        "right": 1262.53125
+      },
+      {
+        "text": "يوليو",
+        "x": 1127.265625,
+        "y": 753,
+        "width": 16.296875,
+        "height": 13.5,
+        "right": 1143.5625
+      },
+      {
+        "text": "أغسطس",
+        "x": 994.046875,
+        "y": 753,
+        "width": 30.484375,
+        "height": 13.5,
+        "right": 1024.53125
+      },
+      {
+        "text": "سبتمبر",
+        "x": 866.9375,
+        "y": 753,
+        "width": 24.375,
+        "height": 13.5,
+        "right": 891.3125
+      },
+      {
+        "text": "أكتوبر",
+        "x": 744.390625,
+        "y": 753,
+        "width": 19.8125,
+        "height": 13.5,
+        "right": 764.203125
+      }
+    ],
+    "selectIcon": null,
+    "label": null
+  },
+  {
+    "app": "procurement",
+    "lang": "en",
+    "dir": "ltr",
+    "aside": {
+      "x": 0,
+      "y": 0,
+      "width": 238,
+      "height": 1000,
+      "right": 238
+    },
+    "main": {
+      "x": 238,
+      "y": 0,
+      "width": 1202,
+      "height": 1198.5,
+      "right": 1440
+    },
+    "kpis": [
+      null,
+      null,
+      null,
+      null
+    ],
+    "chart": [],
+    "selectIcon": {
+      "left": "169px",
+      "right": "7px"
+    },
+    "label": {
+      "left": "0px",
+      "right": "153.516px",
+      "transform": "matrix(0.75, 0, 0, 0.75, 14, -9)"
+    }
+  },
+  {
+    "app": "procurement",
+    "lang": "ar",
+    "dir": "rtl",
+    "aside": {
+      "x": 0,
+      "y": 0,
+      "width": 238,
+      "height": 1000,
+      "right": 238
+    },
+    "main": {
+      "x": 238,
+      "y": 0,
+      "width": 1202,
+      "height": 1198.5,
+      "right": 1440
+    },
+    "kpis": [
+      null,
+      null,
+      null,
+      null
+    ],
+    "chart": [],
+    "selectIcon": {
+      "left": "169px",
+      "right": "7px"
+    },
+    "label": {
+      "left": "0px",
+      "right": "163.297px",
+      "transform": "matrix(0.75, 0, 0, 0.75, 14, -9)"
+    }
+  }
+]
