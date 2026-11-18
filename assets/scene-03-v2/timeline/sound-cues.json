@@ -1,0 +1,295 @@
+{
+  "sample_rate": 48000,
+  "duration": 130,
+  "mix_peak_dbfs": -18.786043192927767,
+  "events": [
+    {
+      "track": "reveals",
+      "frame": 3,
+      "time": 0.1,
+      "duration": 0.35,
+      "kind": "reveal",
+      "description": "Shot 03-01 first visual reveal",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "reveals",
+      "frame": 303,
+      "time": 10.1,
+      "duration": 0.35,
+      "kind": "reveal",
+      "description": "Shot 03-02 first visual reveal",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "layers",
+      "frame": 320,
+      "time": 10.666666666666666,
+      "duration": 0.22,
+      "kind": "pulse",
+      "description": "Staggered layer entrance",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "layers",
+      "frame": 339,
+      "time": 11.3,
+      "duration": 0.22,
+      "kind": "pulse",
+      "description": "Staggered layer entrance",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "layers",
+      "frame": 359,
+      "time": 11.966666666666667,
+      "duration": 0.22,
+      "kind": "pulse",
+      "description": "Staggered layer entrance",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "reveals",
+      "frame": 603,
+      "time": 20.1,
+      "duration": 0.35,
+      "kind": "reveal",
+      "description": "Shot 03-03 first visual reveal",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "camera",
+      "frame": 605,
+      "time": 20.166666666666668,
+      "duration": 0.45,
+      "kind": "whoosh",
+      "description": "Transition to genuine footage",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "reveals",
+      "frame": 1053,
+      "time": 35.1,
+      "duration": 0.35,
+      "kind": "reveal",
+      "description": "Shot 03-04 first visual reveal",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "reveals",
+      "frame": 1353,
+      "time": 45.1,
+      "duration": 0.35,
+      "kind": "reveal",
+      "description": "Shot 03-05 first visual reveal",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "reveals",
+      "frame": 1653,
+      "time": 55.1,
+      "duration": 0.35,
+      "kind": "reveal",
+      "description": "Shot 03-06 first visual reveal",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "reveals",
+      "frame": 1953,
+      "time": 65.1,
+      "duration": 0.35,
+      "kind": "reveal",
+      "description": "Shot 03-07 first visual reveal",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "layers",
+      "frame": 1967,
+      "time": 65.56666666666666,
+      "duration": 0.22,
+      "kind": "pulse",
+      "description": "Staggered layer entrance",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "layers",
+      "frame": 1986,
+      "time": 66.2,
+      "duration": 0.22,
+      "kind": "pulse",
+      "description": "Staggered layer entrance",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "layers",
+      "frame": 2006,
+      "time": 66.86666666666666,
+      "duration": 0.22,
+      "kind": "pulse",
+      "description": "Staggered layer entrance",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "layers",
+      "frame": 2025,
+      "time": 67.5,
+      "duration": 0.22,
+      "kind": "pulse",
+      "description": "Staggered layer entrance",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "layers",
+      "frame": 2045,
+      "time": 68.16666666666667,
+      "duration": 0.22,
+      "kind": "pulse",
+      "description": "Staggered layer entrance",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "reveals",
+      "frame": 2253,
+      "time": 75.1,
+      "duration": 0.35,
+      "kind": "reveal",
+      "description": "Shot 03-08 first visual reveal",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "reveals",
+      "frame": 2553,
+      "time": 85.1,
+      "duration": 0.35,
+      "kind": "reveal",
+      "description": "Shot 03-09 first visual reveal",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "connections",
+      "frame": 2580,
+      "time": 86.0,
+      "duration": 0.3,
+      "kind": "pulse",
+      "description": "Verified relationship begins drawing",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "connections",
+      "frame": 2595,
+      "time": 86.5,
+      "duration": 0.3,
+      "kind": "pulse",
+      "description": "Verified relationship begins drawing",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "connections",
+      "frame": 2640,
+      "time": 88.0,
+      "duration": 0.3,
+      "kind": "pulse",
+      "description": "Verified relationship begins drawing",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "connections",
+      "frame": 2655,
+      "time": 88.5,
+      "duration": 0.3,
+      "kind": "pulse",
+      "description": "Verified relationship begins drawing",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "reveals",
+      "frame": 3003,
+      "time": 100.1,
+      "duration": 0.35,
+      "kind": "reveal",
+      "description": "Shot 03-10 first visual reveal",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "camera",
+      "frame": 3005,
+      "time": 100.16666666666667,
+      "duration": 0.45,
+      "kind": "whoosh",
+      "description": "Transition to genuine footage",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "reveals",
+      "frame": 3453,
+      "time": 115.1,
+      "duration": 0.35,
+      "kind": "reveal",
+      "description": "Shot 03-11 first visual reveal",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "layers",
+      "frame": 3459,
+      "time": 115.3,
+      "duration": 0.22,
+      "kind": "pulse",
+      "description": "Staggered layer entrance",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "layers",
+      "frame": 3479,
+      "time": 115.96666666666667,
+      "duration": 0.22,
+      "kind": "pulse",
+      "description": "Staggered layer entrance",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "layers",
+      "frame": 3498,
+      "time": 116.6,
+      "duration": 0.22,
+      "kind": "pulse",
+      "description": "Staggered layer entrance",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "layers",
+      "frame": 3518,
+      "time": 117.26666666666667,
+      "duration": 0.22,
+      "kind": "pulse",
+      "description": "Staggered layer entrance",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "layers",
+      "frame": 3537,
+      "time": 117.9,
+      "duration": 0.22,
+      "kind": "pulse",
+      "description": "Staggered layer entrance",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "reveals",
+      "frame": 3753,
+      "time": 125.1,
+      "duration": 0.35,
+      "kind": "reveal",
+      "description": "Shot 03-12 first visual reveal",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "reveals",
+      "frame": 828,
+      "time": 27.6,
+      "duration": 0.35,
+      "kind": "reveal",
+      "description": "Procurement product reveal",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    }
+  ]
+}

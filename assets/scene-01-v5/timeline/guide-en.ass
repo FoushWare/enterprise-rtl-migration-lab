@@ -1,0 +1,26 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1920
+PlayResY: 1080
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Guide,Arial,52,&H00FFFFFF,&H00FFFFFF,&H00121A26,&H50121A26,0,0,0,0,100,100,0,0,3,6,0,2,170,170,42,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.25,0:00:04.30,Guide,,0,0,0,,Imagine a European enterprise software company
+Dialogue: 0,0:00:04.30,0:00:07.80,Guide,,0,0,0,,expanding into the Middle East.
+Dialogue: 0,0:00:08.20,0:00:10.70,Guide,,0,0,0,,The platform has two main applications:
+Dialogue: 0,0:00:10.70,0:00:11.80,Guide,,0,0,0,,Invoicing
+Dialogue: 0,0:00:12.70,0:00:14.80,Guide,,0,0,0,,and Procurement.
+Dialogue: 0,0:00:17.20,0:00:21.20,Guide,,0,0,0,,The first business requirement sounded simple:
+Dialogue: 0,0:00:22.60,0:00:26.20,Guide,,0,0,0,,support Arabic in both applications.
+Dialogue: 0,0:00:29.20,0:00:33.50,Guide,,0,0,0,,So we switched the language and document direction
+Dialogue: 0,0:00:33.50,0:00:37.60,Guide,,0,0,0,,from LTR to RTL.
+Dialogue: 0,0:00:38.20,0:00:40.00,Guide,,0,0,0,,But suddenly,
+Dialogue: 0,0:00:40.00,0:00:43.70,Guide,,0,0,0,,{\an8\pos(1150,130)}several parts of the UI started breaking.
+Dialogue: 0,0:00:44.20,0:00:48.00,Guide,,0,0,0,,So why did changing the language and direction
+Dialogue: 0,0:00:48.00,0:00:49.80,Guide,,0,0,0,,break the UI?

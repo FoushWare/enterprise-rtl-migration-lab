@@ -1,0 +1,221 @@
+{
+  "status": "Draft – Pending Review",
+  "exports": {
+    "Scene-01_Business-Expansion_AR_V5_Preview.mp4": {
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1920,
+            "height": 1080,
+            "r_frame_rate": "30/1",
+            "nb_read_frames": "1500"
+          },
+          {
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "channels": 2,
+            "r_frame_rate": "0/0",
+            "nb_read_frames": "2344"
+          }
+        ],
+        "format": {
+          "duration": "50.000000",
+          "size": "10314764"
+        }
+      },
+      "full_video_and_audio_decode": "passed",
+      "audio_peak_dbfs": -19.077431333175145,
+      "audio_decode_sha256": "3452fe4cf901a5ae405165bf9290ef8b45b1126e37feb39ccebfbb8d4029e667",
+      "permanent_text_bounds_failures": 0
+    },
+    "Scene-01_Business-Expansion_AR_V5_Clean.mp4": {
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1920,
+            "height": 1080,
+            "r_frame_rate": "30/1",
+            "nb_read_frames": "1500"
+          },
+          {
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "channels": 2,
+            "r_frame_rate": "0/0",
+            "nb_read_frames": "2344"
+          }
+        ],
+        "format": {
+          "duration": "50.000000",
+          "size": "10618723"
+        }
+      },
+      "full_video_and_audio_decode": "passed",
+      "audio_peak_dbfs": -19.077431333175145,
+      "audio_decode_sha256": "3452fe4cf901a5ae405165bf9290ef8b45b1126e37feb39ccebfbb8d4029e667",
+      "permanent_text_bounds_failures": 0
+    },
+    "Scene-01_Business-Expansion_EN_V5_Preview.mp4": {
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1920,
+            "height": 1080,
+            "r_frame_rate": "30/1",
+            "nb_read_frames": "1500"
+          },
+          {
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "channels": 2,
+            "r_frame_rate": "0/0",
+            "nb_read_frames": "2344"
+          }
+        ],
+        "format": {
+          "duration": "50.000000",
+          "size": "10426863"
+        }
+      },
+      "full_video_and_audio_decode": "passed",
+      "audio_peak_dbfs": -19.077431333175145,
+      "audio_decode_sha256": "3452fe4cf901a5ae405165bf9290ef8b45b1126e37feb39ccebfbb8d4029e667",
+      "permanent_text_bounds_failures": 0
+    },
+    "Scene-01_Business-Expansion_EN_V5_Clean.mp4": {
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1920,
+            "height": 1080,
+            "r_frame_rate": "30/1",
+            "nb_read_frames": "1500"
+          },
+          {
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "sample_rate": "48000",
+            "channels": 2,
+            "r_frame_rate": "0/0",
+            "nb_read_frames": "2344"
+          }
+        ],
+        "format": {
+          "duration": "50.000000",
+          "size": "10669882"
+        }
+      },
+      "full_video_and_audio_decode": "passed",
+      "audio_peak_dbfs": -19.077431333175145,
+      "audio_decode_sha256": "3452fe4cf901a5ae405165bf9290ef8b45b1126e37feb39ccebfbb8d4029e667",
+      "permanent_text_bounds_failures": 0
+    }
+  },
+  "caption_timing": "Estimated, pending actual voiceover recording",
+  "preservation": {
+    "old_files_checked": 122,
+    "mismatches": []
+  },
+  "sound_cues_verified": [
+    {
+      "time": 0.0,
+      "track": "geography",
+      "peak_dbfs": -23.358495499220567
+    },
+    {
+      "time": 4.2,
+      "track": "geography",
+      "peak_dbfs": -18.77526259517445
+    },
+    {
+      "time": 5.3,
+      "track": "geography",
+      "peak_dbfs": -23.910229899588188
+    },
+    {
+      "time": 5.933333333333334,
+      "track": "geography",
+      "peak_dbfs": -23.910229899588188
+    },
+    {
+      "time": 8.166666666666666,
+      "track": "products",
+      "peak_dbfs": -20.965719379812555
+    },
+    {
+      "time": 12.666666666666666,
+      "track": "products",
+      "peak_dbfs": -20.965719379812555
+    },
+    {
+      "time": 17.5,
+      "track": "requirement",
+      "peak_dbfs": -22.232866488245907
+    },
+    {
+      "time": 22.6,
+      "track": "requirement",
+      "peak_dbfs": -23.71290825591297
+    },
+    {
+      "time": 29.266666666666666,
+      "track": "switch",
+      "peak_dbfs": -23.01797879211492
+    },
+    {
+      "time": 31.7,
+      "track": "switch",
+      "peak_dbfs": -19.098910395293224
+    },
+    {
+      "time": 32.0,
+      "track": "switch",
+      "peak_dbfs": -19.909815084152992
+    },
+    {
+      "time": 38.36666666666667,
+      "track": "teaser",
+      "peak_dbfs": -24.141979727459844
+    },
+    {
+      "time": 40.36666666666667,
+      "track": "teaser",
+      "peak_dbfs": -24.141979727459844
+    },
+    {
+      "time": 42.36666666666667,
+      "track": "teaser",
+      "peak_dbfs": -24.141979727459844
+    },
+    {
+      "time": 44.5,
+      "track": "question",
+      "peak_dbfs": -23.5319037741479
+    },
+    {
+      "time": 49.1,
+      "track": "question",
+      "peak_dbfs": -28.412591092098364
+    }
+  ],
+  "same_audio_all_four_exports": true
+}

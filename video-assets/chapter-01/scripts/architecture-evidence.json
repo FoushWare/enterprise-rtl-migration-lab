@@ -1,0 +1,59 @@
+{
+  "project": "Enterprise RTL Migration Lab",
+  "chapter": "01 \u2014 Nx Monorepo Architecture",
+  "sourceHead": "b127325a14ad3bf8e70aede2a2e29b9dae638355",
+  "sourceWorkspace": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-latest",
+  "preExistingChanges": [
+    "nx.json: analytics=false and JSON formatting; preserved unchanged"
+  ],
+  "projectsActuallyListed": [
+    "design-system",
+    "rtl-scanner",
+    "procurement",
+    "invoicing",
+    "shared"
+  ],
+  "diagramScope": "The two applications and their two shared libraries; rtl-scanner tooling is deliberately outside this application diagram.",
+  "verifiedEdges": [
+    {
+      "from": "invoicing",
+      "to": "design-system",
+      "evidence": "apps/invoicing/src/main.tsx"
+    },
+    {
+      "from": "invoicing",
+      "to": "shared",
+      "evidence": "apps/invoicing/src/App.tsx"
+    },
+    {
+      "from": "procurement",
+      "to": "design-system",
+      "evidence": "apps/procurement/src/main.tsx"
+    },
+    {
+      "from": "procurement",
+      "to": "shared",
+      "evidence": "apps/procurement/src/App.tsx"
+    },
+    {
+      "from": "design-system",
+      "to": "shared",
+      "evidence": "libs/design-system/src/runtime.tsx and index.tsx"
+    }
+  ],
+  "evidenceHashes": {
+    "nx.json": "a63adf301c442d5d7dd7875596427d428f4e0cf9df5ea63bf7a3b18d2288a971",
+    "package.json": "484d96f020b3e72e069d6936d3aafd50a429ed859f81b806eb30fe9838c4fc73",
+    "tsconfig.json": "3f6f1d432a91be108dcf6efe8e303a6fe4c1bed5f51f073cc4d3a829d5be303f",
+    "apps/invoicing/project.json": "8e193558712d4151fb39d00ac5061c3734208c207247db83f81fb741cca1cd0a",
+    "apps/procurement/project.json": "3775580962739b7fd35625b7efb50bd4c10c3ffbd25099bff1f30505077b9232",
+    "libs/shared/project.json": "d2444098636edc3bf7a343f0f007592ac2a91494fc2d258e5788727aabd3544f",
+    "libs/design-system/project.json": "241c4c9f7457294ee1443cbd26d6abb0dca306dc56b1a66e933a646487164e47",
+    "apps/invoicing/src/main.tsx": "06400e0ec7ceaf8ea80b459fbe1a61da76c60f6d5b267f29360ce75ac7954321",
+    "apps/invoicing/src/App.tsx": "4d264ee85caa0a654180470502fa4886672b283467f658404038f36fc3c09b2c",
+    "apps/procurement/src/main.tsx": "06400e0ec7ceaf8ea80b459fbe1a61da76c60f6d5b267f29360ce75ac7954321",
+    "apps/procurement/src/App.tsx": "75f4321735af46bcc092abd1e448a6581f486eb97dc5349fb5379e9744379c91",
+    "libs/design-system/src/runtime.tsx": "f8838d854547198d3e7ee7b4a746a407e60944d6cf9353104ee54f2b1cc26cec",
+    "libs/design-system/src/index.tsx": "6493f544a7858be20d078b74f0c51ab957890230da9a66160318d93ebc2384ab"
+  }
+}

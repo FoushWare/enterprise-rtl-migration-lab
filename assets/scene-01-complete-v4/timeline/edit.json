@@ -1,0 +1,142 @@
+{
+  "status": "Draft – Pending Review",
+  "fps": 30,
+  "duration": 50,
+  "frames": 1500,
+  "voice": "none; new script is proposed, not approved or recorded",
+  "video_root": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos",
+  "presenter": {
+    "start": 26,
+    "end": 32,
+    "layer": "layers/presenter-placeholder.svg",
+    "replaceWith": "creator video, 180:100:620:900 bounding box; source/presenter config controls layer; no fabricated human"
+  },
+  "shots": [
+    {
+      "id": "geo",
+      "start": 0,
+      "end": 20,
+      "source": "../scene-01-opening-v3/outputs/Scene-01_Geographic-Journey_{LANG}_20s_Draft_V3.mp4",
+      "type": "V3 reuse; packet stream copy, no regeneration",
+      "vo": "تخيل معايا شركة Software كبيرة في أوروبا، عندها Enterprise Platform شغالة بالفعل. الشركة دي قررت تتوسع في سوق جديد... الشرق الأوسط.",
+      "start_frame": 0,
+      "end_frame_exclusive": 600
+    },
+    {
+      "id": "invoicing",
+      "start": 20,
+      "end": 23,
+      "source": "RTL-Migration_Broken-UI_Demo_EN_Fullscreen_V4_Clean.mp4",
+      "in": 6,
+      "type": "actual project recording; clean",
+      "vo": "عندنا تطبيق للفواتير،",
+      "start_frame": 600,
+      "end_frame_exclusive": 690
+    },
+    {
+      "id": "procurement",
+      "start": 23,
+      "end": 26,
+      "source": "expanded-v1/originals/Procurement_EN.mov",
+      "in": 20,
+      "crop": [
+        2944,
+        1656,
+        112,
+        238
+      ],
+      "type": "actual project original recording",
+      "vo": "وتطبيق للمشتريات.",
+      "start_frame": 690,
+      "end_frame_exclusive": 780
+    },
+    {
+      "id": "request",
+      "start": 26,
+      "end": 32,
+      "source": "RTL-Migration_Broken-UI_Demo_EN_Fullscreen_V4_Clean.mp4",
+      "in": 0,
+      "type": "real VS Code background, blurred under separate silhouette and fictional request graphics",
+      "vo": "والمطلوب مننا: ندعم العربي في الاتنين.",
+      "start_frame": 780,
+      "end_frame_exclusive": 960
+    },
+    {
+      "id": "switch",
+      "start": 32,
+      "end": 38,
+      "source": "RTL-Migration_Broken-UI_Demo_EN_Fullscreen_V4_Clean.mp4",
+      "in": 8,
+      "type": "actual recorded English→Arabic selector interaction",
+      "vo": "بس تغيير اللغة لوحده، هل كفاية؟",
+      "start_frame": 960,
+      "end_frame_exclusive": 1140
+    },
+    {
+      "id": "sidebar",
+      "start": 38,
+      "end": 40,
+      "source": "RTL-Migration_Broken-UI_Demo_{LANG}_Fullscreen_V4.mp4",
+      "in": 19,
+      "type": "approved issue footage teaser",
+      "vo": "القائمة،",
+      "start_frame": 1140,
+      "end_frame_exclusive": 1200
+    },
+    {
+      "id": "chart",
+      "start": 40,
+      "end": 42,
+      "source": "RTL-Migration_Broken-UI_Demo_{LANG}_Fullscreen_V4.mp4",
+      "in": 49,
+      "type": "approved issue footage teaser",
+      "vo": "الـChart،",
+      "start_frame": 1200,
+      "end_frame_exclusive": 1260
+    },
+    {
+      "id": "dialog",
+      "start": 42,
+      "end": 44,
+      "source": "RTL-Migration_Broken-UI_Demo_{LANG}_Fullscreen_V4.mp4",
+      "in": 110,
+      "type": "approved issue footage teaser",
+      "vo": "والنوافذ...",
+      "start_frame": 1260,
+      "end_frame_exclusive": 1320
+    },
+    {
+      "id": "table",
+      "start": 44,
+      "end": 46,
+      "source": "RTL-Migration_Broken-UI_Demo_{LANG}_Fullscreen_V4.mp4",
+      "in": 144,
+      "type": "approved issue footage teaser",
+      "vo": "كل جزء ممكن يتأثر.",
+      "start_frame": 1320,
+      "end_frame_exclusive": 1380
+    },
+    {
+      "id": "question",
+      "start": 46,
+      "end": 48,
+      "source": "RTL-Migration_Broken-UI_Demo_EN_Fullscreen_V4_Clean.mp4",
+      "in": 158,
+      "type": "real Procurement motion beneath question graphic",
+      "vo": "",
+      "start_frame": 1380,
+      "end_frame_exclusive": 1440
+    },
+    {
+      "id": "handoff",
+      "start": 48,
+      "end": 50,
+      "source": "RTL-Migration_Broken-UI_Demo_EN_Fullscreen_V4_Clean.mp4",
+      "in": 160,
+      "type": "continuous real Procurement background with localized Scene02 title",
+      "vo": "تعالوا نشوف.",
+      "start_frame": 1440,
+      "end_frame_exclusive": 1500
+    }
+  ]
+}

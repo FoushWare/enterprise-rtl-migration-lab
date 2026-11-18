@@ -1,0 +1,7 @@
+{
+  "name": "scene-01-cinematic-opening",
+  "private": true,
+  "type": "module",
+  "scripts": { "render": "node render.mjs", "preview-frames": "node render.mjs --preview" },
+  "devDependencies": { "@playwright/test": "1.64.0" }
+}

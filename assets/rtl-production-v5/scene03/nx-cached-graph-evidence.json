@@ -1,0 +1,20 @@
+{
+  "source": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/.nx/workspace-data/project-graph.json",
+  "mtime": 1793113484.2000484,
+  "freshly_generated": false,
+  "nodes": [
+    "design-system",
+    "rtl-scanner",
+    "procurement",
+    "invoicing",
+    "shared"
+  ],
+  "dependencies": {
+    "design-system": [],
+    "rtl-scanner": [],
+    "procurement": [],
+    "invoicing": [],
+    "shared": []
+  },
+  "external_dependency_sources": 332
+}

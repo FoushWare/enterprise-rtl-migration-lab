@@ -1,0 +1,517 @@
+{
+  "AR": [
+    {
+      "start": 0.3,
+      "end": 2.6499999999999995,
+      "text": "دلوقتي نبص جوّه المشروع.",
+      "shot": "03-01",
+      "estimated_only": true
+    },
+    {
+      "start": 2.6499999999999995,
+      "end": 4.4125,
+      "text": "قبل أي تعديل،",
+      "shot": "03-01",
+      "estimated_only": true
+    },
+    {
+      "start": 4.4125,
+      "end": 6.762499999999999,
+      "text": "لازم نعرف المكوّنات الرئيسية،",
+      "shot": "03-01",
+      "estimated_only": true
+    },
+    {
+      "start": 6.762499999999999,
+      "end": 9.7,
+      "text": "ومين مسؤول عن كل جزء.",
+      "shot": "03-01",
+      "estimated_only": true
+    },
+    {
+      "start": 10.3,
+      "end": 12.65,
+      "text": "ده Nx monorepo: تطبيقين،",
+      "shot": "03-02",
+      "estimated_only": true
+    },
+    {
+      "start": 12.65,
+      "end": 13.825,
+      "text": "ومكتبات مشتركة،",
+      "shot": "03-02",
+      "estimated_only": true
+    },
+    {
+      "start": 13.825,
+      "end": 14.4125,
+      "text": "وأدوات.",
+      "shot": "03-02",
+      "estimated_only": true
+    },
+    {
+      "start": 14.4125,
+      "end": 16.7625,
+      "text": "هنفصل بين كود التطبيق،",
+      "shot": "03-02",
+      "estimated_only": true
+    },
+    {
+      "start": 16.7625,
+      "end": 18.525,
+      "text": "وكود العرض المشترك،",
+      "shot": "03-02",
+      "estimated_only": true
+    },
+    {
+      "start": 18.525,
+      "end": 19.7,
+      "text": "وأدوات التحليل.",
+      "shot": "03-02",
+      "estimated_only": true
+    },
+    {
+      "start": 20.3,
+      "end": 22.14,
+      "text": "أول تطبيق هو Invoicing،",
+      "shot": "03-03",
+      "estimated_only": true
+    },
+    {
+      "start": 22.14,
+      "end": 24.44,
+      "text": "لإدارة الفواتير وصفحات عرضها وتفاصيلها،",
+      "shot": "03-03",
+      "estimated_only": true
+    },
+    {
+      "start": 24.44,
+      "end": 27.2,
+      "text": "وله نقطة بداية ومسارات خاصة بيه.",
+      "shot": "03-03",
+      "estimated_only": true
+    },
+    {
+      "start": 27.6,
+      "end": 28.546666666666667,
+      "text": "والتاني Procurement،",
+      "shot": "03-03",
+      "estimated_only": true
+    },
+    {
+      "start": 28.546666666666667,
+      "end": 30.44,
+      "text": "لإدارة طلبات الشراء وتفاصيلها،",
+      "shot": "03-03",
+      "estimated_only": true
+    },
+    {
+      "start": 30.44,
+      "end": 32.80666666666667,
+      "text": "برضه له نقطة بداية ومسارات،",
+      "shot": "03-03",
+      "estimated_only": true
+    },
+    {
+      "start": 32.80666666666667,
+      "end": 34.7,
+      "text": "والتطبيقين بيستخدموا مكتبات مشتركة.",
+      "shot": "03-03",
+      "estimated_only": true
+    },
+    {
+      "start": 35.3,
+      "end": 37.806666666666665,
+      "text": "ده App الحقيقي للفواتير.",
+      "shot": "03-04",
+      "estimated_only": true
+    },
+    {
+      "start": 37.806666666666665,
+      "end": 39.68666666666667,
+      "text": "الـRouter بيحدد الصفحة،",
+      "shot": "03-04",
+      "estimated_only": true
+    },
+    {
+      "start": 39.68666666666667,
+      "end": 44.7,
+      "text": "وApp يحتفظ ببيانات الفواتير ويمرّرها للصفحات اللي محتاجاها.",
+      "shot": "03-04",
+      "estimated_only": true
+    },
+    {
+      "start": 45.3,
+      "end": 49.68666666666667,
+      "text": "الـDesign System فيه الـShell والحقول والجداول والـDialog.",
+      "shot": "03-05",
+      "estimated_only": true
+    },
+    {
+      "start": 49.68666666666667,
+      "end": 54.7,
+      "text": "عشان كده نفس المكوّن ممكن يؤثر على التطبيقين.",
+      "shot": "03-05",
+      "estimated_only": true
+    },
+    {
+      "start": 55.3,
+      "end": 58.2375,
+      "text": "مكتبة shared فيها البيانات والـFixtures،",
+      "shot": "03-06",
+      "estimated_only": true
+    },
+    {
+      "start": 58.2375,
+      "end": 60.5875,
+      "text": "وحساب المجموع وتنسيق المبلغ،",
+      "shot": "03-06",
+      "estimated_only": true
+    },
+    {
+      "start": 60.5875,
+      "end": 61.7625,
+      "text": "والتخزين المحلي.",
+      "shot": "03-06",
+      "estimated_only": true
+    },
+    {
+      "start": 61.7625,
+      "end": 64.7,
+      "text": "ومنها كمان بنوصل للـLocale والترجمة.",
+      "shot": "03-06",
+      "estimated_only": true
+    },
+    {
+      "start": 65.3,
+      "end": 68.12,
+      "text": "الترجمة واتجاه المستند والـStyling حاجات مختلفة.",
+      "shot": "03-07",
+      "estimated_only": true
+    },
+    {
+      "start": 68.12,
+      "end": 69.06,
+      "text": "في الـStudy،",
+      "shot": "03-07",
+      "estimated_only": true
+    },
+    {
+      "start": 69.06,
+      "end": 71.41,
+      "text": "المستند RTL والـTheme لسه LTR.",
+      "shot": "03-07",
+      "estimated_only": true
+    },
+    {
+      "start": 71.41,
+      "end": 73.28999999999999,
+      "text": "والأيقونات بتتراجع حسب معناها،",
+      "shot": "03-07",
+      "estimated_only": true
+    },
+    {
+      "start": 73.28999999999999,
+      "end": 74.7,
+      "text": "مش انعكاس تلقائي.",
+      "shot": "03-07",
+      "estimated_only": true
+    },
+    {
+      "start": 75.3,
+      "end": 78.825,
+      "text": "الـScanner بيجمع أدلة ثابتة ومخاطر محتملة.",
+      "shot": "03-08",
+      "estimated_only": true
+    },
+    {
+      "start": 78.825,
+      "end": 81.7625,
+      "text": "والـCodemod بيخطط لتغييرات بشروط أمان؛",
+      "shot": "03-08",
+      "estimated_only": true
+    },
+    {
+      "start": 81.7625,
+      "end": 84.7,
+      "text": "مش موافقة تلقائية على الإصلاح.",
+      "shot": "03-08",
+      "estimated_only": true
+    },
+    {
+      "start": 85.3,
+      "end": 88.9,
+      "text": "الخريطة دي من الـimports الفعلية،",
+      "shot": "03-09",
+      "estimated_only": true
+    },
+    {
+      "start": 88.9,
+      "end": 91.06,
+      "text": "مش علاقات مفترضة.",
+      "shot": "03-09",
+      "estimated_only": true
+    },
+    {
+      "start": 91.06,
+      "end": 94.66,
+      "text": "التطبيقين بيستخدموا Design System وshared.",
+      "shot": "03-09",
+      "estimated_only": true
+    },
+    {
+      "start": 94.66,
+      "end": 96.82,
+      "text": "والأدوات بتحلل المصدر،",
+      "shot": "03-09",
+      "estimated_only": true
+    },
+    {
+      "start": 96.82,
+      "end": 99.7,
+      "text": "مش اعتماد بين التطبيقين.",
+      "shot": "03-09",
+      "estimated_only": true
+    },
+    {
+      "start": 100.3,
+      "end": 105.34,
+      "text": "مثالنا الحقيقي: الفاتورة 1048 للعميل Northstar Studio،",
+      "shot": "03-10",
+      "estimated_only": true
+    },
+    {
+      "start": 105.34,
+      "end": 108.94,
+      "text": "بقيمة أربعة آلاف وتمنمية دولار،",
+      "shot": "03-10",
+      "estimated_only": true
+    },
+    {
+      "start": 108.94,
+      "end": 110.38,
+      "text": "وحالتها Pending.",
+      "shot": "03-10",
+      "estimated_only": true
+    },
+    {
+      "start": 110.38,
+      "end": 114.7,
+      "text": "من الجدول بنفتح نفس بيانات التفاصيل.",
+      "shot": "03-10",
+      "estimated_only": true
+    },
+    {
+      "start": 115.3,
+      "end": 117.77368421052631,
+      "text": "المشكلة ممكن تبان في التطبيق،",
+      "shot": "03-11",
+      "estimated_only": true
+    },
+    {
+      "start": 117.77368421052631,
+      "end": 122.22631578947369,
+      "text": "لكن قرارها يكون في مكوّن مشترك أو في الـRuntime.",
+      "shot": "03-11",
+      "estimated_only": true
+    },
+    {
+      "start": 122.22631578947369,
+      "end": 123.71052631578948,
+      "text": "لازم نثبت السبب،",
+      "shot": "03-11",
+      "estimated_only": true
+    },
+    {
+      "start": 123.71052631578948,
+      "end": 124.7,
+      "text": "مش نفترضه.",
+      "shot": "03-11",
+      "estimated_only": true
+    },
+    {
+      "start": 125.3,
+      "end": 129.7,
+      "text": "إزاي نكتشف مخاطر الـRTL وسط كل الكود ده؟",
+      "shot": "03-12",
+      "estimated_only": true
+    }
+  ],
+  "EN": [
+    {
+      "start": 0.3,
+      "end": 3.0647058823529405,
+      "text": "Let’s look under the hood.",
+      "shot": "03-01",
+      "estimated_only": true
+    },
+    {
+      "start": 3.0647058823529405,
+      "end": 9.7,
+      "text": "Before changing code, identify the main components and who owns each responsibility.",
+      "shot": "03-01",
+      "estimated_only": true
+    },
+    {
+      "start": 10.3,
+      "end": 15.522222222222222,
+      "text": "This Nx monorepo contains two applications, shared libraries, and tools.",
+      "shot": "03-02",
+      "estimated_only": true
+    },
+    {
+      "start": 15.522222222222222,
+      "end": 19.7,
+      "text": "Separate application logic, shared presentation, and source analysis.",
+      "shot": "03-02",
+      "estimated_only": true
+    },
+    {
+      "start": 20.3,
+      "end": 27.2,
+      "text": "Invoicing manages invoices, with its own entry point, routes, list, and detail pages.",
+      "shot": "03-03",
+      "estimated_only": true
+    },
+    {
+      "start": 27.6,
+      "end": 32.333333333333336,
+      "text": "Procurement manages purchase orders through its own entry and routes.",
+      "shot": "03-03",
+      "estimated_only": true
+    },
+    {
+      "start": 32.333333333333336,
+      "end": 34.7,
+      "text": "Both applications use shared libraries.",
+      "shot": "03-03",
+      "estimated_only": true
+    },
+    {
+      "start": 35.3,
+      "end": 37.75217391304348,
+      "text": "This is the real Invoicing App.",
+      "shot": "03-04",
+      "estimated_only": true
+    },
+    {
+      "start": 37.75217391304348,
+      "end": 44.7,
+      "text": "The router selects pages; App owns invoice state and passes it to the pages that need it.",
+      "shot": "03-04",
+      "estimated_only": true
+    },
+    {
+      "start": 45.3,
+      "end": 50.522222222222226,
+      "text": "The Design System supplies the shell, fields, tables, and dialogs.",
+      "shot": "03-05",
+      "estimated_only": true
+    },
+    {
+      "start": 50.522222222222226,
+      "end": 54.7,
+      "text": "One shared component can therefore affect both applications.",
+      "shot": "03-05",
+      "estimated_only": true
+    },
+    {
+      "start": 55.3,
+      "end": 60.742105263157896,
+      "text": "Shared contains business types, fixtures, totals, money formatting, and local storage.",
+      "shot": "03-06",
+      "estimated_only": true
+    },
+    {
+      "start": 60.742105263157896,
+      "end": 64.7,
+      "text": "It also exports the locale and translation interface.",
+      "shot": "03-06",
+      "estimated_only": true
+    },
+    {
+      "start": 65.3,
+      "end": 68.97826086956522,
+      "text": "Locale, document direction, styling, and icon meaning are separate.",
+      "shot": "03-07",
+      "estimated_only": true
+    },
+    {
+      "start": 68.97826086956522,
+      "end": 74.7,
+      "text": "Study uses document RTL and MUI LTR; icons require semantic review, not automatic mirroring.",
+      "shot": "03-07",
+      "estimated_only": true
+    },
+    {
+      "start": 75.3,
+      "end": 78.71818181818182,
+      "text": "The Scanner collects static evidence and potential risks.",
+      "shot": "03-08",
+      "estimated_only": true
+    },
+    {
+      "start": 78.71818181818182,
+      "end": 84.7,
+      "text": "The Codemod constrains changes through safety checks; a finding is not automatic repair approval.",
+      "shot": "03-08",
+      "estimated_only": true
+    },
+    {
+      "start": 85.3,
+      "end": 89.22727272727272,
+      "text": "These relationships come from actual imports.",
+      "shot": "03-09",
+      "estimated_only": true
+    },
+    {
+      "start": 89.22727272727272,
+      "end": 93.8090909090909,
+      "text": "Both applications use Design System and Shared.",
+      "shot": "03-09",
+      "estimated_only": true
+    },
+    {
+      "start": 93.8090909090909,
+      "end": 99.7,
+      "text": "Tools analyze source files; neither application imports the other.",
+      "shot": "03-09",
+      "estimated_only": true
+    },
+    {
+      "start": 100.3,
+      "end": 109.06521739130434,
+      "text": "Our real example is invoice1048: Northstar Studio, four thousand eight hundred US dollars, Pending.",
+      "shot": "03-10",
+      "estimated_only": true
+    },
+    {
+      "start": 109.06521739130434,
+      "end": 114.7,
+      "text": "The actual table link opens the same invoice details.",
+      "shot": "03-10",
+      "estimated_only": true
+    },
+    {
+      "start": 115.3,
+      "end": 122.56363636363636,
+      "text": "A symptom may appear in an application while its owner is a shared component or runtime layer.",
+      "shot": "03-11",
+      "estimated_only": true
+    },
+    {
+      "start": 122.56363636363636,
+      "end": 124.7,
+      "text": "Establish causality before changing code.",
+      "shot": "03-11",
+      "estimated_only": true
+    },
+    {
+      "start": 125.3,
+      "end": 129.7,
+      "text": "How do we find RTL risks across this codebase?",
+      "shot": "03-12",
+      "estimated_only": true
+    }
+  ]
+}

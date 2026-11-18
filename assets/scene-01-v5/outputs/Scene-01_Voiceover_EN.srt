@@ -1,0 +1,51 @@
+1
+00:00:00,250 --> 00:00:04,300
+Imagine a European enterprise software company
+
+2
+00:00:04,300 --> 00:00:07,800
+expanding into the Middle East.
+
+3
+00:00:08,200 --> 00:00:10,700
+The platform has two main applications:
+
+4
+00:00:10,700 --> 00:00:11,800
+Invoicing
+
+5
+00:00:12,700 --> 00:00:14,800
+and Procurement.
+
+6
+00:00:17,200 --> 00:00:21,200
+The first business requirement sounded simple:
+
+7
+00:00:22,600 --> 00:00:26,200
+support Arabic in both applications.
+
+8
+00:00:29,200 --> 00:00:33,500
+So we switched the language and document direction
+
+9
+00:00:33,500 --> 00:00:37,600
+from LTR to RTL.
+
+10
+00:00:38,200 --> 00:00:40,000
+But suddenly,
+
+11
+00:00:40,000 --> 00:00:43,700
+several parts of the UI started breaking.
+
+12
+00:00:44,200 --> 00:00:48,000
+So why did changing the language and direction
+
+13
+00:00:48,000 --> 00:00:49,800
+break the UI?

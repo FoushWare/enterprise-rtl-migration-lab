@@ -1,0 +1,11 @@
+flowchart TD
+ I[Invoicing main / App / pages] -->|verified imports| D[design-system index]
+ P[Procurement main / App] -->|verified imports| D
+ I -->|verified imports| S[shared index]
+ P -->|verified imports| S
+ D -->|useLocale / DemoControls| S
+ D -->|re-export| R[Study runtime: LTR ThemeProvider]
+ D --> C[styles.css and Emotion styled]
+ S -->|re-export| L[i18n: LocaleProvider]
+ L --> T[translations dictionary]
+ L --> Q[React Router hooks]

@@ -1,0 +1,77 @@
+[
+  {
+    "start": 0,
+    "duration": 10,
+    "source": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-03-v1/media/VSCode_Architecture_Original.mov",
+    "in": 0,
+    "crop": [
+      3330,
+      1872,
+      0,
+      30
+    ]
+  },
+  {
+    "start": 10,
+    "duration": 10,
+    "source": null
+  },
+  {
+    "start": 20,
+    "duration": 7.5,
+    "source": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/fullscreen-v4/originals/Invoicing_EN.mov",
+    "in": 25,
+    "crop": [
+      2944,
+      1656,
+      112,
+      238
+    ]
+  },
+  {
+    "start": 27.5,
+    "duration": 7.5,
+    "source": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/expanded-v1/originals/Procurement_EN.mov",
+    "in": 20,
+    "crop": [
+      2944,
+      1656,
+      112,
+      238
+    ]
+  },
+  {
+    "start": 35,
+    "duration": 10,
+    "source": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-03-v1/media/VSCode_Architecture_Original.mov",
+    "in": 2,
+    "crop": [
+      2330,
+      1310,
+      930,
+      170
+    ]
+  },
+  {
+    "start": 45,
+    "duration": 55,
+    "source": null
+  },
+  {
+    "start": 100,
+    "duration": 15,
+    "source": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/fullscreen-v4/originals/Invoice_1048_Arrow_Action.mov",
+    "in": 48,
+    "crop": [
+      2944,
+      1656,
+      112,
+      238
+    ]
+  },
+  {
+    "start": 115,
+    "duration": 15,
+    "source": null
+  }
+]

@@ -1,0 +1,6 @@
+file '/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-01-v5/outputs/qa-EN-3.png'
+file '/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-01-v5/outputs/qa-EN-11.png'
+file '/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-01-v5/outputs/qa-EN-24.png'
+file '/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-01-v5/outputs/qa-EN-35.png'
+file '/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-01-v5/outputs/qa-EN-41.png'
+file '/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-01-v5/outputs/qa-EN-47.png'

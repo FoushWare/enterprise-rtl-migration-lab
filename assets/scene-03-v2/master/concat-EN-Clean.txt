@@ -1,0 +1,6 @@
+file '/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-01-v5/outputs/Scene-01_Business-Expansion_EN_V5_Clean.mp4'
+duration 50
+file '/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/rtl-production-v5/scene02/outputs/Scene-02_Broken-RTL_EN_V5_Clean.mp4'
+duration 134
+file '/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-03-v2/outputs/Scene-03_Architecture_EN_V2_Clean.mp4'
+duration 130

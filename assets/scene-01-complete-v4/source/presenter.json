@@ -1,0 +1,14 @@
+{
+  "mode": "silhouette",
+  "asset": "../layers/presenter-placeholder.svg",
+  "videoAsset": "../layers/presenter-replacement.mp4",
+  "start": 26,
+  "end": 32,
+  "box": {
+    "left": 160,
+    "top": 100,
+    "width": 620,
+    "height": 900
+  },
+  "note": "Set mode=video and provide your recording; renderer can display this separate media layer. No synthetic person."
+}

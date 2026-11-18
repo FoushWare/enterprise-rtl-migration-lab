@@ -1,0 +1,31 @@
+{
+  "programs": [],
+  "stream_groups": [],
+  "streams": [
+    {
+      "codec_name": "h264",
+      "width": 1920,
+      "height": 1080,
+      "pix_fmt": "yuv420p",
+      "r_frame_rate": "30/1",
+      "avg_frame_rate": "30/1",
+      "duration": "10.000000",
+      "nb_read_frames": "300"
+    }
+  ],
+  "format": {
+    "duration": "10.000000",
+    "size": "3608676"
+  },
+  "status": "Draft \u2013 Pending Review",
+  "full_decode": "passed; FFmpeg decoded the entire video without reported errors",
+  "representative_frames_reviewed": [
+    0,
+    75,
+    150,
+    225,
+    299
+  ],
+  "source_workflow": "Three.js WebGL actual 3D geometry; deterministic frame render",
+  "audio": "none"
+}

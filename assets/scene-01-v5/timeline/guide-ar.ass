@@ -1,0 +1,30 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1920
+PlayResY: 1080
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Guide,Arial,52,&H00FFFFFF,&H00FFFFFF,&H00121A26,&H50121A26,0,0,0,0,100,100,0,0,3,6,0,2,170,170,42,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.25,0:00:02.30,Guide,,0,0,0,,‫تخيّل شركة أوروبية‬
+Dialogue: 0,0:00:02.30,0:00:04.30,Guide,,0,0,0,,‫عندها منصة ‪Enterprise‬،‬
+Dialogue: 0,0:00:04.30,0:00:07.80,Guide,,0,0,0,,‫وقررت تتوسع في الشرق الأوسط.‬
+Dialogue: 0,0:00:08.20,0:00:10.80,Guide,,0,0,0,,‫المنصة دي فيها تطبيقين أساسيين:‬
+Dialogue: 0,0:00:10.80,0:00:12.40,Guide,,0,0,0,,‫‪Invoicing‬‬
+Dialogue: 0,0:00:12.70,0:00:16.60,Guide,,0,0,0,,‫و‪Procurement‬.‬
+Dialogue: 0,0:00:17.20,0:00:20.30,Guide,,0,0,0,,‫وأول ‪Requirement‬ وصلنا من الـ‪Business‬‬
+Dialogue: 0,0:00:20.30,0:00:22.60,Guide,,0,0,0,,‫كان بسيط جدًا:‬
+Dialogue: 0,0:00:22.60,0:00:25.40,Guide,,0,0,0,,‫محتاجين ندعم اللغة العربية‬
+Dialogue: 0,0:00:25.40,0:00:26.80,Guide,,0,0,0,,‫في التطبيقين.‬
+Dialogue: 0,0:00:29.20,0:00:31.00,Guide,,0,0,0,,‫فأول حاجة جرّبناها‬
+Dialogue: 0,0:00:31.00,0:00:34.00,Guide,,0,0,0,,‫إننا نغيّر اللغة والـ‪Direction‬‬
+Dialogue: 0,0:00:34.00,0:00:37.60,Guide,,0,0,0,,‫من ‪LTR‬ لـ‪RTL‬.‬
+Dialogue: 0,0:00:38.20,0:00:40.00,Guide,,0,0,0,,‫لكن المفاجأة‬
+Dialogue: 0,0:00:40.00,0:00:43.70,Guide,,0,0,0,,{\an8\pos(1150,130)}‫إن حاجات كتير في الـ‪UI‬ بدأت تبوظ.‬
+Dialogue: 0,0:00:44.20,0:00:47.00,Guide,,0,0,0,,‫السؤال بقى: ليه مجرد تغيير اللغة‬
+Dialogue: 0,0:00:47.00,0:00:49.80,Guide,,0,0,0,,‫والاتجاه عمل كل المشاكل دي؟‬

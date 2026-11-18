@@ -1,0 +1,37 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1920
+PlayResY: 1080
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Guide,Arial,43,&H00FFFFFF,&H00FFFFFF,&H00121A26,&H50121A26,0,0,0,0,100,100,0,0,3,5,0,2,140,140,35,1
+Style: GuideLeft,Arial,40,&H00FFFFFF,&H00FFFFFF,&H00121A26,&H50121A26,0,0,0,0,100,100,0,0,3,5,0,2,100,1260,100,1
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,00:00:00.30,00:00:03.06,Guide,,0,0,0,,Let’s look under the hood.
+Dialogue: 0,00:00:03.06,00:00:09.70,Guide,,0,0,0,,Before changing code, identify the main components and who owns each responsibility.
+Dialogue: 0,00:00:10.30,00:00:15.52,Guide,,0,0,0,,This Nx monorepo contains two applications, shared libraries, and tools.
+Dialogue: 0,00:00:15.52,00:00:19.70,Guide,,0,0,0,,Separate application logic, shared presentation, and source analysis.
+Dialogue: 0,00:00:20.30,00:00:27.20,Guide,,0,0,0,,Invoicing manages invoices, with its own entry point, routes, list, and detail pages.
+Dialogue: 0,00:00:27.60,00:00:32.33,Guide,,0,0,0,,Procurement manages purchase orders through its own entry and routes.
+Dialogue: 0,00:00:32.33,00:00:34.70,Guide,,0,0,0,,Both applications use shared libraries.
+Dialogue: 0,00:00:35.30,00:00:39.48,Guide,,0,0,0,,Each application owns its screens, routes, and behavior.
+Dialogue: 0,00:00:39.48,00:00:44.70,Guide,,0,0,0,,Invoicing holds invoice state; Procurement filters purchase orders by status.
+Dialogue: 0,00:00:45.30,00:00:51.57,Guide,,0,0,0,,Both applications reuse navigation, cards, fields, and tables from the Design System.
+Dialogue: 0,00:00:51.57,00:00:54.70,Guide,,0,0,0,,Dialogs are used by Invoicing specifically.
+Dialogue: 0,00:00:55.30,00:01:00.74,Guide,,0,0,0,,Shared contains business types, fixtures, totals, money formatting, and local storage.
+Dialogue: 0,00:01:00.74,00:01:04.70,Guide,,0,0,0,,It also exports the locale and translation interface.
+Dialogue: 0,00:01:05.30,00:01:08.98,Guide,,0,0,0,,Locale, document direction, styling, and icon meaning are separate.
+Dialogue: 0,00:01:08.98,00:01:14.70,Guide,,0,0,0,,Study uses document RTL and MUI LTR; icons require semantic review, not automatic mirroring.
+Dialogue: 0,00:01:15.30,00:01:18.72,Guide,,0,0,0,,The Scanner collects static evidence and potential risks.
+Dialogue: 0,00:01:18.72,00:01:24.70,Guide,,0,0,0,,The Codemod constrains changes through safety checks; a finding is not automatic repair approval.
+Dialogue: 0,00:01:25.30,00:01:29.23,Guide,,0,0,0,,These relationships come from actual imports.
+Dialogue: 0,00:01:29.23,00:01:33.81,Guide,,0,0,0,,Both applications use Design System and Shared.
+Dialogue: 0,00:01:33.81,00:01:39.70,Guide,,0,0,0,,Tools analyze source files; neither application imports the other.
+Dialogue: 0,00:01:40.30,00:01:49.07,Guide,,0,0,0,,Our real example is invoice1048: Northstar Studio, four thousand eight hundred US dollars, Pending.
+Dialogue: 0,00:01:49.07,00:01:54.70,Guide,,0,0,0,,The actual table link opens the same invoice details.
+Dialogue: 0,00:01:55.30,00:02:02.56,Guide,,0,0,0,,A symptom may appear in an application while its owner is a shared component or runtime layer.
+Dialogue: 0,00:02:02.56,00:02:04.70,Guide,,0,0,0,,Establish causality before changing code.
+Dialogue: 0,00:02:05.30,00:02:09.70,Guide,,0,0,0,,How do we find RTL risks across this codebase?

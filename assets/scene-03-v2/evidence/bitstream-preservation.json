@@ -1,0 +1,38 @@
+[
+  {
+    "file": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-03-v2/master/CoffeeBreakWeb_RTL-Migration_AR_Master_V3_Clean.mp4",
+    "coded_slice_payloads_identical": true,
+    "source_slice_counts": [
+      1500,
+      4020,
+      3900
+    ]
+  },
+  {
+    "file": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-03-v2/master/CoffeeBreakWeb_RTL-Migration_AR_Master_V3_Preview.mp4",
+    "coded_slice_payloads_identical": true,
+    "source_slice_counts": [
+      1500,
+      4020,
+      3900
+    ]
+  },
+  {
+    "file": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-03-v2/master/CoffeeBreakWeb_RTL-Migration_EN_Master_V3_Clean.mp4",
+    "coded_slice_payloads_identical": true,
+    "source_slice_counts": [
+      1500,
+      4020,
+      3900
+    ]
+  },
+  {
+    "file": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-03-v2/master/CoffeeBreakWeb_RTL-Migration_EN_Master_V3_Preview.mp4",
+    "coded_slice_payloads_identical": true,
+    "source_slice_counts": [
+      1500,
+      4020,
+      3900
+    ]
+  }
+]

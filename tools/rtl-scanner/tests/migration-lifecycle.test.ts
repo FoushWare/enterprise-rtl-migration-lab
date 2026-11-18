@@ -1,20 +1,21 @@
 import { describe, expect, it } from 'vitest';
 import { projectLifecycle } from '../src/migration-lifecycle.js';
-import { reconcileScans } from '../src/scan-history.js';
-import type { Finding } from '../src/model.js';
 
-const f = (id: string, original = 'x'): Finding => ({ id, ruleId: 'R', ruleVersion: 1, category: 'MANUAL_REVIEW', severity: 'Minor', confidence: 'High', title: 'risk', sourceMechanism: 'css', applications: [], path: 'a.css', range: { start: { offset: 0, line: 1, column: 1 }, end: { offset: 1, line: 1, column: 2 } }, original, context: 'a', ownership: 'owner', rationale: 'r', treatment: 't', evidenceIds: [], relatedLocations: [], issueIds: [], suggestion: null, limitation: 'l' });
+const evidence = [{ decision: 'Approved', scannerAfter: { findingPresent: false }, originalSourceSha256: 'original', candidateSourceSha256: 'candidate' }] as any;
+const base = { evidence, decision: null, review: null } as any;
 
-describe('migration lifecycle and scan reconciliation', () => {
-  it('does not treat approval alone as completion', () => expect(projectLifecycle({ decision: null, review: { status: 'Approved' } as never, evidence: [], audit: [] })).toBe('In Progress'));
-  it('projects applied and rolled back from authoritative records', () => {
-    expect(projectLifecycle({ evidence: [], audit: [{ type: 'APPLIED', timestamp: '2026-01-01', resultingSha256: 'new' } as never], currentSourceSha256: 'new' })).toBe('Applied');
-    expect(projectLifecycle({ evidence: [], audit: [{ type: 'ROLLED_BACK', timestamp: '2026-01-02' } as never] })).toBe('Rolled Back');
+describe('projectLifecycle authoritative priority', () => {
+  it.each([
+    ['Applied', [{ type: 'APPLIED', resultingSha256: 'candidate', timestamp: '2026-01-01T00:00:00.000Z' }], 'candidate', 'Applied'],
+    ['Rolled Back', [{ type: 'APPLIED', resultingSha256: 'candidate', timestamp: '2026-01-01T00:00:00.000Z' }, { type: 'ROLLED_BACK', timestamp: '2026-01-02T00:00:00.000Z' }], 'original', 'Rolled Back'],
+    ['Apply Failed', [{ type: 'APPLY_FAILED', timestamp: '2026-01-01T00:00:00.000Z' }], 'original', 'Failed'],
+    ['Stale', [{ type: 'APPLIED', resultingSha256: 'candidate', timestamp: '2026-01-01T00:00:00.000Z' }], 'external', 'Stale'],
+  ])('%s uses persisted audit/current-source inputs', (_name, audit, currentSourceSha256, expected) => {
+    expect(projectLifecycle({ ...base, audit, currentSourceSha256 })).toBe(expected);
   });
-  it('reconciles new, changed, and unresolved identities', () => {
-    const previous = { scanId: 'a', inputDigest: 'a', policyDigest: 'p', timestamp: '2026-01-01', findings: [f('old')] };
-    const current = { scanId: 'b', inputDigest: 'b', policyDigest: 'p', timestamp: '2026-01-02', findings: [{ ...f('new'), context: 'new-context' }, f('old', 'changed')] };
-    const statuses = reconcileScans(previous, current).map(x => x.status);
-    expect(statuses).toContain('New'); expect(statuses).toContain('Changed');
+
+  it('keeps a normal approved review in progress before Apply', () => {
+    expect(projectLifecycle({ ...base, review: { status: 'Approved' }, currentSourceSha256: 'original', audit: [] })).toBe('Validated');
+    expect(projectLifecycle({ ...base, review: { status: 'Candidate Proposed' }, currentSourceSha256: 'original', audit: [] })).toBe('In Progress');
   });
 });

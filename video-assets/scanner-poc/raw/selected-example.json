@@ -1,0 +1,187 @@
+{
+  "evidence": {
+    "id": "8836248fe0ff21d6599cbf1b4e4133088b157eab84c9dc123a9a1fd8a88b31ce",
+    "path": "libs/design-system/src/styles.css",
+    "mechanism": "css",
+    "context": "stylesheet/.chart-labels",
+    "property": "padding-left",
+    "value": "40px",
+    "original": "padding-left: 40px;",
+    "range": {
+      "start": {
+        "offset": 4639,
+        "line": 290,
+        "column": 3
+      },
+      "end": {
+        "offset": 4658,
+        "line": 290,
+        "column": 22
+      }
+    },
+    "semantics": "css",
+    "tokens": [
+      "40px"
+    ]
+  },
+  "findings": [
+    {
+      "id": "RTL.CHART.LABEL_FLOW:caa8a6652446209dc2fc98cf",
+      "ruleId": "RTL.CHART.LABEL_FLOW",
+      "ruleVersion": 1,
+      "category": "MANUAL_REVIEW",
+      "severity": "Major",
+      "confidence": "Medium",
+      "title": "SVG geometry with separate flex labels",
+      "sourceMechanism": "typescript-structure",
+      "applications": [
+        "invoicing"
+      ],
+      "path": "apps/invoicing/src/pages/Dashboard.tsx",
+      "range": {
+        "start": {
+          "offset": 3355,
+          "line": 87,
+          "column": 13
+        },
+        "end": {
+          "offset": 3538,
+          "line": 91,
+          "column": 14
+        }
+      },
+      "original": "<svg\n              viewBox=\"0 0 600 215\"\n              role=\"img\"\n              aria-label={t(\"Revenue increased from May to October, from 24,000 to 61,000 US dollars\")}\n            >",
+      "context": "Dashboard/svg",
+      "ownership": "manual-chart",
+      "rationale": "Fixed SVG geometry and separate HTML flex labels can respond differently to document direction.",
+      "treatment": "Review chronology, axis gutters, labels/data correspondence and accessible description together.",
+      "evidenceIds": [
+        "4300319c4ed3b2c0076c2228a365566bc0abc9695017c461bad1a63eee746405",
+        "4a76730854ea0a6c2fa2a44919f073f34242f514a55d293dc2bc1549414e84b7",
+        "6edaff018ac3f0af109099cab50cf46ca4d51e23a4a2579f5811d7fd1e85b33d",
+        "8836248fe0ff21d6599cbf1b4e4133088b157eab84c9dc123a9a1fd8a88b31ce",
+        "917dd11df748e1d451404f4050a1e9165c6f680a3ea4489e54961d1a2d3ddc40"
+      ],
+      "relatedLocations": [
+        {
+          "path": "libs/design-system/src/styles.css",
+          "range": {
+            "start": {
+              "offset": 4588,
+              "line": 288,
+              "column": 3
+            },
+            "end": {
+              "offset": 4602,
+              "line": 288,
+              "column": 17
+            }
+          }
+        },
+        {
+          "path": "libs/design-system/src/styles.css",
+          "range": {
+            "start": {
+              "offset": 4605,
+              "line": 289,
+              "column": 3
+            },
+            "end": {
+              "offset": 4636,
+              "line": 289,
+              "column": 34
+            }
+          }
+        },
+        {
+          "path": "libs/design-system/src/styles.css",
+          "range": {
+            "start": {
+              "offset": 4639,
+              "line": 290,
+              "column": 3
+            },
+            "end": {
+              "offset": 4658,
+              "line": 290,
+              "column": 22
+            }
+          }
+        },
+        {
+          "path": "libs/design-system/src/styles.css",
+          "range": {
+            "start": {
+              "offset": 4661,
+              "line": 291,
+              "column": 3
+            },
+            "end": {
+              "offset": 4676,
+              "line": 291,
+              "column": 18
+            }
+          }
+        },
+        {
+          "path": "libs/design-system/src/styles.css",
+          "range": {
+            "start": {
+              "offset": 4679,
+              "line": 292,
+              "column": 3
+            },
+            "end": {
+              "offset": 4694,
+              "line": 292,
+              "column": 18
+            }
+          }
+        }
+      ],
+      "issueIds": [
+        "RTL-02"
+      ],
+      "suggestion": null,
+      "limitation": "Static evidence indicates a risk; rendered behavior is not established by this scan."
+    },
+    {
+      "id": "RTL.CSS.PHYSICAL:82212e990854fbb975d34448",
+      "ruleId": "RTL.CSS.PHYSICAL",
+      "ruleVersion": 1,
+      "category": "MANUAL_REVIEW",
+      "severity": "Minor",
+      "confidence": "High",
+      "title": "Physical horizontal declaration",
+      "sourceMechanism": "css",
+      "applications": [],
+      "path": "libs/design-system/src/styles.css",
+      "range": {
+        "start": {
+          "offset": 4639,
+          "line": 290,
+          "column": 3
+        },
+        "end": {
+          "offset": 4658,
+          "line": 290,
+          "column": 22
+        }
+      },
+      "original": "padding-left: 40px;",
+      "context": "stylesheet/.chart-labels",
+      "ownership": "custom-css",
+      "rationale": "Physical syntax does not establish reading-start/end intent or styling ownership.",
+      "treatment": "Review semantics, writing mode, cascade and owner before any conversion.",
+      "evidenceIds": [
+        "8836248fe0ff21d6599cbf1b4e4133088b157eab84c9dc123a9a1fd8a88b31ce"
+      ],
+      "relatedLocations": [],
+      "issueIds": [
+        "RTL-02"
+      ],
+      "suggestion": null,
+      "limitation": "Static evidence indicates a risk; rendered behavior is not established by this scan."
+    }
+  ]
+}

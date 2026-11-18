@@ -1,0 +1,200 @@
+[
+  {
+    "frame": 3,
+    "time": 0.1,
+    "peak": 3650,
+    "description": "Shot 03-01 first visual reveal"
+  },
+  {
+    "frame": 303,
+    "time": 10.1,
+    "peak": 3650,
+    "description": "Shot 03-02 first visual reveal"
+  },
+  {
+    "frame": 320,
+    "time": 10.666666666666666,
+    "peak": 2243,
+    "description": "Staggered layer entrance"
+  },
+  {
+    "frame": 339,
+    "time": 11.3,
+    "peak": 2243,
+    "description": "Staggered layer entrance"
+  },
+  {
+    "frame": 359,
+    "time": 11.966666666666667,
+    "peak": 2243,
+    "description": "Staggered layer entrance"
+  },
+  {
+    "frame": 603,
+    "time": 20.1,
+    "peak": 3650,
+    "description": "Shot 03-03 first visual reveal"
+  },
+  {
+    "frame": 605,
+    "time": 20.166666666666668,
+    "peak": 2403,
+    "description": "Transition to genuine footage"
+  },
+  {
+    "frame": 1053,
+    "time": 35.1,
+    "peak": 3650,
+    "description": "Shot 03-04 first visual reveal"
+  },
+  {
+    "frame": 1055,
+    "time": 35.166666666666664,
+    "peak": 3133,
+    "description": "Transition to genuine footage"
+  },
+  {
+    "frame": 1353,
+    "time": 45.1,
+    "peak": 3650,
+    "description": "Shot 03-05 first visual reveal"
+  },
+  {
+    "frame": 1653,
+    "time": 55.1,
+    "peak": 3650,
+    "description": "Shot 03-06 first visual reveal"
+  },
+  {
+    "frame": 1953,
+    "time": 65.1,
+    "peak": 3650,
+    "description": "Shot 03-07 first visual reveal"
+  },
+  {
+    "frame": 1967,
+    "time": 65.56666666666666,
+    "peak": 2243,
+    "description": "Staggered layer entrance"
+  },
+  {
+    "frame": 1986,
+    "time": 66.2,
+    "peak": 2243,
+    "description": "Staggered layer entrance"
+  },
+  {
+    "frame": 2006,
+    "time": 66.86666666666666,
+    "peak": 2243,
+    "description": "Staggered layer entrance"
+  },
+  {
+    "frame": 2025,
+    "time": 67.5,
+    "peak": 2243,
+    "description": "Staggered layer entrance"
+  },
+  {
+    "frame": 2253,
+    "time": 75.1,
+    "peak": 3650,
+    "description": "Shot 03-08 first visual reveal"
+  },
+  {
+    "frame": 2553,
+    "time": 85.1,
+    "peak": 3650,
+    "description": "Shot 03-09 first visual reveal"
+  },
+  {
+    "frame": 2664,
+    "time": 88.8,
+    "peak": 2502,
+    "description": "Verified import connection"
+  },
+  {
+    "frame": 2688,
+    "time": 89.6,
+    "peak": 2502,
+    "description": "Verified import connection"
+  },
+  {
+    "frame": 2712,
+    "time": 90.4,
+    "peak": 2502,
+    "description": "Verified import connection"
+  },
+  {
+    "frame": 2736,
+    "time": 91.2,
+    "peak": 2502,
+    "description": "Verified import connection"
+  },
+  {
+    "frame": 2760,
+    "time": 92.0,
+    "peak": 2502,
+    "description": "Verified import connection"
+  },
+  {
+    "frame": 3003,
+    "time": 100.1,
+    "peak": 3650,
+    "description": "Shot 03-10 first visual reveal"
+  },
+  {
+    "frame": 3005,
+    "time": 100.16666666666667,
+    "peak": 2350,
+    "description": "Transition to genuine footage"
+  },
+  {
+    "frame": 3453,
+    "time": 115.1,
+    "peak": 3650,
+    "description": "Shot 03-11 first visual reveal"
+  },
+  {
+    "frame": 3459,
+    "time": 115.3,
+    "peak": 2180,
+    "description": "Staggered layer entrance"
+  },
+  {
+    "frame": 3479,
+    "time": 115.96666666666667,
+    "peak": 2243,
+    "description": "Staggered layer entrance"
+  },
+  {
+    "frame": 3498,
+    "time": 116.6,
+    "peak": 2243,
+    "description": "Staggered layer entrance"
+  },
+  {
+    "frame": 3518,
+    "time": 117.26666666666667,
+    "peak": 2243,
+    "description": "Staggered layer entrance"
+  },
+  {
+    "frame": 3537,
+    "time": 117.9,
+    "peak": 2243,
+    "description": "Staggered layer entrance"
+  },
+  {
+    "frame": 3753,
+    "time": 125.1,
+    "peak": 3650,
+    "description": "Shot 03-12 first visual reveal"
+  },
+  {
+    "frame": 828,
+    "time": 27.6,
+    "peak": 3650,
+    "description": "Procurement product reveal"
+  }
+]

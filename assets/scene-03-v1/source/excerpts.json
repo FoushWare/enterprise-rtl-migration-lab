@@ -1,0 +1,120 @@
+{
+  "design": {
+    "path": "libs/design-system/src/index.tsx",
+    "start": 166,
+    "end": 184,
+    "lines": [
+      "166  export function DataTable<T>({",
+      "167    columns,",
+      "168    rows,",
+      "169    rowKey,",
+      "170  }: {",
+      "171    columns: { label: string; render: (row: T) => ReactNode }[];",
+      "172    rows: T[];",
+      "173    rowKey: (row: T) => string;",
+      "174  }) {",
+      "175    const { t } = useLocale();",
+      "176    return rows.length ? (",
+      "177      <div className=\"table-scroll\">",
+      "178        <Table>",
+      "179          <TableHead>",
+      "180            <TableRow>",
+      "181              {columns.map((c) => (",
+      "182                <TableCell key={c.label}>{c.label}</TableCell>",
+      "183              ))}",
+      "184            </TableRow>"
+    ],
+    "sha256": "6b25e8348728c9ed9eafda8b08b61a48c3e2d942f846a56c83c593267b0aa9c3"
+  },
+  "shared": {
+    "path": "libs/shared/src/index.ts",
+    "start": 128,
+    "end": 141,
+    "lines": [
+      "128  export const total = (invoice: Pick<Invoice, \"items\">) =>",
+      "129    invoice.items.reduce((sum, item) => sum + item.quantity * item.rate, 0);",
+      "130  /**",
+      "131   * Format an amount using the established English financial presentation.",
+      "132   * @param value - Numeric amount, without conversion or rounding of stored data.",
+      "133   * @param currency - Intl currency code; defaults to USD.",
+      "134   * @returns A display string; Arabic UI labels do not change this formatter.",
+      "135   */",
+      "136  export const money = (value: number, currency = \"USD\") =>",
+      "137    new Intl.NumberFormat(\"en-US\", {",
+      "138      style: \"currency\",",
+      "139      currency,",
+      "140      maximumFractionDigits: 2,",
+      "141    }).format(value);"
+    ],
+    "sha256": "8be587e6ea8bb7571d26f40612bfae7a0258868851efdbbf412803b85df319b3"
+  },
+  "runtime": {
+    "path": "libs/design-system/src/runtime.tsx",
+    "start": 77,
+    "end": 84,
+    "lines": [
+      " 77  /** Preserve the historical LTR-only styling provider while Arabic changes the document. */",
+      " 78  export function Provider({ children }: { children: ReactNode }) {",
+      " 79    return (",
+      " 80      <ThemeProvider theme={theme}>",
+      " 81        <CssBaseline />",
+      " 82        {children}",
+      " 83      </ThemeProvider>",
+      " 84    );"
+    ],
+    "sha256": "22bb7b81281098a0e858b13eab6a44095bbc59c66b43b5c9824894cb8bcdb272"
+  },
+  "locale": {
+    "path": "libs/shared/src/i18n.tsx",
+    "start": 45,
+    "end": 53,
+    "lines": [
+      " 45    const query = new URLSearchParams(location.search);",
+      " 46    const demo = query.get(\"demo\") === \"unmigrated-rtl\";",
+      " 47    const language: Language = demo && query.get(\"lang\") === \"ar\" ? \"ar\" : \"en\";",
+      " 48    const t = translator(language);",
+      " 49    // Historical demo behavior: document RTL is active while MUI stays LTR.",
+      " 50    useLayoutEffect(() => {",
+      " 51      document.documentElement.lang = language === \"ar\" ? \"ar-EG\" : \"en\";",
+      " 52      document.documentElement.dir = language === \"ar\" ? \"rtl\" : \"ltr\";",
+      " 53    }, [language]);"
+    ],
+    "sha256": "54f1f193f90b7d0633bc0a4a73e87239456764b1bc403b2133223dc6dc2b6faf"
+  },
+  "app": {
+    "path": "apps/invoicing/src/App.tsx",
+    "start": 18,
+    "end": 26,
+    "lines": [
+      " 18  export default function App() {",
+      " 19    const { t, label } = useLocale();",
+      " 20    const [invoices, setInvoices] = useState<Invoice[]>([]),",
+      " 21      [loaded, setLoaded] = useState(false);",
+      " 22    useEffect(() => {",
+      " 23      mockApi",
+      " 24        .listInvoices()",
+      " 25        .then(setInvoices)",
+      " 26        .finally(() => setLoaded(true));"
+    ],
+    "sha256": "b07c226d09c65d75a5c5ca21f0bbd7ad36c7ea5a5ee3fba9a32cd5b45b6f40a8"
+  },
+  "main": {
+    "path": "apps/invoicing/src/main.tsx",
+    "start": 8,
+    "end": 18,
+    "lines": [
+      "  8  ReactDOM.createRoot(document.getElementById(\"root\")!).render(",
+      "  9    <React.StrictMode>",
+      " 10      <Provider>",
+      " 11        <BrowserRouter>",
+      " 12          <LocaleProvider>",
+      " 13            <App />",
+      " 14          </LocaleProvider>",
+      " 15        </BrowserRouter>",
+      " 16      </Provider>",
+      " 17    </React.StrictMode>,",
+      " 18  );"
+    ],
+    "sha256": "0079a4657a0e0e89d6c7557ad139dc68875ba9f4d1c34184ce9d4744c561f3ca"
+  }
+}

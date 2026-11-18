@@ -1,0 +1,15 @@
+{
+  "status": "Replaceable placeholder, not final presenter",
+  "timeline": [
+    0,
+    10
+  ],
+  "asset": "media/presenter-placeholder.svg",
+  "bounds": [
+    110,
+    180,
+    600,
+    800
+  ],
+  "replacement": "Replace the isolated SVG asset, or add a real presenter video element and draw it at these bounds in source/composition.js; do not change the navy background or other scenes."
+}

@@ -1,0 +1,27 @@
+[
+  {
+    "file": "01-developer-screencast.mp4",
+    "status": "NOT_PRODUCED",
+    "reason": "Authentic VS Code desktop capture/control required."
+  },
+  {
+    "file": "02-animated-architecture.mp4",
+    "status": "PASS",
+    "codec": "h264",
+    "resolution": [
+      1920,
+      1080
+    ],
+    "fps": 30,
+    "duration": 36.0,
+    "audioTracks": 0,
+    "bytes": 741288,
+    "sha256": "72865b0fe531edc100ca48389d8f39551b13863afb0460b4068fcecb4b43ad7a",
+    "fullDecode": "PASS"
+  },
+  {
+    "file": "03-hybrid-screencast.mp4",
+    "status": "NOT_PRODUCED",
+    "reason": "Authentic VS Code desktop capture/control required."
+  }
+]

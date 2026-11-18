@@ -1,0 +1,18 @@
+{
+  "head": "b127325a14ad3bf8e70aede2a2e29b9dae638355",
+  "gitStatus": " M nx.json\n",
+  "trackedHashChanges": [],
+  "video": {
+    "duration": 59.666667,
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "codec": "H.264",
+    "audio": "AAC",
+    "decodedWithoutErrors": true,
+    "audioMeanDb": -17.2,
+    "audioPeakDb": -1.4
+  },
+  "audioListeningReview": "Not available in this session; human audition required",
+  "captionTiming": "Measured scene segments; phrase timings approximate"
+}

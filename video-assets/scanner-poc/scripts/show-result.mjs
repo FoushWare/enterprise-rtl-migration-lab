@@ -1,0 +1,17 @@
+import fs from 'node:fs';
+const raw=fs.readFileSync(process.env.POC+'/cli-output.txt','utf8');
+const report=JSON.parse(raw.slice(raw.indexOf('{')));
+const evidence=report.evidence.find(e=>e.path==='libs/design-system/src/styles.css'&&e.context==='stylesheet/.chart-labels'&&e.property==='padding-left');
+if(!evidence)throw Error('Expected actual source declaration not found');
+const finding=report.findings.find(f=>f.ruleId==='RTL.CSS.PHYSICAL'&&f.evidenceIds.includes(evidence.id));
+if(!finding)throw Error('No linked physical-property finding');
+console.log('ACTUAL SCANNER OUTPUT — selected record');
+console.log(`${report.evidence.length} facts | ${report.findings.length} findings | complete=${report.complete}`);
+console.log(`Source: ${evidence.path}:${evidence.range.start.line}`);
+console.log(`Evidence: ${evidence.context} | ${evidence.property}: ${evidence.value}`);
+console.log(`Evidence ID: ${evidence.id}`);
+console.log(`Finding: ${finding.id}`);
+console.log(`${finding.category} | severity=${finding.severity} | confidence=${finding.confidence}`);
+console.log(`Linked evidence: ${finding.evidenceIds.includes(evidence.id)}`);
+console.log('Static risk for human review — not proof of a visual defect.');
+fs.writeFileSync(process.env.POC+'/selected-record.json',JSON.stringify({evidence,finding},null,2)+'\n');

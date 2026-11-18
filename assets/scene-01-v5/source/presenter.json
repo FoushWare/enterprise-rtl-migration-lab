@@ -1,0 +1,13 @@
+{
+  "mode": "silhouette",
+  "start": 17,
+  "end": 29,
+  "asset": "../layers/presenter-placeholder.svg",
+  "videoAsset": "../layers/presenter-replacement.mp4",
+  "box": {
+    "left": 160,
+    "top": 100,
+    "width": 620,
+    "height": 900
+  }
+}

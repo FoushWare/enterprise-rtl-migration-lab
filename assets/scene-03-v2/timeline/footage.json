@@ -1,0 +1,14 @@
+{
+  "invoicing": {
+    "original": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/fullscreen-v4/originals/Invoicing_EN.mov",
+    "in": 25
+  },
+  "procurement": {
+    "original": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/expanded-v1/originals/Procurement_EN.mov",
+    "in": 20
+  },
+  "invoice": {
+    "original": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/fullscreen-v4/originals/Invoice_1048_Arrow_Action.mov",
+    "in": 48
+  }
+}

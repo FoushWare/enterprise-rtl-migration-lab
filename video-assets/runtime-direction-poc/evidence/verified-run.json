@@ -1,0 +1,67 @@
+{
+  "source": "import {createTheme} from \"@mui/material\";createTheme({direction:getDirection()});",
+  "origin": "tools/rtl-scanner/tests/detection.test.ts:35",
+  "parser": {
+    "evidence": [],
+    "diagnostics": []
+  },
+  "diagnosticsBeforeDetect": [],
+  "diagnosticsAfterDetect": [
+    {
+      "path": "a.tsx",
+      "range": {
+        "start": {
+          "offset": 55,
+          "line": 1,
+          "column": 56
+        },
+        "end": {
+          "offset": 79,
+          "line": 1,
+          "column": 80
+        }
+      },
+      "code": "RUNTIME_DIRECTION_UNKNOWN",
+      "message": "Theme direction expression not statically resolved.",
+      "impact": "DIRECTIONAL_UNSUPPORTED",
+      "blocking": true,
+      "rationale": "Runtime direction cannot be safely correlated."
+    }
+  ],
+  "findings": [
+    {
+      "id": "RTL.RUNTIME.DIRECTION_UNKNOWN:63925fd498c4a6abc1025635",
+      "ruleId": "RTL.RUNTIME.DIRECTION_UNKNOWN",
+      "ruleVersion": 1,
+      "category": "RUNTIME_CONFIG",
+      "severity": "Minor",
+      "confidence": "Low",
+      "title": "Dynamic runtime direction requires review",
+      "sourceMechanism": "typescript-structure",
+      "applications": [],
+      "path": "a.tsx",
+      "range": {
+        "start": {
+          "offset": 55,
+          "line": 1,
+          "column": 56
+        },
+        "end": {
+          "offset": 79,
+          "line": 1,
+          "column": 80
+        }
+      },
+      "original": "direction:getDirection()",
+      "context": "module",
+      "ownership": "unknown",
+      "rationale": "Direction is supplied by an unresolved expression.",
+      "treatment": "Review document/theme/cache synchronization without evaluating application code.",
+      "evidenceIds": [],
+      "relatedLocations": [],
+      "issueIds": [],
+      "suggestion": null,
+      "limitation": "Static evidence indicates a risk; rendered behavior is not established by this scan."
+    }
+  ]
+}

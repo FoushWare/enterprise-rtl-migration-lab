@@ -1,0 +1,156 @@
+{
+  "ar": [
+    [
+      0.25,
+      2.3,
+      "تخيّل شركة أوروبية"
+    ],
+    [
+      2.3,
+      4.3,
+      "عندها منصة Enterprise،"
+    ],
+    [
+      4.3,
+      7.8,
+      "وقررت تتوسع في الشرق الأوسط."
+    ],
+    [
+      8.2,
+      10.8,
+      "المنصة دي فيها تطبيقين أساسيين:"
+    ],
+    [
+      10.8,
+      12.4,
+      "Invoicing"
+    ],
+    [
+      12.7,
+      16.6,
+      "وProcurement."
+    ],
+    [
+      17.2,
+      20.3,
+      "وأول Requirement وصلنا من الـBusiness"
+    ],
+    [
+      20.3,
+      22.6,
+      "كان بسيط جدًا:"
+    ],
+    [
+      22.6,
+      25.4,
+      "محتاجين ندعم اللغة العربية"
+    ],
+    [
+      25.4,
+      26.8,
+      "في التطبيقين."
+    ],
+    [
+      29.2,
+      31,
+      "فأول حاجة جرّبناها"
+    ],
+    [
+      31,
+      34,
+      "إننا نغيّر اللغة والـDirection"
+    ],
+    [
+      34,
+      37.6,
+      "من LTR لـRTL."
+    ],
+    [
+      38.2,
+      40,
+      "لكن المفاجأة"
+    ],
+    [
+      40,
+      43.7,
+      "إن حاجات كتير في الـUI بدأت تبوظ."
+    ],
+    [
+      44.2,
+      47,
+      "السؤال بقى: ليه مجرد تغيير اللغة"
+    ],
+    [
+      47,
+      49.8,
+      "والاتجاه عمل كل المشاكل دي؟"
+    ]
+  ],
+  "en": [
+    [
+      0.25,
+      4.3,
+      "Imagine a European enterprise software company"
+    ],
+    [
+      4.3,
+      7.8,
+      "expanding into the Middle East."
+    ],
+    [
+      8.2,
+      10.7,
+      "The platform has two main applications:"
+    ],
+    [
+      10.7,
+      11.8,
+      "Invoicing"
+    ],
+    [
+      12.7,
+      14.8,
+      "and Procurement."
+    ],
+    [
+      17.2,
+      21.2,
+      "The first business requirement sounded simple:"
+    ],
+    [
+      22.6,
+      26.2,
+      "support Arabic in both applications."
+    ],
+    [
+      29.2,
+      33.5,
+      "So we switched the language and document direction"
+    ],
+    [
+      33.5,
+      37.6,
+      "from LTR to RTL."
+    ],
+    [
+      38.2,
+      40,
+      "But suddenly,"
+    ],
+    [
+      40,
+      43.7,
+      "several parts of the UI started breaking."
+    ],
+    [
+      44.2,
+      48,
+      "So why did changing the language and direction"
+    ],
+    [
+      48,
+      49.8,
+      "break the UI?"
+    ]
+  ]
+}

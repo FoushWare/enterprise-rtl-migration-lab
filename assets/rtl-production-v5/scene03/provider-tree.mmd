@@ -1,0 +1,8 @@
+flowchart TD
+ A[createRoot render] --> B[StrictMode]
+ B --> C[Provider / ThemeProvider: LTR]
+ C --> D[BrowserRouter]
+ D --> E[LocaleProvider]
+ E --> F[App]
+ F --> G[AppShell and route pages]
+ E -.layout effect.-> H[html.lang and html.dir]

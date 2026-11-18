@@ -1,0 +1,1 @@
+styles.css:290  |  .chart-labels  |  padding-left: 40px

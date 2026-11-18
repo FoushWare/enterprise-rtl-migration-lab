@@ -1,0 +1,151 @@
+{
+  "sample_rate": 48000,
+  "duration": 50,
+  "mix_peak_dbfs": -18.775837581560584,
+  "events": [
+    {
+      "track": "geography",
+      "frame": 0,
+      "time": 0.0,
+      "duration": 0.8,
+      "kind": "air",
+      "description": "Subtle establishing atmosphere",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "geography",
+      "frame": 126,
+      "time": 4.2,
+      "duration": 0.85,
+      "kind": "whoosh",
+      "description": "Camera departure",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "geography",
+      "frame": 159,
+      "time": 5.3,
+      "duration": 0.32,
+      "kind": "pulse",
+      "description": "Cairo marker",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "geography",
+      "frame": 178,
+      "time": 5.933333333333334,
+      "duration": 0.32,
+      "kind": "pulse",
+      "description": "Riyadh marker",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "products",
+      "frame": 245,
+      "time": 8.166666666666666,
+      "duration": 0.3,
+      "kind": "reveal",
+      "description": "Blue Invoicing label",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "products",
+      "frame": 380,
+      "time": 12.666666666666666,
+      "duration": 0.3,
+      "kind": "reveal",
+      "description": "Purple Procurement label",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "requirement",
+      "frame": 525,
+      "time": 17.5,
+      "duration": 0.55,
+      "kind": "notify",
+      "description": "Business requirement notification",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "requirement",
+      "frame": 678,
+      "time": 22.6,
+      "duration": 0.48,
+      "kind": "impact",
+      "description": "Support Arabic headline",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "switch",
+      "frame": 878,
+      "time": 29.266666666666666,
+      "duration": 0.045,
+      "kind": "click",
+      "description": "Focus on actual language selector; editorial SFX, not recorded click",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "switch",
+      "frame": 951,
+      "time": 31.7,
+      "duration": 0.5,
+      "kind": "whoosh",
+      "description": "Recorded switch transition",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "switch",
+      "frame": 960,
+      "time": 32.0,
+      "duration": 0.26,
+      "kind": "pulse",
+      "description": "Arabic RTL label",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "teaser",
+      "frame": 1151,
+      "time": 38.36666666666667,
+      "duration": 0.25,
+      "kind": "warning",
+      "description": "Sidebar issue",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "teaser",
+      "frame": 1211,
+      "time": 40.36666666666667,
+      "duration": 0.25,
+      "kind": "warning",
+      "description": "Chart issue",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "teaser",
+      "frame": 1271,
+      "time": 42.36666666666667,
+      "duration": 0.25,
+      "kind": "warning",
+      "description": "Detail arrow issue",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "question",
+      "frame": 1335,
+      "time": 44.5,
+      "duration": 0.85,
+      "kind": "impact",
+      "description": "Question reveal",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "question",
+      "frame": 1473,
+      "time": 49.1,
+      "duration": 0.7,
+      "kind": "air",
+      "description": "Transition tail",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    }
+  ]
+}

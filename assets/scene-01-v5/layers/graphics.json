@@ -1,0 +1,20 @@
+{
+  "ar": {
+    "task": "متطلبات العمل",
+    "headline": "دعم اللغة العربية",
+    "apps": "مطلوب في الفواتير والمشتريات",
+    "experience": "مهمة فريق التطوير",
+    "placeholder": "مساحة تسجيل المقدم",
+    "replace": "بديل مؤقت — يُستبدل بتسجيلك",
+    "question": "ليه تغيير اللغة والاتجاه\nبوّظ الـUI؟"
+  },
+  "en": {
+    "task": "BUSINESS REQUIREMENT",
+    "headline": "SUPPORT ARABIC LANGUAGE",
+    "apps": "Arabic support required for Invoicing and Procurement.",
+    "experience": "ASSIGNED TO THE ENGINEERING TEAM",
+    "placeholder": "Presenter recording area",
+    "replace": "Temporary placeholder — replace with your recording",
+    "question": "Why did changing the language\nbreak the UI?"
+  }
+}

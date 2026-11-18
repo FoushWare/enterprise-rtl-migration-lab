@@ -1,0 +1,122 @@
+[
+  {
+    "file": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-03-v1/outputs/Scene-03_Architecture_EN_V1_Clean.mp4",
+    "duration": "130.000000",
+    "frames": "3900",
+    "resolution": [
+      1920,
+      1080
+    ],
+    "fps": "30",
+    "video": "H.264",
+    "audio": "AAC stereo48k",
+    "audio_peak_dbfs": -18.76,
+    "audio_pcm_sha256": "99da03d5d8ec01ffc812584b9bd724845f3eac0dc140da9644cb5dd9a3cee7f5",
+    "decode": "PASS"
+  },
+  {
+    "file": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-03-v1/outputs/Scene-03_Architecture_AR_V1_Preview.mp4",
+    "duration": "130.000000",
+    "frames": "3900",
+    "resolution": [
+      1920,
+      1080
+    ],
+    "fps": "30",
+    "video": "H.264",
+    "audio": "AAC stereo48k",
+    "audio_peak_dbfs": -18.76,
+    "audio_pcm_sha256": "99da03d5d8ec01ffc812584b9bd724845f3eac0dc140da9644cb5dd9a3cee7f5",
+    "decode": "PASS"
+  },
+  {
+    "file": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-03-v1/outputs/Scene-03_Architecture_AR_V1_Clean.mp4",
+    "duration": "130.000000",
+    "frames": "3900",
+    "resolution": [
+      1920,
+      1080
+    ],
+    "fps": "30",
+    "video": "H.264",
+    "audio": "AAC stereo48k",
+    "audio_peak_dbfs": -18.76,
+    "audio_pcm_sha256": "99da03d5d8ec01ffc812584b9bd724845f3eac0dc140da9644cb5dd9a3cee7f5",
+    "decode": "PASS"
+  },
+  {
+    "file": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-03-v1/outputs/Scene-03_Architecture_EN_V1_Preview.mp4",
+    "duration": "130.000000",
+    "frames": "3900",
+    "resolution": [
+      1920,
+      1080
+    ],
+    "fps": "30",
+    "video": "H.264",
+    "audio": "AAC stereo48k",
+    "audio_peak_dbfs": -18.76,
+    "audio_pcm_sha256": "99da03d5d8ec01ffc812584b9bd724845f3eac0dc140da9644cb5dd9a3cee7f5",
+    "decode": "PASS"
+  },
+  {
+    "file": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-03-v1/master/CoffeeBreakWeb_RTL-Migration_EN_Master_V2_Preview.mp4",
+    "duration": "314.000000",
+    "frames": "9420",
+    "resolution": [
+      1920,
+      1080
+    ],
+    "fps": "30",
+    "video": "H.264",
+    "audio": "AAC stereo48k",
+    "audio_peak_dbfs": -18.76,
+    "audio_pcm_sha256": "c6e62c69f6c9bdee26d4c46f9d8f7b3eaa8c15f6add8048afdac2c799daaa26b",
+    "decode": "PASS"
+  },
+  {
+    "file": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-03-v1/master/CoffeeBreakWeb_RTL-Migration_AR_Master_V2_Clean.mp4",
+    "duration": "314.000000",
+    "frames": "9420",
+    "resolution": [
+      1920,
+      1080
+    ],
+    "fps": "30",
+    "video": "H.264",
+    "audio": "AAC stereo48k",
+    "audio_peak_dbfs": -18.76,
+    "audio_pcm_sha256": "c6e62c69f6c9bdee26d4c46f9d8f7b3eaa8c15f6add8048afdac2c799daaa26b",
+    "decode": "PASS"
+  },
+  {
+    "file": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-03-v1/master/CoffeeBreakWeb_RTL-Migration_AR_Master_V2_Preview.mp4",
+    "duration": "314.000000",
+    "frames": "9420",
+    "resolution": [
+      1920,
+      1080
+    ],
+    "fps": "30",
+    "video": "H.264",
+    "audio": "AAC stereo48k",
+    "audio_peak_dbfs": -18.76,
+    "audio_pcm_sha256": "c6e62c69f6c9bdee26d4c46f9d8f7b3eaa8c15f6add8048afdac2c799daaa26b",
+    "decode": "PASS"
+  },
+  {
+    "file": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-03-v1/master/CoffeeBreakWeb_RTL-Migration_EN_Master_V2_Clean.mp4",
+    "duration": "314.000000",
+    "frames": "9420",
+    "resolution": [
+      1920,
+      1080
+    ],
+    "fps": "30",
+    "video": "H.264",
+    "audio": "AAC stereo48k",
+    "audio_peak_dbfs": -18.76,
+    "audio_pcm_sha256": "c6e62c69f6c9bdee26d4c46f9d8f7b3eaa8c15f6add8048afdac2c799daaa26b",
+    "decode": "PASS"
+  }
+]

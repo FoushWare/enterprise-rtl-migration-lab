@@ -1,0 +1,259 @@
+{
+  "sample_rate": 48000,
+  "duration": 134,
+  "mix_peak_dbfs": -18.786043192927764,
+  "events": [
+    {
+      "track": "transitions",
+      "frame": 5,
+      "time": 0.16666666666666666,
+      "duration": 0.5,
+      "kind": "air",
+      "description": "Natural section transition",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "switch",
+      "frame": 240,
+      "time": 8.0,
+      "duration": 0.35,
+      "kind": "reveal",
+      "description": "Editorial language-switch emphasis; not recorded click audio",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "highlights",
+      "frame": 471,
+      "time": 15.7,
+      "duration": 0.25,
+      "kind": "warning",
+      "description": "Sidebar stays on the left in Arabic",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "camera",
+      "frame": 450,
+      "time": 15.0,
+      "duration": 0.45,
+      "kind": "whoosh",
+      "description": "Gentle zoom into actual UI",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "highlights",
+      "frame": 771,
+      "time": 25.7,
+      "duration": 0.25,
+      "kind": "warning",
+      "description": "Logo composition changes in Arabic",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "camera",
+      "frame": 750,
+      "time": 25.0,
+      "duration": 0.45,
+      "kind": "whoosh",
+      "description": "Gentle zoom into actual UI",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "highlights",
+      "frame": 981,
+      "time": 32.7,
+      "duration": 0.25,
+      "kind": "warning",
+      "description": "KPI icons overlap Arabic headings",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "camera",
+      "frame": 960,
+      "time": 32.0,
+      "duration": 0.45,
+      "kind": "whoosh",
+      "description": "Gentle zoom into actual UI",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "highlights",
+      "frame": 1221,
+      "time": 40.7,
+      "duration": 0.25,
+      "kind": "warning",
+      "description": "Month labels reverse; the chart path does not",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "camera",
+      "frame": 1200,
+      "time": 40.0,
+      "duration": 0.45,
+      "kind": "whoosh",
+      "description": "Gentle zoom into actual UI",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "highlights",
+      "frame": 1521,
+      "time": 50.7,
+      "duration": 0.25,
+      "kind": "warning",
+      "description": "Arabic detail arrow retains LTR orientation",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "camera",
+      "frame": 1500,
+      "time": 50.0,
+      "duration": 0.45,
+      "kind": "whoosh",
+      "description": "Gentle zoom into actual UI",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "highlights",
+      "frame": 1851,
+      "time": 61.7,
+      "duration": 0.25,
+      "kind": "warning",
+      "description": "Arabic pagination icon direction contradicts page progression",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "camera",
+      "frame": 1830,
+      "time": 61.0,
+      "duration": 0.45,
+      "kind": "whoosh",
+      "description": "Gentle zoom into actual UI",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "transitions",
+      "frame": 2015,
+      "time": 67.16666666666667,
+      "duration": 0.5,
+      "kind": "air",
+      "description": "Natural section transition",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "highlights",
+      "frame": 2211,
+      "time": 73.7,
+      "duration": 0.25,
+      "kind": "warning",
+      "description": "Same input in Arabic; labels still align left",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "camera",
+      "frame": 2190,
+      "time": 73.0,
+      "duration": 0.45,
+      "kind": "whoosh",
+      "description": "Gentle zoom into actual UI",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "transitions",
+      "frame": 2435,
+      "time": 81.16666666666667,
+      "duration": 0.5,
+      "kind": "air",
+      "description": "Natural section transition",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "highlights",
+      "frame": 2601,
+      "time": 86.7,
+      "duration": 0.25,
+      "kind": "warning",
+      "description": "Arabic dialog: close button overlaps the title",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "camera",
+      "frame": 2580,
+      "time": 86.0,
+      "duration": 0.45,
+      "kind": "whoosh",
+      "description": "Gentle zoom into actual UI",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "highlights",
+      "frame": 2841,
+      "time": 94.7,
+      "duration": 0.25,
+      "kind": "warning",
+      "description": "Stored address stays English in both languages",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "camera",
+      "frame": 2820,
+      "time": 94.0,
+      "duration": 0.45,
+      "kind": "whoosh",
+      "description": "Gentle zoom into actual UI",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "switch",
+      "frame": 3090,
+      "time": 103.0,
+      "duration": 0.35,
+      "kind": "reveal",
+      "description": "Editorial language-switch emphasis; not recorded click audio",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "highlights",
+      "frame": 3501,
+      "time": 116.7,
+      "duration": 0.25,
+      "kind": "warning",
+      "description": "Procurement Arabic table headers remain left aligned",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "camera",
+      "frame": 3480,
+      "time": 116.0,
+      "duration": 0.45,
+      "kind": "whoosh",
+      "description": "Gentle zoom into actual UI",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "highlights",
+      "frame": 3711,
+      "time": 123.7,
+      "duration": 0.25,
+      "kind": "warning",
+      "description": "Procurement status filter label remains left aligned",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "camera",
+      "frame": 3690,
+      "time": 123.0,
+      "duration": 0.45,
+      "kind": "whoosh",
+      "description": "Gentle zoom into actual UI",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    },
+    {
+      "track": "transitions",
+      "frame": 3875,
+      "time": 129.16666666666666,
+      "duration": 0.5,
+      "kind": "air",
+      "description": "Natural section transition",
+      "license": "Original procedural synthesis created for this project; no sampled speech/music/stock"
+    }
+  ]
+}

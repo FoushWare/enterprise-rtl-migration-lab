@@ -1,0 +1,164 @@
+{
+  "checks": [
+    {
+      "name": "empty-search-en",
+      "rows": 0,
+      "text": "ATLAS INVOICE\nInvoices\n\nManage your invoices, track payments, and keep business moving.\n\nCreate invoice\nSearch invoices\nSearch invoices\nStatus\nAll statuses\nStatus\n0 invoices\nNo results found\n\nTry another search or adjust your filters.\n\n0 results\n1"
+    },
+    {
+      "name": "search-1048-en",
+      "rows": 1
+    },
+    {
+      "name": "form-fields-en",
+      "fields": [
+        {
+          "id": "",
+          "type": "text"
+        },
+        {
+          "id": "",
+          "type": "text"
+        },
+        {
+          "id": "_r_7_",
+          "type": "date",
+          "label": "Invoice date"
+        },
+        {
+          "id": "_r_8_",
+          "type": "date",
+          "label": "Due date"
+        },
+        {
+          "id": "_r_9_",
+          "type": "text",
+          "label": "Description 1"
+        },
+        {
+          "id": "_r_a_",
+          "type": "number",
+          "label": "Quantity 1"
+        },
+        {
+          "id": "_r_b_",
+          "type": "number",
+          "label": "Rate 1"
+        }
+      ]
+    },
+    {
+      "name": "dialog-focus-en",
+      "inside": true
+    },
+    {
+      "name": "settings-save-en",
+      "alert": "Settings saved"
+    },
+    {
+      "name": "empty-search-ar",
+      "rows": 0,
+      "text": "فواتير ATLAS\nالفواتير\n\nأدر فواتيرك وتابع المدفوعات وحافظ على سير أعمالك.\n\nإنشاء فاتورة\nالبحث عن الفواتير\nالبحث عن الفواتير\nالحالة\nجميع الحالات\nالحالة\n0 فواتير\nلا توجد نتائج\n\nجرّب بحثًا آخر أو غيّر عوامل التصفية.\n\n0 نتائج\n1"
+    },
+    {
+      "name": "search-1048-ar",
+      "rows": 1
+    },
+    {
+      "name": "form-fields-ar",
+      "fields": [
+        {
+          "id": "",
+          "type": "text"
+        },
+        {
+          "id": "",
+          "type": "text"
+        },
+        {
+          "id": "_r_7_",
+          "type": "date",
+          "label": "تاريخ الفاتورة"
+        },
+        {
+          "id": "_r_8_",
+          "type": "date",
+          "label": "تاريخ الاستحقاق"
+        },
+        {
+          "id": "_r_9_",
+          "type": "text",
+          "label": "الوصف 1"
+        },
+        {
+          "id": "_r_a_",
+          "type": "number",
+          "label": "الكمية 1"
+        },
+        {
+          "id": "_r_b_",
+          "type": "number",
+          "label": "السعر 1"
+        }
+      ]
+    },
+    {
+      "name": "dialog-focus-ar",
+      "inside": true
+    },
+    {
+      "name": "settings-save-ar",
+      "alert": "تم حفظ الإعدادات"
+    },
+    {
+      "name": "mobile-buttons-4200",
+      "buttons": [
+        {
+          "text": "فتح قائمة التنقل",
+          "visible": true
+        },
+        {
+          "text": "الإشعارات",
+          "visible": true
+        },
+        {
+          "text": null,
+          "visible": true
+        }
+      ]
+    },
+    {
+      "name": "mobile-menu-4200",
+      "side": {
+        "x": 0,
+        "y": 0,
+        "width": 238,
+        "height": 844
+      }
+    },
+    {
+      "name": "mobile-buttons-4201",
+      "buttons": [
+        {
+          "text": "فتح قائمة التنقل",
+          "visible": true
+        },
+        {
+          "text": "الإشعارات",
+          "visible": true
+        }
+      ]
+    },
+    {
+      "name": "mobile-menu-4201",
+      "side": {
+        "x": 0,
+        "y": 0,
+        "width": 238,
+        "height": 844
+      }
+    }
+  ],
+  "errs": [],
+  "scope": "isolated browser localStorage; no existing profile or application files changed"
+}

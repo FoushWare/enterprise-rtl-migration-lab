@@ -1,0 +1,24 @@
+import {chromium} from '../../../node_modules/@playwright/test/index.mjs';
+import fs from 'node:fs';import path from 'node:path';
+const out=path.resolve('assets/rtl-production-v5/audit');
+const browser=await chromium.launch({executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true,args:['--no-first-run']});
+const context=await browser.newContext({viewport:{width:1920,height:1080},locale:'en-US'});
+const page=await context.newPage();let events=[];page.on('console',m=>{if(m.type()==='error')events.push({type:'console',text:m.text()})});page.on('pageerror',e=>events.push({type:'pageerror',text:String(e)}));
+const log=[];async function settle(){await page.evaluate(async()=>{await document.fonts.ready;await Promise.all(document.getAnimations().filter(a=>a.effect?.getComputedTiming().iterations!==Infinity).map(a=>a.finished.catch(()=>{})));});}
+async function snap(name){await settle();await page.locator('.app-main').waitFor();await page.screenshot({path:out+'/evidence/'+name+'.png'});log.push({name,url:page.url(),state:await page.evaluate(()=>({dir:document.documentElement.dir,lang:document.documentElement.lang,title:document.querySelector('h1')?.textContent,body:document.body.innerText,overflow:document.documentElement.scrollWidth>innerWidth,geometry:[...document.querySelectorAll('.sidebar,.brand,.kpi-icon,.kpi-label,th,label,.MuiSelect-icon,.MuiDialogTitle-root,.MuiDialogTitle-root button,.pagination button')].map(e=>{const r=e.getBoundingClientRect(),s=getComputedStyle(e);return {tag:e.tagName,cls:e.className,text:e.textContent,rect:[r.x,r.y,r.width,r.height],align:s.textAlign,dir:s.direction,transform:s.transform}})}))});}
+process.on('uncaughtException',e=>{fs.writeFileSync(out+'/partial-runtime.json',JSON.stringify({log,events,error:String(e)},null,2));process.exit(1)});
+async function go(port,route,lang){await page.goto(`http://127.0.0.1:${port}${route}?demo=unmigrated-rtl&lang=${lang}`);await page.locator('.app-main').waitFor();}
+for(const lang of ['en','ar']){
+ await go(4200,'/',lang);await snap('invoice-dashboard-'+lang);
+ for(const route of ['/invoices','/invoices/INV-2026-1048','/invoices/new','/customers','/settings','/missing']){await go(4200,route,lang);await snap('invoice-'+route.split('/').filter(Boolean).join('-')+'-'+lang);if(route==='/customers'){await page.getByRole('button',{name:lang==='ar'?'عرض العميل':'View customer'}).first().click();await page.getByRole('dialog').waitFor();await settle();await page.screenshot({path:out+`/evidence/customer-dialog-${lang}.png`});log.push({name:'customer-dialog-'+lang,state:await page.getByRole('dialog').evaluate(e=>({text:e.innerText,html:e.outerHTML}))});await page.keyboard.press('Escape');await page.getByRole('dialog').waitFor({state:'hidden'});}}
+ for(const route of ['/','/orders/PO-2026-402','/settings','/missing']){await go(4201,route,lang);await snap('procurement-'+(route==='/'?'orders':route.split('/').filter(Boolean).join('-'))+'-'+lang);}
+}
+// Record real selector interaction and canonical filtering, not direct locale URL substitution.
+await go(4200,'/invoices','en');await page.locator('select[aria-label="Language / اللغة"]').selectOption('ar');await page.locator('html[dir=rtl]').waitFor();await snap('real-language-switch');
+await page.getByRole('combobox').filter({has:page.locator('option')}).count().catch(()=>0);
+const combos=page.locator('.MuiSelect-select');await combos.first().click();await page.getByRole('option',{name:'قيد الانتظار',exact:true}).click();await page.waitForFunction(()=>document.querySelectorAll('tbody tr').length===4);await snap('invoice-pending-four');
+await go(4200,'/invoices','ar');await page.locator('.pagination button').last().click();await snap('invoice-next-page');await page.locator('a[aria-label*="INV-"]').first().click();await snap('invoice-arrow-route');
+await go(4201,'/','en');await page.locator('select[aria-label="Language / اللغة"]').selectOption('ar');await page.locator('html[dir=rtl]').waitFor();await page.locator('.MuiSelect-select').click();await page.getByRole('option',{name:'قيد الانتظار',exact:true}).click();await page.waitForFunction(()=>document.querySelectorAll('tbody tr').length===3);await snap('procurement-pending-three');
+for(const width of [390,899,900]){await page.setViewportSize({width,height:1000});for(const port of [4200,4201]){await go(port,'/','ar');await snap(`responsive-${port}-${width}`);}}
+await page.setViewportSize({width:1920,height:1080});await go(4200,'/invoices/new','ar');await page.keyboard.press('Tab');await page.screenshot({path:out+'/evidence/keyboard-focus.png'});log.push({name:'focus',active:await page.evaluate(()=>({tag:document.activeElement.tagName,text:document.activeElement.textContent}))});
+fs.writeFileSync(out+'/runtime.json',JSON.stringify({time:new Date().toISOString(),browser:await browser.version(),log,events},null,2));await context.close();await browser.close();

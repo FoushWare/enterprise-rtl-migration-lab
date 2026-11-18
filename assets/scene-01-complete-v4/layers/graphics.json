@@ -1,0 +1,4 @@
+{
+ "ar":{"invoicing":"الفواتير","procurement":"المشتريات","task":"مهمة فريق التطوير","headline":"دعم اللغة العربية","apps":"في الفواتير والمشتريات","experience":"مع الحفاظ على نفس تجربة الاستخدام","placeholder":"مساحة تسجيل المقدم","replace":"بديل مؤقت — يُستبدل بتسجيلك","question":"ليه تغيير اللغة\nأثّر على الواجهة؟","next":"المشهد 02","title":"تجربة RTL غير المُصلحة"},
+ "en":{"invoicing":"Invoicing","procurement":"Procurement","task":"THE ENGINEERING BRIEF","headline":"Support Arabic","apps":"In Invoicing and Procurement","experience":"Preserve the same user experience","placeholder":"Presenter recording area","replace":"Temporary placeholder — replace with your recording","question":"Why did the language change\naffect the UI?","next":"Scene 02","title":"The Broken RTL Experience"}
+}

@@ -1,0 +1,22 @@
+{
+  "package.json": "484d96f020b3e72e069d6936d3aafd50a429ed859f81b806eb30fe9838c4fc73",
+  "nx.json": "5326c318ad26cc51900464d32ad9eda2d1a2a287f92690b79189e6f8529c9a70",
+  "tsconfig.json": "3f6f1d432a91be108dcf6efe8e303a6fe4c1bed5f51f073cc4d3a829d5be303f",
+  "apps/invoicing/project.json": "8e193558712d4151fb39d00ac5061c3734208c207247db83f81fb741cca1cd0a",
+  "apps/procurement/project.json": "3775580962739b7fd35625b7efb50bd4c10c3ffbd25099bff1f30505077b9232",
+  "apps/invoicing/vite.config.ts": "c00d2f174a64f70b787a36a14953fe4dec607806fd9a380114a0f1a09fae96d6",
+  "apps/procurement/vite.config.ts": "152bf8b413a882a2318061354a9acd8326dcd71f513e5e59b14a96d51ac38442",
+  "apps/invoicing/src/main.tsx": "0079a4657a0e0e89d6c7557ad139dc68875ba9f4d1c34184ce9d4744c561f3ca",
+  "apps/procurement/src/main.tsx": "9ba6b421f30d3be5788134668fde6b443d2e300aacc36870fcc9af62a95ba049",
+  "apps/invoicing/src/App.tsx": "b07c226d09c65d75a5c5ca21f0bbd7ad36c7ea5a5ee3fba9a32cd5b45b6f40a8",
+  "apps/procurement/src/App.tsx": "65658a720940556e25b0f81cdcd011317287ba5898445e6a633124b6c03f1c54",
+  "apps/invoicing/src/components/InvoiceTable.tsx": "84b925ccc45b7613a0402154a59e4fe8315b627376de6bbb0c998d6c4469b354",
+  "apps/invoicing/src/pages/InvoiceDetails.tsx": "d9bb7ae66b3aa1027c2dbead6f0ac27073700ce4089cd27be78fa8f03a3e1374",
+  "libs/design-system/src/index.tsx": "6b25e8348728c9ed9eafda8b08b61a48c3e2d942f846a56c83c593267b0aa9c3",
+  "libs/design-system/src/runtime.tsx": "22bb7b81281098a0e858b13eab6a44095bbc59c66b43b5c9824894cb8bcdb272",
+  "libs/design-system/src/styles.css": "7f75a3e295d7ffe023d1e5893f8902d16f25937630445039c8000bf3bb889ed1",
+  "libs/shared/src/index.ts": "8be587e6ea8bb7571d26f40612bfae7a0258868851efdbbf412803b85df319b3",
+  "libs/shared/src/i18n.tsx": "54f1f193f90b7d0633bc0a4a73e87239456764b1bc403b2133223dc6dc2b6faf",
+  "libs/shared/src/translations.ts": "b7c2284f49dd201d569168eb3ed57602042eb9e11d50443852baf0fc4a514c70",
+  "tools/rtl-scanner/src/cli.ts": "2377f40a7bd4bdc8513ecd9acc2ad6c58702454d65d9b7378afd6f708d07ef7d"
+}

@@ -1,0 +1,2 @@
+import {chromium} from '../../../node_modules/@playwright/test/index.mjs';import path from 'node:path';
+const b=await chromium.launch({executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true});const p=await b.newPage({viewport:{width:1920,height:1080}});await p.goto('file://'+path.resolve('assets/rtl-production-v5/scene03/architecture-imports.svg'));await p.screenshot({path:'assets/rtl-production-v5/scene03/architecture-imports.png'});await b.close();

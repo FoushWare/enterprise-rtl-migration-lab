@@ -1,0 +1,7 @@
+Executed outside the IDE for verification; this is NOT screencast footage.
+
+Command: ./node_modules/.bin/nx show projects --json
+Environment: NX_DAEMON=false NX_INTERACTIVE=false NX_TUI=false NX_NO_CLOUD=true; cache/data directories under /private/tmp.
+Exit code: 0
+Actual stdout:
+["design-system","rtl-scanner","procurement","invoicing","shared"]

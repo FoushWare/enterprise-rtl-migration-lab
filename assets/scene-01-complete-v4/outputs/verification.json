@@ -1,0 +1,64 @@
+{
+  "status": "Draft – Pending Review",
+  "exports": {
+    "AR": {
+      "path": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-01-complete-v4/outputs/Scene-01_Business-Expansion_AR_50s_Draft_V4.mp4",
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 1920,
+            "height": 1080,
+            "r_frame_rate": "30/1",
+            "nb_read_frames": "1500"
+          }
+        ],
+        "format": {
+          "duration": "50.000000",
+          "size": "11248168"
+        }
+      },
+      "decode": "Complete50second decode passed",
+      "first600_decoded_frames_identical_to_V3": true,
+      "tail_text_bounds_checked": 900,
+      "clipped_text_frames": 0
+    },
+    "EN": {
+      "path": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-01-complete-v4/outputs/Scene-01_Business-Expansion_EN_50s_Draft_V4.mp4",
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 1920,
+            "height": 1080,
+            "r_frame_rate": "30/1",
+            "nb_read_frames": "1500"
+          }
+        ],
+        "format": {
+          "duration": "50.000000",
+          "size": "11316068"
+        }
+      },
+      "decode": "Complete50second decode passed",
+      "first600_decoded_frames_identical_to_V3": true,
+      "tail_text_bounds_checked": 900,
+      "clipped_text_frames": 0
+    }
+  },
+  "audio": "None; no generated narration or inherited SFX",
+  "presenter": "Original faceless replaceable silhouette26–32; real presenter pending",
+  "limitations": [
+    "Storyboard shot times adjusted because existing20s V3 is retained.",
+    "Only four verified issue examples teased, not all nine.",
+    "Real VO and presenter recording still required."
+  ],
+  "preservation": {
+    "old_assets_checked": 75,
+    "mismatches": []
+  }
+}

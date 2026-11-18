@@ -1,0 +1,164 @@
+{
+  "status": "Draft \u2013 Pending Review",
+  "fps": 30,
+  "resolution": [
+    1920,
+    1080
+  ],
+  "duration": 184,
+  "scenes": [
+    {
+      "language": "AR",
+      "variant": "Clean",
+      "sources": [
+        "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-01-v5/outputs/Scene-01_Business-Expansion_AR_V5_Clean.mp4",
+        "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/rtl-production-v5/scene02/outputs/Scene-02_Broken-RTL_AR_V5_Clean.mp4"
+      ],
+      "timeline": [
+        [
+          0,
+          50
+        ],
+        [
+          50,
+          184
+        ]
+      ],
+      "source_in_out": [
+        [
+          0,
+          50
+        ],
+        [
+          0,
+          134
+        ]
+      ],
+      "transition": "Natural cut from Scene01 question to genuine Study terminal; existing end effects decay before cut. No repeated 10-second geography, product or requirement segment. Scene02 has its own shorter language context, preserving the standalone scene.",
+      "audio": [
+        "scene-01-v5/audio/SFX-Mix.wav",
+        "scene02/audio/SFX-Mix.wav"
+      ],
+      "captions": [
+        "scene-01-v5/timeline/voiceover.json",
+        "scene02/voiceover.json"
+      ],
+      "clean_definition": "Defect labels and SFX retained; narration guide captions removed."
+    },
+    {
+      "language": "AR",
+      "variant": "Preview",
+      "sources": [
+        "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-01-v5/outputs/Scene-01_Business-Expansion_AR_V5_Preview.mp4",
+        "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/rtl-production-v5/scene02/outputs/Scene-02_Broken-RTL_AR_V5_Preview.mp4"
+      ],
+      "timeline": [
+        [
+          0,
+          50
+        ],
+        [
+          50,
+          184
+        ]
+      ],
+      "source_in_out": [
+        [
+          0,
+          50
+        ],
+        [
+          0,
+          134
+        ]
+      ],
+      "transition": "Natural cut from Scene01 question to genuine Study terminal; existing end effects decay before cut. No repeated 10-second geography, product or requirement segment. Scene02 has its own shorter language context, preserving the standalone scene.",
+      "audio": [
+        "scene-01-v5/audio/SFX-Mix.wav",
+        "scene02/audio/SFX-Mix.wav"
+      ],
+      "captions": [
+        "scene-01-v5/timeline/voiceover.json",
+        "scene02/voiceover.json"
+      ],
+      "clean_definition": "Defect labels and SFX retained; narration guide captions removed."
+    },
+    {
+      "language": "EN",
+      "variant": "Clean",
+      "sources": [
+        "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-01-v5/outputs/Scene-01_Business-Expansion_EN_V5_Clean.mp4",
+        "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/rtl-production-v5/scene02/outputs/Scene-02_Broken-RTL_EN_V5_Clean.mp4"
+      ],
+      "timeline": [
+        [
+          0,
+          50
+        ],
+        [
+          50,
+          184
+        ]
+      ],
+      "source_in_out": [
+        [
+          0,
+          50
+        ],
+        [
+          0,
+          134
+        ]
+      ],
+      "transition": "Natural cut from Scene01 question to genuine Study terminal; existing end effects decay before cut. No repeated 10-second geography, product or requirement segment. Scene02 has its own shorter language context, preserving the standalone scene.",
+      "audio": [
+        "scene-01-v5/audio/SFX-Mix.wav",
+        "scene02/audio/SFX-Mix.wav"
+      ],
+      "captions": [
+        "scene-01-v5/timeline/voiceover.json",
+        "scene02/voiceover.json"
+      ],
+      "clean_definition": "Defect labels and SFX retained; narration guide captions removed."
+    },
+    {
+      "language": "EN",
+      "variant": "Preview",
+      "sources": [
+        "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-01-v5/outputs/Scene-01_Business-Expansion_EN_V5_Preview.mp4",
+        "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/rtl-production-v5/scene02/outputs/Scene-02_Broken-RTL_EN_V5_Preview.mp4"
+      ],
+      "timeline": [
+        [
+          0,
+          50
+        ],
+        [
+          50,
+          184
+        ]
+      ],
+      "source_in_out": [
+        [
+          0,
+          50
+        ],
+        [
+          0,
+          134
+        ]
+      ],
+      "transition": "Natural cut from Scene01 question to genuine Study terminal; existing end effects decay before cut. No repeated 10-second geography, product or requirement segment. Scene02 has its own shorter language context, preserving the standalone scene.",
+      "audio": [
+        "scene-01-v5/audio/SFX-Mix.wav",
+        "scene02/audio/SFX-Mix.wav"
+      ],
+      "captions": [
+        "scene-01-v5/timeline/voiceover.json",
+        "scene02/voiceover.json"
+      ],
+      "clean_definition": "Defect labels and SFX retained; narration guide captions removed."
+    }
+  ],
+  "assembly": "Stream-copy concat of independent final scene sources; no previous master, no repeated master recompression."
+}

@@ -5,7 +5,7 @@ import { dirname, join } from 'node:path';
 import type { ReviewIdentity } from './review-session.js';
 import { validateReviewIdentity } from './review-session.js';
 
-export const DEFAULT_MANUAL_CHANGE_STORE_PATH = join(homedir(), '.rtl-migration-analyzer', 'manual-changes-v1.json');
+export const DEFAULT_MANUAL_CHANGE_STORE_PATH = process.env.RTL_MANUAL_CHANGE_STORE_PATH || join(homedir(), '.rtl-migration-analyzer', 'manual-changes-v1.json');
 export interface ManualChange extends ReviewIdentity { readonly changeId: string; readonly beforeSourceSha256: string; readonly afterSourceSha256: string; readonly beforeText: string; readonly afterText: string; readonly timestamp: string; readonly sourceChanged: boolean; readonly integritySha256: string }
 const digest = (value: unknown) => createHash('sha256').update(JSON.stringify(value)).digest('hex');
 export class ManualChangeStore {

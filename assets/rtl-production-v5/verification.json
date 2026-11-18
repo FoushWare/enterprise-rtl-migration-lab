@@ -1,0 +1,132 @@
+{
+  "media": [
+    {
+      "file": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/rtl-production-v5/scene02/outputs/Scene-02_Broken-RTL_EN_V5_Clean.mp4",
+      "duration": "134.000000",
+      "frames": "4020",
+      "fps": "30/1",
+      "resolution": [
+        1920,
+        1080
+      ],
+      "video": "H.264",
+      "audio": "AAC stereo48k",
+      "audio_peak_dbfs": -18.81,
+      "audio_pcm_sha256": "82884370c235b9223fed283641a107594d67fee06935777ef39a8be1919a41aa",
+      "full_decode": "PASS"
+    },
+    {
+      "file": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/rtl-production-v5/scene02/outputs/Scene-02_Broken-RTL_EN_V5_Preview.mp4",
+      "duration": "134.000000",
+      "frames": "4020",
+      "fps": "30/1",
+      "resolution": [
+        1920,
+        1080
+      ],
+      "video": "H.264",
+      "audio": "AAC stereo48k",
+      "audio_peak_dbfs": -18.81,
+      "audio_pcm_sha256": "82884370c235b9223fed283641a107594d67fee06935777ef39a8be1919a41aa",
+      "full_decode": "PASS"
+    },
+    {
+      "file": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/rtl-production-v5/scene02/outputs/Scene-02_Broken-RTL_AR_V5_Clean.mp4",
+      "duration": "134.000000",
+      "frames": "4020",
+      "fps": "30/1",
+      "resolution": [
+        1920,
+        1080
+      ],
+      "video": "H.264",
+      "audio": "AAC stereo48k",
+      "audio_peak_dbfs": -18.81,
+      "audio_pcm_sha256": "82884370c235b9223fed283641a107594d67fee06935777ef39a8be1919a41aa",
+      "full_decode": "PASS"
+    },
+    {
+      "file": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/rtl-production-v5/scene02/outputs/Scene-02_Broken-RTL_AR_V5_Preview.mp4",
+      "duration": "134.000000",
+      "frames": "4020",
+      "fps": "30/1",
+      "resolution": [
+        1920,
+        1080
+      ],
+      "video": "H.264",
+      "audio": "AAC stereo48k",
+      "audio_peak_dbfs": -18.81,
+      "audio_pcm_sha256": "82884370c235b9223fed283641a107594d67fee06935777ef39a8be1919a41aa",
+      "full_decode": "PASS"
+    },
+    {
+      "file": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/rtl-production-v5/master/outputs/CoffeeBreakWeb_RTL-Migration_AR_Master_V1_Clean.mp4",
+      "duration": "184.021333",
+      "frames": "5520",
+      "fps": "30/1",
+      "resolution": [
+        1920,
+        1080
+      ],
+      "video": "H.264",
+      "audio": "AAC stereo48k",
+      "audio_peak_dbfs": -18.81,
+      "audio_pcm_sha256": "2b0248b53535e329d19829a2cd0b9cb24897e0243d319f0da8d4d4eee46a8f63",
+      "full_decode": "PASS"
+    },
+    {
+      "file": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/rtl-production-v5/master/outputs/CoffeeBreakWeb_RTL-Migration_EN_Master_V1_Clean.mp4",
+      "duration": "184.021333",
+      "frames": "5520",
+      "fps": "30/1",
+      "resolution": [
+        1920,
+        1080
+      ],
+      "video": "H.264",
+      "audio": "AAC stereo48k",
+      "audio_peak_dbfs": -18.81,
+      "audio_pcm_sha256": "2b0248b53535e329d19829a2cd0b9cb24897e0243d319f0da8d4d4eee46a8f63",
+      "full_decode": "PASS"
+    },
+    {
+      "file": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/rtl-production-v5/master/outputs/CoffeeBreakWeb_RTL-Migration_EN_Master_V1_Preview.mp4",
+      "duration": "184.021333",
+      "frames": "5520",
+      "fps": "30/1",
+      "resolution": [
+        1920,
+        1080
+      ],
+      "video": "H.264",
+      "audio": "AAC stereo48k",
+      "audio_peak_dbfs": -18.81,
+      "audio_pcm_sha256": "2b0248b53535e329d19829a2cd0b9cb24897e0243d319f0da8d4d4eee46a8f63",
+      "full_decode": "PASS"
+    },
+    {
+      "file": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/rtl-production-v5/master/outputs/CoffeeBreakWeb_RTL-Migration_AR_Master_V1_Preview.mp4",
+      "duration": "184.021333",
+      "frames": "5520",
+      "fps": "30/1",
+      "resolution": [
+        1920,
+        1080
+      ],
+      "video": "H.264",
+      "audio": "AAC stereo48k",
+      "audio_peak_dbfs": -18.81,
+      "audio_pcm_sha256": "2b0248b53535e329d19829a2cd0b9cb24897e0243d319f0da8d4d4eee46a8f63",
+      "full_decode": "PASS"
+    }
+  ],
+  "audio_consistency": "All AR/EN Clean/Preview decoded audio identical within each delivery group.",
+  "preservation": {
+    "study_git_state": "identical before/after",
+    "tracked_files_hashed": 248,
+    "historical_media_hashed": 14,
+    "source_changes": 0,
+    "commits_pushes": 0
+  }
+}

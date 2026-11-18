@@ -1,0 +1,14 @@
+import fs from 'node:fs';
+import {createRequire} from 'node:module';
+const root='/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-latest';
+const {extractTypescript}=await import(root+'/dist/tools/rtl-scanner/typescript.js');
+const {detect}=await import(root+'/dist/tools/rtl-scanner/rules.js');
+const {emptyPolicy}=await import(root+'/dist/tools/rtl-scanner/policy.js');
+const {classifyDiagnostics}=await import(root+'/dist/tools/rtl-scanner/coverage.js');
+const s='import {createTheme} from "@mui/material";createTheme({direction:getDirection()});';
+const p={...emptyPolicy,ownership:{css:'custom-css','react-inline':'custom-inline'},approvals:[],exceptions:[],roles:[],dynamicExceptions:[],issueBindings:[]};
+const r=extractTypescript('a.tsx',s),sources=new Map([['a.tsx',s]]),d=classifyDiagnostics(r.diagnostics,r.evidence,sources,p);
+const before=structuredClone(d);const findings=detect(r.evidence,sources,p,d);
+if(!d.some(x=>x.code==='RUNTIME_DIRECTION_UNKNOWN'&&x.blocking)||!findings.some(x=>x.ruleId==='RTL.RUNTIME.DIRECTION_UNKNOWN'))throw Error('Expected runtime records missing');
+const result={source:s,origin:'tools/rtl-scanner/tests/detection.test.ts:35',parser:r,diagnosticsBeforeDetect:before,diagnosticsAfterDetect:d,findings};
+fs.writeFileSync(new URL('../evidence/verified-run.json',import.meta.url),JSON.stringify(result,null,2)); console.log(JSON.stringify(result,null,2));

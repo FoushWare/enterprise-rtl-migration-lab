@@ -1,0 +1,673 @@
+{
+  "status": "Draft \u2013 Pending Review",
+  "duration": 134,
+  "fps": 30,
+  "resolution": [
+    1920,
+    1080
+  ],
+  "shots": [
+    {
+      "en": "Project structure",
+      "ar": "\u0647\u064a\u0643\u0644 \u0627\u0644\u0645\u0634\u0631\u0648\u0639 \u0627\u0644\u062d\u0642\u064a\u0642\u064a",
+      "source": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/fullscreen-v3/originals/VSCode_Invoicing_Clean_Startup.mov",
+      "start": 46,
+      "duration": 6,
+      "browser": false,
+      "name": "Genuine npm run dev and successful Local URL",
+      "source_crop": [
+        3264,
+        1836,
+        140,
+        180
+      ],
+      "terminal_camera": true,
+      "index": 0,
+      "timeline_start": 0,
+      "app": "invoicing",
+      "overlay": {}
+    },
+    {
+      "en": "Invoicing: English \u2192 Arabic",
+      "ar": "\u0627\u0644\u0641\u0648\u0627\u062a\u064a\u0631: \u0645\u0646 \u0627\u0644\u0625\u0646\u062c\u0644\u064a\u0632\u064a \u0644\u0644\u0639\u0631\u0628\u064a",
+      "source": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/originals/Brave_Main_Take02_Original.mov",
+      "start": 43,
+      "duration": 8,
+      "browser": true,
+      "name": "Invoicing: English \u2192 Arabic",
+      "source_crop": [
+        2944,
+        1656,
+        112,
+        238
+      ],
+      "index": 1,
+      "timeline_start": 6,
+      "app": "invoicing",
+      "overlay": {}
+    },
+    {
+      "en": "Sidebar stays on the left in Arabic",
+      "ar": "\u0627\u0644\u0640Sidebar \u0644\u0633\u0647 \u0639\u0644\u0649 \u0627\u0644\u0634\u0645\u0627\u0644",
+      "source": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/originals/Brave_Main_Take02_Original.mov",
+      "start": 60,
+      "duration": 8,
+      "browser": true,
+      "name": "Sidebar stays on the left in Arabic",
+      "source_crop": [
+        2944,
+        1656,
+        112,
+        238
+      ],
+      "issue": {
+        "rect": [
+          8,
+          140,
+          288,
+          890
+        ],
+        "label_box": [
+          340,
+          160,
+          700,
+          64
+        ],
+        "en": "Sidebar stays on the left in Arabic",
+        "ar": "\u0627\u0644\u0640Sidebar \u0644\u0633\u0647 \u0639\u0644\u0649 \u0627\u0644\u0634\u0645\u0627\u0644",
+        "connector": [
+          296,
+          192,
+          340,
+          192
+        ],
+        "label_style": {
+          "background": "#DC2626",
+          "text": "#FFFFFF",
+          "corner_radius": 7,
+          "font": "System semibold",
+          "size": 32,
+          "shadow": "subtle"
+        },
+        "anchor": "left"
+      },
+      "camera_x": "0",
+      "zoom_max": 1.025,
+      "index": 2,
+      "timeline_start": 14,
+      "app": "invoicing",
+      "overlay": {
+        "AR": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/fullscreen-v4/graphics/AR/02-overlay.png",
+        "EN": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/fullscreen-v4/graphics/EN/02-overlay.png"
+      }
+    },
+    {
+      "name": "English logo reference",
+      "source": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/fullscreen-v4/originals/Invoicing_EN.mov",
+      "start": 25,
+      "duration": 2,
+      "source_crop": [
+        1600,
+        900,
+        112,
+        238
+      ],
+      "browser": true,
+      "ar": "English logo reference",
+      "en": "English logo reference",
+      "index": 3,
+      "timeline_start": 22,
+      "app": "invoicing",
+      "overlay": {}
+    },
+    {
+      "name": "Logo composition changes in Arabic",
+      "source": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/fullscreen-v4/originals/Invoicing_AR_Journey.mov",
+      "start": 60,
+      "duration": 7,
+      "source_crop": [
+        1600,
+        900,
+        112,
+        238
+      ],
+      "browser": true,
+      "ar": "Logo composition changes in Arabic",
+      "en": "Logo composition changes in Arabic",
+      "issue": {
+        "rect": [
+          242,
+          84,
+          270,
+          94
+        ],
+        "label_box": [
+          150,
+          198,
+          1000,
+          62
+        ],
+        "en": "Logo flips; the dot moves before the name",
+        "ar": "\u0627\u0644\u0640Logo \u0627\u062a\u0642\u0644\u0628\u061b \u0627\u0644\u0646\u0642\u0637\u0629 \u0628\u0642\u062a \u0642\u0628\u0644 \u0627\u0644\u0627\u0633\u0645"
+      },
+      "zoom_max": 1.06,
+      "index": 4,
+      "timeline_start": 24,
+      "app": "invoicing",
+      "overlay": {
+        "AR": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/fullscreen-v4/graphics/AR/04-overlay.png",
+        "EN": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/fullscreen-v4/graphics/EN/04-overlay.png"
+      }
+    },
+    {
+      "en": "KPI icons overlap Arabic headings",
+      "ar": "\u0623\u064a\u0642\u0648\u0646\u0627\u062a \u0627\u0644\u0640KPI \u062f\u0627\u062e\u0644\u0629 \u0641\u064a \u0627\u0644\u0639\u0646\u0627\u0648\u064a\u0646 \u0627\u0644\u0639\u0631\u0628\u064a",
+      "source": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/originals/Brave_Main_Take02_Original.mov",
+      "start": 75,
+      "duration": 8,
+      "browser": true,
+      "name": "KPI icons overlap Arabic headings",
+      "source_crop": [
+        2944,
+        1656,
+        112,
+        238
+      ],
+      "issue": {
+        "rect": [
+          935,
+          380,
+          140,
+          58
+        ],
+        "label_box": [
+          790,
+          280,
+          780,
+          72
+        ],
+        "en": "KPI icon overlaps Arabic text",
+        "ar": "\u0623\u064a\u0642\u0648\u0646\u0629 \u0627\u0644\u0640KPI \u062f\u0627\u062e\u0644\u0629 \u0641\u064a \u0627\u0644\u0646\u0635 \u0627\u0644\u0639\u0631\u0628\u064a",
+        "label_style": {
+          "background": "#DC2626",
+          "text": "#FFFFFF",
+          "corner_radius": 7,
+          "font": "System semibold",
+          "size": 32,
+          "shadow": "subtle"
+        }
+      },
+      "zoom_max": 1.08,
+      "index": 5,
+      "timeline_start": 31,
+      "app": "invoicing",
+      "overlay": {
+        "AR": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/fullscreen-v4/graphics/AR/05-overlay.png",
+        "EN": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/fullscreen-v4/graphics/EN/05-overlay.png"
+      }
+    },
+    {
+      "en": "Month labels reverse; the chart path does not",
+      "ar": "\u0627\u0644\u0634\u0647\u0648\u0631 \u0627\u062a\u0639\u0643\u0633\u062a\u060c \u0644\u0643\u0646 \u062e\u0637 \u0627\u0644\u0640Chart \u0632\u064a \u0645\u0627 \u0647\u0648",
+      "source": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/originals/Brave_Main_Take02_Original.mov",
+      "start": 90,
+      "duration": 8,
+      "browser": true,
+      "name": "Month labels reverse; the chart path does not",
+      "source_crop": [
+        2944,
+        1656,
+        112,
+        238
+      ],
+      "issue": {
+        "rect": [
+          1008,
+          972,
+          790,
+          42
+        ],
+        "label_box": [
+          1080,
+          870,
+          780,
+          80
+        ],
+        "en": "Months reverse; the chart path does not",
+        "ar": "\u0627\u0644\u0634\u0647\u0648\u0631 \u0627\u062a\u0639\u0643\u0633\u062a\u061b \u062e\u0637 \u0627\u0644\u0631\u0633\u0645 \u0632\u064a \u0645\u0627 \u0647\u0648",
+        "label_style": {
+          "background": "#DC2626",
+          "text": "#FFFFFF",
+          "corner_radius": 7,
+          "font": "System semibold",
+          "size": 32,
+          "shadow": "subtle"
+        }
+      },
+      "zoom_max": 1.045,
+      "index": 6,
+      "timeline_start": 39,
+      "app": "invoicing",
+      "overlay": {
+        "AR": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/fullscreen-v4/graphics/AR/06-overlay.png",
+        "EN": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/fullscreen-v4/graphics/EN/06-overlay.png"
+      }
+    },
+    {
+      "name": "English detail-arrow reference",
+      "source": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/fullscreen-v4/originals/Invoicing_EN.mov",
+      "start": 25,
+      "duration": 2,
+      "source_crop": [
+        1536,
+        864,
+        1440,
+        800
+      ],
+      "browser": true,
+      "ar": "English detail-arrow reference",
+      "en": "English detail-arrow reference",
+      "index": 7,
+      "timeline_start": 47,
+      "app": "invoicing",
+      "overlay": {}
+    },
+    {
+      "name": "Arabic detail arrow retains LTR orientation",
+      "source": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/fullscreen-v4/originals/Invoicing_AR_Journey.mov",
+      "start": 60,
+      "duration": 7,
+      "source_crop": [
+        1536,
+        864,
+        550,
+        800
+      ],
+      "browser": true,
+      "ar": "Arabic detail arrow retains LTR orientation",
+      "en": "Arabic detail arrow retains LTR orientation",
+      "issue": {
+        "rect": [
+          195,
+          408,
+          48,
+          48
+        ],
+        "label_box": [
+          50,
+          320,
+          1000,
+          62
+        ],
+        "en": "Detail arrow does not mirror in RTL",
+        "ar": "\u0633\u0647\u0645 \u0641\u062a\u062d \u0627\u0644\u062a\u0641\u0627\u0635\u064a\u0644 \u0645\u0627 \u0627\u062a\u0639\u0643\u0633\u0634 \u0645\u0639 \u0627\u0644\u0640RTL"
+      },
+      "zoom_max": 1.06,
+      "index": 8,
+      "timeline_start": 49,
+      "app": "invoicing",
+      "overlay": {
+        "AR": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/fullscreen-v4/graphics/AR/08-overlay.png",
+        "EN": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/fullscreen-v4/graphics/EN/08-overlay.png"
+      }
+    },
+    {
+      "name": "Actual arrow opens INV-2026-1048",
+      "source": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/fullscreen-v4/originals/Invoice_1048_Arrow_Action.mov",
+      "start": 52,
+      "duration": 4,
+      "source_crop": [
+        2944,
+        1656,
+        112,
+        238
+      ],
+      "browser": true,
+      "ar": "Actual arrow opens INV-2026-1048",
+      "en": "Actual arrow opens INV-2026-1048",
+      "index": 9,
+      "timeline_start": 56,
+      "app": "invoicing",
+      "overlay": {}
+    },
+    {
+      "name": "Arabic pagination icon direction contradicts page progression",
+      "source": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/fullscreen-v4/originals/Navigation_Procurement.mov",
+      "start": 5,
+      "duration": 7,
+      "source_crop": [
+        1920,
+        1080,
+        112,
+        1000
+      ],
+      "browser": true,
+      "ar": "Arabic pagination icon direction contradicts page progression",
+      "en": "Arabic pagination icon direction contradicts page progression",
+      "issue": {
+        "rect": [
+          600,
+          850,
+          300,
+          65
+        ],
+        "label_box": [
+          550,
+          935,
+          1100,
+          62
+        ],
+        "en": "Next still points right in RTL",
+        "ar": "\u0633\u0647\u0645 \u0627\u0644\u062a\u0627\u0644\u064a \u0644\u0633\u0647 \u0628\u064a\u0634\u0627\u0648\u0631 \u064a\u0645\u064a\u0646 \u0641\u064a \u0627\u0644\u0640RTL"
+      },
+      "zoom_max": 1.06,
+      "index": 10,
+      "timeline_start": 60,
+      "app": "invoicing",
+      "overlay": {
+        "AR": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/fullscreen-v4/graphics/AR/10-overlay.png",
+        "EN": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/fullscreen-v4/graphics/EN/10-overlay.png"
+      }
+    },
+    {
+      "en": "Create invoice: English form",
+      "ar": "\u0625\u0646\u0634\u0627\u0621 \u0641\u0627\u062a\u0648\u0631\u0629: \u0627\u0644\u0641\u0648\u0631\u0645 \u0628\u0627\u0644\u0625\u0646\u062c\u0644\u064a\u0632\u064a",
+      "source": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/expanded-v1/originals/Create_Invoice_EN_AR.mov",
+      "start": 100,
+      "duration": 5,
+      "browser": true,
+      "name": "Create invoice: English form",
+      "source_crop": [
+        2944,
+        1656,
+        112,
+        238
+      ],
+      "index": 11,
+      "timeline_start": 67,
+      "app": "invoicing",
+      "overlay": {}
+    },
+    {
+      "en": "Same input in Arabic; labels still align left",
+      "ar": "\u0646\u0641\u0633 \u0627\u0644\u0628\u064a\u0627\u0646\u0627\u062a \u0628\u0627\u0644\u0639\u0631\u0628\u064a\u061b \u0627\u0644\u0640Labels \u0644\u0633\u0647 \u0639\u0644\u0649 \u0627\u0644\u0634\u0645\u0627\u0644",
+      "source": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/expanded-v1/originals/Create_Invoice_EN_AR.mov",
+      "start": 150,
+      "duration": 9,
+      "browser": true,
+      "name": "Same input in Arabic; labels still align left",
+      "source_crop": [
+        2944,
+        1656,
+        112,
+        238
+      ],
+      "issue": {
+        "rect": [
+          390,
+          440,
+          155,
+          35
+        ],
+        "label_box": [
+          390,
+          340,
+          800,
+          72
+        ],
+        "en": "Arabic field labels still align left",
+        "ar": "\u0639\u0646\u0627\u0648\u064a\u0646 \u0627\u0644\u062d\u0642\u0648\u0644 \u0627\u0644\u0639\u0631\u0628\u064a \u0644\u0633\u0647 \u0639\u0644\u0649 \u0627\u0644\u0634\u0645\u0627\u0644",
+        "label_style": {
+          "background": "#DC2626",
+          "text": "#FFFFFF",
+          "corner_radius": 7,
+          "font": "System semibold",
+          "size": 32,
+          "shadow": "subtle"
+        },
+        "anchor": "left"
+      },
+      "zoom_max": 1.08,
+      "index": 12,
+      "timeline_start": 72,
+      "app": "invoicing",
+      "overlay": {
+        "AR": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/fullscreen-v4/graphics/AR/12-overlay.png",
+        "EN": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/fullscreen-v4/graphics/EN/12-overlay.png"
+      }
+    },
+    {
+      "en": "Customers: the real English fixture",
+      "ar": "\u0627\u0644\u0639\u0645\u0644\u0627\u0621: \u0646\u0641\u0633 \u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u062f\u064a\u0645\u0648 \u0628\u0627\u0644\u0625\u0646\u062c\u0644\u064a\u0632\u064a",
+      "source": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/expanded-v1/originals/Customers_EN.mov",
+      "start": 20,
+      "duration": 4,
+      "browser": true,
+      "name": "Customers: the real English fixture",
+      "source_crop": [
+        2944,
+        1656,
+        112,
+        238
+      ],
+      "index": 13,
+      "timeline_start": 81,
+      "app": "invoicing",
+      "overlay": {}
+    },
+    {
+      "en": "Arabic dialog: close button overlaps the title",
+      "ar": "\u0627\u0644\u0640Popup \u0627\u0644\u0639\u0631\u0628\u064a: \u0632\u0631\u0627\u0631 \u0627\u0644\u0642\u0641\u0644 \u062f\u0627\u062e\u0644 \u0639\u0644\u0649 \u0627\u0644\u0639\u0646\u0648\u0627\u0646",
+      "source": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/originals/Brave_Support_Original.mov",
+      "start": 30,
+      "duration": 8,
+      "browser": true,
+      "name": "Arabic dialog: close button overlaps the title",
+      "source_crop": [
+        2304,
+        1296,
+        412,
+        538
+      ],
+      "issue": {
+        "rect": [
+          1180,
+          395,
+          265,
+          52
+        ],
+        "label_box": [
+          990,
+          285,
+          800,
+          72
+        ],
+        "en": "Close button overlaps the dialog title",
+        "ar": "\u0632\u0631\u0627\u0631 \u0627\u0644\u0642\u0641\u0644 \u062f\u0627\u062e\u0644 \u0639\u0644\u0649 \u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u0640Popup",
+        "label_style": {
+          "background": "#DC2626",
+          "text": "#FFFFFF",
+          "corner_radius": 7,
+          "font": "System semibold",
+          "size": 32,
+          "shadow": "subtle"
+        }
+      },
+      "zoom_max": 1.08,
+      "index": 14,
+      "timeline_start": 85,
+      "app": "invoicing",
+      "overlay": {
+        "AR": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/fullscreen-v4/graphics/AR/14-overlay.png",
+        "EN": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/fullscreen-v4/graphics/EN/14-overlay.png"
+      }
+    },
+    {
+      "en": "Stored address stays English in both languages",
+      "ar": "\u0627\u0644\u0639\u0646\u0648\u0627\u0646 \u0645\u062a\u062e\u0632\u0646 \u0628\u0627\u0644\u0625\u0646\u062c\u0644\u064a\u0632\u064a \u0641\u064a \u0627\u0644\u0644\u063a\u062a\u064a\u0646",
+      "source": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/originals/Brave_Support_Original.mov",
+      "start": 55,
+      "duration": 8,
+      "browser": true,
+      "name": "Stored address stays English in both languages",
+      "source_crop": [
+        2304,
+        1296,
+        412,
+        538
+      ],
+      "issue": {
+        "rect": [
+          1045,
+          620,
+          400,
+          42
+        ],
+        "label_box": [
+          900,
+          690,
+          900,
+          80
+        ],
+        "en": "Stored English address: 24 moves to the end",
+        "ar": "\u0646\u0641\u0633 \u0627\u0644\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u0625\u0646\u062c\u0644\u064a\u0632\u064a\u061b \u0631\u0642\u0645 24 \u0628\u0642\u0649 \u0641\u064a \u0627\u0644\u0622\u062e\u0631",
+        "label_style": {
+          "background": "#DC2626",
+          "text": "#FFFFFF",
+          "corner_radius": 7,
+          "font": "System semibold",
+          "size": 32,
+          "shadow": "subtle"
+        }
+      },
+      "zoom_max": 1.08,
+      "index": 15,
+      "timeline_start": 93,
+      "app": "invoicing",
+      "overlay": {
+        "AR": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/fullscreen-v4/graphics/AR/15-overlay.png",
+        "EN": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/fullscreen-v4/graphics/EN/15-overlay.png"
+      }
+    },
+    {
+      "en": "Procurement: real English \u2192 Arabic selection",
+      "ar": "\u0627\u0644\u0645\u0634\u062a\u0631\u064a\u0627\u062a: \u062a\u0628\u062f\u064a\u0644 \u0627\u0644\u0644\u063a\u0629 \u0627\u0644\u062d\u0642\u064a\u0642\u064a \u0644\u0644\u0639\u0631\u0628\u064a",
+      "source": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/expanded-v1/originals/Procurement_Switch.mov",
+      "start": 84,
+      "duration": 14,
+      "browser": true,
+      "name": "Procurement: real English \u2192 Arabic selection",
+      "source_crop": [
+        2944,
+        1656,
+        112,
+        238
+      ],
+      "index": 16,
+      "timeline_start": 101,
+      "app": "procurement",
+      "overlay": {}
+    },
+    {
+      "name": "Procurement Arabic table headers remain left aligned",
+      "source": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/fullscreen-v4/originals/Navigation_Procurement.mov",
+      "start": 270,
+      "duration": 7,
+      "source_crop": [
+        2944,
+        1656,
+        112,
+        238
+      ],
+      "browser": true,
+      "ar": "Procurement Arabic table headers remain left aligned",
+      "en": "Procurement Arabic table headers remain left aligned",
+      "issue": {
+        "rect": [
+          368,
+          655,
+          1475,
+          72
+        ],
+        "label_box": [
+          650,
+          555,
+          850,
+          62
+        ],
+        "en": "Arabic table headers still align left",
+        "ar": "\u0639\u0646\u0627\u0648\u064a\u0646 \u0627\u0644\u0640Table \u0627\u0644\u0639\u0631\u0628\u064a \u0644\u0633\u0647 \u0628\u0645\u062d\u0627\u0630\u0627\u0629 \u0627\u0644\u0634\u0645\u0627\u0644",
+        "anchor": "left"
+      },
+      "zoom_max": 1.06,
+      "index": 17,
+      "timeline_start": 115,
+      "app": "procurement",
+      "overlay": {
+        "AR": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/fullscreen-v4/graphics/AR/17-overlay.png",
+        "EN": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/fullscreen-v4/graphics/EN/17-overlay.png"
+      }
+    },
+    {
+      "name": "Procurement status filter label remains left aligned",
+      "source": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/fullscreen-v4/originals/Navigation_Procurement.mov",
+      "start": 285,
+      "duration": 7,
+      "source_crop": [
+        2944,
+        1656,
+        112,
+        238
+      ],
+      "browser": true,
+      "ar": "Procurement status filter label remains left aligned",
+      "en": "Procurement status filter label remains left aligned",
+      "issue": {
+        "rect": [
+          1565,
+          556,
+          90,
+          32
+        ],
+        "label_box": [
+          800,
+          557,
+          750,
+          62
+        ],
+        "en": "Status filter label still aligns left",
+        "ar": "\u0639\u0646\u0648\u0627\u0646 \u0641\u0644\u062a\u0631 \u0627\u0644\u062d\u0627\u0644\u0629 \u0644\u0633\u0647 \u0639\u0644\u0649 \u0627\u0644\u0634\u0645\u0627\u0644",
+        "anchor": "left",
+        "connector_mode": "label_right_to_rect_left"
+      },
+      "zoom_max": 1.06,
+      "index": 18,
+      "timeline_start": 122,
+      "app": "procurement",
+      "overlay": {
+        "AR": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/fullscreen-v4/graphics/AR/18-overlay.png",
+        "EN": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/fullscreen-v4/graphics/EN/18-overlay.png"
+      }
+    },
+    {
+      "en": "Purchase orders: Arabic interface, unchanged records",
+      "ar": "\u0623\u0648\u0627\u0645\u0631 \u0627\u0644\u0634\u0631\u0627\u0621: \u0648\u0627\u062c\u0647\u0629 \u0639\u0631\u0628\u064a \u0648\u0646\u0641\u0633 \u0627\u0644\u0628\u064a\u0627\u0646\u0627\u062a",
+      "source": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/expanded-v1/originals/Procurement_Switch.mov",
+      "start": 155,
+      "duration": 5,
+      "browser": true,
+      "name": "Purchase orders: Arabic interface, unchanged records",
+      "source_crop": [
+        2944,
+        1656,
+        112,
+        238
+      ],
+      "index": 19,
+      "timeline_start": 129,
+      "app": "procurement",
+      "overlay": {}
+    }
+  ],
+  "method": "Original raw footage; reused V4 verified overlay layers and geometry; new timings, guide captions, and SFX. No previous master used."
+}

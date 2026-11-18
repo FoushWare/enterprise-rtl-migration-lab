@@ -1,9 +1,14 @@
 import { createHash, randomUUID } from 'node:crypto';
-import { cp, lstat, mkdtemp, readFile, rm, symlink, writeFile } from 'node:fs/promises';
+import { cp, lstat, mkdtemp, readFile, readdir, realpath, rm, symlink, writeFile } from 'node:fs/promises';
 import { dirname, isAbsolute, join, normalize, relative, resolve, sep } from 'node:path';
 import { tmpdir } from 'node:os';
-import { spawn, type ChildProcess } from 'node:child_process';
-import { request as httpRequest } from 'node:http';
+import { type ChildProcess } from 'node:child_process';
+import {spawnPreviewRuntime,signalOwnedRuntime} from './runtime-process.js';
+import { createServer as createNetServer } from 'node:net';
+import type { PreviewApplication } from './example-preview-mappings.js';
+import {loadProjectConfiguration,PROJECT_CONFIGURATION} from './project-configuration.js';
+import {loadPreviewConfiguration} from './preview-configuration.js';
+import { writePreviewRuntimeConfig } from './preview-runtime.js';
 
 export const REVIEW_SOURCE = 'apps/invoicing/src/components/InvoiceTable.tsx';
 export const REVIEW_FINDING_ID = 'RTL.ICON.PROGRESSION:237172da962fe4d0605ddd83';
@@ -13,11 +18,17 @@ export type ReviewClassification = 'Manual' | 'Assisted' | 'Automated / Codemod 
 export interface ReviewIdentity { findingId: string; sourcePath: string; inputDigest: string; policyDigest: string; schemaVersion: number }
 export interface ReviewRecord extends ReviewIdentity { status: ReviewStatus; reviewerNotes: string; evidenceReferences: readonly string[]; candidateSessionId?: string; timestamp: string }
 export interface PatchRequest { findingId: string; path: string; startOffset: number; endOffset: number; expectedSha256: string; replacement: string }
-export interface ReviewSession { id: string; root: string; candidateRoot: string; sourcePath: string; state: ReviewState; classification: ReviewClassification; originalSha256: string; candidateSha256?: string; createdAt: string; runtime?: { port: number; origin: string; status: 'starting'|'healthy'|'stopped'|'failed'; error?: string } }
+export interface ReviewSession { id: string; root: string; candidateRoot: string; sourcePath: string; state: ReviewState; classification: ReviewClassification; originalSha256: string; candidateSha256?: string; patch?: PatchRequest; createdAt: string; runtimePorts?:Record<string,number>; runtime?: { port: number; origin: string; status: 'starting'|'healthy'|'stopped'|'failed'; error?: string } }
+export type ReviewComparisonState = 'ready' | 'unchanged' | 'stale' | 'unavailable';
+export interface ReviewComparison { state: ReviewComparisonState; path: string; before?: string; after?: string; beforeLocation?: { line: number; column: number }; afterLocation?: { line: number; column: number }; diff: string; reason?: string }
 export const CANDIDATE_PORT = 4202;
 export const CANDIDATE_ORIGIN = `http://127.0.0.1:${CANDIDATE_PORT}`;
 export function runtimeCacheDir(root: string, role: 'original' | 'candidate'): string { return join(resolve(root), '.rtl-vite-cache', role); }
 const runtimes = new Map<string, ChildProcess>();
+const runtimeStates = new Map<string, ReviewSession>();
+const runtimeStarts = new Map<string, Promise<ReviewSession>>();
+const reservedPorts = new Set<number>();
+export const CANDIDATE_PORTS = Array.from({ length: 11 }, (_, index) => CANDIDATE_PORT + index);
 const reviewRecords = new Map<string, ReviewRecord>();
 
 const digest = (text: string) => createHash('sha256').update(text).digest('hex');
@@ -51,22 +62,35 @@ export function validateReviewPath(root: string, path: string): string {
   if (!inside(resolve(root), target) || path !== REVIEW_SOURCE) throw new Error('REVIEW_SOURCE_NOT_ALLOWED');
   return target;
 }
+export async function validateProjectSourcePath(root: string, path: string): Promise<string> {
+  if (!path || isAbsolute(path) || normalize(path) !== path || path.split(/[\\/]/).includes('..')) throw new Error('INVALID_REVIEW_PATH');
+  const canonicalRoot = await realpath(resolve(root));
+  const target = resolve(canonicalRoot, path);
+  if (!inside(canonicalRoot, target)) throw new Error('REVIEW_SOURCE_NOT_ALLOWED');
+  let canonicalTarget: string;
+  try { canonicalTarget = await realpath(target); } catch (error) { if ((error as NodeJS.ErrnoException).code === 'ENOENT') throw new Error('PROJECT_SOURCE_UNAVAILABLE'); throw error; }
+  if (!inside(canonicalRoot, canonicalTarget)) throw new Error('REVIEW_SOURCE_NOT_ALLOWED');
+  return canonicalTarget;
+}
 export function validatePatch(text: string, patch: PatchRequest): void {
   if (!patch.findingId || patch.path !== REVIEW_SOURCE) throw new Error('REVIEW_FINDING_NOT_ALLOWED');
   if (!Number.isInteger(patch.startOffset) || !Number.isInteger(patch.endOffset) || patch.startOffset < 0 || patch.endOffset < patch.startOffset || patch.endOffset > text.length) throw new Error('INVALID_REVIEW_RANGE');
   if (digest(text.slice(patch.startOffset, patch.endOffset)) !== patch.expectedSha256) throw new Error('STALE_REVIEW_SOURCE');
 }
-export async function createReviewSession(root: string): Promise<ReviewSession> {
-  const source = validateReviewPath(root, REVIEW_SOURCE);
-  const sourceStat = await lstat(source);
+export async function createReviewSession(root: string, sourcePath: string = REVIEW_SOURCE): Promise<ReviewSession> {
+  const source = sourcePath===REVIEW_SOURCE?validateReviewPath(root,sourcePath):await validateProjectSourcePath(root,sourcePath);
+  const sourceStat = await lstat(join(root,sourcePath));
   if (!sourceStat.isFile()) throw new Error('REVIEW_SOURCE_NOT_REGULAR_FILE');
-  const candidateRoot = await mkdtemp(join(tmpdir(), 'rtl-review-'));
+  const candidateRoot = await realpath(await mkdtemp(join(tmpdir(), 'rtl-review-')));
   try {
-    const allowedTopLevel = new Set(['apps', 'libs', 'package.json', 'package-lock.json', 'nx.json', 'tsconfig.json', 'tsconfig.base.json', 'vite.config.ts', 'playwright.config.ts']);
-    await cp(root, candidateRoot, { recursive: true, dereference: false, filter: (sourcePath) => { const relativePath = sourcePath.slice(root.length + 1); const top = relativePath.split('/')[0] ?? ''; return relativePath === '' || allowedTopLevel.has(top); } });
-    const copied = validateReviewPath(candidateRoot, REVIEW_SOURCE);
+    const project=await loadProjectConfiguration(root);
+    const rootConfigs = (await readdir(root)).filter(name => /^(tsconfig.*\.json|(?:vite|vitest|playwright|eslint)(?:\.[\w-]+)*\.config\.[cm]?[jt]s)$/.test(name));
+    const allowedTopLevel = new Set(['apps', 'libs', 'tests', 'tools', '.storybook', 'package.json', 'package-lock.json', 'nx.json', 'rtl-scanner.config.json','rtl-preview.config.json',PROJECT_CONFIGURATION, ...(project?.copyPaths.map(p=>p.split('/')[0])??[]), ...rootConfigs]);
+    await cp(root, candidateRoot, { recursive: true, dereference: false, filter: (sourcePath) => { const relativePath = sourcePath.slice(root.length + 1); const parts = relativePath.split('/'); const top = parts[0] ?? ''; return relativePath === '' || (allowedTopLevel.has(top) && (!project || [PROJECT_CONFIGURATION,'rtl-preview.config.json','rtl-scanner.config.json',...rootConfigs,...project.copyPaths].some(p=>relativePath===p||relativePath.startsWith(p+'/')||p.startsWith(relativePath+'/'))) && !parts.some(part => ['node_modules', 'dist', '.nx', '.git', '.rtl-vite-cache'].includes(part))); } });
+    await symlink(join(root, 'node_modules'), join(candidateRoot, 'node_modules'), 'dir');
+    const copied = await validateProjectSourcePath(candidateRoot, sourcePath);
     const text = await readFile(copied, 'utf8');
-    return { id: randomUUID(), root: resolve(root), candidateRoot, sourcePath: REVIEW_SOURCE, state: 'Candidate Proposed', classification: 'Manual', originalSha256: digest(text), createdAt: new Date().toISOString() };
+    return { id: randomUUID(), root: resolve(root), candidateRoot, sourcePath, state: 'Candidate Proposed', classification: 'Manual', originalSha256: digest(text), createdAt: new Date().toISOString() };
   } catch (error) { await rm(candidateRoot, { recursive: true, force: true }); throw error; }
 }
 export async function applyReviewPatch(session: ReviewSession, patch: PatchRequest): Promise<ReviewSession> {
@@ -75,33 +99,118 @@ export async function applyReviewPatch(session: ReviewSession, patch: PatchReque
   validatePatch(text, patch);
   const next = text.slice(0, patch.startOffset) + patch.replacement + text.slice(patch.endOffset);
   await writeFile(target, next, 'utf8');
-  return { ...session, state: 'Candidate Proposed', candidateSha256: digest(next) };
+  return { ...session, state: 'Candidate Proposed', candidateSha256: digest(next), patch };
+}
+const locationAt = (text: string, offset: number): { line: number; column: number } => {
+  const prefix = text.slice(0, offset);
+  const line = prefix.split(/\r?\n/).length;
+  const lastBreak = Math.max(prefix.lastIndexOf('\n'), prefix.lastIndexOf('\r'));
+  return { line, column: offset - lastBreak };
+};
+export async function reviewSessionComparison(session: ReviewSession): Promise<ReviewComparison> {
+  const original = await readFile(validateReviewPath(session.root, REVIEW_SOURCE), 'utf8');
+  const candidate = await readFile(await validateProjectSourcePath(session.candidateRoot,session.sourcePath), 'utf8');
+  if (digest(original) !== session.originalSha256) return { state: 'stale', path: REVIEW_SOURCE, diff: '', reason: 'STALE_ORIGINAL_SOURCE' };
+  if (session.candidateSha256 && digest(candidate) !== session.candidateSha256) return { state: 'stale', path: REVIEW_SOURCE, diff: '', reason: 'STALE_CANDIDATE_SOURCE' };
+  if (!session.patch) return original === candidate
+    ? { state: 'unchanged', path: REVIEW_SOURCE, diff: 'No candidate changes applied.' }
+    : { state: 'unavailable', path: REVIEW_SOURCE, diff: '', reason: 'PATCH_CORRESPONDENCE_UNAVAILABLE' };
+  const patch = session.patch;
+  try { validatePatch(original, patch); } catch (error) { return { state: 'stale', path: REVIEW_SOURCE, diff: '', reason: error instanceof Error ? error.message : 'STALE_REVIEW_SOURCE' }; }
+  const expectedCandidate = original.slice(0, patch.startOffset) + patch.replacement + original.slice(patch.endOffset);
+  if (expectedCandidate !== candidate) return { state: 'unavailable', path: REVIEW_SOURCE, diff: '', reason: 'PATCH_CORRESPONDENCE_UNAVAILABLE' };
+  const before = original.slice(patch.startOffset, patch.endOffset);
+  const afterStart = patch.startOffset;
+  const after = candidate.slice(afterStart, afterStart + patch.replacement.length);
+  const beforeLocation = locationAt(original, patch.startOffset);
+  const afterLocation = locationAt(candidate, afterStart);
+  return { state: 'ready', path: REVIEW_SOURCE, before, after, beforeLocation, afterLocation, diff: `--- ${REVIEW_SOURCE} (original)\n+++ ${REVIEW_SOURCE} (candidate)\n@@ ${beforeLocation.line}:${beforeLocation.column} → ${afterLocation.line}:${afterLocation.column}\n- ${before}\n+ ${after}` };
 }
 export async function reviewSessionDiff(session: ReviewSession): Promise<string> {
-  const original = await readFile(validateReviewPath(session.root, REVIEW_SOURCE), 'utf8');
-  const candidate = await readFile(validateReviewPath(session.candidateRoot, REVIEW_SOURCE), 'utf8');
-  if (original === candidate) return 'No candidate changes applied.';
-  const originalLine = original.split(/\r?\n/).find(line => line.includes('{i.id}')) ?? '';
-  const candidateLine = candidate.split(/\r?\n/).find(line => line.includes('{i.id}')) ?? '';
-  return `--- ${REVIEW_SOURCE} (original)\n+++ ${REVIEW_SOURCE} (candidate)\n@@\n- ${originalLine}\n+ ${candidateLine}`;
+  const comparison = await reviewSessionComparison(session);
+  if (comparison.state === 'ready' || comparison.state === 'unchanged') return comparison.diff;
+  throw new Error(comparison.reason ?? 'PATCH_CORRESPONDENCE_UNAVAILABLE');
 }
-function health(origin: string, port: number): Promise<boolean> { return new Promise(resolveHealth => { const request = httpRequest(`${origin}/invoices`, { method: 'GET', host: '127.0.0.1', port, path: '/invoices', timeout: 1000 }, response => { response.resume(); resolveHealth(Boolean(response.statusCode && response.statusCode < 500)); }); request.on('error', () => resolveHealth(false)); request.on('timeout', () => { request.destroy(); resolveHealth(false); }); request.end(); }); }
-export async function assertPortAvailable(port: number = CANDIDATE_PORT): Promise<void> { if (await health(`http://127.0.0.1:${port}`, port)) throw new Error('CANDIDATE_PORT_OCCUPIED'); }
-export async function startCandidateRuntime(session: ReviewSession): Promise<ReviewSession> {
-  if (runtimes.has(session.id)) return { ...session, runtime: { port: CANDIDATE_PORT, origin: CANDIDATE_ORIGIN, status: 'healthy' } };
-  await assertPortAvailable();
-  const viteBin = join(session.root, 'node_modules/vite/bin/vite.js');
+export async function assertPortAvailable(port: number = CANDIDATE_PORT): Promise<void> {
+  await new Promise<void>((resolvePort, reject) => {
+    const probe = createNetServer();
+    probe.once('error', () => reject(new Error('CANDIDATE_PORT_OCCUPIED')));
+    probe.listen(port, '127.0.0.1', () => probe.close(() => resolvePort()));
+  });
+}
+async function runtimeIdentityHash(session:ReviewSession,application:string){const app=(await loadPreviewConfiguration(session.candidateRoot)).applications[application];return digest(await readFile(await validateProjectSourcePath(session.candidateRoot,(application==='invoicing'?session.sourcePath:app?.entry)??(application==='procurement'?'apps/procurement/src/App.tsx':session.sourcePath)),'utf8'));}
+const runtimeKey = (session: ReviewSession, application: PreviewApplication) => session.id + (application === 'invoicing' ? '' : ':' + application);
+export function candidateApplicationRuntime(session: ReviewSession, application: PreviewApplication): ReviewSession['runtime'] { return runtimeStates.get(runtimeKey(session, application))?.runtime; }
+async function ownedRuntimeHealthy(session: ReviewSession, application: PreviewApplication = 'invoicing'): Promise<boolean> {
+  const child = runtimes.get(runtimeKey(session, application));
+  if (!child || child.exitCode !== null || child.signalCode !== null || !session.runtime) return false;
+  try {
+    const response = await fetch(session.runtime.origin + '/__rtl_preview_identity', { signal: AbortSignal.timeout(1000) });
+    const identity = await response.json() as { sessionId?: string; sourceSha256?: string; role?: string; projectRoot?: string; application?: string };
+    return response.ok && identity.sessionId === session.id && identity.role === 'candidate' && identity.application === application && identity.sourceSha256 === await runtimeIdentityHash(session,application) && identity.projectRoot === await realpath(session.candidateRoot);
+  } catch { return false; }
+}
+export async function startCandidateRuntime(session: ReviewSession, application?: PreviewApplication): Promise<ReviewSession> {
+  if(Object.values(session.runtimePorts??{}).some(port=>!CANDIDATE_PORTS.includes(port)))throw Error('CANDIDATE_PORT_ASSIGNMENT_INVALID');
+  const apps=(await loadPreviewConfiguration(session.candidateRoot)).applications;
+  application=application??(Object.keys(apps)[0]||'invoicing');
+  if(!apps[application]&&!['invoicing','procurement'].includes(application))throw Error('PREVIEW_APPLICATION_NOT_CONFIGURED');
+  const key = runtimeKey(session, application);
+  const active = runtimeStarts.get(key);
+  if (active) { const next = await active; return next; }
+  const operation = startRuntime(session, application);
+  runtimeStarts.set(key, operation);
+  try { const next = await operation; return next; } finally { runtimeStarts.delete(key); }
+}
+async function startRuntime(session: ReviewSession, application: PreviewApplication): Promise<ReviewSession> {
+  const key = runtimeKey(session, application);
+  const currentHash = digest(await readFile(await validateProjectSourcePath(session.candidateRoot,session.sourcePath), 'utf8'));
+  if (session.candidateSha256 && currentHash !== session.candidateSha256) throw new Error('STALE_CANDIDATE_SOURCE');
+  const existing = runtimeStates.get(key);
+  if (existing && await ownedRuntimeHealthy({ ...existing, candidateSha256: session.candidateSha256 }, application)) return { ...session, runtime: existing.runtime };
+  if (existing) await stopRuntimeKey(existing, key);
   const dependencyMount = join(session.candidateRoot, 'node_modules');
-  await symlink(join(session.root, 'node_modules'), dependencyMount, 'dir');
-  const candidateConfig = join(session.candidateRoot, 'apps/invoicing/vite.config.ts');
-  const child = spawn(process.execPath, [viteBin, '--config', candidateConfig, '--host', '127.0.0.1', '--port', String(CANDIDATE_PORT), '--strictPort'], { cwd: session.root, env: { ...process.env, NODE_PATH: join(session.root, 'node_modules'), RTL_VITE_CACHE_DIR: runtimeCacheDir(session.candidateRoot, 'candidate') }, shell: false, stdio: ['ignore', 'ignore', 'pipe'] });
+  try { await symlink(join(session.root, 'node_modules'), dependencyMount, 'dir'); }
+  catch (error) { if ((error as NodeJS.ErrnoException).code !== 'EEXIST' || await realpath(dependencyMount) !== await realpath(join(session.root, 'node_modules'))) throw error; }
+  const sourceSha256 = digest(await readFile(await validateProjectSourcePath(session.candidateRoot,session.sourcePath), 'utf8'));
+  if (session.candidateSha256 && sourceSha256 !== session.candidateSha256) throw new Error('STALE_CANDIDATE_SOURCE');
+  const runtimeSourceHash = await runtimeIdentityHash(session,application);
+  const candidateConfig = await writePreviewRuntimeConfig(session.candidateRoot, { role: 'candidate', sessionId: session.id, sourceSha256: runtimeSourceHash }, { application, contextRoot: session.root });
+  // Retain per-application origins through composition/restart; a stopped app's URL must not become another app in the same review.
+  const assignments=session.runtimePorts??(session.runtimePorts={});
+  const preferred=assignments[application];
+  const ports=preferred?[preferred,...CANDIDATE_PORTS.filter(p=>p!==preferred)]:CANDIDATE_PORTS;
+  for (const port of ports) {
+  if(Object.entries(assignments).some(([app,assigned])=>app!==application&&assigned===port))continue;
+  if (reservedPorts.has(port)) continue;
+  reservedPorts.add(port);
+  try { await assertPortAvailable(port); } catch { reservedPorts.delete(port); continue; }
+  const origin = `http://127.0.0.1:${port}`;
+  let child:ChildProcess;
+  try {
+  child = await spawnPreviewRuntime(session.candidateRoot,application,candidateConfig,port, { cwd: session.candidateRoot, env: { ...process.env, NODE_PATH: join(session.root, 'node_modules'), RTL_VITE_CACHE_DIR: runtimeCacheDir(session.candidateRoot, 'candidate') }, shell: false, stdio: ['ignore', 'ignore', 'pipe'] });
+  }catch(error){reservedPorts.delete(port);throw error;}
   let startupError = ''; child.stderr?.on('data', chunk => { startupError = `${startupError}${String(chunk)}`.slice(-2000); });
-  runtimes.set(session.id, child);
-  const starting = { ...session, runtime: { port: CANDIDATE_PORT, origin: CANDIDATE_ORIGIN, status: 'starting' as const } };
-  for (let attempt = 0; attempt < 100; attempt++) { if (await health(CANDIDATE_ORIGIN, CANDIDATE_PORT)) return { ...starting, runtime: { ...starting.runtime!, status: 'healthy' } }; if (child.exitCode !== null) break; await new Promise(resolveDelay => setTimeout(resolveDelay, 100)); }
-  await stopCandidateRuntime(starting);
-  return { ...starting, runtime: { ...starting.runtime!, status: 'failed', ...(startupError ? { error: startupError.trim() } : {}) } };
+  child.on('error', error => { startupError = error.message; });
+  runtimes.set(key, child);
+  assignments[application]=port;
+  const starting = { ...session,runtimePorts:assignments, candidateSha256: sourceSha256, runtime: { port, origin, status: 'starting' as const } };
+  runtimeStates.set(key, starting);
+  for (let attempt = 0; attempt < 100; attempt++) { if (await ownedRuntimeHealthy(starting, application)) { const healthy = { ...starting, runtime: { ...starting.runtime, status: 'healthy' as const } }; runtimeStates.set(key, healthy); return healthy; } if (child.exitCode !== null || startupError.includes('EADDRINUSE')) break; await new Promise(resolveDelay => setTimeout(resolveDelay, 100)); }
+  await stopRuntimeKey(starting, key);
+  if (/EADDRINUSE|already in use/.test(startupError)) continue;
+  return { ...starting, runtime: { ...starting.runtime, status: 'failed', error: startupError.trim() || 'CANDIDATE_IDENTITY_UNAVAILABLE' } };
+  }
+  throw new Error('CANDIDATE_PORT_POOL_EXHAUSTED');
 }
-export async function stopCandidateRuntime(session: ReviewSession): Promise<ReviewSession> { const child = runtimes.get(session.id); if (child && child.exitCode === null) { child.kill('SIGTERM'); await new Promise<void>(resolveStop => { const timer = setTimeout(() => { if (child.exitCode === null) child.kill('SIGKILL'); resolveStop(); }, 2000); child.once('exit', () => { clearTimeout(timer); resolveStop(); }); }); } runtimes.delete(session.id); return { ...session, runtime: session.runtime ? { ...session.runtime, status: 'stopped' } : undefined }; }
-export async function disposeReviewSession(session: ReviewSession): Promise<void> { if (!inside(tmpdir(), resolve(session.candidateRoot))) throw new Error('INVALID_REVIEW_SESSION_ROOT'); await stopCandidateRuntime(session); await rm(session.candidateRoot, { recursive: true, force: true }); }
+async function stopRuntimeKey(session: ReviewSession, key: string): Promise<void> {
+  const child = runtimes.get(key);
+  if (child && child.exitCode === null && child.signalCode === null) { signalOwnedRuntime(child); await new Promise<void>(resolveStop => { const timer = setTimeout(() => { if (child.exitCode === null) signalOwnedRuntime(child,'SIGKILL'); resolveStop(); }, 2000); child.once('exit', () => { clearTimeout(timer); resolveStop(); }); }); }
+  const owned = runtimeStates.get(key); if (owned?.runtime) reservedPorts.delete(owned.runtime.port); runtimes.delete(key); runtimeStates.delete(key);
+}
+export async function stopCandidateRuntime(session: ReviewSession): Promise<ReviewSession> {
+  await Promise.all([...new Set([session.id, ...runtimes.keys(), ...runtimeStates.keys()])].filter(key => key === session.id || key.startsWith(session.id + ':')).map(key => stopRuntimeKey(session, key)));
+  return { ...session, runtime: session.runtime ? { ...session.runtime, status: 'stopped' } : undefined };
+}
+export async function disposeReviewSession(session: ReviewSession): Promise<void> { if (!inside(await realpath(tmpdir()), await realpath(session.candidateRoot))) throw new Error('INVALID_REVIEW_SESSION_ROOT'); await Promise.all([...runtimeStarts].filter(([key]) => key === session.id || key.startsWith(session.id + ':')).map(([, start]) => start.catch(() => undefined))); await stopCandidateRuntime(session); await rm(session.candidateRoot, { recursive: true, force: true }); }
 export const reviewSourceDirectory = (root: string) => dirname(validateReviewPath(root, REVIEW_SOURCE));

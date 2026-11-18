@@ -1,0 +1,265 @@
+{
+  "status": "Draft – Pending Review",
+  "filesChecked": 94,
+  "changedOldFiles": [],
+  "oldMedia": [
+    {
+      "path": "video-assets/scanner-poc/scanner-flow-poc.mp4",
+      "decode": "passed",
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 1920,
+            "height": 1080
+          }
+        ],
+        "format": {
+          "duration": "22.500000"
+        }
+      }
+    },
+    {
+      "path": "video-assets/scanner-poc/raw/real-vscode-take.mp4",
+      "decode": "passed",
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 2462,
+            "height": 1740
+          }
+        ],
+        "format": {
+          "duration": "179.966668"
+        }
+      }
+    },
+    {
+      "path": "video-assets/scanner-poc/raw/final-take.mp4",
+      "decode": "passed",
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 2462,
+            "height": 1740
+          }
+        ],
+        "format": {
+          "duration": "530.066667"
+        }
+      }
+    },
+    {
+      "path": "video-assets/scanner-poc/raw/clip4.mp4",
+      "decode": "passed",
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 1920,
+            "height": 1080
+          }
+        ],
+        "format": {
+          "duration": "5.500000"
+        }
+      }
+    },
+    {
+      "path": "video-assets/scanner-poc/raw/clip1.mp4",
+      "decode": "passed",
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 1920,
+            "height": 1080
+          }
+        ],
+        "format": {
+          "duration": "4.500000"
+        }
+      }
+    },
+    {
+      "path": "video-assets/scanner-poc/raw/clip0.mp4",
+      "decode": "passed",
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 1920,
+            "height": 1080
+          }
+        ],
+        "format": {
+          "duration": "4.500000"
+        }
+      }
+    },
+    {
+      "path": "video-assets/scanner-poc/raw/clip2.mp4",
+      "decode": "passed",
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 1920,
+            "height": 1080
+          }
+        ],
+        "format": {
+          "duration": "4.500000"
+        }
+      }
+    },
+    {
+      "path": "video-assets/scanner-poc/raw/clip3.mp4",
+      "decode": "passed",
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 1920,
+            "height": 1080
+          }
+        ],
+        "format": {
+          "duration": "4.500000"
+        }
+      }
+    },
+    {
+      "path": "video-assets/runtime-direction-poc/runtime-direction-demo.mp4",
+      "decode": "passed",
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 1920,
+            "height": 1080
+          },
+          {
+            "codec_name": "aac"
+          }
+        ],
+        "format": {
+          "duration": "59.666667"
+        }
+      }
+    },
+    {
+      "path": "video-assets/runtime-direction-poc/runtime-direction-without-narration.mp4",
+      "decode": "passed",
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 1920,
+            "height": 1080
+          },
+          {
+            "codec_name": "aac"
+          }
+        ],
+        "format": {
+          "duration": "59.664000"
+        }
+      }
+    },
+    {
+      "path": "video-assets/runtime-direction-poc/evidence/vscode-real.mp4",
+      "decode": "passed",
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 2880,
+            "height": 1800
+          }
+        ],
+        "format": {
+          "duration": "239.966668"
+        }
+      }
+    },
+    {
+      "path": "video-assets/runtime-direction-poc/render/picture.mp4",
+      "decode": "passed",
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 1920,
+            "height": 1080
+          }
+        ],
+        "format": {
+          "duration": "59.666667"
+        }
+      }
+    },
+    {
+      "path": "video-assets/runtime-direction-poc/render/motion.mp4",
+      "decode": "passed",
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 1920,
+            "height": 1080
+          }
+        ],
+        "format": {
+          "duration": "59.666667"
+        }
+      }
+    },
+    {
+      "path": "video-assets/chapter-01/experiments/02-animated-architecture.mp4",
+      "decode": "passed",
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 1920,
+            "height": 1080
+          }
+        ],
+        "format": {
+          "duration": "36.000000"
+        }
+      }
+    }
+  ]
+}

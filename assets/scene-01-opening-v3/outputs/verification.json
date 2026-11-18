@@ -1,0 +1,88 @@
+{
+  "status": "Draft – Pending Review",
+  "exports": {
+    "ar": {
+      "path": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-01-opening-v3/outputs/Scene-01_Geographic-Journey_AR_20s_Draft_V3.mp4",
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 1920,
+            "height": 1080,
+            "r_frame_rate": "30/1",
+            "nb_read_frames": "600"
+          }
+        ],
+        "format": {
+          "duration": "20.000000",
+          "size": "8567715"
+        }
+      },
+      "decode": "Full20s decoded without errors",
+      "label_bounds_failures": 0,
+      "label_overlap_failures": 0,
+      "visual_review_frames": [
+        0,
+        120,
+        270,
+        345,
+        405,
+        465,
+        540,
+        599
+      ]
+    },
+    "en": {
+      "path": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-01-opening-v3/outputs/Scene-01_Geographic-Journey_EN_20s_Draft_V3.mp4",
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 1920,
+            "height": 1080,
+            "r_frame_rate": "30/1",
+            "nb_read_frames": "600"
+          }
+        ],
+        "format": {
+          "duration": "20.000000",
+          "size": "8585351"
+        }
+      },
+      "decode": "Full20s decoded without errors",
+      "label_bounds_failures": 0,
+      "label_overlap_failures": 0,
+      "visual_review_frames": [
+        0,
+        120,
+        270,
+        345,
+        405,
+        465,
+        540,
+        599
+      ]
+    }
+  },
+  "limitations": [
+    "VO alignment estimated; no real recording.",
+    "Visual review covers representative frames; bounding/overlap checks cover every frame.",
+    "Earth day/night textures are2048px; not new high-detail satellite footage."
+  ],
+  "camera": {
+    "AR_EN_identical_all_600_frames": true,
+    "travel_world_distance_10_5_to_15_5": 1.9043732653123144,
+    "orientation": "camera.lookAt changes with deterministic lookLat/lookLon/lookRadius keyframes; source/timing.json",
+    "final_hold": "Stable frames540–599 within floating-point numerical precision",
+    "final_hold_max_float_delta": 9.930136612989092e-16
+  },
+  "preservation": {
+    "files_checked": 39,
+    "V4_files_checked": 4,
+    "mismatches": []
+  }
+}

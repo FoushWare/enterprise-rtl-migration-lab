@@ -1,0 +1,2 @@
+file '/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-01-opening-v3/outputs/Scene-01_Geographic-Journey_AR_20s_Draft_V3.mp4'
+file '/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-01-complete-v4/outputs/tail-ar.mp4'

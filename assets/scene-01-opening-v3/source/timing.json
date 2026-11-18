@@ -1,0 +1,27 @@
+{
+ "status":"Draft – Pending Review; estimated VO alignment",
+ "fps":30,"duration":20,"frames":600,
+ "narration":[
+ {"start":0.4,"end":8.4,"text":"تخيل معايا شركة Software كبيرة في أوروبا، عندها Enterprise Platform شغالة بالفعل."},
+ {"start":10.4,"end":16.8,"text":"الشركة دي قررت تتوسع في سوق جديد... الشرق الأوسط."}
+ ],
+ "phrases":[[0.4,1.5,"تخيل معايا"],[1.5,3.0,"شركة Software"],[3.0,4.5,"كبيرة في أوروبا"],[4.8,5.3,"عندها"],[5.3,6.9,"Enterprise Platform"],[6.9,8.4,"شغالة بالفعل"],[10.4,11.8,"الشركة دي قررت"],[11.8,13.5,"تتوسع في سوق جديد"],[13.5,14.8,"وقفة طبيعية"],[14.8,16.8,"الشرق الأوسط"]],
+ "camera":[
+ {"t":0,"lat":63,"lon":-4,"radius":4.2,"lookLat":44,"lookLon":16,"lookRadius":1.4},
+ {"t":9.8,"lat":61,"lon":1,"radius":4.05,"lookLat":44,"lookLon":17,"lookRadius":1.4},
+ {"t":10.5,"lat":61,"lon":1,"radius":4.05,"lookLat":44,"lookLon":17,"lookRadius":1.4},
+ {"t":13.2,"lat":48,"lon":20,"radius":4.0,"lookLat":34,"lookLon":29,"lookRadius":1.4},
+ {"t":15.5,"lat":42,"lon":32,"radius":4.2,"lookLat":29,"lookLon":38,"lookRadius":1.3},
+ {"t":18,"lat":45,"lon":25,"radius":4.6,"lookLat":34,"lookLon":31,"lookRadius":1.25},
+ {"t":20,"lat":45,"lon":25,"radius":4.6,"lookLat":34,"lookLon":31,"lookRadius":1.25}
+ ],
+ "locations":[
+ {"id":"hq","lat":50.11,"lon":8.68,"start":3,"labelAR":"أوروبا","labelEN":"Europe"},
+ {"id":"egypt","lat":30.0444,"lon":31.2357,"start":13.2,"routeStart":11,"routeEnd":13.2,"labelAR":"مصر","labelEN":"Egypt"},
+ {"id":"saudi","lat":24.7136,"lon":46.6753,"start":14.8,"routeStart":12.4,"routeEnd":14.8,"labelAR":"السعودية","labelEN":"Saudi Arabia"}
+ ],
+ "regionalTitle":{"start":15.2,"end":20,"ar":"الشرق الأوسط","en":"Middle East"},
+ "presenter":"None in geographic0–20; later footage pending approval",
+ "transition":"Steady18–20 composition; no hard cut or fade. Later product shot is NOT rendered.",
+ "timingNote":"All speech/word times are estimates until real recording; frame precision does not imply measured alignment. Egypt/Saudi are visual destinations under expansion phrase; not invented spoken additions."
+}

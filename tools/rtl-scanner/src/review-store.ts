@@ -6,7 +6,7 @@ import type { ReviewIdentity, ReviewRecord, ReviewStatus } from './review-sessio
 import { reviewRecordKey, reviewStatusTransitions, validateReviewIdentity, validateReviewRecordShape } from './review-session.js';
 
 export const REVIEW_STORE_VERSION = 1 as const;
-export const DEFAULT_REVIEW_STORE_PATH = join(homedir(), '.rtl-migration-analyzer', 'review-records-v1.json');
+export const DEFAULT_REVIEW_STORE_PATH = process.env.RTL_REVIEW_STORE_PATH || join(homedir(), '.rtl-migration-analyzer', 'review-records-v1.json');
 export type MigrationTreatment = 'Automated' | 'Assisted' | 'Manual';
 export interface MigrationDecisionHistory { readonly selectedTreatment: MigrationTreatment; readonly overrideReason?: string; readonly timestamp: string }
 export interface MigrationDecision extends ReviewIdentity { readonly sourceDigest: string; readonly recommendation: MigrationTreatment; readonly recommendationRationale: string; readonly eligibilityConstraints: readonly string[]; readonly blockers: readonly string[]; readonly selectedTreatment: MigrationTreatment; readonly overrideReason?: string; readonly timestamp: string; readonly history: readonly MigrationDecisionHistory[] }

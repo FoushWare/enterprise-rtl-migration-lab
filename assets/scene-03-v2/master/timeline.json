@@ -1,0 +1,83 @@
+{
+  "status": "Draft \u2013 Pending Review",
+  "duration": 314,
+  "scenes": [
+    {
+      "version": "Scene01 V5",
+      "timeline": [
+        0,
+        50
+      ]
+    },
+    {
+      "version": "Scene02 V5",
+      "timeline": [
+        50,
+        184
+      ]
+    },
+    {
+      "version": "Scene03 V2",
+      "timeline": [
+        184,
+        314
+      ]
+    }
+  ],
+  "method": "Stream-copy of independently editable scenes, no previous compressed master as input",
+  "variants": [
+    {
+      "language": "AR",
+      "variant": "Clean",
+      "sources": [
+        "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-01-v5/outputs/Scene-01_Business-Expansion_AR_V5_Clean.mp4",
+        "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/rtl-production-v5/scene02/outputs/Scene-02_Broken-RTL_AR_V5_Clean.mp4",
+        "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-03-v2/outputs/Scene-03_Architecture_AR_V2_Clean.mp4"
+      ],
+      "output": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-03-v2/master/CoffeeBreakWeb_RTL-Migration_AR_Master_V3_Clean.mp4",
+      "transitions": "Existing individual-scene entrance/exit animation and quiet SFX tails; natural cut184s from real Procurement to replaceable presenter. No repeated RTL demonstration at this boundary."
+    },
+    {
+      "language": "AR",
+      "variant": "Preview",
+      "sources": [
+        "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-01-v5/outputs/Scene-01_Business-Expansion_AR_V5_Preview.mp4",
+        "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/rtl-production-v5/scene02/outputs/Scene-02_Broken-RTL_AR_V5_Preview.mp4",
+        "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-03-v2/outputs/Scene-03_Architecture_AR_V2_Preview.mp4"
+      ],
+      "output": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-03-v2/master/CoffeeBreakWeb_RTL-Migration_AR_Master_V3_Preview.mp4",
+      "transitions": "Existing individual-scene entrance/exit animation and quiet SFX tails; natural cut184s from real Procurement to replaceable presenter. No repeated RTL demonstration at this boundary."
+    },
+    {
+      "language": "EN",
+      "variant": "Clean",
+      "sources": [
+        "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-01-v5/outputs/Scene-01_Business-Expansion_EN_V5_Clean.mp4",
+        "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/rtl-production-v5/scene02/outputs/Scene-02_Broken-RTL_EN_V5_Clean.mp4",
+        "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-03-v2/outputs/Scene-03_Architecture_EN_V2_Clean.mp4"
+      ],
+      "output": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-03-v2/master/CoffeeBreakWeb_RTL-Migration_EN_Master_V3_Clean.mp4",
+      "transitions": "Existing individual-scene entrance/exit animation and quiet SFX tails; natural cut184s from real Procurement to replaceable presenter. No repeated RTL demonstration at this boundary."
+    },
+    {
+      "language": "EN",
+      "variant": "Preview",
+      "sources": [
+        "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-01-v5/outputs/Scene-01_Business-Expansion_EN_V5_Preview.mp4",
+        "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/rtl-production-v5/scene02/outputs/Scene-02_Broken-RTL_EN_V5_Preview.mp4",
+        "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-03-v2/outputs/Scene-03_Architecture_EN_V2_Preview.mp4"
+      ],
+      "output": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-03-v2/master/CoffeeBreakWeb_RTL-Migration_EN_Master_V3_Preview.mp4",
+      "transitions": "Existing individual-scene entrance/exit animation and quiet SFX tails; natural cut184s from real Procurement to replaceable presenter. No repeated RTL demonstration at this boundary."
+    }
+  ],
+  "audio": {
+    "source": "Original48kHz stereo PCM scene mixes, concatenated at exact50s/184s offsets and encoded once as AAC",
+    "tracks": [
+      "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-01-v5/audio/SFX-Mix.wav",
+      "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/rtl-production-v5/scene02/audio/SFX-Mix.wav",
+      "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-03-v2/audio/SFX-Mix.wav"
+    ],
+    "mix": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-03-v2/master/SFX-Mix.wav"
+  }
+}

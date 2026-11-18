@@ -1,0 +1,170 @@
+[
+  {
+    "time": 0.16666666666666666,
+    "frame": 5,
+    "peak_pcm": 2649,
+    "description": "Natural section transition"
+  },
+  {
+    "time": 8.0,
+    "frame": 240,
+    "peak_pcm": 3464,
+    "description": "Editorial language-switch emphasis; not recorded click audio"
+  },
+  {
+    "time": 15.7,
+    "frame": 471,
+    "peak_pcm": 3052,
+    "description": "Sidebar stays on the left in Arabic"
+  },
+  {
+    "time": 15.0,
+    "frame": 450,
+    "peak_pcm": 2087,
+    "description": "Gentle zoom into actual UI"
+  },
+  {
+    "time": 25.7,
+    "frame": 771,
+    "peak_pcm": 3052,
+    "description": "Logo composition changes in Arabic"
+  },
+  {
+    "time": 25.0,
+    "frame": 750,
+    "peak_pcm": 2201,
+    "description": "Gentle zoom into actual UI"
+  },
+  {
+    "time": 32.7,
+    "frame": 981,
+    "peak_pcm": 3052,
+    "description": "KPI icons overlap Arabic headings"
+  },
+  {
+    "time": 32.0,
+    "frame": 960,
+    "peak_pcm": 2064,
+    "description": "Gentle zoom into actual UI"
+  },
+  {
+    "time": 40.7,
+    "frame": 1221,
+    "peak_pcm": 3052,
+    "description": "Month labels reverse; the chart path does not"
+  },
+  {
+    "time": 40.0,
+    "frame": 1200,
+    "peak_pcm": 2251,
+    "description": "Gentle zoom into actual UI"
+  },
+  {
+    "time": 50.7,
+    "frame": 1521,
+    "peak_pcm": 3052,
+    "description": "Arabic detail arrow retains LTR orientation"
+  },
+  {
+    "time": 50.0,
+    "frame": 1500,
+    "peak_pcm": 2192,
+    "description": "Gentle zoom into actual UI"
+  },
+  {
+    "time": 61.7,
+    "frame": 1851,
+    "peak_pcm": 3052,
+    "description": "Arabic pagination icon direction contradicts page progression"
+  },
+  {
+    "time": 61.0,
+    "frame": 1830,
+    "peak_pcm": 2183,
+    "description": "Gentle zoom into actual UI"
+  },
+  {
+    "time": 67.16666666666667,
+    "frame": 2015,
+    "peak_pcm": 3212,
+    "description": "Natural section transition"
+  },
+  {
+    "time": 73.7,
+    "frame": 2211,
+    "peak_pcm": 3052,
+    "description": "Same input in Arabic; labels still align left"
+  },
+  {
+    "time": 73.0,
+    "frame": 2190,
+    "peak_pcm": 2317,
+    "description": "Gentle zoom into actual UI"
+  },
+  {
+    "time": 81.16666666666667,
+    "frame": 2435,
+    "peak_pcm": 3267,
+    "description": "Natural section transition"
+  },
+  {
+    "time": 86.7,
+    "frame": 2601,
+    "peak_pcm": 3052,
+    "description": "Arabic dialog: close button overlaps the title"
+  },
+  {
+    "time": 86.0,
+    "frame": 2580,
+    "peak_pcm": 2028,
+    "description": "Gentle zoom into actual UI"
+  },
+  {
+    "time": 94.7,
+    "frame": 2841,
+    "peak_pcm": 3052,
+    "description": "Stored address stays English in both languages"
+  },
+  {
+    "time": 94.0,
+    "frame": 2820,
+    "peak_pcm": 2276,
+    "description": "Gentle zoom into actual UI"
+  },
+  {
+    "time": 103.0,
+    "frame": 3090,
+    "peak_pcm": 3464,
+    "description": "Editorial language-switch emphasis; not recorded click audio"
+  },
+  {
+    "time": 116.7,
+    "frame": 3501,
+    "peak_pcm": 3052,
+    "description": "Procurement Arabic table headers remain left aligned"
+  },
+  {
+    "time": 116.0,
+    "frame": 3480,
+    "peak_pcm": 2187,
+    "description": "Gentle zoom into actual UI"
+  },
+  {
+    "time": 123.7,
+    "frame": 3711,
+    "peak_pcm": 3052,
+    "description": "Procurement status filter label remains left aligned"
+  },
+  {
+    "time": 123.0,
+    "frame": 3690,
+    "peak_pcm": 2402,
+    "description": "Gentle zoom into actual UI"
+  },
+  {
+    "time": 129.16666666666666,
+    "frame": 3875,
+    "peak_pcm": 3010,
+    "description": "Natural section transition"
+  }
+]

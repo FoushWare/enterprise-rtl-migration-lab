@@ -1,0 +1,44 @@
+import {enterReview} from './enter-review';
+import {test,expect} from '@playwright/test';
+import {readFileSync,writeFileSync} from 'node:fs';
+import {join} from 'node:path';
+import {createHash} from 'node:crypto';
+const origin='http://127.0.0.1:4318';
+const sha=(s:string)=>createHash('sha256').update(s).digest('hex');
+test.describe.configure({mode:'serial'});
+for(const mode of ['one-by-one','apply-first'] as const)test(mode+' reviews actual CSS spacing across files, renders RTL, applies once and rolls back',async({page,request,browser},info)=>{
+ test.setTimeout(240000);
+ const env=JSON.parse(readFileSync(process.env.RTL_MANUAL_ENVIRONMENT!,'utf8'));if(!env.project.includes('rtl-analyzer-e2e-')||env.project.includes('EDczGl'))throw Error('DISPOSABLE_ONLY');
+ const report=JSON.parse(readFileSync(join(env.dashboard,'rtl-report.json'),'utf8'));
+ const fs=report.findings.filter((f:any)=>f.path.endsWith('arbitrary-spacing.css')||f.path.endsWith('unrelated-name.css'));
+ const a=fs.find((f:any)=>f.original.startsWith('margin-left: 12px')),b=fs.find((f:any)=>f.original.startsWith('padding-right: 8px')),c=fs.find((f:any)=>f.original.startsWith('margin-right: 20px')),d=fs.find((f:any)=>f.original.startsWith('padding-left: 16px'));
+ expect([a,b,c,d].every(Boolean)).toBe(true);
+ const originals=Object.fromEntries([...new Set(fs.map((f:any)=>f.path))].map((p:any)=>[p,readFileSync(join(env.project,p),'utf8')]));
+ const snapshot=()=>request.get(origin+'/review/workflows?'+new URLSearchParams({inputDigest:report.inputDigest,policyDigest:report.policyDigest,mode})).then(r=>r.json()).then(r=>r.workflow);
+ const events:any[]=[],errors:string[]=[];page.on('request',r=>{if(r.method()==='POST')events.push({url:r.url(),body:r.postDataJSON()})});page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.accept());
+ await page.goto('?finding='+encodeURIComponent(a.id),{waitUntil:'domcontentloaded'});await enterReview(page,mode);await expect(page.locator('.workflow-summary')).toContainText(mode);
+ let w=await snapshot();const id=w.id;
+ for(const f of [a,b,c,d]){const e=w.entries.find((e:any)=>e.finding.id===f.id);expect(e.patch.replacement).toMatch(/^(margin|padding)-inline-(start|end)\s*:/);expect(e.reason).toContain('css-spacing-logical');expect(e.reason).toContain('Requires semantic review');expect(e.applied).toBe(mode==='apply-first')}
+ for(const f of fs.filter((f:any)=>![a,b,c,d].includes(f))){const e=w.entries.find((e:any)=>e.finding.id===f.id);expect(e.patch).toBeUndefined();expect(e.reason).toContain('CSS_SPACING_')}
+ async function select(f:any){await page.locator('button.file[data-source-path="'+f.path+'"]').click();await page.locator('button.finding').filter({hasText:f.path+':'+f.range.start.line+':'+f.range.start.column}).click()}
+ for(const f of [a,b,c,d]){await select(f);if(mode==='one-by-one'){await page.getByRole('button',{name:'Prepare candidate',exact:true}).click();await expect.poll(async()=>(await snapshot()).entries.find((e:any)=>e.finding.id===f.id).applied).toBe(true)}}
+ const mapped=report.findings.find((f:any)=>f.path.endsWith('InvoiceTable.tsx')&&f.ruleId==='RTL.BIDI.ISOLATION');await select(mapped);await expect(page.locator('.component-before .embedded-state')).toHaveAttribute('data-state','ready');await page.locator('.component-toolbar').getByRole('button',{name:'Open candidate application',exact:true}).click();
+ w=await snapshot();const session=w.session.id;await expect.poll(async()=>(await snapshot()).session.runtime?.status).toBe('healthy');w=await snapshot();
+ const application=await browser.newPage();const rendering:any[]=[];await application.goto('http://127.0.0.1:4200/invoices?demo=unmigrated-rtl&lang=ar',{waitUntil:'domcontentloaded'});await expect(application.locator('html')).toHaveAttribute('dir','rtl');const originalRTL=await application.locator('.spacing-a').evaluate(n=>{const s=getComputedStyle(n);return {marginLeft:s.marginLeft,marginRight:s.marginRight,paddingRight:s.paddingRight}});expect(originalRTL).toEqual({marginLeft:'12px',marginRight:'0px',paddingRight:'8px'});
+ for(const rtl of [false,true]){await application.goto(w.session.runtime.origin+'/invoices?demo=unmigrated-rtl&lang='+(rtl?'ar':'en'),{waitUntil:'domcontentloaded'});await expect(application.locator('html')).toHaveAttribute('dir',rtl?'rtl':'ltr');const computed=await application.locator('.spacing-a').evaluate(n=>{const s=getComputedStyle(n);return {marginLeft:s.marginLeft,marginRight:s.marginRight,paddingLeft:s.paddingLeft,paddingRight:s.paddingRight}});expect(computed).toEqual(rtl?{marginLeft:'0px',marginRight:'12px',paddingLeft:'8px',paddingRight:'0px'}:{marginLeft:'12px',marginRight:'0px',paddingLeft:'0px',paddingRight:'8px'});rendering.push({rtl,computed})}await application.close();
+ for(const [f,label,decision] of [[a,'Approve fix','Accepted'],[b,'Reject fix','Rejected'],[c,'Defer','Deferred'],[d,'Approve fix','Accepted']] as const){await select(f);await page.getByRole('button',{name:label,exact:true}).click();await expect.poll(async()=>(await snapshot()).entries.find((e:any)=>e.finding.id===f.id).decision).toBe(decision)}
+ w=await snapshot();const css=readFileSync(join(w.session.candidateRoot,a.path),'utf8');expect(css).toContain('margin-inline-start: 12px !important');expect(css).toContain('padding-right: 8px');expect(css).toContain('margin-right: 20px');expect(readFileSync(join(w.session.candidateRoot,d.path),'utf8')).toContain('padding-inline-start: 16px');
+ await page.reload({waitUntil:'domcontentloaded'});await enterReview(page,mode);await expect(page.locator('.workflow-summary')).toContainText('2 accepted');expect((await snapshot()).id).toBe(id);
+ await page.getByRole('button',{name:'Validate accepted changes',exact:true}).click();await expect(page.locator('.workflow-validation')).toContainText('Technical validation: Passed',{timeout:180000});await page.screenshot({path:info.outputPath('css-validated.png'),fullPage:true});
+ await page.getByRole('button',{name:'Apply accepted changes to source',exact:true}).click();await expect(page.locator('.workflow-summary')).toContainText('Applied');w=await snapshot();expect(w.receipts).toHaveLength(2);expect(w.session.id).toBe(session);
+ for(const r of w.receipts){expect(sha(readFileSync(join(env.project,r.path),'utf8'))).toBe(r.appliedSha256);expect(sha(readFileSync(r.backupPath,'utf8'))).toBe(r.originalSha256)}
+ // Select a mapped current finding: preview eligibility is independent from transformation eligibility.
+ const showPreview=async()=>{await page.locator('button.file').filter({hasText:'InvoiceTable.tsx'}).click();await page.locator('button.finding').first().click();await expect(page.locator('.component-before .embedded-state')).toHaveAttribute('data-state','ready',{timeout:30000})};
+ await showPreview();await page.locator('.component-toolbar').getByRole('button',{name:'RTL',exact:true}).click();const currentFrame=page.frameLocator('.component-before iframe');await expect(currentFrame.locator('html')).toHaveAttribute('dir','rtl');expect(await currentFrame.locator('.spacing-a').evaluate(n=>{const s=getComputedStyle(n);return {marginRight:s.marginRight,paddingRight:s.paddingRight,paddingLeft:s.paddingLeft}})).toEqual({marginRight:'12px',paddingRight:'8px',paddingLeft:'0px'});expect(await currentFrame.locator('.spacing-c').evaluate(n=>getComputedStyle(n).paddingRight)).toBe('16px');await page.getByRole('button',{name:'Expand original preview',exact:true}).click();await page.screenshot({path:info.outputPath('css-post-apply.png')});await page.getByRole('button',{name:'Close',exact:true}).click();
+ await page.reload({waitUntil:'domcontentloaded'});await enterReview(page,mode);await showPreview();
+ const unrelated=join(env.project,'libs/shared/src/index.ts'),unchanged=readFileSync(unrelated,'utf8');writeFileSync(unrelated,unchanged+'\n// preserve unrelated edit\n');
+ await page.getByRole('button',{name:'Rollback accepted changes',exact:true}).click();await expect(page.locator('.workflow-summary')).toContainText('Rolled Back');expect(readFileSync(unrelated,'utf8')).toContain('preserve unrelated edit');writeFileSync(unrelated,unchanged);
+ await page.reload({waitUntil:'domcontentloaded'});await expect(page.locator('.source-context-status')).toContainText('Automatic rescan complete');await expect(page.locator('.workflow-summary')).toContainText('0 accepted');await showPreview();
+ for(const [p,source] of Object.entries(originals))expect(readFileSync(join(env.project,p),'utf8')).toBe(source);
+ expect(events.filter(e=>/\/apply$/.test(e.url))).toHaveLength(1);expect(errors).toEqual([]);writeFileSync(info.outputPath('css-acceptance.json'),JSON.stringify({mode,workflow:w,originalRTL,rendering,events,errors,originals},null,2));
+});

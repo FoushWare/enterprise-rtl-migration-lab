@@ -1,0 +1,47 @@
+{
+  "head": "910133cc332af96268d19fc6563608434b2c321c",
+  "branch": "study/unmigrated-rtl-ui",
+  "tracked_source_files_unchanged": 248,
+  "historical_mp4_files_unchanged": 30,
+  "git_status_unchanged": true,
+  "new_source_changes": 0,
+  "new_commits": 0,
+  "picture_preservation": [
+    {
+      "master": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-03-v2/master/CoffeeBreakWeb_RTL-Migration_AR_Master_V3_Clean.mp4",
+      "scene_coded_slice_counts": [
+        1500,
+        4020,
+        3900
+      ],
+      "all_coded_slice_payloads_identical": true
+    },
+    {
+      "master": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-03-v2/master/CoffeeBreakWeb_RTL-Migration_AR_Master_V3_Preview.mp4",
+      "scene_coded_slice_counts": [
+        1500,
+        4020,
+        3900
+      ],
+      "all_coded_slice_payloads_identical": true
+    },
+    {
+      "master": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-03-v2/master/CoffeeBreakWeb_RTL-Migration_EN_Master_V3_Clean.mp4",
+      "scene_coded_slice_counts": [
+        1500,
+        4020,
+        3900
+      ],
+      "all_coded_slice_payloads_identical": true
+    },
+    {
+      "master": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-03-v2/master/CoffeeBreakWeb_RTL-Migration_EN_Master_V3_Preview.mp4",
+      "scene_coded_slice_counts": [
+        1500,
+        4020,
+        3900
+      ],
+      "all_coded_slice_payloads_identical": true
+    }
+  ]
+}

@@ -1,0 +1,326 @@
+{
+  "AR": [
+    {
+      "start": 0.25,
+      "end": 5.75,
+      "estimated_spoken_duration": 3.2,
+      "text": "دي نسخة الـStudy. بنشغّل التطبيق الحقيقي من الـTerminal.",
+      "position": "",
+      "shot": 0
+    },
+    {
+      "start": 6.25,
+      "end": 13.75,
+      "estimated_spoken_duration": 3.6,
+      "text": "الواجهة شغّالة بالإنجليزي. نبدّل للعربي من نفس اختيار اللغة.",
+      "position": "",
+      "shot": 1
+    },
+    {
+      "start": 14.25,
+      "end": 21.75,
+      "estimated_spoken_duration": 2.8,
+      "text": "العربي اتفعّل، لكن الـSidebar فضل على الشمال.",
+      "position": "",
+      "shot": 2
+    },
+    {
+      "start": 22.25,
+      "end": 23.75,
+      "estimated_spoken_duration": 0.8,
+      "text": "الـLogo بالإنجليزي.",
+      "position": "",
+      "shot": 3
+    },
+    {
+      "start": 24.25,
+      "end": 30.75,
+      "estimated_spoken_duration": 3.2,
+      "text": "بالعربي، تركيب الـLogo اتقلب والنقطة اتحركت قبل الاسم.",
+      "position": "",
+      "shot": 4
+    },
+    {
+      "start": 31.25,
+      "end": 38.75,
+      "estimated_spoken_duration": 2.8,
+      "text": "هنا أيقونة الـKPI داخلة على عنوان الكارت.",
+      "position": "",
+      "shot": 5
+    },
+    {
+      "start": 39.25,
+      "end": 46.75,
+      "estimated_spoken_duration": 3.6,
+      "text": "ترتيب الشهور انعكس، لكن مسار الرسم نفسه ما اتغيرش.",
+      "position": "{\\an8\\pos(1120,120)}",
+      "shot": 6
+    },
+    {
+      "start": 47.25,
+      "end": 48.75,
+      "estimated_spoken_duration": 1.2,
+      "text": "سهم التفاصيل بالإنجليزي.",
+      "position": "",
+      "shot": 7
+    },
+    {
+      "start": 49.25,
+      "end": 55.75,
+      "estimated_spoken_duration": 2.8,
+      "text": "السهم اتحرك للشمال، لكنه لسه بيشاور لليمين.",
+      "position": "",
+      "shot": 8
+    },
+    {
+      "start": 56.25,
+      "end": 59.75,
+      "estimated_spoken_duration": 2.4,
+      "text": "الفاتورة بتتفتح صح؛ المشكلة اتجاه السهم.",
+      "position": "",
+      "shot": 9
+    },
+    {
+      "start": 60.25,
+      "end": 66.75,
+      "estimated_spoken_duration": 4.4,
+      "text": "الصفحات بتتغيّر صح، لكن سهم التالي مش متوافق مع ترتيبها بالعربي.",
+      "position": "{\\an8\\pos(1120,120)}",
+      "shot": 10
+    },
+    {
+      "start": 67.25,
+      "end": 71.75,
+      "estimated_spoken_duration": 2.0,
+      "text": "نفتح نموذج إنشاء فاتورة الحقيقي.",
+      "position": "",
+      "shot": 11
+    },
+    {
+      "start": 72.25,
+      "end": 80.75,
+      "estimated_spoken_duration": 4.0,
+      "text": "عناوين الحقول لسه متظبطة على الشمال، رغم إن الواجهة عربي.",
+      "position": "",
+      "shot": 12
+    },
+    {
+      "start": 81.25,
+      "end": 84.75,
+      "estimated_spoken_duration": 1.6,
+      "text": "ودي بيانات العملاء التجريبية.",
+      "position": "",
+      "shot": 13
+    },
+    {
+      "start": 85.25,
+      "end": 92.75,
+      "estimated_spoken_duration": 3.2,
+      "text": "جوه الـDialog، زرار القفل داخل على عنوان العميل.",
+      "position": "",
+      "shot": 14
+    },
+    {
+      "start": 93.25,
+      "end": 100.75,
+      "estimated_spoken_duration": 4.0,
+      "text": "نفس العنوان الإنجليزي، لكن رقم أربعة وعشرين ظهر في آخره.",
+      "position": "",
+      "shot": 15
+    },
+    {
+      "start": 101.25,
+      "end": 114.75,
+      "estimated_spoken_duration": 2.8,
+      "text": "نروح للمشتريات، ونبدّل اللغة من الاختيار الحقيقي.",
+      "position": "",
+      "shot": 16
+    },
+    {
+      "start": 115.25,
+      "end": 121.75,
+      "estimated_spoken_duration": 3.2,
+      "text": "عناوين الجدول العربي لسه على الشمال جوه الأعمدة.",
+      "position": "",
+      "shot": 17
+    },
+    {
+      "start": 122.25,
+      "end": 128.75,
+      "estimated_spoken_duration": 3.2,
+      "text": "ونفس مشكلة المحاذاة ظاهرة في عنوان فلتر الحالة.",
+      "position": "",
+      "shot": 18
+    },
+    {
+      "start": 129.25,
+      "end": 133.75,
+      "estimated_spoken_duration": 2.4,
+      "text": "البيانات ثابتة. الجاي نفهم طبقات الكود.",
+      "position": "",
+      "shot": 19
+    }
+  ],
+  "EN": [
+    {
+      "start": 0.25,
+      "end": 5.75,
+      "estimated_spoken_duration": 4.4,
+      "text": "This is the Study workspace, running the real application from its terminal.",
+      "position": "",
+      "shot": 0
+    },
+    {
+      "start": 6.25,
+      "end": 13.75,
+      "estimated_spoken_duration": 4.4,
+      "text": "The English interface works. Switch to Arabic through its actual language selector.",
+      "position": "",
+      "shot": 1
+    },
+    {
+      "start": 14.25,
+      "end": 21.75,
+      "estimated_spoken_duration": 3.7,
+      "text": "Arabic is active, but the sidebar remains on the left.",
+      "position": "",
+      "shot": 2
+    },
+    {
+      "start": 22.25,
+      "end": 23.75,
+      "estimated_spoken_duration": 1.1,
+      "text": "The English logo.",
+      "position": "",
+      "shot": 3
+    },
+    {
+      "start": 24.25,
+      "end": 30.75,
+      "estimated_spoken_duration": 4.4,
+      "text": "Arabic reverses the logo composition and moves its dot before the name.",
+      "position": "",
+      "shot": 4
+    },
+    {
+      "start": 31.25,
+      "end": 38.75,
+      "estimated_spoken_duration": 3.0,
+      "text": "The KPI icon occupies the Arabic heading’s space.",
+      "position": "",
+      "shot": 5
+    },
+    {
+      "start": 39.25,
+      "end": 46.75,
+      "estimated_spoken_duration": 3.7,
+      "text": "The month labels reverse, but the plotted line remains unchanged.",
+      "position": "{\\an8\\pos(1120,120)}",
+      "shot": 6
+    },
+    {
+      "start": 47.25,
+      "end": 48.75,
+      "estimated_spoken_duration": 1.5,
+      "text": "The English detail arrow.",
+      "position": "",
+      "shot": 7
+    },
+    {
+      "start": 49.25,
+      "end": 55.75,
+      "estimated_spoken_duration": 4.4,
+      "text": "The control moves left in Arabic, but its arrow still points right.",
+      "position": "",
+      "shot": 8
+    },
+    {
+      "start": 56.25,
+      "end": 59.75,
+      "estimated_spoken_duration": 2.6,
+      "text": "Navigation works. The icon direction is wrong.",
+      "position": "",
+      "shot": 9
+    },
+    {
+      "start": 60.25,
+      "end": 66.75,
+      "estimated_spoken_duration": 4.1,
+      "text": "Pagination changes records correctly, but Next contradicts the Arabic page order.",
+      "position": "{\\an8\\pos(1120,120)}",
+      "shot": 10
+    },
+    {
+      "start": 67.25,
+      "end": 71.75,
+      "estimated_spoken_duration": 2.2,
+      "text": "Open the real invoice creation form.",
+      "position": "",
+      "shot": 11
+    },
+    {
+      "start": 72.25,
+      "end": 80.75,
+      "estimated_spoken_duration": 5.2,
+      "text": "Arabic field labels retain their left positioning. The form has not acquired RTL styling.",
+      "position": "",
+      "shot": 12
+    },
+    {
+      "start": 81.25,
+      "end": 84.75,
+      "estimated_spoken_duration": 1.9,
+      "text": "These are fictional customer fixtures.",
+      "position": "",
+      "shot": 13
+    },
+    {
+      "start": 85.25,
+      "end": 92.75,
+      "estimated_spoken_duration": 3.0,
+      "text": "The close button overlaps the customer dialog title.",
+      "position": "",
+      "shot": 14
+    },
+    {
+      "start": 93.25,
+      "end": 100.75,
+      "estimated_spoken_duration": 5.2,
+      "text": "The stored English address is unchanged, but its leading number appears at the end.",
+      "position": "",
+      "shot": 15
+    },
+    {
+      "start": 101.25,
+      "end": 114.75,
+      "estimated_spoken_duration": 3.3,
+      "text": "Move to Procurement and use its actual language selector.",
+      "position": "",
+      "shot": 16
+    },
+    {
+      "start": 115.25,
+      "end": 121.75,
+      "estimated_spoken_duration": 3.0,
+      "text": "Arabic table headings remain left-aligned inside their columns.",
+      "position": "",
+      "shot": 17
+    },
+    {
+      "start": 122.25,
+      "end": 128.75,
+      "estimated_spoken_duration": 3.3,
+      "text": "The floating Status label has the same alignment problem.",
+      "position": "",
+      "shot": 18
+    },
+    {
+      "start": 129.25,
+      "end": 133.75,
+      "estimated_spoken_duration": 3.3,
+      "text": "Data remains intact. Next, trace responsibility through the code.",
+      "position": "",
+      "shot": 19
+    }
+  ]
+}

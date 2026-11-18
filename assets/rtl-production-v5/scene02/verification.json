@@ -1,0 +1,54 @@
+[
+  {
+    "file": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/rtl-production-v5/scene02/outputs/Scene-02_Broken-RTL_AR_V5_Clean.mp4",
+    "duration": "134.000000",
+    "frames": "4020",
+    "fps": "30/1",
+    "resolution": [
+      1920,
+      1080
+    ],
+    "video": "h264",
+    "audio": "aac",
+    "full_decode": "PASS"
+  },
+  {
+    "file": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/rtl-production-v5/scene02/outputs/Scene-02_Broken-RTL_AR_V5_Preview.mp4",
+    "duration": "134.000000",
+    "frames": "4020",
+    "fps": "30/1",
+    "resolution": [
+      1920,
+      1080
+    ],
+    "video": "h264",
+    "audio": "aac",
+    "full_decode": "PASS"
+  },
+  {
+    "file": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/rtl-production-v5/scene02/outputs/Scene-02_Broken-RTL_EN_V5_Clean.mp4",
+    "duration": "134.000000",
+    "frames": "4020",
+    "fps": "30/1",
+    "resolution": [
+      1920,
+      1080
+    ],
+    "video": "h264",
+    "audio": "aac",
+    "full_decode": "PASS"
+  },
+  {
+    "file": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/rtl-production-v5/scene02/outputs/Scene-02_Broken-RTL_EN_V5_Preview.mp4",
+    "duration": "134.000000",
+    "frames": "4020",
+    "fps": "30/1",
+    "resolution": [
+      1920,
+      1080
+    ],
+    "video": "h264",
+    "audio": "aac",
+    "full_decode": "PASS"
+  }
+]

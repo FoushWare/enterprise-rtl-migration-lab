@@ -1,0 +1,95 @@
+{
+  "status": "Draft – Pending Review",
+  "scene": "cli",
+  "aspect": "16:9",
+  "lang": "en",
+  "fps": 30,
+  "width": 1920,
+  "height": 1080,
+  "duration": 6.7,
+  "timing": [
+    {
+      "id": "cli",
+      "duration": 6,
+      "entrance": 0.65,
+      "transition": 0.45,
+      "hold": 0.5,
+      "pause": 0.2,
+      "markers": {
+        "cli.command.start": 0.6,
+        "cli.command.complete": 2.8
+      }
+    },
+    {
+      "id": "orchestrator",
+      "duration": 7,
+      "entrance": 0.65,
+      "transition": 0.45,
+      "hold": 0.5,
+      "pause": 0.2,
+      "markers": {
+        "scan.dispatch": 1,
+        "scan.audit": 3.5,
+        "scan.final": 5
+      }
+    },
+    {
+      "id": "parsing",
+      "duration": 7,
+      "entrance": 0.65,
+      "transition": 0.45,
+      "hold": 0.5,
+      "pause": 0.2,
+      "markers": {
+        "parser.evidence.highlight": 1,
+        "parser.evidence.extracted": 3
+      }
+    },
+    {
+      "id": "detection",
+      "duration": 7,
+      "entrance": 0.65,
+      "transition": 0.45,
+      "hold": 0.5,
+      "pause": 0.2,
+      "markers": {
+        "detection.rules.applied": 1.5,
+        "detection.finding.created": 3.5
+      }
+    },
+    {
+      "id": "coverage",
+      "duration": 7,
+      "entrance": 0.65,
+      "transition": 0.45,
+      "hold": 0.5,
+      "pause": 0.2,
+      "markers": {
+        "coverage.incomplete.warning": 3
+      }
+    },
+    {
+      "id": "reporting",
+      "duration": 6,
+      "entrance": 0.65,
+      "transition": 0.45,
+      "hold": 0.5,
+      "pause": 0.2,
+      "markers": {
+        "report.generated": 2.5
+      }
+    },
+    {
+      "id": "overview",
+      "duration": 8,
+      "entrance": 0.8,
+      "transition": 0.5,
+      "hold": 1,
+      "pause": 0.2,
+      "markers": {
+        "overview.reveal": 0.4,
+        "overview.connections": 2
+      }
+    }
+  ]
+}

@@ -1,0 +1,116 @@
+{
+  "status": "Draft – Pending Review",
+  "fps": 30,
+  "duration": 50,
+  "shots": [
+    {
+      "id": "geo",
+      "start": 0,
+      "end": 8,
+      "source": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/css-migrations-rtl/assets/scene-01-opening-v3/outputs/Scene-01_Geographic-Journey_{LANG}_20s_Draft_V3.mp4",
+      "in": 0,
+      "speed": 2.5,
+      "kind": "retimed approved 3D footage, no new globe render",
+      "start_frame": 0,
+      "end_frame_exclusive": 240
+    },
+    {
+      "id": "invoicing",
+      "start": 8,
+      "end": 12.5,
+      "source": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/fullscreen-v4/originals/Invoicing_EN.mov",
+      "in": 25,
+      "crop": [
+        2944,
+        1656,
+        112,
+        238
+      ],
+      "kind": "actual Invoicing original recording",
+      "start_frame": 240,
+      "end_frame_exclusive": 375
+    },
+    {
+      "id": "procurement",
+      "start": 12.5,
+      "end": 17,
+      "source": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/expanded-v1/originals/Procurement_EN.mov",
+      "in": 20,
+      "crop": [
+        2944,
+        1656,
+        112,
+        238
+      ],
+      "kind": "actual Procurement original recording",
+      "start_frame": 375,
+      "end_frame_exclusive": 510
+    },
+    {
+      "id": "request",
+      "start": 17,
+      "end": 29,
+      "source": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/fullscreen-v3/originals/VSCode_Invoicing_Clean_Startup.mov",
+      "in": 46,
+      "crop": [
+        3264,
+        1836,
+        140,
+        180
+      ],
+      "kind": "real VS Code background beneath replaceable silhouette and fictional business-task graphics",
+      "start_frame": 510,
+      "end_frame_exclusive": 870
+    },
+    {
+      "id": "switch",
+      "start": 29,
+      "end": 38,
+      "source": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/RTL-Migration_Broken-UI_Demo_EN_Fullscreen_V4_Clean.mp4",
+      "in": 8,
+      "kind": "actual recorded English→Arabic switch",
+      "start_frame": 870,
+      "end_frame_exclusive": 1140
+    },
+    {
+      "id": "sidebar",
+      "start": 38,
+      "end": 40,
+      "source": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/RTL-Migration_Broken-UI_Demo_{LANG}_Fullscreen_V4.mp4",
+      "in": 19,
+      "kind": "verified existing issue footage",
+      "start_frame": 1140,
+      "end_frame_exclusive": 1200
+    },
+    {
+      "id": "chart",
+      "start": 40,
+      "end": 42,
+      "source": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/RTL-Migration_Broken-UI_Demo_{LANG}_Fullscreen_V4.mp4",
+      "in": 49,
+      "kind": "verified existing issue footage",
+      "start_frame": 1200,
+      "end_frame_exclusive": 1260
+    },
+    {
+      "id": "arrow",
+      "start": 42,
+      "end": 44,
+      "source": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/RTL-Migration_Broken-UI_Demo_{LANG}_Fullscreen_V4.mp4",
+      "in": 62,
+      "kind": "verified existing detail-arrow footage",
+      "start_frame": 1260,
+      "end_frame_exclusive": 1320
+    },
+    {
+      "id": "question",
+      "start": 44,
+      "end": 50,
+      "source": "/Users/a.fouad/iCloud Drive (Archive)/Documents/Youtube/enterprise-rtl-migration-lab-study/study/demo/videos/RTL-Migration_Broken-UI_Demo_EN_Fullscreen_V4_Clean.mp4",
+      "in": 158,
+      "kind": "actual continuing Procurement footage beneath blurred question",
+      "start_frame": 1320,
+      "end_frame_exclusive": 1500
+    }
+  ]
+}

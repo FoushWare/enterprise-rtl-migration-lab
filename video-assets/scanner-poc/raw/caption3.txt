@@ -1,0 +1,1 @@
+Actual report: stylesheet/.chart-labels  |  padding-left: 40px

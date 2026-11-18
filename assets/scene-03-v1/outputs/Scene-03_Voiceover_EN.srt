@@ -1,0 +1,99 @@
+1
+00:00:00,300 --> 00:00:03,065
+Let’s look under the hood.
+
+2
+00:00:03,065 --> 00:00:09,700
+Before changing code, identify the main components and who owns each responsibility.
+
+3
+00:00:10,300 --> 00:00:15,522
+This Nx monorepo contains two applications, shared libraries, and tools.
+
+4
+00:00:15,522 --> 00:00:19,700
+Separate application logic, shared presentation, and source analysis.
+
+5
+00:00:20,300 --> 00:00:27,200
+Invoicing manages invoices, with its own entry point, routes, list, and detail pages.
+
+6
+00:00:27,600 --> 00:00:32,333
+Procurement manages purchase orders through its own entry and routes.
+
+7
+00:00:32,333 --> 00:00:34,700
+Both applications use shared libraries.
+
+8
+00:00:35,300 --> 00:00:37,752
+This is the real Invoicing App.
+
+9
+00:00:37,752 --> 00:00:44,700
+The router selects pages; App owns invoice state and passes it to the pages that need it.
+
+10
+00:00:45,300 --> 00:00:50,522
+The Design System supplies the shell, fields, tables, and dialogs.
+
+11
+00:00:50,522 --> 00:00:54,700
+One shared component can therefore affect both applications.
+
+12
+00:00:55,300 --> 00:01:00,742
+Shared contains business types, fixtures, totals, money formatting, and local storage.
+
+13
+00:01:00,742 --> 00:01:04,700
+It also exports the locale and translation interface.
+
+14
+00:01:05,300 --> 00:01:08,978
+Locale, document direction, styling, and icon meaning are separate.
+
+15
+00:01:08,978 --> 00:01:14,700
+Study uses document RTL and MUI LTR; icons require semantic review, not automatic mirroring.
+
+16
+00:01:15,300 --> 00:01:18,718
+The Scanner collects static evidence and potential risks.
+
+17
+00:01:18,718 --> 00:01:24,700
+The Codemod constrains changes through safety checks; a finding is not automatic repair approval.
+
+18
+00:01:25,300 --> 00:01:29,227
+These relationships come from actual imports.
+
+19
+00:01:29,227 --> 00:01:33,809
+Both applications use Design System and Shared.
+
+20
+00:01:33,809 --> 00:01:39,700
+Tools analyze source files; neither application imports the other.
+
+21
+00:01:40,300 --> 00:01:49,065
+Our real example is invoice1048: Northstar Studio, four thousand eight hundred US dollars, Pending.
+
+22
+00:01:49,065 --> 00:01:54,700
+The actual table link opens the same invoice details.
+
+23
+00:01:55,300 --> 00:02:02,564
+A symptom may appear in an application while its owner is a shared component or runtime layer.
+
+24
+00:02:02,564 --> 00:02:04,700
+Establish causality before changing code.
+
+25
+00:02:05,300 --> 00:02:09,700
+How do we find RTL risks across this codebase?

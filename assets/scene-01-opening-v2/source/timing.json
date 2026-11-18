@@ -1,0 +1,268 @@
+{
+  "status": "Draft – Pending Review",
+  "fps": 30,
+  "preview_frames": 300,
+  "preview_duration": 10,
+  "timing_basis": "Estimated natural delivery; not forced alignment or recorded speech",
+  "frame_convention": "Start inclusive, end exclusive; time=frame/30",
+  "narration_preview": "تخيل معايا شركة Software كبيرة في أوروبا، عندها Enterprise Platform شغالة بالفعل.",
+  "phrases": [
+    {
+      "start": 0.4,
+      "end": 1.5,
+      "start_frame": 12,
+      "end_frame_exclusive": 45,
+      "text": "تخيل معايا"
+    },
+    {
+      "start": 1.5,
+      "end": 3.0,
+      "start_frame": 45,
+      "end_frame_exclusive": 90,
+      "text": "شركة Software"
+    },
+    {
+      "start": 3.0,
+      "end": 4.5,
+      "start_frame": 90,
+      "end_frame_exclusive": 135,
+      "text": "كبيرة في أوروبا،"
+    },
+    {
+      "start": 4.8,
+      "end": 5.3,
+      "start_frame": 144,
+      "end_frame_exclusive": 159,
+      "text": "عندها"
+    },
+    {
+      "start": 5.3,
+      "end": 6.9,
+      "start_frame": 159,
+      "end_frame_exclusive": 207,
+      "text": "Enterprise Platform"
+    },
+    {
+      "start": 6.9,
+      "end": 8.4,
+      "start_frame": 207,
+      "end_frame_exclusive": 252,
+      "text": "شغالة بالفعل."
+    }
+  ],
+  "guide_captions": [
+    {
+      "start": 1.5,
+      "end": 3.0,
+      "start_frame": 45,
+      "end_frame_exclusive": 90,
+      "text": "شركة Software"
+    },
+    {
+      "start": 3.0,
+      "end": 4.5,
+      "start_frame": 90,
+      "end_frame_exclusive": 135,
+      "text": "مقر في أوروبا"
+    },
+    {
+      "start": 5.3,
+      "end": 6.9,
+      "start_frame": 159,
+      "end_frame_exclusive": 207,
+      "text": "Enterprise Platform"
+    },
+    {
+      "start": 6.9,
+      "end": 8.4,
+      "start_frame": 207,
+      "end_frame_exclusive": 252,
+      "text": "شغالة بالفعل"
+    }
+  ],
+  "camera_travel_start": 5.1,
+  "camera_travel_duration": 4.4,
+  "pin_starts": [
+    3.0,
+    6.0,
+    7.1,
+    8.2
+  ],
+  "shots": [
+    {
+      "id": "01A",
+      "start": 0,
+      "end": 4.8,
+      "narration": "تخيل معايا شركة Software كبيرة في أوروبا،",
+      "spoken_start": 0.4,
+      "spoken_end": 4.5,
+      "spoken_duration": 4.1,
+      "visual": "Europe-centered Earth; fictional HQ appears with the Europe phrase.",
+      "camera": "Gentle push during establishment; no Middle East announcement.",
+      "keyframes": {
+        "HQ_start": 3.0,
+        "HQ_settled": 3.7
+      },
+      "presenter": "None; keep cinematic opening uninterrupted.",
+      "transition": "Continuous camera, brief natural clause pause; no cut.",
+      "start_frame": 0,
+      "end_frame_exclusive": 144,
+      "status": "Draft timing estimate — pending real VO alignment",
+      "source": "Master Prompt Scene01 exact narration; future visuals are proposals only",
+      "sfx": "None in preview; optional restrained accent only after VO review"
+    },
+    {
+      "id": "01B",
+      "start": 4.8,
+      "end": 8.4,
+      "narration": "عندها Enterprise Platform شغالة بالفعل.",
+      "spoken_start": 4.8,
+      "spoken_end": 8.4,
+      "spoken_duration": 3.6,
+      "visual": "Network arcs begin during the platform phrase, as visual foreshadowing; do not label new markets.",
+      "camera": "Travel begins 5.1, eases toward regional framing through9.5.",
+      "keyframes": {
+        "platform_phrase": 5.3,
+        "arc_starts": [
+          5.6,
+          6.7,
+          7.8
+        ],
+        "pin_starts": [
+          6.0,
+          7.1,
+          8.2
+        ]
+      },
+      "presenter": "None.",
+      "transition": "Continue network settlement while sentence concludes.",
+      "start_frame": 144,
+      "end_frame_exclusive": 252,
+      "status": "Draft timing estimate — pending real VO alignment",
+      "source": "Master Prompt Scene01 exact narration; future visuals are proposals only",
+      "sfx": "None in preview; optional restrained accent only after VO review"
+    },
+    {
+      "id": "01C",
+      "start": 8.4,
+      "end": 10,
+      "narration": "",
+      "spoken_start": null,
+      "spoken_end": null,
+      "spoken_duration": 0,
+      "visual": "Quiet network hold, no expansion title before the expansion narration.",
+      "camera": "Settle at9.5; last0.5sec stable for next edit.",
+      "keyframes": {
+        "camera_settled": 9.5
+      },
+      "presenter": "None.",
+      "transition": "Match camera into the future expansion shot, not rendered yet.",
+      "start_frame": 252,
+      "end_frame_exclusive": 300,
+      "status": "Draft timing estimate — pending real VO alignment",
+      "source": "Master Prompt Scene01 exact narration; future visuals are proposals only",
+      "sfx": "None in preview; optional restrained accent only after VO review"
+    },
+    {
+      "id": "01D",
+      "start": 10,
+      "end": 20,
+      "narration": "الشركة دي قررت تتوسع في سوق جديد... الشرق الأوسط.",
+      "spoken_start": 10.4,
+      "spoken_end": 16.8,
+      "spoken_duration": 6.4,
+      "visual": "Future: announce expansion only now; reveal regional endpoints.",
+      "camera": "Future regional push / route emphasis.",
+      "keyframes": {
+        "expansion_caption": 13.8,
+        "settle": 17.2
+      },
+      "presenter": "None.",
+      "transition": "Network-to-product match transition, pending approval.",
+      "start_frame": 300,
+      "end_frame_exclusive": 600,
+      "status": "Draft timing estimate — pending real VO alignment",
+      "source": "Master Prompt Scene01 exact narration; future visuals are proposals only",
+      "sfx": "None in preview; optional restrained accent only after VO review"
+    },
+    {
+      "id": "01E",
+      "start": 20,
+      "end": 32,
+      "narration": "والـPlatform دي مش مجرد Website. عندك Invoicing وProcurement وShared Components مستخدمة في أكتر من Application.",
+      "spoken_start": 20.4,
+      "spoken_end": 31.2,
+      "spoken_duration": 10.8,
+      "visual": "Future: actual product footage and verified shared-code references; missing assets remain FOOTAGE REQUIRED.",
+      "camera": "Real full-screen source/browser cuts; no invented dashboards.",
+      "keyframes": {
+        "products": 23.8,
+        "shared_components": 27.8
+      },
+      "presenter": "Planned real presenter placeholder20.0–23.8; record separately, no synthetic person.",
+      "transition": "Return to presenter for requirement, pending approval.",
+      "start_frame": 600,
+      "end_frame_exclusive": 960,
+      "status": "Draft timing estimate — pending real VO alignment",
+      "source": "Master Prompt Scene01 exact narration; future visuals are proposals only",
+      "sfx": "None in preview; optional restrained accent only after VO review"
+    },
+    {
+      "id": "01F",
+      "start": 32,
+      "end": 41,
+      "narration": "وفجأة، الـBusiness Team بعت Requirement شكله بسيط جدًا: إحنا محتاجين ندعم العربي.",
+      "spoken_start": 32.3,
+      "spoken_end": 40.2,
+      "spoken_duration": 7.9,
+      "visual": "Future: presenter then fictional request graphic, clearly educational scenario.",
+      "camera": "Presenter medium close-up; gentle push on request phrase.",
+      "keyframes": {
+        "request": 34.8,
+        "support_arabic": 38.2
+      },
+      "presenter": "Real presenter placeholder32–35, footage not captured here.",
+      "transition": "Actual language selector / question, pending approval.",
+      "start_frame": 960,
+      "end_frame_exclusive": 1230,
+      "status": "Draft timing estimate — pending real VO alignment",
+      "source": "Master Prompt Scene01 exact narration; future visuals are proposals only",
+      "sfx": "None in preview; optional restrained accent only after VO review"
+    },
+    {
+      "id": "01G",
+      "start": 41,
+      "end": 52,
+      "narration": "بس السؤال هنا: هل هنترجم الكلام ونضيف dir RTL وخلاص؟ ولا الموضوع أكبر من كده بكتير؟",
+      "spoken_start": 41.3,
+      "spoken_end": 51.5,
+      "spoken_duration": 10.2,
+      "visual": "Future: actual selector and restrained question; no premature fixes.",
+      "camera": "Real browser close-up then transition to preserved Scene02.",
+      "keyframes": {
+        "dir_RTL": 45.7,
+        "question": 48.8
+      },
+      "presenter": "Optional real presenter return48.8–51.5; pending approval.",
+      "transition": "Into separate composition referencing immutable approved V4. Do not overwrite it.",
+      "start_frame": 1230,
+      "end_frame_exclusive": 1560,
+      "status": "Draft timing estimate — pending real VO alignment",
+      "source": "Master Prompt Scene01 exact narration; future visuals are proposals only",
+      "sfx": "None in preview; optional restrained accent only after VO review"
+    }
+  ],
+  "future_scene_scripts": {
+    "Scene 02": "PENDING APPROVAL — no narration authored",
+    "Scene 03": "PENDING APPROVAL — no narration authored",
+    "Scene 04": "PENDING APPROVAL — no narration authored",
+    "Scene 05": "PENDING APPROVAL — no narration authored",
+    "Scene 06": "PENDING APPROVAL — no narration authored",
+    "Scene 07": "PENDING APPROVAL — no narration authored",
+    "Scene 08": "PENDING APPROVAL — no narration authored",
+    "Scene 09": "PENDING APPROVAL — no narration authored"
+  },
+  "establishing_push_start": 0,
+  "establishing_push_end": 4.5,
+  "establishing_push_distance": 0.08
+}

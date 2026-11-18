@@ -1,0 +1,31 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1920
+PlayResY: 1080
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Guide,Arial,42,&H00FFFFFF,&H00FFFFFF,&H00121A26,&H50121A26,0,0,0,0,100,100,0,0,3,5,0,2,180,180,35,1
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,00:00:00.25,00:00:05.75,Guide,,0,0,0,,This is the Study workspace, running the real application from its terminal.
+Dialogue: 0,00:00:06.25,00:00:13.75,Guide,,0,0,0,,The English interface works. Switch to Arabic through its actual language selector.
+Dialogue: 0,00:00:14.25,00:00:21.75,Guide,,0,0,0,,Arabic is active, but the sidebar remains on the left.
+Dialogue: 0,00:00:22.25,00:00:23.75,Guide,,0,0,0,,The English logo.
+Dialogue: 0,00:00:24.25,00:00:30.75,Guide,,0,0,0,,Arabic reverses the logo composition and moves its dot before the name.
+Dialogue: 0,00:00:31.25,00:00:38.75,Guide,,0,0,0,,The KPI icon occupies the Arabic heading’s space.
+Dialogue: 0,00:00:39.25,00:00:46.75,Guide,,0,0,0,,{\an8\pos(1120,120)}The month labels reverse, but the plotted line remains unchanged.
+Dialogue: 0,00:00:47.25,00:00:48.75,Guide,,0,0,0,,The English detail arrow.
+Dialogue: 0,00:00:49.25,00:00:55.75,Guide,,0,0,0,,The control moves left in Arabic, but its arrow still points right.
+Dialogue: 0,00:00:56.25,00:00:59.75,Guide,,0,0,0,,Navigation works. The icon direction is wrong.
+Dialogue: 0,00:01:00.25,00:01:06.75,Guide,,0,0,0,,{\an8\pos(1120,120)}Pagination changes records correctly, but Next contradicts the Arabic page order.
+Dialogue: 0,00:01:07.25,00:01:11.75,Guide,,0,0,0,,Open the real invoice creation form.
+Dialogue: 0,00:01:12.25,00:01:20.75,Guide,,0,0,0,,Arabic field labels retain their left positioning. The form has not acquired RTL styling.
+Dialogue: 0,00:01:21.25,00:01:24.75,Guide,,0,0,0,,These are fictional customer fixtures.
+Dialogue: 0,00:01:25.25,00:01:32.75,Guide,,0,0,0,,The close button overlaps the customer dialog title.
+Dialogue: 0,00:01:33.25,00:01:40.75,Guide,,0,0,0,,The stored English address is unchanged, but its leading number appears at the end.
+Dialogue: 0,00:01:41.25,00:01:54.75,Guide,,0,0,0,,Move to Procurement and use its actual language selector.
+Dialogue: 0,00:01:55.25,00:02:01.75,Guide,,0,0,0,,Arabic table headings remain left-aligned inside their columns.
+Dialogue: 0,00:02:02.25,00:02:08.75,Guide,,0,0,0,,The floating Status label has the same alignment problem.
+Dialogue: 0,00:02:09.25,00:02:13.75,Guide,,0,0,0,,Data remains intact. Next, trace responsibility through the code.
