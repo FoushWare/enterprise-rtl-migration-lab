@@ -30,6 +30,8 @@
     "parse5": "7.3.0",
     "postcss": "8.5.29",
     "postcss-value-parser": "4.2.0",
-    "typescript": "~5.9.0"
-  }
+    "typescript": "~5.9.0",
+    "postcss-scss": "4.0.9"
+  },
+  "private": true
 }

@@ -1,4 +1,8 @@
-# RTL Migration Analyzer / @atlas/rtl-scanner
+# RTL Analyzer implementation / @atlas/rtl-scanner
+
+**Release architecture verified 2026-11-19:** this is the private implementation manifest, not a second npm release. The existing public package is [`rtl-analyzer`](https://github.com/FoushWare/rtl-analyzer/tree/codex/rtl-analyzer-0.3.0-prep/packages/rtl-analyzer), currently published at 0.2.0; preparation targets 0.3.0. Its `rtl-analyzer scan` / `rtl-analyzer preview` router bundles this implementation from a pinned source commit. See the [release-preparation record](../../docs/rtl-analyzer-v3/published-release-preparation-2026-11-19.md). Local implementation tarballs below remain useful for separate scanner verification.
+
+Recursive discovery and published static syntax detection were carried forward for wrapper compatibility. Utility classes remain detection-only, with one finding per recognized static token. Standalone review still requires explicit project/preview configuration. Earlier Nx-only discovery statements below are historical.
 
 Current consumer contract verified 2026-11-19. Static scanning is read-only. The optional local review companion prepares bounded fixes in isolated copies; only explicit approval, accepted-only validation and a separate confirmed Apply can write original source. The dated detection notes below preserve the earlier scanner evidence.
 

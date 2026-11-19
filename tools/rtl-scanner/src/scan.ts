@@ -1,6 +1,6 @@
 import { readdir, readFile, lstat } from 'node:fs/promises';
 import { join } from 'node:path';
-import { extractCss } from './css.js';
+import { extractCss, extractScss } from './css.js';
 import { extractHtml } from './html.js';
 import { extractTypescript } from './typescript.js';
 import { detect } from './rules.js';
@@ -9,31 +9,26 @@ import { auditPolicy } from './policy-audit.js';
 import { classifyDiagnostics } from './coverage.js';
 import { hash, type Report } from './model.js';
 import {loadProjectConfiguration,PROJECT_CONFIGURATION} from './project-configuration.js';
+import {discover} from './discovery.js';
 export async function scan(root:string):Promise<Report> {
   const files:string[]=[], skipped:string[]=[];
   async function walk(relative:string){for(const e of (await readdir(join(root,relative),{withFileTypes:true})).sort((a,b)=>a.name<b.name?-1:1)){
     const p=`${relative}/${e.name}`; if(e.isSymbolicLink()){skipped.push(p);continue;}
     if(e.isDirectory()){if(!['node_modules','dist','.nx','.git'].includes(e.name))await walk(p);}
-    else if(/\.(css|tsx?|jsx?|html)$/.test(p)&&!p.endsWith('.stories.tsx'))files.push(p);else skipped.push(p);
+    else if(/\.(css|scss|tsx?|jsx?|html)$/.test(p)&&!p.endsWith('.stories.tsx'))files.push(p);else skipped.push(p);
   }}
   const project=await loadProjectConfiguration(root);
   if(project){
-    for(const path of project.scanRoots){const info=await lstat(join(root,path));if(info.isDirectory())await walk(path);else if(/\.(css|tsx?|jsx?|html)$/.test(path))files.push(path);else skipped.push(path);}
+    for(const path of project.scanRoots){const info=await lstat(join(root,path));if(info.isDirectory())await walk(path);else if(/\.(css|scss|tsx?|jsx?|html)$/.test(path))files.push(path);else skipped.push(path);}
   }else{
-  // Read Nx metadata as JSON, never execute configuration or plugins.
-  for(const group of ['apps','libs']){if((await lstat(join(root,group))).isSymbolicLink())throw new Error('Symlink project group not permitted');}
-  for(const group of ['apps','libs'])for(const dir of (await readdir(join(root,group))).sort()){
-    const base=`${group}/${dir}`;if(!(await lstat(join(root,base))).isDirectory())continue;
-    const metadata=JSON.parse(await readFile(join(root,base,'project.json'),'utf8')) as {sourceRoot:string};
-    if(!metadata.sourceRoot.startsWith(base+'/')||metadata.sourceRoot.includes('..'))throw new Error('Invalid sourceRoot');
-    if((await lstat(join(root,metadata.sourceRoot))).isSymbolicLink())throw new Error('Symlink sourceRoot not permitted');
-    await walk(metadata.sourceRoot);
-    if(group==='apps'){if((await lstat(join(root,base,'index.html'))).isSymbolicLink())throw new Error('Symlink HTML not permitted');files.push(base+'/index.html');}
-  }
+    const discovered = await discover(root);
+    root = discovered.root;
+    files.push(...discovered.files);
+    skipped.push(...discovered.skipped);
   }
   files.splice(0,files.length,...new Set(files));
   files.sort();const evidence:Report['evidence']=[],diagnostics:Report['diagnostics']=[],inputs:string[]=[],sources=new Map<string,string>();const policy=await loadPolicy(root);
-  for(const p of files){const s=await readFile(join(root,p),'utf8');inputs.push(p+'\0'+s);sources.set(p,s);if(s.length>2_000_000)throw new Error('Source exceeds size limit');const r=p.endsWith('.css')?extractCss(p,s):p.endsWith('.html')?extractHtml(p,s):extractTypescript(p,s);evidence.push(...r.evidence);diagnostics.push(...r.diagnostics);}
+  for(const p of files){const s=await readFile(join(root,p),'utf8');inputs.push(p+'\0'+s);sources.set(p,s);if(s.length>2_000_000)throw new Error('Source exceeds size limit');const r=p.endsWith('.scss')?extractScss(p,s):p.endsWith('.css')?extractCss(p,s):p.endsWith('.html')?extractHtml(p,s):extractTypescript(p,s);evidence.push(...r.evidence);diagnostics.push(...r.diagnostics);}
   // Preview declarations are data-only context identity, not analyzed source or semantic approval.
   try {const path=join(root,'rtl-preview.config.json'),info=await lstat(path);if(info.isSymbolicLink())throw Error('PREVIEW_CONFIGURATION_SYMLINK');const text=await readFile(path,'utf8');if(text.length>200000)throw Error('PREVIEW_CONFIGURATION_SIZE');inputs.push('rtl-preview.config.json\0'+text);}catch(error){if((error as NodeJS.ErrnoException).code!=='ENOENT')throw error;}
   if(project)inputs.push(PROJECT_CONFIGURATION+'\0'+await readFile(join(root,PROJECT_CONFIGURATION),'utf8'));

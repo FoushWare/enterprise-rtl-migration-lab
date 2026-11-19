@@ -18,7 +18,8 @@
     "rtl:scan:test": "vitest run --config tools/rtl-scanner/vitest.config.ts",
     "rtl:scan:typecheck": "tsc -p tools/rtl-scanner/tsconfig.typecheck.json",
     "rtl:scan:build": "tsc -p tools/rtl-scanner/tsconfig.json",
-    "rtl:preview": "node dist/tools/rtl-scanner/preview-companion.js"
+    "rtl:preview": "node dist/tools/rtl-scanner/preview-companion.js",
+    "test:e2e:journey": "playwright test --config=playwright.journey.config.ts"
   },
   "dependencies": {
     "@emotion/cache": "11.14.0",
@@ -54,7 +55,8 @@
     "typescript-eslint": "^8.0.0",
     "vite": "^6.4.5",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "5.0.3"
+    "vitest": "5.0.3",
+    "postcss-scss": "4.0.9"
   },
   "overrides": {
     "undici": "^7.30.1"

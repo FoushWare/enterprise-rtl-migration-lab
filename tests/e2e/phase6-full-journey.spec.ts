@@ -1,37 +1,29 @@
-import { createHash } from 'node:crypto';
-import { cpSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { execFile } from 'node:child_process';
+import { mkdtemp, readFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
-import { spawn, type ChildProcess } from 'node:child_process';
-import { request } from 'node:http';
+import { join, resolve } from 'node:path';
+import { promisify } from 'node:util';
 import { expect, test } from '@playwright/test';
 
-const port = 4319;
-const rootSource = process.env.RTL_E2E_FIXTURE_ROOT ?? '/private/tmp/rtl-apply-project';
-const report = JSON.parse(readFileSync(process.env.RTL_E2E_REPORT ?? '/private/tmp/rtl-apply-dashboard-v5/rtl-report.json', 'utf8'));
-const automatedId = 'RTL.BIDI.ISOLATION:741d2ce2aec3a86cf2db37ea';
-const assistedId = 'RTL.BIDI.ISOLATION:ee65b3a5436494c134055362';
-const manualId = 'RTL.ICON.PROGRESSION:237172da962fe4d0605ddd83';
-const automatedPath = 'apps/invoicing/src/components/InvoiceTable.tsx';
-const manualPath = automatedPath;
-const sha = (x: string) => createHash('sha256').update(x).digest('hex');
-const call = (path: string, body?: unknown) => new Promise<{ status: number; json: any }>((resolve, reject) => { const r = request({ host: '127.0.0.1', port, path, method: body === undefined ? 'GET' : 'POST', headers: body === undefined ? {} : { 'content-type': 'application/json', origin: 'http://127.0.0.1:4320' } }, res => { let b=''; res.on('data',x=>b+=x); res.on('end',()=>resolve({status:res.statusCode ?? 0,json:JSON.parse(b||'{}')})); }); r.on('error',reject); if(body!==undefined)r.write(JSON.stringify(body)); r.end(); });
-const start = (root: string, state: string) => spawn(process.execPath, ['dist/tools/rtl-scanner/preview-companion.js'], { cwd: process.cwd(), env: { ...process.env, RTL_PREVIEW_PORT: String(port), RTL_PROJECT_ROOT: root, RTL_REVIEW_STORE_PATH: join(state,'review-records-v1.json'), RTL_EVIDENCE_STORE_PATH: join(state,'review-evidence-v1.json'), RTL_MANUAL_CHANGE_STORE_PATH: join(state,'manual-changes-v1.json'), RTL_SCAN_MANIFEST_STORE_PATH: join(state,'scan-manifests-v1.json'), RTL_AUDIT_STORE_PATH: join(state,'apply-audit-v1.json'), RTL_APPLY_BACKUP_ROOT: join(state,'backups') }, stdio:'ignore' });
-const stop = async (p: ChildProcess) => { if(p.exitCode!==null)return; const done=new Promise<void>(r=>p.once('exit',()=>r())); p.kill('SIGTERM'); await done; };
-test('full multi-finding developer journey persists authoritative state', async ({ page }) => {
-  const workspace=mkdtempSync(join(tmpdir(),'rtl-phase6-')), root=join(workspace,'project'), state=join(workspace,'state'); mkdirSync(join(state,'backups'),{recursive:true}); cpSync(rootSource,root,{recursive:true}); const child=start(root,state);
-  const identity=(id:string,path:string)=>({findingId:id,sourcePath:path,inputDigest:report.inputDigest,policyDigest:report.policyDigest,schemaVersion:2});
-  try {
-    for(let i=0;i<100;i++){try{if((await call('/health')).status===200)break}catch{} await new Promise(r=>setTimeout(r,50));}
-    const manifest={scanId:crypto.randomUUID(),inputDigest:report.inputDigest,policyDigest:report.policyDigest,timestamp:new Date().toISOString(),sourceCoverage:{complete:true,filesAnalyzed:report.files.length,filesExpected:report.files.length},findings:report.findings}; expect((await call('/review/rescan',{project:'invoicing',manifest})).status).toBe(201);
-    await page.addInitScript(() => { (window as any).__RTL_COMPANION_ORIGIN__ = 'http://127.0.0.1:4319'; });
-    await page.goto('http://127.0.0.1:4320/rtl-report-dashboard.html'); await expect(page.getByText('Total current findings: 47')).toBeVisible(); await expect(page.getByText(/Recommendations:/)).toBeVisible();
-    const assisted=identity(assistedId,manualPath); const manual=identity(manualId,manualPath);
-    await page.goto('http://127.0.0.1:4320/rtl-report-dashboard.html?finding='+encodeURIComponent(assistedId)); const assistedPanel=page.locator('.decision-panel'); await expect(assistedPanel).toContainText('Recommendation: Assisted'); await assistedPanel.getByRole('button',{name:'Save Migration Decision'}).click(); await expect(assistedPanel).toContainText('Saved Assisted decision');
-    await page.goto('http://127.0.0.1:4320/rtl-report-dashboard.html?finding='+encodeURIComponent(manualId)); const manualPanel=page.locator('.decision-panel'); await expect(manualPanel).toContainText('Recommendation: Manual'); await manualPanel.locator('select').selectOption('Assisted'); await manualPanel.getByRole('button',{name:'Save Migration Decision'}).click(); await expect(manualPanel).toContainText('Override reason is required'); await manualPanel.locator('textarea').fill('manual boundary'); await manualPanel.locator('select').selectOption('Manual'); await manualPanel.getByRole('button',{name:'Save Migration Decision'}).click(); await expect(manualPanel).toContainText('Saved Manual decision');
-    const autoUrl='http://127.0.0.1:4320/rtl-report-dashboard.html?finding='+encodeURIComponent(automatedId); await page.goto(autoUrl); await expect(page.getByText('Codemod Dry Run')).toBeVisible(); await page.getByRole('button',{name:'Propose Candidate'}).click(); await expect(page.getByText(/Candidate session .* created/)).toBeVisible({timeout:30000}); await page.getByRole('button',{name:'Start Candidate Preview'}).click(); await expect(page.getByRole('button',{name:'Open Candidate LTR Preview'})).toBeVisible({timeout:30000}); await page.getByRole('button',{name:'Analyze Transformation'}).click(); await expect(page.getByText('Analyzed: bidi-isolate-auto')).toBeVisible({timeout:15000}); await page.getByRole('button',{name:'Apply to Candidate'}).click(); await page.getByRole('dialog').getByRole('button',{name:'Apply to Candidate'}).click(); await expect(page.getByText('Candidate-applied patch')).toBeVisible({timeout:15000}); await page.getByRole('button',{name:'Run Validation'}).click(); await expect(page.locator('.validation-state')).toHaveText('Passed',{timeout:120000}); await page.getByRole('button',{name:'Archive Evidence'}).click(); await expect(page.locator('.validation-state')).toHaveText('Evidence Archived',{timeout:15000});
-    await page.reload(); const review=page.locator('.review-workspace'); await review.locator('textarea').fill('phase6 approval'); await review.locator('input').fill('validation-evidence'); await review.getByRole('button',{name:'Mark Ready for Review'}).click(); await expect(review).toContainText('Ready for Review'); page.on('dialog',d=>d.accept()); await review.getByRole('button',{name:'Approve'}).click(); await expect(review).toContainText('Approved',{timeout:15000}); const source=join(root,automatedPath), original=readFileSync(source,'utf8'), originalHash=sha(original); await expect(page.locator('.controlled-apply')).toContainText('Ready to Apply',{timeout:15000}); await page.locator('.controlled-apply').getByRole('button',{name:'Apply Change'}).click(); await page.getByRole('dialog').getByRole('button',{name:'Confirm Apply'}).click(); await expect(page.locator('.controlled-apply')).toContainText('Applied to Source',{timeout:15000}); const appliedHash=sha(readFileSync(source,'utf8')); expect(appliedHash).not.toBe(originalHash); await page.locator('.controlled-apply').getByRole('button',{name:'Rollback Change'}).click(); await page.getByRole('dialog').getByRole('button',{name:'Confirm Rollback'}).click(); await expect(page.locator('.controlled-apply')).toContainText('Rolled Back',{timeout:15000}); expect(sha(readFileSync(source,'utf8'))).toBe(originalHash);
-    await page.goto('http://127.0.0.1:4320/rtl-report-dashboard.html?finding='+encodeURIComponent(manualId)); await expect(page.locator('.manual-workflow')).toBeVisible(); const before=readFileSync(source,'utf8'); const after=before+'\n// phase6 manual implementation\n'; writeFileSync(source,after); const manualWorkflow=page.locator('.manual-workflow'); await manualWorkflow.locator('textarea').nth(0).fill(before); await manualWorkflow.locator('textarea').nth(1).fill(after); await manualWorkflow.getByRole('button',{name:'Register Manual Change'}).click(); await expect(manualWorkflow).toContainText('Manual change validated and persisted',{timeout:15000});
-    await page.goto('http://127.0.0.1:4320/rtl-report-dashboard.html'); await page.getByRole('button',{name:'Rescan authoritative report'}).click(); await expect(page.locator('.rescan-state')).toContainText('Rescan persisted:',{timeout:15000}); const scans=(await call('/review/rescan')).json.scans; expect(scans.length).toBeGreaterThanOrEqual(2); const progress=(await call('/review/progress')).json; expect(progress.totalFindings).toBe(47); expect(progress.recommendationDistribution.Assisted).toBeGreaterThan(0); expect(progress.lifecycleDistribution).toBeTruthy(); expect(progress.findings.some((f:any)=>f.findingId===assistedId)).toBeTruthy(); await expect(page.getByText('Migration Progress')).toBeVisible(); const auditBefore=(await call('/review/audit')).json.events; await stop(child); const restarted=start(root,state); try { for(let i=0;i<100;i++){try{if((await call('/health')).status===200)break}catch{} await new Promise(r=>setTimeout(r,50));} await page.reload(); expect((await call('/review/audit')).json.events).toEqual(auditBefore); expect((await call('/review/rescan')).json.scans.length).toBe(scans.length); expect((await call('/review/progress')).json.totalFindings).toBe(47); } finally { await stop(restarted); }
-  } finally { if(child.exitCode===null)await stop(child); }
+// The historical test depended on a developer's deleted /private/tmp report,
+// fixed finding IDs and an obsolete UI. Exercise the existing complete black-box
+// journey instead; it creates/retains its own disposable target and services.
+const run = promisify(execFile);
+test('full installed-consumer journey validates accepted-only Apply and rollback in both modes', async () => {
+  test.setTimeout(300_000);
+  const artifacts = await mkdtemp(join(tmpdir(), 'rtl-phase6-package-'));
+  const npm = process.env.npm_execpath;
+  if (!npm) throw new Error('Run through npm run test:e2e or test:e2e:journey (npm_execpath required)');
+  const packed = await run(process.execPath, [npm, 'pack', '--json', '--pack-destination', artifacts], {
+    cwd: resolve('tools/rtl-scanner'), maxBuffer: 8_000_000,
+  });
+  const [{ filename }] = JSON.parse(packed.stdout);
+  const result = await run(process.execPath, ['tests/e2e/package-consumer-smoke.mjs', join(artifacts, filename)], {
+    cwd: process.cwd(), maxBuffer: 8_000_000,
+  });
+  const workspace = result.stdout.match(/CONSUMER_WORKSPACE (.+)/)?.[1];
+  expect(workspace).toBeTruthy();
+  const evidence = JSON.parse(await readFile(join(workspace!, 'smoke.json'), 'utf8'));
+  expect(evidence.status).toBe('Passed');
+  expect(evidence.modes).toHaveLength(2);
 });
