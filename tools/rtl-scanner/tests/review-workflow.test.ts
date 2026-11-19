@@ -110,3 +110,21 @@ it('refuses automatic preparation for wrong identities, missing routes, unsuppor
   await expect(store.preparePreview(w.id,{...input,inputDigest:'stale'})).rejects.toThrow('PREVIEW_SOURCE_IDENTITY_MISMATCH');await expect(store.preparePreview(w.id,{...input,routeId:'unrelated'})).rejects.toThrow('PREVIEW_MAPPING_UNAVAILABLE');const unsupported=w.entries.find(e=>!e.patch)!;await expect(store.preparePreview(w.id,{...input,findingId:unsupported.finding.id})).rejects.toThrow();await store.change(w.id,entry.finding.id,{action:'Rejected'});await expect(store.preparePreview(w.id,input)).rejects.toThrow('PREVIEW_DECISION_REJECTED');expect(w.session).toBeUndefined();
  }finally{await rm(root,{recursive:true,force:true})}
 });
+
+it('starts a separate review explicitly, retaining read-only history and blocking historical decisions and Apply',async()=>{
+ const {root,store}=await fixture();let candidate:string|undefined;
+ try{
+  const report=await scan(root),old=await store.begin({...report,mode:'one-by-one'}),entry=old.entries.find(e=>e.patch)!;
+  await store.change(old.id,entry.finding.id,{action:'apply'});candidate=old.session!.candidateRoot;await store.change(old.id,entry.finding.id,{action:'Accepted',notes:'Historical note'});const before=await readFile(join(root,file),'utf8');
+  const fresh=await store.begin({...report,mode:'one-by-one',restart:true});expect(fresh.id).not.toBe(old.id);expect(fresh.entries.every(e=>e.decision==='Pending'&&!e.notes&&!e.history.length)).toBe(true);expect(fresh.session).toBeUndefined();expect(fresh.validation).toBeUndefined();expect(old.supersededBy).toBe(fresh.id);expect(old.entries.find(e=>e.finding.id===entry.finding.id)?.notes).toBe('Historical note');expect(await readFile(join(root,file),'utf8')).toBe(before);
+  await expect(store.change(old.id,entry.finding.id,{action:'Rejected'})).rejects.toThrow('HISTORICAL_REVIEW_LOCKED');await expect(store.validate(old.id)).rejects.toThrow('HISTORICAL_REVIEW_LOCKED');await expect(store.apply(old.id,'APPLY_CONFIRMED')).rejects.toThrow('HISTORICAL_REVIEW_LOCKED');
+ }finally{if(candidate)await rm(candidate,{recursive:true,force:true});await rm(root,{recursive:true,force:true})}
+});
+
+it('blocks Apply when a matching Passed record lacks required execution or candidate-hash evidence',async()=>{
+ const {root,store}=await fixture();let candidate:string|undefined;
+ try{
+  const report=await scan(root),w=await store.begin({...report,mode:'one-by-one'}),entry=w.entries.find(e=>e.patch)!;const before=await readFile(join(root,file),'utf8');await store.change(w.id,entry.finding.id,{action:'apply'});candidate=w.session!.candidateRoot;await store.change(w.id,entry.finding.id,{action:'Accepted'});
+  w.validation={state:'Passed',signature:hash(JSON.stringify([entry.patch])),checks:[],hashes:{},at:new Date().toISOString()};await expect(store.apply(w.id,'APPLY_CONFIRMED')).rejects.toThrow('VALIDATION_EVIDENCE_MISSING');expect(await readFile(join(root,file),'utf8')).toBe(before);
+ }finally{if(candidate)await rm(candidate,{recursive:true,force:true});await rm(root,{recursive:true,force:true})}
+});

@@ -22,6 +22,15 @@ function App(){const rows=useContext(PreviewContext);return <div className="app-
 put('src/reading.css',`body{font:16px system-ui;background:#f4f5f9;color:#14253b}.app-shell{max-width:860px;margin:32px auto}header{padding:24px;background:#14253b;color:white;border-radius:12px}main{padding:24px;background:white}article{width:520px;padding:16px;background:#eaf2f7}h2{font-size:23px}.contact-card{margin-left:18px}.contact-name{text-align:left}.contact-email{border-left:3px solid blue}.reject-me{padding-right:11px}.pending-me{margin-right:9px}.unmapped{padding-left:6px}\n`);
 put('rtl-scanner.config.json',{schemaVersion:1,generatedStyleOwner:'unknown',ownership:{css:'custom-css'},approvals:[],exceptions:[],issueBindings:[],dynamicExceptions:[],roles:[]});
 put('rtl-project.config.json',{schemaVersion:1,scanRoots:['src','index.html'],copyPaths:['src','index.html','tests','vite.config.ts','tsconfig.json','package.json'],packageManager:'npm',validation:{typecheck:['run','typecheck'],build:['run','build'],test:['run','test']}});
+const scenario=process.env.RTL_VALIDATION_SCENARIO;
+if(scenario&&scenario!=='full'){
+ const config=JSON.parse(readFileSync(join(project,'rtl-project.config.json'),'utf8'));
+ if(scenario==='limited')config.validation={build:['run','build']};
+ else if(scenario==='none')config.validation={};
+ else if(scenario==='failed'){const pkg=JSON.parse(readFileSync(join(project,'package.json'),'utf8'));pkg.scripts.test='node --eval "process.exit(7)"';put('package.json',pkg);}
+ else throw Error('UNKNOWN_VALIDATION_SCENARIO');
+ put('rtl-project.config.json',config);
+}
 const routes=[{id:'people',path:'/people',ltr:'/people?direction=ltr',rtl:'/people?direction=rtl'}];
 put('rtl-preview.config.json',{schemaVersion:1,applications:{directory:{viteConfig:'vite.config.ts',entry:'src/main.tsx',originalOrigin:'http://127.0.0.1:4215',readySelector:'#root main article',dataAdapter:'none',startupScript:'dev',routes}},mappings:['.contact-card','.contact-name','.contact-email','.reject-me','.pending-me'].map(selector=>({source:'src/reading.css',sourceSelector:selector,targetSelector:selector,routes:[{application:'directory',route:'people'}]}))});
 // Reuse installed dependencies only as a test optimization. A normal standalone developer uses npm install.

@@ -25,10 +25,10 @@ test('source apply and rollback reconcile current previews without migrating his
   await expect(page.locator('.component-after .embedded-state')).toHaveAttribute('data-preparation-state','ready',{timeout:30000});
   await expect(page.locator('.component-after .embedded-state')).toHaveAttribute('data-state','ready',{timeout:30_000});
   await page.getByRole('button',{name:'Approve fix',exact:true}).click();await expect(page.locator('.workflow-summary')).toContainText('1 accepted');
-  await page.getByRole('button',{name:'Validate accepted changes',exact:true}).click();
-  await expect(page.locator('.workflow-validation')).toContainText('Technical validation: Passed',{timeout:180_000});
+  await page.getByRole('button',{name:/^Validate \d+ accepted changes$/}).click();
+  await expect(page.locator('.workflow-validation')).toContainText('Validation: Passed',{timeout:180_000});
   const before=await capture('validated');
-  await page.getByRole('button',{name:'Apply accepted changes to source',exact:true}).click();
+  await page.getByRole('button',{name:/^Apply \d+ accepted changes to source$/}).click();
   await expect(page.locator('.workflow-summary')).toContainText('Applied');
   const applied=await capture('applied');expect(applied.receipts).toHaveLength(1);expect(applied.id).toBe(before.id);expect(applied.inputDigest).toBe(before.inputDigest);expect(applied.session.id).toBe(before.session.id);expect(evidence.at(-1).activeReport.inputDigest).not.toBe(report.inputDigest);expect(evidence.at(-1).sourceHashes).toEqual(applied.validation.hashes);await page.getByRole('button',{name:'Review details',exact:true}).click();await page.getByRole('button',{name:'History',exact:true}).click();await page.getByRole('tab',{name:'Technical',exact:true}).click();await expect(page.locator('.workflow-receipts')).toContainText(applied.receipts[0].auditId);await page.keyboard.press('Escape');
   const legacyQuery=new URLSearchParams({inputDigest:report.inputDigest,policyDigest:report.policyDigest,findingId:a.id,workflowId:before.id,mode:'ltr'});
@@ -46,8 +46,8 @@ test('source apply and rollback reconcile current previews without migrating his
   // The current report, ranges and source are refreshed; historical decisions remain in their workflow.
   await expect(page.locator('.decision-card .source-context-status')).toContainText('Source applied');await expect(page.locator('.decision-card')).not.toContainText(before.inputDigest);await page.getByRole('button',{name:'Review details',exact:true}).click();await page.getByRole('button',{name:'History',exact:true}).click();await page.getByRole('tab',{name:'Technical',exact:true}).click();await expect(page.getByRole('dialog',{name:'Review details'})).toContainText('Historical Before preview unavailable');await page.keyboard.press('Escape');
   await expect(page.locator('.component-before .embedded-state')).toHaveAttribute('data-state','ready',{timeout:30_000});
-  await expect(page.locator('.component-before .preview-identity')).toContainText('Current source');
-  await expect(page.locator('.component-after .preview-identity')).not.toContainText('Passed');
+  await expect(page.locator('.component-before .preview-status')).toHaveText('Current source');
+  await expect(page.locator('.component-after .preview-status')).toHaveText('No candidate');
   await expect(page.frameLocator('.component-before iframe').locator('.invoice-link > bdi').first()).toHaveText(/INV-/);
   const select=async(original:string)=>{await page.locator('button.file').filter({hasText:'InvoiceTable.tsx'}).click();const current=await page.evaluate(()=>JSON.parse(document.getElementById('rtl-dashboard-data')!.textContent!));const f=Object.values(current.queue).flat().find((f:any)=>f.path===invoice&&(original==='{i.id}'?f.eligibility==='AUTOMATED_ELIGIBLE':f.line===report.findings.find((x:any)=>x.path===invoice&&x.original===original).range.start.line)) as any;expect(f).toBeTruthy();await page.locator('button.finding').filter({hasText:f.path+':'+f.line+':'+f.column}).click();await expect(page.locator('.component-before .embedded-state')).toHaveAttribute('data-state','ready',{timeout:30_000});return f};
   const unsupported=await select('{money(total(i), i.currency)}');await expect(page.locator('.after-card pre')).toContainText('AMBIGUOUS_TOKEN_EXPRESSION');
@@ -66,7 +66,7 @@ test('source apply and rollback reconcile current previews without migrating his
   await page.getByRole('button',{name:'Retry context',exact:true}).click();await expect(page.locator('.component-before .embedded-state')).toContainText('DASHBOARD_SOURCE_IDENTITY_MISMATCH');
   await page.reload({waitUntil:'domcontentloaded'});await expect(page.locator('.source-context-status').filter({hasText:'Source context blocked:'}).last()).toContainText('DASHBOARD_SOURCE_IDENTITY_MISMATCH');
   writeFileSync(join(env.project,invoice),appliedSource);await page.reload({waitUntil:'domcontentloaded'});await enterReview(page);await expect(page.locator('.workflow-summary')).toContainText('Applied');
-  await page.getByRole('button',{name:'Rollback accepted changes',exact:true}).click();await expect(page.locator('.source-context-status')).toContainText('Automatic rescan complete');
+  await page.locator('.session-overflow > summary').click();await page.getByRole('menuitem',{name:'Rollback accepted changes',exact:true}).click();await expect(page.locator('.source-context-status')).toContainText('Automatic rescan complete');
   await expect(page.locator('.component-before .embedded-state')).toHaveAttribute('data-state','ready',{timeout:30_000});
   expect(readFileSync(join(env.project,invoice),'utf8')).toBe(original);await expect(page.frameLocator('.component-before iframe').locator('.invoice-link bdi')).toHaveCount(0);
   await page.getByRole('button',{name:'Expand original preview',exact:true}).click();await page.screenshot({path:info.outputPath('post-rollback-current.png')});await page.getByRole('button',{name:'Close',exact:true}).click();

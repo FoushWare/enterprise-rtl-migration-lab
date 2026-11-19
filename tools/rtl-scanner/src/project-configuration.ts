@@ -8,6 +8,7 @@ export interface ProjectConfiguration {
   scanRoots: string[];
   copyPaths: string[];
   packageManager: 'npm' | 'pnpm' | 'yarn';
+  validationExclusions?: Partial<Record<'typecheck' | 'build' | 'test', string>>;
   validation: Partial<Record<'typecheck' | 'build' | 'test', string[]>>;
 }
 export function projectRelativePath(value: unknown): asserts value is string {
@@ -19,12 +20,16 @@ export async function loadProjectConfiguration(root: string): Promise<ProjectCon
   catch(error){if((error as NodeJS.ErrnoException).code === 'ENOENT')return; throw error;}
   if(raw.length>100000)throw Error('PROJECT_CONFIGURATION_SIZE');
   const c=JSON.parse(raw) as ProjectConfiguration;
-  if(!c || c.schemaVersion!==1 || Object.keys(c).some(k=>!['schemaVersion','scanRoots','copyPaths','packageManager','validation'].includes(k)) || !['npm','pnpm','yarn'].includes(c.packageManager) || !c.validation || typeof c.validation!=='object' || Array.isArray(c.validation))throw Error('PROJECT_CONFIGURATION_INVALID');
+  if(!c || c.schemaVersion!==1 || Object.keys(c).some(k=>!['schemaVersion','scanRoots','copyPaths','packageManager','validation','validationExclusions'].includes(k)) || !['npm','pnpm','yarn'].includes(c.packageManager) || !c.validation || typeof c.validation!=='object' || Array.isArray(c.validation))throw Error('PROJECT_CONFIGURATION_INVALID');
   for(const paths of [c.scanRoots,c.copyPaths]) {
     if(!Array.isArray(paths)||!paths.length||paths.length>100||new Set(paths).size!==paths.length)throw Error('PROJECT_CONFIGURATION_INVALID_SCOPE');
     for(const path of paths){projectRelativePath(path); /* Check every ancestor, including directories. */ await previewFile(root,path,true);}
   }
   if(c.scanRoots.some(path=>!c.copyPaths.some(copy=>path===copy||path.startsWith(copy+'/'))))throw Error('PROJECT_CONFIGURATION_SCAN_NOT_COPIED');
   for(const [name,args] of Object.entries(c.validation))if(!['typecheck','build','test'].includes(name)||!Array.isArray(args)||!args.length||args.length>30||args.some(a=>typeof a!=='string'||!a||a.length>1000||/[\x00-\x1f]/.test(a)))throw Error('PROJECT_CONFIGURATION_INVALID_CHECK');
+  if(c.validationExclusions){
+    if(typeof c.validationExclusions!=='object'||Array.isArray(c.validationExclusions))throw Error('PROJECT_CONFIGURATION_INVALID_EXCLUSION');
+    for(const [name,reason] of Object.entries(c.validationExclusions))if(!['typecheck','build','test'].includes(name)||c.validation[name as keyof typeof c.validation]||typeof reason!=='string'||!reason.trim()||reason.length>1000)throw Error('PROJECT_CONFIGURATION_INVALID_EXCLUSION');
+  }
   return c;
 }

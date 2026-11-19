@@ -111,6 +111,7 @@ const server = createServer(async (request, response) => {
   }
   if (url.pathname.startsWith('/review/workflows')) {
     try {
+      if(request.method==='GET'&&url.pathname==='/review/workflows'&&url.searchParams.get('history')==='1')return send(response,200,{workflows:await workflowStore.exclusive(async()=>workflowStore.list().map(w=>workflowStore.view(w))),projectRoot});
       const match = url.pathname.match(/^\/review\/workflows(?:\/([^/]+)(?:\/(change|runtime|validate|apply|rollback|preview|resume|prepare-preview))?)?$/);
       if (!match) throw new Error('WORKFLOW_ROUTE_NOT_FOUND');
       const id = match[1], action = match[2];

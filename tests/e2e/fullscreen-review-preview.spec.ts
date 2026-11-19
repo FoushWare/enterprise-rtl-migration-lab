@@ -12,7 +12,7 @@ test('expanded live previews preserve frames, navigation, session and decisions'
   page.on('pageerror', e => errors.push(e.message));
   await page.goto('?finding=' + encodeURIComponent(finding.id));
   await enterReview(page);
-  await expect(page.locator('.workflow-summary')).toContainText('one-by-one');
+  await expect(page.locator('.session-identity')).toHaveAttribute('title','One by one review');
   await expect(page.locator('.component-after .embedded-state')).toHaveAttribute('data-preparation-state','ready',{timeout:30000});
   const original = page.locator('iframe[title="Before: original application route"]');
   const candidate = page.locator('iframe[title="After: isolated candidate application route"]');
@@ -51,7 +51,7 @@ test('expanded live previews preserve frames, navigation, session and decisions'
   await expect(original).toBeHidden(); await expect(candidate).toBeVisible();
   await expect(after.locator('.invoice-link > bdi').first()).toHaveText(/INV-/);
   await expect(dialog.locator('.component-after h3')).toContainText(initial.entries.find((e: any) => e.finding.id === finding.id).decision);
-  await expect(dialog.locator('.component-after h3')).toContainText('validation: ' + (initial.validation?.state || 'Not run'));
+  await expect(dialog.locator('.component-after .preview-status')).toContainText(initial.validationPresentation?.status || 'Not run');
   await page.screenshot({ path: info.outputPath('after-only.png') });
   await after.getByRole('textbox', { name: 'Search invoices', exact: true }).fill('INV-');
   await expect(after.getByRole('textbox', { name: 'Search invoices', exact: true })).toHaveValue('INV-');

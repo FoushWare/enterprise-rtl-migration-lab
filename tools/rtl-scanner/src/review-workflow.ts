@@ -1,3 +1,4 @@
+import { configuredWorkflowChecks, workflowValidationPresentation, workflowValidationEvidenceIssue } from './workflow-validation.js';
 import { createHash, randomUUID } from 'node:crypto';
 import { mkdir, readFile, readdir, rename, realpath, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
@@ -18,10 +19,10 @@ const run = promisify(execFile);
 const sha = (text: string) => createHash('sha256').update(text).digest('hex');
 export type FindingDecision = 'Pending' | 'Accepted' | 'Rejected' | 'Deferred' | 'Flagged';
 export interface WorkflowEntry { finding: Finding; patch?: PatchRequest; reason: string; applied: boolean; decision: FindingDecision; notes: string; history: { decision: FindingDecision; notes: string; at: string }[] }
-export interface WorkflowCheck { name: string; state: 'Passed' | 'Failed' | 'Unavailable'; detail: string }
+export interface WorkflowCheck { name: string; state: 'Passed' | 'Failed' | 'Unavailable' | 'Error' | 'Not run' | 'Not configured' | 'Not applicable'; detail: string; kind?: 'project' | 'scanner' | 'runtime'; command?: string; scope?: string }
 export interface WorkflowValidation { state: 'Passed' | 'Failed' | 'Unavailable'; signature: string; checks: WorkflowCheck[]; at: string; hashes: Record<string, string> }
 export interface ReviewWorkflow {
-  id: string; root: string; resumedFrom?: string; previewConfigDigest?:string; inputDigest: string; policyDigest: string; mode: 'one-by-one' | 'apply-first'; scope: string[];
+  id: string; root: string; supersededBy?: string; rolledBackAt?: string; resumedFrom?: string; previewConfigDigest?:string; inputDigest: string; policyDigest: string; mode: 'one-by-one' | 'apply-first'; scope: string[];
   entries: WorkflowEntry[]; baseline: Record<string, string>; sourcePaths: Record<string, string>; session?: ReviewSession;
   validation?: WorkflowValidation; receipts?: ApplyReceipt[]; state: 'Reviewing' | 'Applying' | 'Applied' | 'Rolled Back'; createdAt: string;
 }
@@ -66,6 +67,7 @@ export class ReviewWorkflowStore {
   exclusive<T>(operation: () => Promise<T>): Promise<T> {
     const result = this.queue.then(operation); this.queue = result.catch(() => undefined); return result;
   }
+  list(): ReviewWorkflow[] { return [...this.workflows].reverse(); }
   get(id: string): ReviewWorkflow { const w = this.workflows.find(w => w.id === id); if (!w) throw new Error('WORKFLOW_NOT_FOUND'); return w; }
   find(inputDigest: string, policyDigest: string, mode: string): ReviewWorkflow | undefined { return [...this.workflows].reverse().find(w => w.inputDigest === inputDigest && w.policyDigest === policyDigest && w.mode === mode); }
   async begin(input: { inputDigest: string; policyDigest: string; mode: ReviewWorkflow['mode']; scope?: string[]; restart?: boolean }, resuming?: ReviewWorkflow): Promise<ReviewWorkflow> {
@@ -73,7 +75,7 @@ export class ReviewWorkflowStore {
     const scope = input.scope ?? [];
     if (!Array.isArray(scope) || scope.some(p => typeof p !== 'string')) throw new Error('INVALID_WORKFLOW_SCOPE');
     const prior = this.find(input.inputDigest, input.policyDigest, input.mode);
-    const restartable=prior&&(prior.state==='Rolled Back'||prior.state==='Reviewing'&&!!prior.resumedFrom&&!prior.session&&!prior.validation&&prior.entries.every(e=>!e.applied&&e.decision==='Pending'&&!e.history.length));
+    const restartable=prior&&['Rolled Back','Reviewing'].includes(prior.state);
     if (prior && !resuming && !(input.restart === true && restartable)) { if (JSON.stringify(prior.scope) !== JSON.stringify(scope)) throw new Error('WORKFLOW_SCOPE_MISMATCH'); return prior; }
     const report = await scan(this.root);
     if (report.inputDigest !== input.inputDigest || report.policyDigest !== input.policyDigest) throw new Error('DASHBOARD_SOURCE_IDENTITY_MISMATCH');
@@ -106,6 +108,7 @@ export class ReviewWorkflowStore {
     const conflicting = entries.filter(e => e.patch && entries.some(other => other !== e && other.patch && other.patch.path === e.patch!.path && other.patch.startOffset < e.patch!.endOffset && e.patch!.startOffset < other.patch.endOffset));
     for (const e of conflicting) { e.reason = 'CONFLICTING_PATCH: overlapping transformations need manual resolution.'; e.patch = undefined; }
     const w: ReviewWorkflow = { id: randomUUID(), root: this.root, ...(resuming?{resumedFrom:resuming.id}:{}), previewConfigDigest,inputDigest: report.inputDigest, policyDigest: report.policyDigest, mode: input.mode, scope, entries, baseline, sourcePaths, state: 'Reviewing', createdAt: new Date().toISOString() };
+    if(input.restart&&prior&&restartable&&!resuming){if(prior.session)prior.session=await stopCandidateRuntime(prior.session);prior.supersededBy=w.id;}
     this.workflows.push(w);
     if (!resuming && w.mode === 'apply-first' && entries.some(e => e.patch)) { for (const e of entries) e.applied = !!e.patch; await this.rebuild(w); }
     await this.persist(); return w;
@@ -137,7 +140,7 @@ export class ReviewWorkflowStore {
       if (actual !== expected) throw new Error('STALE_CANDIDATE_SOURCE');
     }
   }
-  private ensureReviewing(w: ReviewWorkflow): void { if (w.state !== 'Reviewing') throw new Error('WORKFLOW_LOCKED_' + w.state); }
+  private ensureReviewing(w: ReviewWorkflow): void { if (w.supersededBy) throw new Error('HISTORICAL_REVIEW_LOCKED'); if (w.state !== 'Reviewing') throw new Error('WORKFLOW_LOCKED_' + w.state); }
   async rebuild(w: ReviewWorkflow): Promise<void> {
     await this.fresh(w);
     if (w.session) await this.candidateFresh(w);
@@ -217,9 +220,10 @@ export class ReviewWorkflowStore {
     const project=await loadProjectConfiguration(this.root);
     for (const name of ['typecheck', 'build', 'test'] as const) {
       const args=project?project.validation[name]:pkg.scripts?.[name]?['run',name]:undefined;
-      if (!args) { checks.push({ name, state: 'Unavailable', detail: 'No configured project check; not a successful check.' }); continue; }
-      try { const result = await run(project?.packageManager??'npm', args, { cwd: w.session!.candidateRoot, env: { ...process.env, NX_DAEMON: 'false', NX_ISOLATE_PLUGINS: 'false' }, timeout: 180_000, maxBuffer: 2_000_000 }); checks.push({ name, state: 'Passed', detail: (result.stdout + result.stderr).slice(-8000) }); }
-      catch (error) { const failure = error as { stdout?: string; stderr?: string; message: string }; checks.push({ name, state: 'Failed', detail: ((failure.stdout ?? '') + (failure.stderr ?? '') + failure.message).slice(-8000) }); }
+      const configured=configuredWorkflowChecks(w).find(c=>c.name===name)!;
+      if (!args) { checks.push(configured); continue; }
+      try { const result = await run(project?.packageManager??'npm', args, { cwd: w.session!.candidateRoot, env: { ...process.env, NX_DAEMON: 'false', NX_ISOLATE_PLUGINS: 'false' }, timeout: 180_000, maxBuffer: 2_000_000 }); checks.push({ ...configured, name, state: 'Passed', detail: (result.stdout + result.stderr).slice(-8000) }); }
+      catch (error) { const failure = error as { stdout?: string; stderr?: string; message: string; code?: string | number; signal?: string }; checks.push({ ...configured, name, state: typeof failure.code === 'number' || failure.signal ? 'Failed' : 'Error', detail: ((failure.stdout ?? '') + (failure.stderr ?? '') + failure.message).slice(-8000) }); }
     }
     try {
       const before = await scan(this.root), after = await scan(w.session!.candidateRoot);
@@ -282,13 +286,14 @@ export class ReviewWorkflowStore {
     }
     await this.candidateFresh(w); await this.fresh(w);
     for (const path of Object.keys(w.baseline)) hashes[path] = sha(await readFile(await validateProjectSourcePath(w.session!.candidateRoot, path), 'utf8'));
-    const required = checks.filter(c => !c.name.startsWith('live-preview:') && !(c.state === 'Unavailable' && ['typecheck', 'build', 'test'].includes(c.name) && !(project?project.validation[c.name as 'typecheck'|'build'|'test']:pkg.scripts?.[c.name])));
-    w.validation = { state: required.some(c => c.state === 'Failed') ? 'Failed' : required.some(c => c.state === 'Unavailable') ? 'Unavailable' : 'Passed', signature: signature(w), checks, hashes, at: new Date().toISOString() };
+    const required = checks.filter(c => !c.name.startsWith('live-preview:') && !(['Not configured','Not applicable'].includes(c.state) && ['typecheck', 'build', 'test'].includes(c.name)));
+    w.validation = { state: required.some(c => c.state === 'Failed') ? 'Failed' : required.some(c => ['Unavailable','Error','Not run'].includes(c.state)) ? 'Unavailable' : 'Passed', signature: signature(w), checks, hashes, at: new Date().toISOString() };
     await this.persist(); return w;
   }
   async apply(id: string, confirmation: string): Promise<ReviewWorkflow> {
-    const w = this.get(id); if (w.state === 'Applied') return w;
+    const w = this.get(id); if(w.supersededBy)throw Error('HISTORICAL_REVIEW_LOCKED'); if (w.state === 'Applied') return w;
     if (!w.validation || w.validation.state !== 'Passed' || w.validation.signature !== signature(w)) throw new Error('VALIDATED_ACCEPTED_CANDIDATE_REQUIRED');
+    const evidenceIssue=workflowValidationEvidenceIssue(w);if(evidenceIssue)throw Error('VALIDATION_EVIDENCE_MISSING: '+evidenceIssue);
     if (w.state === 'Reviewing') await this.fresh(w);
     if (!['Reviewing', 'Applying'].includes(w.state)) throw new Error('WORKFLOW_LOCKED_' + w.state);
     if (w.state === 'Applying') {
@@ -311,7 +316,7 @@ export class ReviewWorkflowStore {
     const w = this.get(id); if (confirmation !== 'ROLLBACK_CONFIRMED') throw new Error('ROLLBACK_CONFIRMATION_REQUIRED');
     if (w.state === 'Rolled Back') return w;
     if (!w.receipts?.length) throw new Error('APPLY_RECEIPTS_REQUIRED');
-    await this.applyService.rollbackAcceptedFiles(w.receipts); w.state = 'Rolled Back'; await this.persist(); return w;
+    await this.applyService.rollbackAcceptedFiles(w.receipts); w.state = 'Rolled Back'; w.rolledBackAt=new Date().toISOString(); await this.persist(); return w;
   }
   async shutdown(): Promise<void> { for (const w of this.workflows) if (w.session) w.session = await stopCandidateRuntime(w.session); await this.persist(); }
   view(w: ReviewWorkflow): unknown {
@@ -320,6 +325,10 @@ export class ReviewWorkflowStore {
       const before = baseline[path], after = composeWorkflowFile(before, w.entries.filter(e => included(e) && e.finding.path === path).map(e => e.patch!));
       return { path, originalSha256: sha(before), candidateSha256: sha(after), before, after, diff: before === after ? 'No candidate changes.' : `--- ${path}\n+++ ${path}\n- ${before.split('\n').join('\n- ')}\n+ ${after.split('\n').join('\n+ ')}` };
     });
-    return { ...rest, schemaVersion: 2, files };
+    const fresh=!!w.validation&&w.validation.signature===signature(w);
+    const evidenceIssue=w.validation?workflowValidationEvidenceIssue(w):undefined;
+    const eligible=!evidenceIssue&&!w.supersededBy&&fresh&&w.validation?.state==='Passed'&&['Reviewing','Applying'].includes(w.state)&&w.entries.some(e=>e.decision==='Accepted'&&included(e));
+    const reason=w.supersededBy?'Historical review was superseded; start from the current review.':eligible?'Snapshot eligible under existing Apply policy: missing or explicitly excluded project commands are not required; scanner/runtime checks and source/candidate identity guards still apply.':w.state!=='Reviewing'&&w.state!=='Applying'?'Historical review cannot apply changes.':!w.entries.some(e=>e.decision==='Accepted'&&included(e))?'Approve at least one prepared change.':!fresh?'Validate the current accepted candidate before Apply.':evidenceIssue?evidenceIssue:'Resolve required checks: '+(w.validation?.checks.filter(c=>['Failed','Unavailable','Error','Not run'].includes(c.state)&&!c.name.startsWith('live-preview:')).map(c=>c.name+': '+c.state+' · '+c.detail.slice(0,180)).join('; ')||w.validation?.state);
+    return { ...rest, schemaVersion: 2, files, validationPresentation:workflowValidationPresentation(w,fresh), applyEligibility:{eligible,reason} };
   }
 }

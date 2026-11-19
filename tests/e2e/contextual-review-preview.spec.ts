@@ -12,7 +12,7 @@ test('every current example finding resolves a real contextual target in its run
   page.on('request',r=>{if(r.url().startsWith(origin)&&r.method()==='POST')posts.push(r.url())});
   const first=report.findings.find((f:any)=>f.path.endsWith('/InvoiceTable.tsx')&&f.original==='{i.id}');
   await page.goto('?finding='+encodeURIComponent(first.id));await enterReview(page);
-  await expect(page.locator('.workflow-summary')).toContainText('one-by-one');
+  await expect(page.locator('.session-identity')).toHaveAttribute('title','One by one review');
   const workflowUrl=origin+'/review/workflows?'+new URLSearchParams({inputDigest:report.inputDigest,policyDigest:report.policyDigest,mode:'one-by-one'});const initialWorkflow=(await request.get(workflowUrl).then(r=>r.json())).workflow;
   let currentPath=first.path;
   const all=process.env.RTL_CONTEXT_FINDING_IDS?report.findings.filter((f:any)=>process.env.RTL_CONTEXT_FINDING_IDS!.split(',').includes(f.id)):process.env.RTL_CONTEXT_SMOKE?report.findings.filter((f:any)=>[first.id,'RTL.BIDI.ISOLATION:862b107afb21edf9840ac703','RTL.CSS.PHYSICAL:82212e990854fbb975d34448','RTL.BIDI.ISOLATION:6fdcd98e2ff091aff507968d'].includes(f.id)):report.findings;
@@ -192,7 +192,7 @@ test('actual candidates use scoped equivalent data across origins and preserve r
     await expect.poll(async()=>{try{return (await request.get(origin+'/health',{timeout:1000})).ok()}catch{return false}}).toBe(false);
     await page.getByRole('button',{name:'Retry context',exact:true}).click();await expect(page.locator('.component-before .embedded-state')).toHaveAttribute('data-context-status','unavailable');
     process.kill(env.supervisorPid,'SIGUSR2');await expect.poll(async()=>{try{return (await request.get(origin+'/health',{timeout:1000})).ok()}catch{return false}},{timeout:15_000}).toBe(true);
-    await page.reload({waitUntil:'domcontentloaded'});await enterReview(page);await expect(page.locator('.workflow-summary')).toContainText('one-by-one');expect((await snapshot()).id).toBe(stable.id);expect((await snapshot()).session.id).toBe(invoiceSession.id);
+    await page.reload({waitUntil:'domcontentloaded'});await enterReview(page);await expect(page.locator('.session-identity')).toHaveAttribute('title','One by one review');expect((await snapshot()).id).toBe(stable.id);expect((await snapshot()).session.id).toBe(invoiceSession.id);
     await expect(page.locator('.component-toolbar .context-preview-controls')).toHaveCount(1);
     await page.getByRole('button',{name:'Open candidate application',exact:true}).click();await expect(page.locator('.component-after .embedded-state')).toHaveAttribute('data-state','ready',{timeout:30_000});
     expect((await snapshot()).entries.map((e:any)=>({id:e.finding.id,applied:e.applied,decision:e.decision}))).toEqual(stable.entries.map((e:any)=>({id:e.finding.id,applied:e.applied,decision:e.decision})));
