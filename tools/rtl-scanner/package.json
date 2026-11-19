@@ -1,1 +1,35 @@
-{"name":"@atlas/rtl-scanner","private":true,"version":"0.1.0","type":"module"}
+{
+  "name": "@atlas/rtl-scanner",
+  "version": "0.1.0",
+  "description": "Conservative RTL analysis with isolated, explicitly approved review workflows",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FoushWare/enterprise-rtl-migration-lab.git",
+    "directory": "tools/rtl-scanner"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "bin": {
+    "rtl-scanner": "dist/cli.js",
+    "rtl-preview": "dist/preview-cli.js"
+  },
+  "files": [
+    "dist/*.js",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json --outDir dist",
+    "prepack": "npm run build"
+  },
+  "dependencies": {
+    "@playwright/test": "1.64.0",
+    "parse5": "7.3.0",
+    "postcss": "8.5.29",
+    "postcss-value-parser": "4.2.0",
+    "typescript": "~5.9.0"
+  }
+}

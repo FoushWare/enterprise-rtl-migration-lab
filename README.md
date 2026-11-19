@@ -1,6 +1,6 @@
 # RTL Migration Analyzer
 
-RTL Migration Analyzer is a conservative, read-only analysis and review tool for finding RTL migration risks in React, TypeScript, CSS, HTML, Emotion, and Material UI codebases.
+RTL Migration Analyzer provides conservative read-only analysis and explicitly approved review workflows for finding RTL migration risks in React, TypeScript, CSS, HTML, Emotion, and Material UI codebases.
 
 The project is published by FoushWare. This repository also contains the fictional Atlas invoicing demo application used as an Analyzer fixture and browser-test target. Atlas is supporting demonstration material; it is not the Analyzer product.
 
@@ -27,6 +27,10 @@ See the [scanner documentation](tools/rtl-scanner/README.md), [architecture](doc
 - Chromium for Playwright browser tests
 
 The portable regression uses loopback ports 4200, 4318/4319, and 4320. It creates disposable temporary directories and does not require developer-specific fixture paths, pre-existing dashboards, or pre-existing state stores.
+
+## Package release testing
+
+The publishable root is `tools/rtl-scanner`, package `@atlas/rtl-scanner` (currently 0.1.0). It exposes `rtl-scanner` and `rtl-preview`. See the [consumer README](tools/rtl-scanner/README.md) for local tarball installation, standalone project/preview configuration, services and the accepted-only Apply/rollback contract. Apps, examples and test generators stay in GitHub and are excluded from npm. No npm publication is performed by this task.
 
 ## Installation
 
@@ -61,27 +65,29 @@ node dist/tools/rtl-scanner/cli.js --format markdown
 The CLI also supports `markdown-structured` and `dashboard`. To publish a dashboard and its companion report artifacts into an output directory:
 
 ```sh
+REPORT_DIR="$(mktemp -d "${TMPDIR:-/tmp}/rtl-report.XXXXXX")"
+REPORT_DIR="$(cd "$REPORT_DIR" && pwd -P)"
 node dist/tools/rtl-scanner/cli.js \
   --format dashboard \
   --root . \
-  --output-dir ./rtl-report
+  --output-dir "$REPORT_DIR"
 ```
 
-The dashboard output is self-contained. Source snippets are opt-in and should be treated as potentially sensitive data.
+The output directory must already exist outside the scanned project and have no symlink ancestors; existing reports are never overwritten. The dashboard output is self-contained. Source snippets are opt-in and should be treated as potentially sensitive data.
 
 ## Dashboard and Companion
 
 The scanner can generate a static `rtl-report-dashboard.html`. The local Companion serves review APIs for records, evidence, decisions, lifecycle, progress, and audit data:
 
 ```sh
-npm run rtl:preview
+RTL_PROJECT_ROOT="$PWD" npm run rtl:preview
 ```
 
 The Companion defaults to loopback port 4318 and stores review data under the local user data directory unless explicit `RTL_*` store paths are supplied. Release tests always provide disposable paths.
 
 ## Candidate Preview, Apply, and Rollback
 
-Candidate Preview starts an isolated runtime for a proposed change. The review workflow validates the candidate before it can be approved. Apply and Rollback are guarded by:
+Candidate Preview starts an isolated runtime for a proposed change. Both modes require explicit per-finding approval, then validate an accepted-only candidate before a separate confirmed Apply. Apply and Rollback are guarded by:
 
 - repository-relative source paths and trusted-root validation;
 - source and policy digests;
@@ -90,7 +96,7 @@ Candidate Preview starts an isolated runtime for a proposed change. The review w
 - disposable backup and audit storage;
 - symlink and path-traversal protections.
 
-The workflow is designed for explicit human review. The Analyzer does not silently rewrite application source files, and its E2E tests operate only on disposable copies of the invoicing fixture.
+The workflow is designed for explicit human review. The Analyzer does not silently rewrite application source files, and its E2E tests operate only on disposable targets, including standalone Vite projects.
 
 ## Verification
 
@@ -112,7 +118,7 @@ That script runs each suite with its isolated Playwright configuration:
 - deterministic Phase 5 dashboard fixture: `playwright.phase5.config.ts`;
 - security and lifecycle suites: `playwright.manual-regression.config.ts`.
 
-The verified output is 23 passed tests, 0 failed, and 0 skipped: 1 Apply/Rollback test, 2 Phase 5 tests, and 20 security/lifecycle tests.
+Earlier portable-regression evidence recorded 23 passing tests. Current exact commands/counts and limitations are in the [completion plan](docs/rtl-analyzer-v3/manual-review-completion-plan.md); historical counts are not a claim about a fresh run.
 
 General repository checks are also available:
 
@@ -125,7 +131,7 @@ npm test
 
 ## Atlas invoicing demo
 
-The bundled Atlas app is a fictional React/Nx/Vite demonstration project used by the portable fixtures. It can be run independently:
+The GitHub example Atlas app is a fictional React/Nx/Vite demonstration project used by the portable fixtures. It can be run independently:
 
 ```sh
 npm run dev
@@ -139,7 +145,7 @@ This starts the invoicing demo at `http://localhost:4200`. The demo's historical
 - Findings require human interpretation and approval.
 - The scanner does not provide a general-purpose automated RTL codemod.
 - Compatibility experiments under `tools/rtl-scanner/tests/experiments/` require separate external setup and are not part of the normal clean-checkout regression.
-- Legacy Atlas phase configurations are not part of the portable release regression and may contain historical machine-specific paths.
+- The default `npm run test:e2e` runner currently fails discovery at the legacy `phase6-full-journey.spec.ts` dependency `/private/tmp/rtl-apply-dashboard-v5/rtl-report.json`. Dedicated disposable Analyzer runners and the installed-tarball smoke have their own setup; see the completion plan for verified results. The default runner now confines cleanup to `test-results/app-e2e`.
 - Generated `dist/`, Playwright reports, test results, dashboards, screenshots, and state stores are reproducible artifacts and are not release source files.
 
 For detailed scope, policy, coverage, and security qualifications, see the [Analyzer documentation index](docs/rtl-analyzer-v3/README.md) and [scanner README](tools/rtl-scanner/README.md).

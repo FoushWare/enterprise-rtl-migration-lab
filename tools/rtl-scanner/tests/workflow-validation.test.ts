@@ -21,6 +21,17 @@ describe('honest accepted-candidate validation presentation',()=>{
   it('keeps command failure, unavailable evidence, start errors and stale validation distinct',()=>{
     for(const state of ['Failed','Unavailable','Error'] as const){const w=workflow();expect(recorded(w,[{name:'test',state,detail:'actual diagnostic'}]).status).toBe(state==='Failed'?'Failed':'Unavailable');expect(workflowValidationPresentation(w,false).explanation).toContain('stale');}
   });
+  it('reports Failed or Unavailable when project checks pass but scanner or runtime evidence fails',()=>{
+    const wFailScanner = workflow();
+    const checksPass = configuredWorkflowChecks(wFailScanner).map(c=>({...c,state:'Passed' as const,detail:'executed'}));
+    expect(recorded(wFailScanner, [...checksPass, { name: 'scanner', state: 'Failed', detail: 'finding still present in candidate' }]).status).toBe('Failed');
+
+    const wFailRuntime = workflow();
+    expect(recorded(wFailRuntime, [...checksPass, { name: 'scanner', state: 'Passed', detail: 'clean' }, { name: 'runtime-people', state: 'Failed', detail: 'crash on load' }]).status).toBe('Failed');
+
+    const wUnavailRuntime = workflow();
+    expect(recorded(wUnavailRuntime, [...checksPass, { name: 'scanner', state: 'Passed', detail: 'clean' }, { name: 'runtime-people', state: 'Unavailable', detail: 'server timed out' }]).status).toBe('Unavailable');
+  });
   it('reports technical validation unavailable when no commands exist even with successful scanner/runtime checks',()=>{
     const result=recorded(workflow({}),[{name:'scanner',state:'Passed',detail:'rescan'},{name:'runtime-people-ltr',state:'Passed',detail:'actual target'}]);expect(result.status).toBe('Technical validation unavailable');expect(result.explanation).toContain('executed: none');expect(result.checks.filter(c=>c.kind==='project').every(c=>c.state==='Not configured')).toBe(true);
   });

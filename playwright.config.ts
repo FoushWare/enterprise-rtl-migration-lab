@@ -1,6 +1,8 @@
 import { defineConfig } from "@playwright/test";
 export default defineConfig({
   testDir: "./tests/e2e",
+  // Limit cleanup to this runner; keep other analyzer evidence intact.
+  outputDir: "test-results/app-e2e",
   fullyParallel: true,
   reporter: [["list"], ["html", { open: "never" }]],
   use: {

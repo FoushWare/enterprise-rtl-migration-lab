@@ -12,6 +12,13 @@ function harness(complete=true, findings=0) {
 function io(){const stdout:string[]=[];const stderr:string[]=[];return {stdout,stderr,io:{writeStdout:(s:string)=>stdout.push(s),writeStderr:(s:string)=>stderr.push(s)}};}
 
 describe('CLI Milestone 2 regressions',()=>{
+  it('shows consumer help without scanning or publishing',async()=>{
+    for(const flag of ['--help','-h']){
+      const h=harness();h.deps.scan=async()=>{throw Error('help must not scan');};const x=io();
+      expect(await runCli([flag],x.io,h.deps)).toBe(0);
+      expect(x.stdout.join('')).toContain('Usage: rtl-scanner');expect(x.stderr).toEqual([]);expect(h.published).toEqual([]);
+    }
+  });
   it('generates incomplete reports, returns 2, and keeps summary off stdout',async()=>{const out=await import('node:fs/promises').then(fs=>fs.mkdtemp('/private/tmp/rtl-cli-regression-'));try{const h=harness(false);const x=io();expect(await runCli(['--output-dir',out],x.io,h.deps)).toBe(2);expect(await readFile(join(out,'rtl-report.json'),'utf8')).toContain('false');expect(await readFile(join(out,'rtl-report.md'),'utf8')).toBe('# false\n');expect(JSON.parse(x.stdout[0]).complete).toBe(false);expect(x.stderr).toHaveLength(1);}finally{await rm(out,{recursive:true,force:true});}});
   it('generates reports and returns 1 for a findings gate',async()=>{const out=await import('node:fs/promises').then(fs=>fs.mkdtemp('/private/tmp/rtl-cli-regression-'));try{const h=harness(true,1);const x=io();expect(await runCli(['--fail-on-findings','--output-dir',out],x.io,h.deps)).toBe(1);expect(await readFile(join(out,'rtl-report.json'),'utf8')).toContain('true');expect(await readFile(join(out,'rtl-report.md'),'utf8')).toBe('# true\n');}finally{await rm(out,{recursive:true,force:true});}});
   it('preserves legacy bytes and emits no files without output-dir',async()=>{const h=harness();const x=io();expect(await runCli(['--format','json'],x.io,h.deps)).toBe(0);expect(x.stdout).toEqual(['{"complete":true}\n']);expect(x.stderr).toEqual([]);expect(h.published).toEqual([]);const y=io();expect(await runCli(['--format','markdown'],y.io,h.deps)).toBe(0);expect(y.stdout).toEqual(['# true\n']);});

@@ -7,16 +7,29 @@ export const contextualPreviewClientSource = String.raw`
   }
   function reconcileContextTargets(item,record,report){
     const previous=item.instance,key=targetSelectionKey(record,item);let saved=null;try{saved=JSON.parse(sessionStorage.getItem(key))}catch{}
-    const targets=report.targets;let selected=0;
-    if(saved?.index===-1&&targets.length)selected=-1;
-    else if(Number.isInteger(saved?.index)&&saved.index>=0&&targets[saved.index]&&targets[saved.index].label===saved.label)selected=saved.index;
-    else if(saved&&targets.filter(t=>t.label===saved.label).length===1)selected=targets.findIndex(t=>t.label===saved.label);
-    const options=targets.map(t=>({value:String(t.index),label:(t.index+1)+' · '+(t.label||'Element')}));
+    const targets=report.targets;let selected=0,restoreFailed=false;
+    if(saved?.restoreRequired){selected=-2;restoreFailed=true}
+    else if((saved?.index===-1||saved?.value==='-1')&&targets.length)selected=-1;
+    else if(saved?.targetKey){
+      const matches=targets.filter(t=>t.key&&t.key===saved.targetKey);
+      if(matches.length===1&&matches[0].keyGuaranteed&&!matches[0].ambiguous)selected=matches[0].index;
+      else{try{sessionStorage.setItem(key,JSON.stringify({restoreRequired:true}))}catch{}selected=-2;restoreFailed=true}
+    }else if(saved?.label){
+      const labelMatches=targets.filter(t=>t.label===saved.label&&t.keyGuaranteed&&!t.ambiguous);
+      if(labelMatches.length===1)selected=labelMatches[0].index;
+      else{try{sessionStorage.setItem(key,JSON.stringify({restoreRequired:true}))}catch{}selected=-2;restoreFailed=true}
+    }else{
+      if(saved){try{sessionStorage.setItem(key,JSON.stringify({restoreRequired:true}))}catch{}selected=-2;restoreFailed=true}
+      else selected=0;
+    }
+    const cleanLabel=l=>{const s=(l||'Element').trim().split(/\s+[^\s@]+@[^\s@]+\.[^\s@]+/)[0].trim();return s||'Element'};
+    const options=targets.map(t=>({value:String(t.index),label:(t.index+1)+' · '+cleanLabel(t.label)}));
+    if(restoreFailed)options.unshift({value:'',label:'Previous target could not be restored. Select a target.'});
     options.push(targets.length?{value:'-1',label:'All '+targets.length+' targets'}:{value:'0',label:'No target yet'});
     // Check the actual options too: an unavailable descriptor may have cleared the DOM since the last report.
     const signature=JSON.stringify([key,options]);
     if(item.targetSignature!==signature||JSON.stringify([...item.instanceSelect.options].map(o=>({value:o.value,label:o.label})))!==JSON.stringify(options))item.instanceSelect.replaceChildren(...options.map(o=>new Option(o.label,o.value)));
-    item.targetSignature=signature;item.instance=selected;item.instanceSelect.value=String(selected);item.instanceSelect.disabled=!targets.length;
+    item.targetSignature=signature;item.instance=selected;item.targetRestoreFailed=restoreFailed;item.instanceSelect.value=restoreFailed?'':String(selected);item.instanceSelect.disabled=!targets.length;
     if(targets.length&&previous!==selected)contextProbe(item,record,record.finding,'highlight');
   }
   function contextControls(current){
@@ -32,7 +45,7 @@ export const contextualPreviewClientSource = String.raw`
     };
     current.contextControls=[make(current.component.querySelector('.component-toolbar'),false),make(current.workspace,true)];
     const summary=el('span','Locating contextual target…','preview-context-summary');current.workspace.insertBefore(summary,current.workspace.querySelector('.preview-workspace-close'));current.contextSummary=summary;
-    for(const item of current.items){const instance=document.createElement('select');instance.setAttribute('aria-label',item.role==='original'?'Original target instance':'Candidate target instance');instance.className='context-instance';instance.onchange=()=>{item.instance=Number(instance.value);const target=item.contextReport?.targets.find(t=>t.index===item.instance);sessionStorage.setItem(targetSelectionKey(record,item),JSON.stringify({index:item.instance,label:target?.label}));contextProbe(item,record,record.finding,'highlight')};item.instance=0;item.instanceSelect=instance;clearContextTargets(item);item.panel.querySelector('h3').append(instance)}
+    for(const item of current.items){const instance=document.createElement('select');instance.setAttribute('aria-label',item.role==='original'?'Original target instance':'Candidate target instance');instance.className='context-instance';instance.onchange=()=>{if(instance.value==='')return;item.instance=Number(instance.value);const target=item.contextReport?.targets.find(t=>t.index===item.instance);item.targetRestoreFailed=false;if(item.instance===-1){sessionStorage.setItem(targetSelectionKey(record,item),JSON.stringify({index:-1,label:'All targets'}))}else if(target&&target.keyGuaranteed&&target.key&&!target.ambiguous){sessionStorage.setItem(targetSelectionKey(record,item),JSON.stringify({index:item.instance,targetKey:target.key,label:target.label}))}else{sessionStorage.removeItem(targetSelectionKey(record,item))};contextProbe(item,record,record.finding,'highlight')};item.instance=0;item.instanceSelect=instance;clearContextTargets(item);item.panel.querySelector('h3').append(instance)}
   }
   const candidateEligible=record=>!!record.contextInfo?.review?.hasAutomaticFix&&record.contextInfo.review.inScope!==false&&!record.historical&&!['Rejected','Deferred','Flagged'].includes(record.contextInfo.review.decision);
   function activateVerifiedCandidate(current){
@@ -94,10 +107,11 @@ export const contextualPreviewClientSource = String.raw`
       reconcileContextTargets(item,record,p);
       const rendered=p.targets.filter(t=>t.rendered).length,offscreen=p.targets.filter(t=>t.rendered&&!t.inViewport).length;
       const targetStatus=p.route!==record.contextInfo.route.path||p.targetStatus==='navigated'?'navigated':p.targetStatus==='document'&&rendered?'document':p.targetStatus==='verified'&&rendered&&p.routeReady&&(!record.contextInfo.mapping.configured||!record.contextInfo.mapping.sourceSelector||p.sourceStatus==='source-rule-matched')?'verified':p.targetStatus==='preparing'?'preparing':['source-not-loaded','target-mismatch','missing-target','route-not-ready'].includes(p.targetStatus)?p.targetStatus:p.targets.length?'hidden':'unresolved';
-      item.state.dataset.contextStatus=targetStatus;item.state.dataset.routeReady=String(!!p.routeReady);item.state.dataset.targetCount=String(p.targets.length);item.state.dataset.state=targetStatus==='navigated'?'navigated':['verified','document'].includes(targetStatus)?'ready':targetStatus==='preparing'?'loading':'unresolved';
-      const contextLabel=targetStatus==='verified'?'Verified targets: '+p.targets.length+(offscreen?' · '+offscreen+' outside viewport':''):targetStatus==='document'?'Page/document-wide context':targetStatus==='navigated'?'Live application · navigated away from target':targetStatus==='route-not-ready'?'Application readiness target not observed on configured route':targetStatus==='source-not-loaded'?'Source stylesheet/rule not observed on this route · mapping unverified':targetStatus==='target-mismatch'?'Configured target does not match the source rule · mapping unverified':targetStatus==='missing-target'?'Source rule loaded; configured target is missing on this route':targetStatus==='hidden'?'Selector located · hidden at this viewport':targetStatus==='preparing'?'Preparing existing UI state…':'Route ready; target unresolved. Retry Highlight targets or restore the required UI state.';
-      const css=p.targets.find(t=>t.css)?.css;const evidence=contextLabel+' · '+p.route+' · '+p.dir.toUpperCase()+(css?' · CSS '+css.sourceProperty+(css.resolvedProperty!==css.sourceProperty?' → '+css.resolvedProperty:'')+': '+css.contribution+' · computed '+css.computedValue:'')+(item.role==='candidate'?' · '+candidateStatus(record)+' · '+(record.contextInfo.review.applied?'selected change applied':'selected finding unchanged')+' · '+record.contextInfo.review.patchInventory.length+' actual candidate patches':'');if(item.diagnostic)setText(item.diagnostic,(item.role==='original'?'Before: ':'After: ')+evidence);setText(item.state,['verified','document'].includes(targetStatus)?contextLabel:evidence);
-      if(['verified','document','navigated','hidden'].includes(targetStatus)){item.ready=p;clearTimeout(item.timeout)}if(['verified','document'].includes(targetStatus)){item.lastVerifiedReport=p;item.verifiedMapping={sourceHash:item.expectedHash,routeId:record.routeId};}
+      item.state.dataset.contextStatus=item.targetRestoreFailed?'target-selection-required':targetStatus;item.state.dataset.routeReady=String(!!p.routeReady);item.state.dataset.targetCount=String(p.targets.length);item.state.dataset.state=item.targetRestoreFailed?'unresolved':targetStatus==='navigated'?'navigated':['verified','document'].includes(targetStatus)?'ready':targetStatus==='preparing'?'loading':'unresolved';
+      const contextLabel=item.targetRestoreFailed?'Previous target could not be restored. Select a target.':targetStatus==='verified'?'Verified targets: '+p.targets.length+(offscreen?' · '+offscreen+' outside viewport':''):targetStatus==='document'?'Page/document-wide context':targetStatus==='navigated'?'Live application · navigated away from target':targetStatus==='route-not-ready'?'Application readiness target not observed on configured route':targetStatus==='source-not-loaded'?'Source stylesheet/rule not observed on this route · mapping unverified':targetStatus==='target-mismatch'?'Configured target does not match the source rule · mapping unverified':targetStatus==='missing-target'?'Source rule loaded; configured target is missing on this route':targetStatus==='hidden'?'Selector located · hidden at this viewport':targetStatus==='preparing'?'Preparing existing UI state…':'Route ready; target unresolved. Retry Highlight targets or restore the required UI state.';
+      const css=item.targetRestoreFailed?null:p.targets.find(t=>t.index===item.instance)?.css;const evidence=contextLabel+' · '+p.route+' · '+p.dir.toUpperCase()+(css?' · CSS '+css.sourceProperty+(css.resolvedProperty!==css.sourceProperty?' → '+css.resolvedProperty:'')+': '+css.contribution+' · computed '+css.computedValue:'')+(item.role==='candidate'?' · '+candidateStatus(record)+' · '+(record.contextInfo.review.applied?'selected preview patch present':'selected finding unchanged')+' · '+record.contextInfo.review.patchInventory.length+' actual candidate patches':'');if(item.diagnostic)setText(item.diagnostic,(item.role==='original'?'Before: ':'After: ')+evidence);setText(item.state,['verified','document'].includes(targetStatus)?contextLabel:evidence);
+      if(['verified','document','navigated','hidden'].includes(targetStatus)&&!item.targetRestoreFailed){item.ready=p;clearTimeout(item.timeout)}else if(item.targetRestoreFailed){item.ready=null;item.lastVerifiedReport=null;item.verifiedMapping=null;}
+      if(['verified','document'].includes(targetStatus)&&!item.targetRestoreFailed){item.lastVerifiedReport=p;item.verifiedMapping={sourceHash:item.expectedHash,routeId:record.routeId};}
       item.contextReport=p;if(item.role==='original')activateVerifiedCandidate(view);updateCandidateAction(view);syncRoute(view);
     }
     const [before,after]=view.items;if(before.fingerprint&&after.fingerprint&&before.fingerprint!==after.fingerprint){setText(view.contextSummary,'Preview datasets differ after interaction · Reset preview data to compare equivalent data; this is not a patch effect.')}else if(record.contextInfo){setText(view.contextSummary,record.contextInfo.mapping.label+' · '+(record.contextInfo.dataAdapter==='none'?'Application data · dataset equivalence unverified':before.fingerprint&&after.fingerprint?'Equivalent preview data':'Dedicated preview data'))}

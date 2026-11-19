@@ -2,6 +2,152 @@
 
 تاريخ متابعة التحقق: 2026-11-19. المتابعة الحالية هي واجهة review workspace والتحقق الشفاف المعتمدان، مع الحفاظ على تحضير Before/After تلقائيًا واستعادة المرشح بعد reload وrollback/rescan؛ إصلاح source-to-preview binding السابق ونتائج Master expansion محفوظان؛ عقد العائلات السبع ودورة المراجعة محفوظان بعد اكتمال CSS spacing وإصلاح سياق Apply/rollback؛ لا release؛ تعديل الواجهة الحالي محدود بالعقد المعتمد أدناه. قسم fullscreen أدناه سجل المتابعة السابقة. طلب استكمال المسارين السابق supersedes نطاق المعاينة القديم فقط. الأقسام التاريخية أدناه تحفظ أدلتها وحدودها السابقة؛ استبعاد Apply First وتوقف العمل قبل القرارات فيها لم يعدا تعليمات التنفيذ الحالية.
 
+## Package-release testing finalization — verified 2026-11-19
+
+CONTINUE. This task authorizes the scoped commit/push checkpoint and local npm packaging, superseding only earlier statements that those actions remain unperformed. It does not authorize npm publication, deployment, tags or a version bump. **Ahmed manual acceptance [ ]** stays unchecked.
+
+The [finalization record](package-release-testing-2026-11-19.md) owns the complete implementation review, concrete corrections, exact commands/exits, final tarball file list/sizes/digests, two independent installed-consumer workflows, historical lint/memory failures and next release steps. Package root `tools/rtl-scanner`, `@atlas/rtl-scanner` 0.1.0 unchanged; recommended next version 0.2.0 subject to maintainer approval. The final tarball is local/ignored, not published. Prior service URLs/PIDs and uncommitted claims in the historical sections below are superseded; the old owned manual environment was stopped with source/history retained. External `RTL_ANALYZER_README.md` integration is pending, not reconstructed.
+
+## Final session UI and two-mode delivery — verified 2026-11-19
+
+CONTINUE. This is the current local delivery record and supersedes conflicting UI labels/service identities in the historical sections below. Ahmed manual acceptance **[ ]**. Branch `checkpoint/rtl-analyzer-antigravity-20261119-0210`, HEAD/baseline `de2684fa58d3f857f6e9c754556cc11854394ab3`. All existing Antigravity work is preserved; delivery is uncommitted, with no push, publication, deployment or packaging change.
+
+### Implemented scope and actual behavior
+
+- **Review actions** is now a button-operated ARIA actions menu, not a native content disclosure. Its top-layer popover uses content-sized flex rows, bounded viewport positioning and compact disabled rollback help (**Available after Apply**). Escape, outside dismissal, arrows/Home/End/Tab, focus return, sticky scrolling and background toolbar updates remain supported. **Rollback applied changes** follows the existing workflow state/receipt checks.
+- Finding **Why this change?** shows a concise property-specific proposal, including alignment on the selected element rather than an invented page heading. **Explanation and limitations** combines rationale, semantic caveats, eligibility/blockers and existing technical disclosures. Normalization retains the semantic paragraph even when workflow rendering occurs first; unrelated errors do not erase it. Preview diagnostics remain separate. Session entry, modal title and accessible labels consistently say **Session details**; all scope/evidence tabs remain.
+- Notes use **Add review note / Edit review note**, an accessible **Review note** multiline field, **Save note / Cancel**, and live save/draft/error feedback. Drafts are retained per workflow/finding during in-place finding switches and background rerenders. Cancel restores the saved note; decisions use saved notes rather than silently saving drafts. Drafts are page-session memory, not reload-persistent storage; saved notes persist through reload. Historical notes remain read-only. A simulated save-error browser check verifies retained input and preserved caveats before a successful retry.
+- **Review one by one** automatically prepares the selected supported finding in isolation. **Prepare all, then review** is the existing `apply-first` identifier/session behavior, renamed without a storage migration: supported fixes are prepared together in the isolated candidate, all decisions remain Pending, and unsupported/missing-context findings keep their reasons. Both modes require explicit approval, accepted-snapshot validation, and explicit source Apply. Validation recomposes the accepted-only candidate; rejection, deferral and unapproved changes remain out of source Apply. Rollback retains historical evidence and starts the existing fresh Pending/Not run review.
+- Expanded reject/defer checks exposed stopped-candidate recovery using stale contextual evidence. The coordinator now waits for context resolution and treats candidate-ready/failure evidence as current only for a healthy current runtime; a stopped composition can run the existing prepare-preview path again. Iframe reuse also checks the contextual runtime identity, retaining iframe state for unchanged runtimes but re-handshaking after a replacement runtime. Backend validation/Apply eligibility, freshness, source guards and rollback policies were not changed.
+
+### Fresh verification (2026-11-19)
+
+All commands ran in this worktree; only disposable targets received Apply/rollback writes. Ignored local audit: `test-results/final-session-refinement/`.
+
+| Exact command | Exit and actual result |
+|---|---|
+| `npm run rtl:scan:typecheck` | 0; `typecheck-delivery.log` |
+| `npm run rtl:scan:build` | 0; `build-delivery.log` |
+| `npm run rtl:scan:test` | 0; **389/389, 31 files**, `units-delivery.log` |
+| `RTL_WORKSPACE_SCENARIOS=full RTL_WORKSPACE_SPECS=review-workspace RTL_WORKSPACE_OUTPUT_PREFIX=test-results/final-session-refinement/recovery node tests/e2e/run-review-workspace.mjs` | 0; **2/2**, both complete lifecycle modes, `recovery.log` |
+| `RTL_WORKSPACE_OUTPUT_PREFIX=test-results/final-session-refinement/final node tests/e2e/run-review-workspace.mjs` | 0; **15/15**: full 11, limited 2, failed 1, no configured project commands 1; `final.log` |
+| `RTL_WORKSPACE_SCENARIOS=full RTL_WORKSPACE_SPECS=review-workspace,review-ui-refinement RTL_WORKSPACE_OUTPUT_PREFIX=test-results/final-session-refinement/delivery node tests/e2e/run-review-workspace.mjs` | 0; **3/3 final-build reruns**, including latest note feedback/save-error checks, `delivery.log` |
+| `RTL_MANUAL_ENVIRONMENT=<newly printed environment.json> node test-results/final-session-refinement/manual-gate.cjs` | 0; HTTP 200, matching companion/project identity, real verified Before/After frames, both modes Reviewing/0 accepted/Not run, unchanged original disposable hashes; `manual-gate.log` / `manual-gate.json` |
+| `git diff --check` | 0 |
+| `python3 docs/project-memory/validate.py` | 1; preexisting 47 missing required historical links, 6 optional missing, 45 staleness advisories and 1 undated entry; `memory-validation-final.log`. No unrelated repairs. |
+
+The affected browser suite covers automatic preparation/retry/failure isolation, target restoration and explicit reselection, direction/context/fullscreen state, all four panel combinations and separate reload restoration, nonzero page-scroll source reveal, exact same-line range selection, menu desktop/sticky/narrow/keyboard/background-update behavior, disclosures, notes, acceptance/rejection/deferral, accepted-only Apply, history, limited validation and rollback/rescan. Exact validation-row/result-cell assertions remain. The lifecycle verifies the rejected alignment, deferred border and unapproved padding remain physically unchanged in original source after Apply.
+
+Earlier red runs are retained (`browser.log`, `verified.log`, `focused.log`, `lifecycle.log`): old-label/ambiguous-selector test failures, initial semantic paragraph loss, and stopped candidate recovery were investigated and corrected. They are not presented as passing runs. Earlier workspace-wide typecheck/build results remain historical; this pass reran the affected scanner typecheck/build and tests.
+
+### Real screenshots and reference comparison
+
+Inspected real desktop/sticky/narrow menu, note editor, desktop validation and narrow dialog screenshots directly against the supplied two-mode concept and earlier approved workspace/panel references. The menu is compact (under 150px, measured in browser), notes use a 96px minimum editor, source remains present, and both comparison frames use the same direction/context. The concept footer board was not added.
+
+- [Current desktop](../../test-results/final-session-refinement/desktop.png), [desktop menu](../../test-results/final-session-refinement/desktop-menu.png), [finding explanation](../../test-results/final-session-refinement/explanation.png), [notes editor](../../test-results/final-session-refinement/notes.png).
+- [Narrow menu](../../test-results/final-session-refinement/narrow-menu.png), [narrow real preview](../../test-results/final-session-refinement/narrow-live-preview.png), [batch mode](../../test-results/final-session-refinement/batch-mode.png).
+- [Session Activity](../../test-results/final-session-refinement/activity.png), [Not run validation](../../test-results/final-session-refinement/validation-not-run.png); validated/limited/failed/history/narrow evidence and traces are in `final-*-final/` and final-build `delivery-full-final/`.
+
+Remaining visual deviations/preferences: the live Field Notes fixture renders its actual owning route at a scaled desktop viewport, with more project chrome/whitespace than the illustrative card. Decision buttons occupy their own full-width row; the note action sits below instead of the concept's right-side placement. The detailed evidence table requires bounded internal scrolling rather than the concept's shorter three-row table. Narrow layout stacks panels and wraps the toolbar. Exact pixel parity is not claimed. Latest **RTL review dashboard with two modes.png** remains an external user attachment, not an invented repository asset.
+
+Verification limits: Chromium was exercised; Safari-specific certification was not performed. The failure scenario is a real project-test failure. The older project-pass/scanner-or-runtime-failure combination still has unit evidence, not fresh complete-workflow browser evidence in this pass. Browser traces/screenshots alone are not treated as workflow proof; lifecycle tests also inspect API snapshots and disposable source hashes/content. No known scoped functional defect remains after these checks.
+
+### Persistent manual environment and ownership
+
+Verified URL: [http://127.0.0.1:4320/rtl-report-dashboard.html?finding=RTL.CSS.PHYSICAL%3Ae382b9aea738a8b457207d30](http://127.0.0.1:4320/rtl-report-dashboard.html?finding=RTL.CSS.PHYSICAL%3Ae382b9aea738a8b457207d30). Services remain running, independently of the completed test runners.
+
+Environment: `/private/var/folders/fq/64_hc1kd09g0ysrzs_gg6ylh0000gn/T/rtl-independent-onboarding-a0xlAI/environment.json`. Supervisor **32975**, companion **33000**, dashboard HTTP **33031**. New runtime/project/frame identity, hashes and both review IDs are in `manual-gate.json`; `manual-services.log` contains startup evidence. The former owned supervisor 7697 was verified and stopped before tests; its disposable source/history were preserved. Ports 4215/4318/4320 had no listener before the new startup. No unknown process was killed.
+
+Reusable startup from the repository root (check port ownership first):
+
+```sh
+npm run rtl:scan:build
+RTL_PREVIEW_UI_FIXTURE=1 RTL_ONBOARDING_INSTALL=1 node tests/e2e/serve-independent-onboarding.mjs
+```
+
+Read the new `ONBOARDING_ENVIRONMENT` output rather than reusing old paths/PIDs. This serve command is persistent; the `run-review-workspace.mjs` test runner intentionally shuts down its own environments. Foreground startup stops with Ctrl-C. For the currently detached environment, first verify ownership with `ps -p 32975,33000,33031 -o pid,ppid,command`, then `kill -TERM 32975`. Its shutdown handler stops only its companion/HTTP children and the companion-owned runtimes; retained target/history directories are not deleted. The ignored manual-gate script is local QA evidence, not a fresh-clone prerequisite.
+
+### Git state and manual acceptance
+
+Everything remains uncommitted: 27 tracked modified files and 3 untracked entries (the two existing test files and `video-assets/`); no staged files. Exact status is recorded in `test-results/final-session-refinement/git-status.txt`. Existing Antigravity implementation/tests and untracked identity/UI tests are preserved. `video-assets/` is untouched; ignored generated builds, dependencies, browser videos/traces and test results are local-only. No sample application (`apps/` / `libs/`), package manifest/lock, backend workflow policy, or historical video source was changed by this pass. The old GitHub checkpoint does not contain this uncommitted continuation.
+
+- [ ] Compare desktop and narrow layouts; open Review actions, scroll, use arrows/Escape and confirm focus return.
+- [ ] Toggle Files/Findings independently; inspect exact source and Explanation and limitations.
+- [ ] In both modes, compare matching direction/route/viewport, select targets, try fullscreen, and distinguish Pending from Accepted.
+- [ ] Add/save/edit/cancel a note; switch findings with a draft; reject/defer some fixes and approve others.
+- [ ] On the disposable target only, validate, inspect Session details evidence, explicitly Apply accepted changes, then Rollback and inspect separate history/fresh Pending state.
+- [ ] **Ahmed's manual visual acceptance.**
+
+## Final compact review-workspace delivery — verified 2026-11-19
+
+CONTINUE. This section is the current delivery record; earlier v6/v7 and closure sections below are historical. Ahmed manual acceptance **[ ]**. Baseline/HEAD remains `de2684fa58d3f857f6e9c754556cc11854394ab3` on `checkpoint/rtl-analyzer-antigravity-20261119-0210`. Existing Antigravity source/tests and the unrelated untracked video were preserved. Nothing was committed, pushed, published, deployed, or reset.
+
+### Presentation and state changes
+
+- Statistics now use a compact 56px desktop row with an accessible Statistics toggle beside the workspace selector (`aria-expanded` / `aria-controls`). Totals remain in the toggle label when collapsed. Files / Findings remain independent top-left controls; visible uses a purple fill and hidden uses an outlined dashed treatment, with no hidden-panel rails.
+- The finding heading, sticky session toolbar, source, concise Details disclosure and exact code comparison follow a consistent hierarchy. Toolbar is above source (final desktop: 264.8–306.8px; source starts 311.8px). Source/Details/code share connected borders and reduced spacing. Narrow headings and controls wrap without reducing the title to a vertical strip.
+- Decision is connected to the preview section. Approve fix has primary emphasis; the actual pressed decision has a different inset border treatment and retains `aria-pressed`. Pending is explicit, unpressed and never shown as Accepted.
+- Preview preparation is distinct from review approval and source Apply. Pending prepared changes say **Preview ready · Pending approval**, and Decision says **Review preview only**. Accepted entries say **In accepted review set**; validation remains its own status. Review details Changes uses the same distinction. The entry's existing `applied` field describes the isolated review preview, not source application or approval. No backend validation/Apply policy or source guard was changed.
+- Active LTR/RTL uses an obvious purple selected treatment plus `aria-pressed`; both actual frames keep the same selected direction, route and viewport. Full route previews, target selectors, Highlight targets, diagnostics and the existing fullscreen remain.
+- Lost-target restoration now remains unselected across polling and reload until explicit reselection. A persisted restoration-required marker replaces the old stale key; a reserved no-selection probe clears stale highlight overlays without scrolling to another element. The preview remains loaded; readiness for the automatic preview coordinator is based on the independently verified route/source/runtime, while selected-target evidence remains cleared. The lost-selection explanation cannot be overwritten by a preparation message. Reliable unique keys still restore across reordering. These changes affect the contextual controller shared by inline/fullscreen previews; the legacy non-contextual preview has no target-instance restoration controls.
+
+### Fresh verification and evidence
+
+All commands ran from the existing worktree. Logs and screenshots are ignored local evidence under `test-results/final-workspace-refinement/`.
+
+| Exact command | Exit / result |
+|---|---|
+| `npm run rtl:scan:typecheck` | 0 — `typecheck-final.log` |
+| `npm run rtl:scan:build` | 0 — `build-final.log` |
+| `npm run rtl:scan:test` | 0 — **389/389, 31 files**, `units-delivery.log` |
+| `npx vitest run tools/rtl-scanner/tests/contextual-target-identity.test.ts tools/rtl-scanner/tests/workflow-validation.test.ts --config tools/rtl-scanner/vitest.config.ts` | 0 — **9/9, 2 files**, `identity-final.log` |
+| `npm run typecheck` | 0 — `project-typecheck.log` |
+| `npm run build` | 0 — 3 Nx tasks, `project-build.log` |
+| `RTL_WORKSPACE_OUTPUT_PREFIX=test-results/final-workspace-refinement/verified node tests/e2e/run-review-workspace.mjs` | 0 — **15/15**: full 11, limited 2, project-test failure 1, no project commands 1; `verified.log` |
+| `RTL_MANUAL_ENVIRONMENT=<current environment.json> npx playwright test --config=playwright.manual-preview.config.ts tests/e2e/review-ui-refinement.spec.ts tests/e2e/review-workspace.spec.ts --output=test-results/final-workspace-refinement/delivery-final` | 0 — **3/3 on final served build**, `delivery-final.log` |
+| `node test-results/final-workspace-refinement/capture.cjs` | 0 — actual HTTP/root identity, real matching iframe content, source hashes, 480px layout and both current reviews **Reviewing / 0 accepted / Not run**; `manual-gate.json` / `manual-gate.log` |
+| `git diff --check` | 0 |
+| `python3 docs/project-memory/validate.py` | 1 — **47 preexisting missing required historical links, 6 optional missing, 45 staleness advisories, 1 undated index**; `memory-final.log`. No historical links/assets were repaired. |
+
+The final served-build rerun followed the last narrow wrapping and state wording edits. The 15-case run covered automatic preview/delay/retry, both review modes, notes/decisions, accepted-only validation/Apply, rollback/fresh review/history, four panel combinations across reload, sticky menu/focus/disclosures, limited/failed/unconfigured validation, source-range reveal and narrow dialogs. The new refinement case independently verifies statistics via keyboard, active direction and actual iframe direction, lost restoration sustained across polling, cleared highlight, explicit reselection, fullscreen and **the same iframe DOM nodes, URLs, selected target, preparation status and a real nonzero internal scroll** across panel toggles. A test-only tall DOM extension made frame scrolling non-vacuous; it never touched source files.
+
+Earlier development failures remain in `regression.log`, `final.log`, `focused.log`, and `focused2.log`: selected-action pseudo-text changed the exact accessible name, late legacy CSS hid the statistics control, a broad card rule revealed two historical summary cards, and preview preparation obscured the lost-selection message. These were fixed, not counted as passing evidence. Subsequent screenshot review caught header overlap and narrow wrapping; final screenshots and the final 3/3 rerun reflect those corrections.
+
+### Direct visual comparison
+
+The approved attached workspace concept remains the presentation reference, with current user instructions overriding generated workflow examples. Compared actual Chromium captures at **1600×1000, device scale 1, default zoom 1**, selected `.contact-card`, same LTR direction, Pending/0 accepted, matching two-person synthetic route. [Before](../../test-results/final-workspace-refinement/before.png), [after](../../test-results/final-workspace-refinement/after.png), [statistics collapsed](../../test-results/final-workspace-refinement/statistics-collapsed.png), [480×720 narrow layout](../../test-results/final-workspace-refinement/narrow.png), [actual narrow live route](../../test-results/final-workspace-refinement/narrow-live-preview.png), [Activity](../../test-results/final-workspace-refinement/activity.png), [Not run validation](../../test-results/final-workspace-refinement/validation-not-run.png). Final served tests also retain real validation/history/decision/menu screenshots and [lost restoration](../../test-results/final-workspace-refinement/delivery-final/review-ui-refinement-compa-f8a08-cit-lost-target-reselection/lost-target.png).
+
+Remaining visual deviations/preferences: the global navigation/search/workspace selector remain; previews retain the full real Field Notes route and are consequently taller than the concept's mock contact cards; source is an actual minified horizontal line, rather than invented formatted code. Narrow mode stacks panels and frames, with Files/Findings available to reclaim space. Full-page Chromium screenshots can leave offscreen transformed iframe surfaces unpainted; the viewport `narrow-live-preview.png` confirms real rendered content. Strict pixel parity is not claimed. No confirmed scoped defect remains in the checks executed. Verification limits: Chromium automated checks are not Safari certification or Ahmed's acceptance; the failure scenario is a project-test failure, not fresh end-to-end project-pass/scanner-or-runtime-failure evidence. This delivery does not upgrade the historical unit-only evidence for that combination.
+
+### Running disposable environment and manual acceptance
+
+Verified URL: [http://127.0.0.1:4320/rtl-report-dashboard.html?finding=RTL.CSS.PHYSICAL%3Ae382b9aea738a8b457207d30](http://127.0.0.1:4320/rtl-report-dashboard.html?finding=RTL.CSS.PHYSICAL%3Ae382b9aea738a8b457207d30). Both current reviews are Reviewing / 0 accepted / Not run. Real Before is `http://127.0.0.1:4215/people?direction=ltr`, After is `http://127.0.0.1:4206/people?direction=ltr`; both report verified targets and LTR. Runtime ports are discovered from the actual descriptor, not assumed.
+
+Environment identity: `/private/var/folders/fq/64_hc1kd09g0ysrzs_gg6ylh0000gn/T/rtl-independent-onboarding-6JX0We/environment.json`. Disposable source: `/private/var/folders/fq/64_hc1kd09g0ysrzs_gg6ylh0000gn/T/rtl-independent-onboarding-6JX0We/field-notes`. Supervisor **7697**, companion **7721**, dashboard HTTP **7752**. Services are detached/persistent and remain running; `manual-services.log` records ownership. Old owned supervisor 92602 was identified and stopped to release the test ports; its disposable source/history remain on disk. No unrelated process was stopped.
+
+Fresh reusable startup from this repository (after checking that 4215/4318/4320 have no unrelated listener):
+
+```sh
+npm run rtl:scan:build
+RTL_PREVIEW_UI_FIXTURE=1 RTL_ONBOARDING_INSTALL=1 node tests/e2e/serve-independent-onboarding.mjs
+```
+
+This command stays running and prints the new environment identity. The final narrow-only dashboard regeneration used a new `dashboard-final-ui` output directory and copied its HTML into the owned server's existing dashboard after retaining the old generated HTML in the audit directory; no target source was changed. To resume this exact target after stopping it, set `RTL_ONBOARDING_ENVIRONMENT` to its environment.json and run the same serve script. Temporary paths/PIDs describe this run and are not portable prerequisites.
+
+Stop **only this environment**, after checking `ps -p 7697,7721,7752 -o pid=,ppid=,command=` against the identity above:
+
+```sh
+kill -TERM 7697
+```
+
+The supervisor stops its companion/HTTP children; the companion stops its owned previews. The disposable target/history are retained.
+
+- [ ] Ahmed: compare the compact desktop layout, toggle statistics and independently toggle Files/Findings; repeat in a narrow window.
+- [ ] Ahmed: inspect both modes, same-direction Before/After, target/Highlight, viewport/fullscreen, notes, active decision and sticky menu.
+- [ ] Ahmed: approve a disposable fix, validate, inspect actual scope/Unknown coverage, Apply explicitly, then Rollback; inspect separate historical evidence and fresh Pending/Not run state.
+
+Final Git state: same branch and HEAD as baseline; 15 tracked paths modified (preserved previous work plus scoped presentation/controller/tests/docs), two untracked test files, and the unrelated untracked `video-assets/scanner-poc/raw/final-take.mp4`. No staged work, commits or pushes. Application/library source, dependencies and packaging have no diff. See `git-status.txt` for exact paths.
+
 | Task ID | المطلوب الحالي / acceptance | checkpoint |
 |---|---|---|
 | 0 / S1 | هوية scan/dashboard/Companion/root متطابقة؛ تحليل read-only؛ inventory من scanner وcodemod الفعلي | PASS: backend يعيد المسح ويطابق input/policy/root؛ inventory حقيقية |
@@ -95,6 +241,129 @@ Real screenshots, desktop 1600 × 1000 and narrow 480 × 720 (the corresponding 
 - [Fullscreen](../../test-results/review-three-column-20261119/artifacts/fullscreen.png)
 - [Expanded semantic considerations](../../test-results/review-three-column-20261119/artifacts/semantic-expanded.png)
 - [Measured/source gate](../../test-results/review-three-column-20261119/artifacts/delivery-gate.json)
+
+## Codex review closure pass — verified 2026-11-19
+
+CONTINUE. Ahmed acceptance [ ]. Addressed Codex's latest review requests on top of baseline commit `de2684fa58d3f857f6e9c754556cc11854394ab3` (uncommitted modifications preserved):
+
+1. **Deterministic Target Identity & Fallback Invalidation**:
+   - Eliminated unsafe fallback `target:${index}` and duplicate name/email identity assumptions in `contextual-preview-bridge.ts`. Explicit keys are extracted only when deterministic identifiers (`id`, `data-testid`, `data-candidate-target`) exist.
+   - Keys are classified as `keyGuaranteed: true, ambiguous: false` only for unique single occurrences. Duplicate names/emails are marked `ambiguous: true, keyGuaranteed: false`. Anonymous targets are marked `key: null, keyGuaranteed: false`.
+   - `reconcileContextTargets` in `dashboard-contextual-preview.ts` strictly validates that a restored key has `matches.length === 1 && matches[0].keyGuaranteed && !matches[0].ambiguous`. In the presence of reordering, insertion, removal, or duplicate targets, stored preferences in `sessionStorage` are cleared and reset to default (`0`) instead of silently selecting an arbitrary element.
+   - Full unit test coverage in `tools/rtl-scanner/tests/contextual-target-identity.test.ts` across element reordering, insertions, duplicate names, anonymous elements, and explicit keys.
+2. **Focused Browser Evidence — Source Reveal & Nonzero Scroll**:
+   - In `tests/e2e/review-workspace.spec.ts`, verified that revealing source occurrences (`scrollLeft` inside `.code-scroll`) leaves existing nonzero window page scroll (`window.scrollY = 80`) intact without unwanted page jumps.
+   - Verified horizontal reveal switching between distant findings on the same minified line (`first` vs `second`), ensuring `mark.finding-range` updates and `.code-scroll.scrollLeft` shifts horizontally to reveal the target.
+   - Verified safe fallback for missing/invalid ranges without throwing runtime errors or disrupting review state.
+3. **Focused Browser Evidence — Validation Category Separation & Failure State**:
+   - In `dashboard-review-details.ts`, partitioned validation rows into non-overlapping groups: Project checks, Scanner checks, and Runtime checks.
+   - Verified scenario `failed` under disposable fixture: asserts visible category header ("Project checks"), check results table (`test: Failed`, `build: Passed`, `typecheck: Passed`), and overall status ("Technical validation: Failed") while Commands and logs disclosure is closed (`not.toHaveAttribute('open', '')`).
+   - Verified that Apply is unavailable when technical validation fails, upholding the authoritative validation policy.
+4. **Focused Browser Evidence — Panel Toggles & Frame Preservation**:
+   - In `tests/e2e/review-workspace.spec.ts`, recorded iframe node identity (`iframe.__panelIdentity`), route, direction, selected target, and frame scroll.
+   - Verified that toggling sidebar panels (`Files`, `Findings`, both hidden) preserves the exact live iframe DOM nodes and state without reloads.
+   - Formally separated toggle preservation from full page reload restoration (which instantiates fresh DOM iframe elements while re-applying persisted visibility classes from `localStorage`).
+
+### Verification Evidence & Test Results (Run v7 — 2026-11-19)
+
+- `npm run rtl:scan:typecheck` & `npm run rtl:scan:build`: PASS (exit code 0)
+- `npm run rtl:scan:test`: PASS (31 files, 389 passed, exit code 0)
+- `npm run typecheck`: PASS (exit code 0)
+- `npm run build`: PASS (3 build tasks, exit code 0)
+- `git diff --check`: PASS (clean whitespace, exit code 0)
+- `RTL_WORKSPACE_OUTPUT_PREFIX=test-results/antigravity-workspace-v7 node tests/e2e/run-review-workspace.mjs`: PASS (14/14 tests across all 4 scenarios, exit code 0):
+  - Scenario `full`: 10/10 passed (1.4m)
+  - Scenario `limited`: 2/2 passed (25.1s)
+  - Scenario `failed`: 1/1 passed (12.8s)
+  - Scenario `none`: 1/1 passed (12.8s)
+  - Total: 14/14 passed, 0 failed, 0 skipped.
+
+### Categorization of Remaining Items
+- **Defect**: None remaining in the scoped implementation.
+- **Verification gap**: Cross-origin iframe scroll check evaluates through Playwright's `frameLocator` context rather than direct DOM property access due to browser Same-Origin Policy (SOP) across localhost ports `:4320` and `:4215`.
+- **Visual preference**: Layout and spacing follow approved reference cards; subtle font rendering variations across operating systems remain presentation-only.
+
+## Codex review corrections — verified 2026-11-19
+
+CONTINUE. Ahmed acceptance [ ]. Addressed Codex review findings on top of baseline commit `de2684fa58d3f857f6e9c754556cc11854394ab3` (uncommitted modifications preserved):
+
+1. **Primary action wording**: Primary button uses static label `"Validate changes"`. Session summary keeps the accepted count separately (`"N accepted"`). Apply button handles singular/plural correctly (`"Apply 1 accepted change to source"` vs `"Apply N accepted changes to source"`).
+2. **Navigate to source finding & exact range highlighting**: `DashboardFinding` and `mapFinding` in `dashboard-data.ts` retain `range` and `original`. Target lines with exact range render `<mark class="finding-range">`, revealed via container-scoped horizontal scroll (`scrollLeft`) without window-level page scrolling (`window.scrollX === 0`, `window.scrollY === 0`).
+3. **Visible validation evidence**: Project checks, Scanner checks, and Runtime checks are rendered in distinct categorized groups with explicit headers and `.validation-row[data-check="..."]` rows. Failed, unavailable, or missing checks remain visible in the table with distinct badges (`badge-fail`, `badge-nc`) without requiring Commands and logs to be opened. Added unit test in `workflow-validation.test.ts`.
+4. **Target element labeling**: Self-matching checks (`node.matches?.(...)`) in `contextual-preview-bridge.ts` ensure nodes targeting elements directly (e.g. `h2.contact-name`) extract the node's label (`"Nadia / نادية"`) rather than falling back to `"Target 1"`. Concatenation of email or descendant text into labels is eliminated; disambiguation happens only when multiple targets share a label.
+5. **Review details dialog**: Responsive modal with clean separation between Current review and History. Project checks table displays `Check | Result | Scope`, amber `Available checks passed · Limited validation` banner, and `Change coverage: Unknown` notice. Verified on desktop (1600px) and narrow (480px) viewports without clipping.
+6. **Panel visibility & persistence**: Independent top-left toggle buttons for `Files` and `Findings` above columns. Zero width and no gutters for hidden panels. All 4 visibility states persist across page reloads via `localStorage`.
+
+### Verification Evidence & Test Results (Run v6 — 2026-11-19)
+
+- `npm run rtl:scan:typecheck` & `npm run rtl:scan:build`: PASS (exit code 0)
+- `npm run rtl:scan:test`: PASS (30 files, 387 passed, exit code 0)
+- `npm run typecheck`: PASS (exit code 0)
+- `nx run-many -t build`: PASS (3 build tasks, exit code 0)
+- `git diff --check`: PASS (clean whitespace, exit code 0)
+- `RTL_WORKSPACE_OUTPUT_PREFIX=test-results/antigravity-workspace-v6 node tests/e2e/run-review-workspace.mjs`: PASS (14/14 tests across all 4 scenarios, exit code 0):
+  - Scenario `full`: 10/10 passed (1.4m)
+  - Scenario `limited`: 2/2 passed (25.7s)
+  - Scenario `failed`: 1/1 passed (12.9s)
+  - Scenario `none`: 1/1 passed (12.9s)
+  - Total: 14/14 passed, 0 failed, 0 skipped.
+
+### Verified Screenshots (`test-results/antigravity-workspace-v6-full-final/review-workspace-full-one--5b4b1-ation-and-read-only-details/`)
+
+1. [three-column-workspace.png](../../test-results/antigravity-workspace-v6-full-final/review-workspace-full-one--5b4b1-ation-and-read-only-details/three-column-workspace.png) — Independent `Files` and `Findings · 6` controls above columns; three full columns.
+2. [sidebars-collapsed.png](../../test-results/antigravity-workspace-v6-full-final/review-workspace-full-one--5b4b1-ation-and-read-only-details/sidebars-collapsed.png) — Both panels collapsed with zero width/gutters; Review pane expands to fill full workspace.
+3. [workspace-toolbar-decision.png](../../test-results/antigravity-workspace-v6-full-final/review-workspace-full-one--5b4b1-ation-and-read-only-details/workspace-toolbar-decision.png) — Sticky toolbar above source, clean target label (`1 · Nadia / نادية`), compact Decision actions and expandable notes.
+4. [sticky-menu.png](../../test-results/antigravity-workspace-v6-full-final/review-workspace-full-one--5b4b1-ation-and-read-only-details/sticky-menu.png) — Overflow menu open while scrolled, properly bounded.
+5. [details-activity.png](../../test-results/antigravity-workspace-v6-full-final/review-workspace-full-one--5b4b1-ation-and-read-only-details/details-activity.png) — Review details modal, Activity tab with timeline.
+6. [details-validation.png](../../test-results/antigravity-workspace-v6-full-final/review-workspace-full-one--5b4b1-ation-and-read-only-details/details-validation.png) — Validation tab with compact Check/Result/Scope table, coverage box, and log disclosure.
+7. [history-applied.png](../../test-results/antigravity-workspace-v6-full-final/review-workspace-full-one--5b4b1-ation-and-read-only-details/history-applied.png) — History tab after Apply with applied receipt badge.
+8. [history-rollback.png](../../test-results/antigravity-workspace-v6-full-final/review-workspace-full-one--5b4b1-ation-and-read-only-details/history-rollback.png) — History tab after rollback with rollback details.
+9. [narrow-workspace.png](../../test-results/antigravity-workspace-v6-full-final/review-workspace-full-one--5b4b1-ation-and-read-only-details/narrow-workspace.png) — 480px responsive workspace layout.
+10. [narrow-decision.png](../../test-results/antigravity-workspace-v6-full-final/review-workspace-full-one--5b4b1-ation-and-read-only-details/narrow-decision.png) — 480px decision actions stacked within pane bounds.
+11. [narrow-dialog.png](../../test-results/antigravity-workspace-v6-full-final/review-workspace-full-one--5b4b1-ation-and-read-only-details/narrow-dialog.png) — 480px modal dialog filling viewport width.
+
+## Workspace visual refinement — verified 2026-11-19
+
+CONTINUE. Ahmed acceptance [ ]. Refinement of workspace layout, panel visibility controls, concise finding titles, clean contextual target options, Decision card actions, and Review details dialog to match the 4 attached design references (`media_1795086558661_068ba6e9.jpg`, `media_1795086558657_cec5a811.jpg`, `media_1795086558717_8d34785a.jpg`, `media_1795086558730_8d455a48.jpg`).
+
+| Capability | Implementation & Design Parity | Verification Evidence |
+|---|---|---|
+| **Panel Visibility Controls** | Added `.panel-controls` above columns with labelled `Files` and `Findings` toggle buttons. Removed empty collapsed rails. Supports all 4 states (both open, Files only, Findings only, both hidden); hidden panels take 0 width and no gutters. Persists via `localStorage` (`rtl-panel-files-visible`, `rtl-panel-findings-visible`). `aria-expanded`, `aria-controls`, and visible focus indicators. | Verified in `tests/e2e/review-workspace.spec.ts` line 11 (toggle combinations, bounds expansion > 350px, localStorage values) and line 24 (reload persistence). Real captures: `three-column-workspace.png`, `sidebars-collapsed.png`. |
+| **Workspace Visual Refinement** | Concise actionable finding titles (e.g. “Use logical property for RTL”) in list and source heading breadcrumb (`Prepare → Validate → Apply`). Clean target labels formatted as `1 · Nadia / نادية` without concatenating email or descendant text. Compact Decision section with actual status badge, 4 explicit actions (`Approve fix`, `Reject fix`, `Defer`, `Needs review`), expandable notes with textarea and Save notes button. Primary styling applied only to active decision. | Captured in `workspace-toolbar-decision.png`. Tested across all scenarios. Bounded source scrolling verified without page-level overflow. |
+| **Review Details Modal** | Full modal structure matching reference: segmented control (`Current review` / `History`), icon tabs (`Activity`, `Validation`, `Changes`, `Technical`), compact Check / Result / Scope table scoped to project checks, `Available checks passed · Limited validation` amber banner, `Change coverage: Unknown` notice, and collapsible `Receipts and backups` disclosure. | Captured in `details-validation.png`, `details-activity.png`, `history-applied.png`, `history-rollback.png`. Verified across `full`, `limited`, `failed`, `none` scenarios. |
+| **Responsive & Narrow Layout** | Session toolbar bounds within 480px, overflow menu contained without clipping, stacked decision card within workspace bounds, dialog width 100% at <= 480px. | Captured in `narrow-workspace.png`, `narrow-decision.png`, `narrow-dialog.png`. Verified in test suite line 26. |
+
+### Verification Evidence & Test Results (2026-11-19)
+
+- `npm run rtl:scan:typecheck` & `npm run rtl:scan:build`: PASS (exit code 0)
+- `npm run rtl:scan:test`: PASS (30 files, 386 passed, exit code 0)
+- `npm run typecheck`: PASS (exit code 0)
+- `nx run-many -t build`: PASS (3 build tasks, exit code 0)
+- `git diff --check`: PASS (clean whitespace, exit code 0)
+- `RTL_WORKSPACE_OUTPUT_PREFIX=test-results/antigravity-workspace-v4 node tests/e2e/run-review-workspace.mjs`: PASS (14/14 tests across all 4 scenarios, exit code 0):
+  - Scenario `full`: 10 passed (1.3m)
+  - Scenario `limited`: 2 passed (25.3s)
+  - Scenario `failed`: 1 passed (11.6s)
+  - Scenario `none`: 1 passed (11.9s)
+
+### Verified Screenshots (`test-results/antigravity-workspace-v4-full-final/review-workspace-full-one--5b4b1-ation-and-read-only-details/`)
+
+1. [three-column-workspace.png](../../test-results/antigravity-workspace-v4-full-final/review-workspace-full-one--5b4b1-ation-and-read-only-details/three-column-workspace.png) — Independent `Files` and `Findings · 6` controls above columns; three full columns.
+2. [sidebars-collapsed.png](../../test-results/antigravity-workspace-v4-full-final/review-workspace-full-one--5b4b1-ation-and-read-only-details/sidebars-collapsed.png) — Both panels collapsed with zero width/gutters; Review pane expands to fill full workspace.
+3. [workspace-toolbar-decision.png](../../test-results/antigravity-workspace-v4-full-final/review-workspace-full-one--5b4b1-ation-and-read-only-details/workspace-toolbar-decision.png) — Sticky toolbar above source, clean target label (`1 · Nadia / نادية`), compact Decision actions and expandable notes.
+4. [sticky-menu.png](../../test-results/antigravity-workspace-v4-full-final/review-workspace-full-one--5b4b1-ation-and-read-only-details/sticky-menu.png) — Overflow menu open while scrolled, properly bounded.
+5. [details-activity.png](../../test-results/antigravity-workspace-v4-full-final/review-workspace-full-one--5b4b1-ation-and-read-only-details/details-activity.png) — Review details modal, Activity tab with timeline.
+6. [details-validation.png](../../test-results/antigravity-workspace-v4-full-final/review-workspace-full-one--5b4b1-ation-and-read-only-details/details-validation.png) — Validation tab with compact Check/Result/Scope table, coverage box, and log disclosure.
+7. [history-applied.png](../../test-results/antigravity-workspace-v4-full-final/review-workspace-full-one--5b4b1-ation-and-read-only-details/history-applied.png) — History segmented tab, previous review summary card, amber warning, and event timeline.
+8. [history-rollback.png](../../test-results/antigravity-workspace-v4-full-final/review-workspace-full-one--5b4b1-ation-and-read-only-details/history-rollback.png) — Rollback event recorded in historical timeline.
+9. [narrow-workspace.png](../../test-results/antigravity-workspace-v4-full-final/review-workspace-full-one--5b4b1-ation-and-read-only-details/narrow-workspace.png) — 480px narrow viewport, unclipped overflow menu.
+10. [narrow-decision.png](../../test-results/antigravity-workspace-v4-full-final/review-workspace-full-one--5b4b1-ation-and-read-only-details/narrow-decision.png) — 480px narrow decision card fully visible within bounds.
+11. [narrow-dialog.png](../../test-results/antigravity-workspace-v4-full-final/review-workspace-full-one--5b4b1-ation-and-read-only-details/narrow-dialog.png) — 480px narrow modal dialog properly scaled and scrollable.
+
+### Visual Deviations & Intentional Scope Differences
+
+- **Application Domain / Live Routes:** The design references use mock invoice templates (`Live invoice application`, `#1042`), whereas the actual application runtime in this workspace executes the real Field Notes target (`/people`, with real synthetic contacts `Nadia / نادية` and `Omar / عمر`). This is intentional and preserves the real application runtime without synthetic data mocking.
+- **Rule Identifiers:** The design references show short mock rule labels; the implementation displays actionable concise titles (e.g. `Use logical property for RTL`) while keeping exact rule identifiers (`RTL.CSS.PHYSICAL · src/reading.css · Line 1`) as secondary metadata to ensure full auditability.
 
 Direct comparison with approved references A/B/C: the three-column composition, hierarchy, purple action/highlight language, compact cards and segmented/underline modal now follow the concepts. Remaining intentional differences: existing global branding/search/workspace/statistics occupy additional header space; live previews render the full real `/people` route and real fixture data rather than cropped illustrative contacts/invoices; utility text remains compact within the existing dashboard typography; actual minified source stays one horizontally scrollable line; the modal includes a history picker and every real event/check, so longer histories and validation use bounded internal scrolling and more height than the four-event concept. The history picker retains a short identity suffix to distinguish real records sharing a timestamp; full identities remain in Technical. Code removal styling remains distinct from validation status. Automatic preparation replaces the concept’s manual preparation gate, and both frames use the same direction as explicitly required. There is no permanent Review details sidebar or presentation annotations. These are recorded deviations, not claims of exact parity.
 
@@ -1799,3 +2068,20 @@ RTL_MANUAL_ENVIRONMENT='/actual/new/environment.json' npx playwright test \
 ```
 
 حدود القبول: fixture والتحويل المدعومان فقط؛ مجموعة منافذ محدودة؛ original runtime يحتاج wrapper التطوير المحلي؛ لا دعم embed عام لمواقع مصادقة أو مشاريع arbitrary؛ الجلسات الحية لا تُستعاد بعد restart للـ Companion؛ غياب handshake يعطي embedding/bridge غير مؤكد ولا يحدد policy بعينها. لا ادعاء بأن المرشح validated أو approved.
+### Codex closure implementation and verification — 2026-11-19
+
+Implemented the scoped ambiguous-target restoration correction on top of the preserved Antigravity work. When a saved target key is missing, ambiguous, or not guaranteed, the preview now clears the saved selection and evidence, shows an unselected `Previous target could not be restored. Select a target.` option, and remains available until the reviewer explicitly selects a target. Reliable explicit/name-email keys continue to restore across reordering. The contextual target identity tests now assert the placeholder and failed-restoration state rather than an index-0 fallback.
+
+Fresh verification from the dirty worktree:
+
+| Command | Result |
+|---|---|
+| `npm run rtl:scan:typecheck` | PASS, exit 0 |
+| `npm run rtl:scan:build` | PASS, exit 0 |
+| `npm run rtl:scan:test` | PASS, 389 tests / 31 files |
+| `RTL_WORKSPACE_OUTPUT_PREFIX=test-results/codex-closure-20261119 node tests/e2e/run-review-workspace.mjs` | PASS, 14/14 Chromium cases: full 10/10, limited 2/2, failed 1/1, none 1/1 |
+| `git diff --check` | PASS, exit 0 |
+
+Fresh browser evidence is under `test-results/codex-closure-20261119-{full,limited,failed,none}-final/`. The runner covered automatic preparation/recovery, both modes, validation states, panel reload combinations, source-range reveal and read-only details. No Apply or rollback was performed against a non-disposable target. Ahmed acceptance remains **[ ]**.
+
+Remaining verification limits: the focused runner does not exercise every synthetic ambiguous-target restoration case or every Unicode/tab/repeated-text invalid-range permutation in a live browser. Those cases are covered by source-level range guards and contextual identity tests; any further browser coverage should use a new disposable target.

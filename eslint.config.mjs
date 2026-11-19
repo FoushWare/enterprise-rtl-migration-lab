@@ -4,6 +4,7 @@ export default tseslint.config(
     ignores: [
       "node_modules/**",
       "dist/**",
+      "tools/rtl-scanner/dist/**",
       ".nx/**",
       "playwright-report/**",
       "test-results/**",

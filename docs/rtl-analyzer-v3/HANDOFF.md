@@ -1,5 +1,7 @@
 # RTL Migration Analyzer v3 Handoff
 
+> Historical Phase 01 planning snapshot. For the implementation/release-testing continuation verified 2026-11-19, use the [current handoff](../project-memory/HANDOFF.md) and [finalization record](package-release-testing-2026-11-19.md). The approval below remains the historical phase approval, not Ahmed's final acceptance.
+
 Status: approved for Phase 01 implementation.
 
 ## Current boundary
