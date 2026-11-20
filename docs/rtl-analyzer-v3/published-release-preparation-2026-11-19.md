@@ -2,6 +2,8 @@
 
 Verified 2026-11-19. Approved continuation of implementation checkpoint `8ea82bfbcba1e46bc229121210e0fec79e8cf08b`; no history rewrite, publication, tag or deployment is authorized here. The [earlier testing record](package-release-testing-2026-11-19.md) remains historical scanner-package evidence, not proof of the public wrapper consumer path.
 
+**Dated continuation:** the user authorized final publication on 2026-11-20. See the [public 0.3.0 release record](public-release-0.3.0-2026-11-20.md) for current status; the preparation evidence and approval state below remain historical.
+
 ## Verified architecture and candidate
 
 The npm registry returns `rtl-analyzer@0.2.0` (`latest`; versions `0.0.0-stage`, `0.1.0`, `0.2.0`). Its `gitHead` is `253912c85dfadda09abb42361b9a9776dc9916eb`, matching [`FoushWare/rtl-analyzer`](https://github.com/FoushWare/rtl-analyzer/commit/253912c85dfadda09abb42361b9a9776dc9916eb). `packages/rtl-analyzer/package.json` owns publication; the repository root is private. The public bin `rtl-analyzer` executes the bundled `dist/standalone-cli.js`, which calls the bundled scanner/reporting CLI. It is a router/build wrapper, not a network bootstrapper. No consumer install fetches this lab or `@atlas/rtl-scanner`. Registry lookup for `@atlas/rtl-scanner` returned E404; its internal manifest is now explicitly private.
