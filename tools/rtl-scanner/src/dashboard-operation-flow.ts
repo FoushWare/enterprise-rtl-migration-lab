@@ -25,7 +25,7 @@ export const operationFlowClientSource=String.raw`
     }else if(passed)opButton(dialog,'Apply '+op.count+' changes…',()=>{dismissOperation();applyConfirmation()});
     else if(op.state==='Failed'&&workflow.state==='Reviewing')opButton(dialog,'Retry',()=>{dismissOperation();runDashboardOperation(op.kind)});
     else if(op.state==='Uncertain'||op.state==='Running')opButton(dialog,'Check operation status',()=>reconcileOperation(op));
-    opButton(dialog,'Back to review',dismissOperation).focus();
+    const back=opButton(dialog,'Back to review',dismissOperation);if(passed||applied)dialog.querySelector('.actions button')?.focus();else back.focus();
   }
   async function reconcileOperation(pending){
     busy=true;busyLabel='Checking operation status';operationWindow('Checking operation status','The previous request may have executed. Checking the authoritative server record…',true);
