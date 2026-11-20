@@ -55,7 +55,7 @@ export const contextualPreviewClientSource = String.raw`
   }
   async function contextRoutes(record,f,current){
     if(!current||!live(record,current.component))return;contextControls(current);
-    const token=(record.routeToken||0)+1;record.routeToken=token;record.contextResolving=true;for(const item of current.items){item.state.dataset.state='loading';item.state.dataset.contextStatus='loading-route';item.state.textContent='Resolving current route and contextual target…'}
+    current.component.dataset.mappingMissing='false';current.component.querySelector('.mapping-unavailable')?.remove();const token=(record.routeToken||0)+1;record.routeToken=token;record.contextResolving=true;for(const item of current.items){item.state.dataset.state='loading';item.state.dataset.contextStatus='loading-route';item.state.textContent='Resolving current route and contextual target…'}
     try{
       const query=new URLSearchParams({inputDigest:d.inputDigest,policyDigest:d.policyDigest,findingId:f.id,mode:record.mode,...(record.workflowId?{workflowId:record.workflowId}:{}),...(record.routeId?{routeId:record.routeId}:{})});
       let info=await request('/contextual-preview?'+query);
@@ -75,6 +75,9 @@ export const contextualPreviewClientSource = String.raw`
         if(item.role==='candidate'&&descriptor?.available&&candidateEligible(record)&&record.entryApplied){activateVerifiedCandidate(current);if(!item.frame)item.state.textContent='Waiting for verified Before before displaying this isolated candidate…';}
         else if(descriptor?.available&&item.role==='original'){load(item,descriptor.url,record,f,descriptor.sourceHash);resize(item,record)}
         else{clearTimeout(item.timeout);item.box.replaceChildren();item.frame=null;item.ready=null;clearContextTargets(item);item.state.dataset.state='unavailable';item.state.dataset.contextStatus=!info.route?'mapping-missing':'runtime-unavailable';item.state.textContent=item.role==='original'?(descriptor?.reason||info.reason||'Unresolved contextual mapping.'):(!record.session?'No candidate prepared · validation: Not run':descriptor?.reason||info.candidateReason||'No isolated candidate is available.');}
+      }
+      if(!info.route){
+        current.component.dataset.mappingMissing='true';const unavailable=el('section','','mapping-unavailable');unavailable.setAttribute('role','status');unavailable.append(el('h3','Live preview unavailable'),el('p','This finding has no configured page/element mapping. You can review the proposed code, but its visual effect has not been verified.'));current.component.append(unavailable);
       }
       updateCandidateAction(current);syncRoute(current);
       current.component.querySelectorAll('.route-actions button').forEach((button,index)=>{button.disabled=!info.candidate?.available;button.onclick=()=>{const url=new URL(info.candidate.urls?.[index?'rtl':'ltr']||info.candidate.url);if(!info.candidate.urls)url.searchParams.set('lang',index?'ar':'en');if(originAllowed(url.href,'candidate'))window.open(url.href,'_blank','noopener,noreferrer')}});

@@ -21,3 +21,14 @@ it('includes preview configuration in report identity while preserving source fi
 
 it('rejects a persisted application port outside the existing pool before touching a runtime',async()=>{await expect(startCandidateRuntime({runtimePorts:{demo:17}} as unknown as ReviewSession,'demo')).rejects.toThrow('CANDIDATE_PORT_ASSIGNMENT_INVALID')});
 it('does not use Atlas example mappings for unmapped external document findings',async()=>{const root=await fixture();try{await writeFile(join(root,'rtl-preview.config.json'),JSON.stringify(configuration()));await writeFile(join(root,'index.html'),'<!doctype html><html dir="ltr"><body></body></html>');const report=await scan(root),base=report.findings.find(f=>f.path===source);expect(base).toBeTruthy();const f={...base!,path:'index.html',ruleId:'RTL.DOCUMENT.INITIAL',context:'html',original:'dir=\"ltr\"'};const mapping=configuredMapping(f,await loadPreviewConfiguration(root));expect(mapping).toMatchObject({kind:'unresolved',routes:[],selector:'',limitation:'No mapped preview for this finding.'});}finally{await rm(root,{recursive:true,force:true})}});
+it('binds JSX text expressions independently through existing class selectors, including bdi candidates',async()=>{
+ const root=await fixture();try{
+ const file='apps/samples/src/start.tsx',source='export function Cards(){const person={name:"Nadia",email:"nadia@example.test"};return <article><h2 className="contact-name">{person.name}</h2><p className="contact-email">{person.email}</p></article>}';
+ await writeFile(join(root,file),source);const c=configuration();c.mappings=[];for(const selector of ['.contact-name','.contact-email'])c.mappings.push({source:file,sourceSelector:selector,targetSelector:selector,routes:[{application:'demo',route:'one'}]});await writeFile(join(root,'rtl-preview.config.json'),JSON.stringify(c));
+ const report=await scan(root),name=report.findings.find(f=>f.original==='{person.name}')!,email=report.findings.find(f=>f.original==='{person.email}')!;
+ expect(name).toBeTruthy();expect(email).toBeTruthy();for(const wrapped of [false,true]){
+ if(wrapped)await writeFile(join(root,file),source.replace('{person.name}','<bdi dir="auto">{person.name}</bdi>').replace('{person.email}','<bdi dir="auto">{person.email}</bdi>'));
+ const config=await loadPreviewConfiguration(root);expect(configuredMapping(name,config)).toMatchObject({selector:'.contact-name',configured:true});expect(configuredMapping(email,config)).toMatchObject({selector:'.contact-email',configured:true});expect(configuredMapping({...name,original:'{other.name}'},config).kind).toBe('unresolved');
+ }
+ }finally{await rm(root,{recursive:true,force:true})}
+});

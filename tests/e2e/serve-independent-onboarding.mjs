@@ -32,7 +32,7 @@ if(scenario&&scenario!=='full'){
  put('rtl-project.config.json',config);
 }
 const routes=[{id:'people',path:'/people',ltr:'/people?direction=ltr',rtl:'/people?direction=rtl'}];
-put('rtl-preview.config.json',{schemaVersion:1,applications:{directory:{viteConfig:'vite.config.ts',entry:'src/main.tsx',originalOrigin:'http://127.0.0.1:'+appPort,readySelector:'#root main article',dataAdapter:'none',startupScript:'dev',routes}},mappings:['.contact-card','.contact-name','.contact-email','.reject-me','.pending-me'].map(selector=>({source:'src/reading.css',sourceSelector:selector,targetSelector:selector,routes:[{application:'directory',route:'people'}]}))});
+put('rtl-preview.config.json',{schemaVersion:1,applications:{directory:{viteConfig:'vite.config.ts',entry:'src/main.tsx',originalOrigin:'http://127.0.0.1:'+appPort,readySelector:'#root main article',dataAdapter:'none',startupScript:'dev',routes}},mappings:[...['.contact-name','.contact-email'].map(selector=>({source:'src/main.tsx',context:'App',sourceSelector:selector,targetSelector:selector,routes:[{application:'directory',route:'people'}]})),...['.contact-card','.contact-name','.contact-email','.reject-me','.pending-me'].map(selector=>({source:'src/reading.css',sourceSelector:selector,targetSelector:selector,routes:[{application:'directory',route:'people'}]}))]});
 // Reuse installed dependencies only as a test optimization. A normal standalone developer uses npm install.
 if(process.env.RTL_ONBOARDING_INSTALL){
  execFileSync('npm',['install','--ignore-scripts','--no-audit','--no-fund'],{cwd:project,stdio:'inherit'});

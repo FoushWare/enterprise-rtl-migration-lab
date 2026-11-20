@@ -97,7 +97,17 @@ const reviewWorkflow=(()=>{
     if(current?.validationPresentation?.status==='Failed'||current?.validationPresentation?.status==='Unavailable'){bar.append(el('p',workflow.applyEligibility?.reason||current.validationPresentation.explanation,'session-policy'));}
     const focusTarget=focusPrimary?primary:[...bar.querySelectorAll('button,summary')].find(n=>focusKey?n.dataset.sessionAction===focusKey:n.textContent===focusLabel);if(focused)(focusTarget&&!focusTarget.disabled?focusTarget:toggle).focus({preventScroll:true});
   }
+  function updateDecisionIndicators(){
+    for(const row of document.querySelectorAll('.finding[data-finding-id]')){
+      const decision=!sourceContextError&&workflow?.state==='Reviewing'?workflow.entries.find(e=>e.finding.id===row.dataset.findingId)?.decision||'Pending':'Pending';
+      const [label,symbol,tone]=({Accepted:['Accepted','✓','accepted'],Rejected:['Rejected','×','rejected'],Deferred:['Deferred','◷','deferred'],Flagged:['Needs review','◇','flagged'],Pending:['Pending','○','pending']})[decision]||['Pending','○','pending'];
+      let icon=row.querySelector('.finding-decision');if(!icon){icon=el('span','','finding-decision');icon.setAttribute('role','img');row.append(icon)}icon.textContent=symbol;icon.dataset.decision=decision;icon.dataset.tone=tone;icon.setAttribute('aria-label',label);icon.title=label;
+    }
+  }
+  window.rtlRenderReviewIndicators=updateDecisionIndicators;
+  const indicatorStyle=el('style');indicatorStyle.textContent='.finding{position:relative;padding-inline-end:34px!important}.finding>strong,.finding>small{overflow-wrap:anywhere;min-width:0}.finding-decision{position:absolute;inset-inline-end:10px;top:50%;transform:translateY(-50%);width:18px;text-align:center;font:700 17px/1.2 system-ui;color:#a3adbb;pointer-events:none}.finding-decision[data-tone=accepted]{color:#55dc9e}.finding-decision[data-tone=rejected]{color:#ff8193}.finding-decision[data-tone=deferred]{color:#ffd166}.finding-decision[data-tone=flagged]{color:#c39aff}';document.head.append(indicatorStyle);
   function render(){
+    updateDecisionIndicators();
     const f=s.finding;if(!localStorage.getItem('rtl-review-workflow'))return;if(!f){sessionToolbar();reviewDetails.update(workflow?.state==='Reviewing'?workflow:null,workflow?.state!=='Reviewing'?[workflow,...(history||[])].filter(Boolean):history);return;}
     normalizeComponentReview();normalizeDecision();sessionToolbar();
     const card=document.querySelector('.decision-card'),component=document.querySelector('.component-review');if(!card)return;
