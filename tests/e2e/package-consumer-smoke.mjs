@@ -77,7 +77,7 @@ try{
   await expect(after).toHaveAttribute('data-context-status','verified',{timeout:30000});
   await page.frameLocator('.component-after iframe').locator('html').evaluate((_,message)=>parent.postMessage({...message,dir:'rtl',directionRevision:999999},'http://127.0.0.1:4320'),oldStatus);
   await page.waitForTimeout(500);await expect(after).toHaveAttribute('data-context-status','verified');
-  await page.getByRole('button',{name:'Approve fix',exact:true}).click();await page.getByRole('button',{name:'Validate changes',exact:true}).click();await expect(page.locator('.session-validation')).toContainText('Passed',{timeout:120000});const validated=await snapshot();assert.equal(validated.applyEligibility.eligible,true);assert.equal(validated.entries.filter(e=>e.applied).length,1);assert.deepEqual(hashes(),initialHashes);result.checks=validated.validationPresentation.checks.map(c=>({name:c.name,state:c.state}));assert.ok(result.checks.every(c=>c.state==='Passed'));
+  await page.getByRole('button',{name:'Approve proposed change',exact:true}).click();await page.getByRole('button',{name:'Validate changes',exact:true}).click();await expect(page.locator('.session-validation')).toContainText('Passed',{timeout:120000});const validated=await snapshot();assert.equal(validated.applyEligibility.eligible,true);assert.equal(validated.entries.filter(e=>e.applied).length,1);assert.deepEqual(hashes(),initialHashes);result.checks=validated.validationPresentation.checks.map(c=>({name:c.name,state:c.state}));assert.ok(result.checks.every(c=>c.state==='Passed'));
   // Unscanned application data changes the actual mapped target without modifying source or configuration.
   put('public/state.json',{label:'Changed after validation'});
   const stale=await fetch('http://127.0.0.1:4318/review/workflows/'+pending.id+'/apply',{method:'POST',headers:{'content-type':'application/json',Origin:'http://127.0.0.1:4320'},body:JSON.stringify({confirmation:'APPLY_CONFIRMED'})});
@@ -103,6 +103,16 @@ try{
  await localPage.addInitScript(()=>{window.__localDirectionEvidence=[];addEventListener('message',e=>{if(e.data?.type==='rtl-context-status'&&e.data.role==='original')window.__localDirectionEvidence.push({page:e.data.dir,target:e.data.targets?.[0]?.effectiveDirection,status:e.data.targetStatus})})});
  await localPage.goto('http://127.0.0.1:4320/rtl-report-dashboard.html?finding='+encodeURIComponent(localFinding.id));await localPage.getByRole('button',{name:'Start manual review',exact:true}).click();
  await expect(localPage.locator('.component-before .embedded-state')).toHaveAttribute('data-context-status','verified',{timeout:60000});
+ await expect(localPage.locator('.finding-heading')).toContainText('Review physical padding');
+ await expect(localPage.locator('.details-summary-row')).toContainText('A visual defect is not established');
+ await expect(localPage.locator('.details-summary-row')).toContainText('Confidence in static evidence: High');
+ await localPage.locator('.more-details > summary').click();
+ await expect(localPage.locator('.more-details-body')).toContainText('Confidence describes the static source match, not visual correctness');
+ await expect(localPage.locator('.more-details-body')).toContainText('including local direction overrides');
+ await expect(localPage.locator('.after-card h3')).toHaveText('After (Proposed Change)');
+ await expect(localPage.locator('.after-card pre')).toHaveText('padding-inline-end:11px');
+ await expect(localPage.getByRole('button',{name:'Approve proposed change',exact:true})).toBeVisible();
+ await expect(localPage.locator('.workflow-decision')).toContainText('Pending');
  await localPage.locator('.component-toolbar').getByRole('button',{name:'RTL',exact:true}).click();
  await expect.poll(()=>localPage.evaluate(()=>window.__localDirectionEvidence.some(x=>x.page==='rtl'&&x.target==='ltr'&&x.status==='verified')),{timeout:30000}).toBe(true);
  await expect(localPage.locator('.component-before .embedded-state')).toHaveAttribute('data-context-status','verified',{timeout:30000});

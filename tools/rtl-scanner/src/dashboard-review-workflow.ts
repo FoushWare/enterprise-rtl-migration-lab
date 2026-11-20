@@ -122,7 +122,7 @@ const reviewWorkflow=(()=>{
       const feedback=el('p',noteFeedback.get(noteKey)|| (draft&&draft.value!==e.notes?'Unsaved draft retained for this finding.':''));feedback.setAttribute('role','status');
       noteBox.append(action('Save note',async()=>{const result=await change(f,'notes',notes.value);noteDrafts.delete(noteKey);noteFeedback.set(noteKey,'Note saved.');return result;}));
       const cancel=el('button','Cancel');cancel.disabled=busy;cancel.onclick=()=>{noteDrafts.delete(noteKey);noteFeedback.set(noteKey,'Unsaved edits discarded. Saved note retained.');render()};noteBox.append(cancel);controls.append(noteBox,feedback);
-      actions.append(action('Approve fix',()=>change(f,'Accepted',e.notes),locked||!e.patch||!e.applied));
+      actions.append(action(f.ruleId==='RTL.CSS.PHYSICAL'?'Approve proposed change':'Approve fix',()=>change(f,'Accepted',e.notes),locked||!e.patch||!e.applied));
       actions.append(action('Reject fix',()=>change(f,'Rejected',e.notes),locked));
       actions.append(action('Defer',()=>change(f,'Deferred',e.notes),locked));
       actions.append(action('Needs review',()=>change(f,'Flagged',e.notes),locked));
