@@ -168,7 +168,7 @@ const reviewWorkflow=(()=>{
       const approveButton=action(e.decision==='Accepted'?'Already accepted':f.ruleId==='RTL.CSS.PHYSICAL'?'Approve proposed change':'Approve fix',()=>{},locked||!e.patch||!e.applied||e.decision==='Accepted');
       // approve owns the save operation so its persisted result can open the dialog.
       approveButton.onclick=()=>approve(f,e.notes);actions.append(approveButton);
-      const n=navigation(),nextStep=el('button',n.label);nextStep.type='button';nextStep.disabled=locked;nextStep.className='persistent-next-finding review-next';nextStep.title=stepDescription(n);nextStep.onclick=advance;actions.append(nextStep);const destination=el('p',stepDescription(n),'review-next-destination');destination.hidden=!destination.textContent;actions.append(destination);
+      const n=navigation(),nextStep=el('button',n.label);nextStep.type='button';nextStep.disabled=locked;nextStep.className='persistent-next-finding review-next';nextStep.title=stepDescription(n);nextStep.onclick=advance;actions.append(nextStep);const destination=el('p',stepDescription(n),'review-next-destination');destination.hidden=!destination.textContent;controls.prepend(destination);
       actions.append(action('Reject fix',()=>change(f,'Rejected',e.notes),locked));
       actions.append(action('Defer',()=>change(f,'Deferred',e.notes),locked));
       actions.append(action('Needs review',()=>change(f,'Flagged',e.notes),locked));
