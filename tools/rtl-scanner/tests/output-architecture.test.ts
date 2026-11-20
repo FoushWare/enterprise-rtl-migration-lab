@@ -1,3 +1,4 @@
+import { realpathSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { mkdtemp, mkdir, symlink, writeFile, rm } from 'node:fs/promises';
 import { join } from 'node:path';
@@ -34,7 +35,7 @@ describe('Milestone 1 output architecture', () => {
 
   it('rejects existing destinations and symlinked ancestors read-only', async () => {
     const root = await mkdtemp(join(tmpdir(), 'atlas-output-'));
-    const external = await mkdtemp('/private/tmp/atlas-output-external-');
+    const external = await mkdtemp(join(realpathSync(tmpdir()), 'atlas-output-external-'));
     try {
       await mkdir(join(root, 'reports'));
       await writeFile(join(root, 'reports', 'existing.json'), '{}');

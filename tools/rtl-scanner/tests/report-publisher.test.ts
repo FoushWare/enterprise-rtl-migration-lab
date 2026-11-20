@@ -1,3 +1,5 @@
+import { realpathSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { describe, expect, it } from 'vitest';
 import { lstat, mkdir, readFile, symlink, writeFile, rm } from 'node:fs/promises';
 import { join } from 'node:path';
@@ -5,8 +7,8 @@ import { publishReports, publishArtifacts, PublicationError, type PublisherFs } 
 import * as fs from 'node:fs/promises';
 
 async function dirs() {
-  const root = await (await import('node:fs/promises')).mkdtemp('/private/tmp/rtl-publisher-root-');
-  const out = await (await import('node:fs/promises')).mkdtemp('/private/tmp/rtl-publisher-out-');
+  const root = await (await import('node:fs/promises')).mkdtemp(join(realpathSync(tmpdir()), 'rtl-publisher-root-'));
+  const out = await (await import('node:fs/promises')).mkdtemp(join(realpathSync(tmpdir()), 'rtl-publisher-out-'));
   return { root, out };
 }
 
@@ -45,7 +47,7 @@ describe('report publication', () => {
       await expect(publishReports(root, linked, 'j\n', 'm\n')).rejects.toThrow(/external|non-symlink/);
       await mkdir(join(root, 'nested'));
       await expect(publishReports(root, join(root, 'nested'), 'j\n', 'm\n')).rejects.toThrow(/external/);
-      const ancestor = await (await import('node:fs/promises')).mkdtemp('/private/tmp/rtl-publisher-parent-');
+      const ancestor = await (await import('node:fs/promises')).mkdtemp(join(realpathSync(tmpdir()), 'rtl-publisher-parent-'));
       const nested = join(ancestor, 'nested');
       await symlink(out, nested);
       await expect(publishReports(root, nested, 'j\n', 'm\n')).rejects.toThrow(/symlink/);

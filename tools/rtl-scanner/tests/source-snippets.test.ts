@@ -1,5 +1,6 @@
+import { tmpdir } from 'node:os';
 import { describe, expect, it } from 'vitest';
-import { constants } from 'node:fs';
+import { constants, realpathSync } from 'node:fs';
 import { mkdtemp, mkdir, symlink, writeFile, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import type { Finding } from '../src/model.js';
@@ -7,7 +8,7 @@ import { range } from '../src/model.js';
 import { extractSourceSnippets } from '../src/source-snippets.js';
 
 const finding = (path: string, source: string, start: number, end = start + 1, id = path): Finding => ({ id, ruleId: 'R1', ruleVersion: 1, category: 'MANUAL_REVIEW', severity: 'Minor', confidence: 'High', title: 'fixture', sourceMechanism: 'css', applications: [], path, range: range(source, start, end), original: source.slice(start, end), context: 'fixture', ownership: 'fixture', rationale: 'fixture', treatment: 'review', evidenceIds: [], relatedLocations: [], issueIds: [], suggestion: null, limitation: 'fixture' });
-async function temp() { return mkdtemp('/private/tmp/rtl-snippets-'); }
+async function temp() { return mkdtemp(join(realpathSync(tmpdir()), 'rtl-snippets-')); }
 
 describe('secure source snippets', () => {
   it('reads verified source, preserves Unicode code-unit offsets, and extracts five-line context', async () => {
