@@ -14,6 +14,13 @@ export const transformations=[
   {key:'RTL.ICON.PROGRESSION:css-opt-in',id:CSS_ICON_TRANSFORMATION_ID,ruleId:'RTL.ICON.PROGRESSION',matches:(f:Finding)=>f.ruleId==='RTL.ICON.PROGRESSION',propose:proposeCssIcon},
 ] as const;
 export function transformationFor(finding:Finding){return transformations.find(t=>t.matches(finding));}
+/** Runtime direction cannot establish semantic intent; accepted changes still need full validation. */
+export function directionRequirement(finding:Finding):'independent'|'dependent'|'unknown'{
+ const strategy=transformationFor(finding);if(!strategy)return 'unknown';
+ if(strategy.id===BIDI_TRANSFORMATION_ID)return 'independent';
+ if([CSS_SPACING_TRANSFORMATION_ID,CSS_DIRECTIONAL_TRANSFORMATION_ID,REACT_INLINE_TRANSFORMATION_ID,CSS_ICON_TRANSFORMATION_ID].some(id=>id===strategy.id))return 'dependent';
+ return 'unknown';
+}
 export function proposeTransformation(finding:Finding,source:string){
  const strategy=transformationFor(finding);
  if(!strategy)throw Error(finding.ruleId==='RTL.UTILITY.PHYSICAL'?'UTILITY_COMPILER_VERSION_AND_VARIANT_REVIEW_REQUIRED':finding.sourceMechanism==='emotion-template'||finding.sourceMechanism==='mui-sx'||finding.sourceMechanism==='mui-theme'?'CSS_IN_JS_OWNER_AND_RTL_PROCESSOR_REVIEW_REQUIRED':'UNSUPPORTED_TRANSFORMATION_FAMILY');

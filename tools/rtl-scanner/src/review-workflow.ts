@@ -1,3 +1,5 @@
+import { captureScopedDirectionEvidence, sameScopedDirectionEvidence, type ScopedDirectionEvidence } from './scoped-direction-evidence.js';
+import { initializeOriginalPreview } from './original-preview-runtime.js';
 import { configuredWorkflowChecks, workflowValidationPresentation, workflowValidationEvidenceIssue } from './workflow-validation.js';
 import { createHash, randomUUID } from 'node:crypto';
 import { mkdir, readFile, readdir, rename, realpath, writeFile } from 'node:fs/promises';
@@ -10,7 +12,7 @@ import {previewConfigurationDigest,PREVIEW_CONFIGURATION,loadPreviewConfiguratio
 import { scan } from './scan.js';
 import { verifiedSourceTransition } from './source-context.js';
 import type { Finding } from './model.js';
-import { proposeTransformation } from './transformations.js';
+import { directionRequirement, proposeTransformation } from './transformations.js';
 import { approvedPreviewForSource } from './preview-manifest.js';
 import { createReviewSession, startCandidateRuntime, stopCandidateRuntime, validateProjectSourcePath, REVIEW_SOURCE, type PatchRequest, type ReviewSession } from './review-session.js';
 import { ControlledApplyService, type ApplyReceipt } from './controlled-apply.js';
@@ -20,7 +22,7 @@ const sha = (text: string) => createHash('sha256').update(text).digest('hex');
 export type FindingDecision = 'Pending' | 'Accepted' | 'Rejected' | 'Deferred' | 'Flagged';
 export interface WorkflowEntry { finding: Finding; patch?: PatchRequest; reason: string; applied: boolean; decision: FindingDecision; notes: string; history: { decision: FindingDecision; notes: string; at: string }[] }
 export interface WorkflowCheck { name: string; state: 'Passed' | 'Failed' | 'Unavailable' | 'Error' | 'Not run' | 'Not configured' | 'Not applicable'; detail: string; kind?: 'project' | 'scanner' | 'runtime'; command?: string; scope?: string }
-export interface WorkflowValidation { state: 'Passed' | 'Failed' | 'Unavailable'; signature: string; checks: WorkflowCheck[]; at: string; hashes: Record<string, string> }
+export interface WorkflowValidation { state: 'Passed' | 'Failed' | 'Unavailable'; signature: string; checks: WorkflowCheck[]; at: string; hashes: Record<string, string>; directionEvidence?: ScopedDirectionEvidence }
 export interface ReviewWorkflow {
   id: string; root: string; supersededBy?: string; rolledBackAt?: string; resumedFrom?: string; previewConfigDigest?:string; inputDigest: string; policyDigest: string; mode: 'one-by-one' | 'apply-first'; scope: string[];
   entries: WorkflowEntry[]; baseline: Record<string, string>; sourcePaths: Record<string, string>; session?: ReviewSession;
@@ -101,7 +103,7 @@ export class ReviewWorkflowStore {
     }
     const entries = report.findings.filter(f => !scope.length || scope.includes(f.path)).map(finding => {
       const entry: WorkflowEntry = { finding, reason: '', applied: false, decision: 'Pending', notes: '', history: [] };
-      try { if (!report.complete) throw new Error('INCOMPLETE_SCAN_REQUIRES_MANUAL_RESOLUTION'); if (report.diagnostics.some(d => d.code === 'RUNTIME_DIRECTION_UNKNOWN')) throw new Error('RUNTIME_DIRECTION_EVIDENCE_REQUIRED'); if (finding.exceptionReason) throw new Error('POLICY_EXCEPTION_REQUIRES_REVIEW'); const proposal=proposeTransformation(finding,baseline[finding.path]);entry.patch=proposal.patch;entry.reason=proposal.transformationId+': '+proposal.reason; }
+      try { if (!report.complete) throw new Error('INCOMPLETE_SCAN_REQUIRES_MANUAL_RESOLUTION'); if (report.diagnostics.some(d => d.code === 'RUNTIME_DIRECTION_UNKNOWN') && directionRequirement(finding) === 'unknown') throw new Error('RUNTIME_DIRECTION_STRATEGY_UNKNOWN'); if (finding.exceptionReason) throw new Error('POLICY_EXCEPTION_REQUIRES_REVIEW'); const proposal=proposeTransformation(finding,baseline[finding.path]);entry.patch=proposal.patch;entry.reason=proposal.transformationId+': '+proposal.reason; }
       catch (error) { entry.reason = `${error instanceof Error ? error.message : 'UNSUPPORTED'}: inspect code and resolve manually; no automatic change.`; }
       return entry;
     });
@@ -208,9 +210,14 @@ export class ReviewWorkflowStore {
     const candidateOrigin = w.session?.runtime?.status === 'healthy' ? w.session.runtime.origin : null;
     return { originalAvailable, originalUrl: this.originalOrigin + route, originalSourceSha256: sha(w.baseline[REVIEW_SOURCE]), candidateSessionId: w.session?.id ?? null, candidateSourceSha256: w.session?.candidateSha256 ?? null, candidateOrigin, url: (candidateOrigin ?? this.originalOrigin) + route, findingId };
   }
+  private async directionEvidence(w:ReviewWorkflow):Promise<ScopedDirectionEvidence|undefined>{
+    const selected=w.entries.filter(e=>e.decision==='Accepted'&&included(e));
+    if(selected.some(e=>directionRequirement(e.finding)==='unknown'))throw Error('RUNTIME_DIRECTION_STRATEGY_UNKNOWN');
+    const dependent=selected.filter(e=>directionRequirement(e.finding)==='dependent');if(!dependent.length)return undefined;
+    return captureScopedDirectionEvidence(this.root,w,dependent,async application=>{await initializeOriginalPreview(this.root,application);await this.runtime(w.id,application)});
+  }
   async validate(id: string): Promise<ReviewWorkflow> {
     const w = this.get(id); this.ensureReviewing(w); await this.fresh(w);
-    if ((await scan(this.root)).diagnostics.some(d=>d.code==='RUNTIME_DIRECTION_UNKNOWN')) throw new Error('RUNTIME_DIRECTION_EVIDENCE_REQUIRED');
     if (!w.entries.some(e => e.decision === 'Accepted' && included(e))) throw new Error('ACCEPTED_CHANGES_REQUIRED');
     if (w.session) await this.candidateFresh(w);
     // The final candidate contains only explicit acceptances. Pending batch edits remain pending in the inventory.
@@ -285,17 +292,20 @@ export class ReviewWorkflowStore {
     } catch (error) { checks.push({ name: 'runtime', state: 'Unavailable', detail: String(error) }); }
     for (const e of w.entries.filter(e => e.decision === 'Accepted')) if (!approvedPreviewForSource(e.finding.path)) checks.push({ name: 'live-preview:' + e.finding.path, state: 'Unavailable', detail: 'No approved owning-route mapping. Code review remains available.' });
     }
+    let directionEvidence:ScopedDirectionEvidence|undefined;
+    try{directionEvidence=await this.directionEvidence(w);if(directionEvidence)checks.push({name:'runtime-scoped-direction',state:'Passed',detail:'Server observed matching mapped target direction in configured LTR and RTL application states; semantic review remains required.'});}
+    catch(error){checks.push({name:'runtime-scoped-direction',state:'Unavailable',detail:String(error)});}
     await this.candidateFresh(w); await this.fresh(w);
     for (const path of Object.keys(w.baseline)) hashes[path] = sha(await readFile(await validateProjectSourcePath(w.session!.candidateRoot, path), 'utf8'));
     const required = checks.filter(c => !c.name.startsWith('live-preview:') && !(['Not configured','Not applicable'].includes(c.state) && ['typecheck', 'build', 'test'].includes(c.name)));
-    w.validation = { state: required.some(c => c.state === 'Failed') ? 'Failed' : required.some(c => ['Unavailable','Error','Not run'].includes(c.state)) ? 'Unavailable' : 'Passed', signature: signature(w), checks, hashes, at: new Date().toISOString() };
+    w.validation = { state: required.some(c => c.state === 'Failed') ? 'Failed' : required.some(c => ['Unavailable','Error','Not run'].includes(c.state)) ? 'Unavailable' : 'Passed', signature: signature(w), checks, hashes, ...(directionEvidence?{directionEvidence}:{}), at: new Date().toISOString() };
     await this.persist(); return w;
   }
   async apply(id: string, confirmation: string): Promise<ReviewWorkflow> {
     const w = this.get(id); if(w.supersededBy)throw Error('HISTORICAL_REVIEW_LOCKED'); if (w.state === 'Applied') return w;
-    if ((await scan(this.root)).diagnostics.some(d=>d.code==='RUNTIME_DIRECTION_UNKNOWN')) throw new Error('RUNTIME_DIRECTION_EVIDENCE_REQUIRED');
     if (!w.validation || w.validation.state !== 'Passed' || w.validation.signature !== signature(w)) throw new Error('VALIDATED_ACCEPTED_CANDIDATE_REQUIRED');
     const evidenceIssue=workflowValidationEvidenceIssue(w);if(evidenceIssue)throw Error('VALIDATION_EVIDENCE_MISSING: '+evidenceIssue);
+    if(w.entries.some(e=>e.decision==='Accepted'&&included(e)&&directionRequirement(e.finding)==='unknown'))throw Error('RUNTIME_DIRECTION_STRATEGY_UNKNOWN');
     if (w.state === 'Reviewing') await this.fresh(w);
     if (!['Reviewing', 'Applying'].includes(w.state)) throw new Error('WORKFLOW_LOCKED_' + w.state);
     if (w.state === 'Applying') {
@@ -307,6 +317,11 @@ export class ReviewWorkflowStore {
       }
     }
     await this.candidateFresh(w);
+    if(w.entries.some(e=>e.decision==='Accepted'&&included(e)&&directionRequirement(e.finding)==='dependent')){
+      if(w.state!=='Reviewing'||!w.validation.directionEvidence)throw Error('DIRECTION_EVIDENCE_REVALIDATION_REQUIRED');
+      const current=await this.directionEvidence(w);if(!current||!sameScopedDirectionEvidence(w.validation.directionEvidence,current))throw Error('DIRECTION_EVIDENCE_STALE');
+      await this.fresh(w);await this.candidateFresh(w);
+    }
     for (const [path, hash] of Object.entries(w.validation.hashes)) if (sha(await readFile(await validateProjectSourcePath(w.session!.candidateRoot, path), 'utf8')) !== hash) throw new Error('STALE_VALIDATED_CANDIDATE');
     if (confirmation !== 'APPLY_CONFIRMED') throw new Error('APPLY_CONFIRMATION_REQUIRED');
     w.state = 'Applying'; await this.persist();
