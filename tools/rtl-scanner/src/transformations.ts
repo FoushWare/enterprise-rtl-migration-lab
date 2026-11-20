@@ -1,4 +1,5 @@
 import type { Finding } from './model.js';
+import type { PatchRequest } from './review-session.js';
 import { proposeBidiIsolation, BIDI_TRANSFORMATION_ID } from './codemod.js';
 import { proposeCssSpacing, CSS_SPACING_TRANSFORMATION_ID } from './css-spacing.js';
 import { proposeCssDirectional, CSS_DIRECTIONAL_TRANSFORMATION_ID } from './css-directional.js';
@@ -13,6 +14,7 @@ export const transformations=[
   {key:'RTL.CSS.PHYSICAL:react-inline',id:REACT_INLINE_TRANSFORMATION_ID,ruleId:'RTL.CSS.PHYSICAL',matches:(f:Finding)=>['RTL.CSS.PHYSICAL','RTL.GEOMETRY.EDGE'].includes(f.ruleId)&&f.sourceMechanism==='react-inline',propose:proposeReactInline},
   {key:'RTL.ICON.PROGRESSION:css-opt-in',id:CSS_ICON_TRANSFORMATION_ID,ruleId:'RTL.ICON.PROGRESSION',matches:(f:Finding)=>f.ruleId==='RTL.ICON.PROGRESSION',propose:proposeCssIcon},
 ] as const;
+export function sameSupportedPatch(a:PatchRequest,b:PatchRequest):boolean{return a.findingId===b.findingId&&a.path===b.path&&a.startOffset===b.startOffset&&a.endOffset===b.endOffset&&a.expectedSha256===b.expectedSha256&&a.replacement===b.replacement}
 export function transformationFor(finding:Finding){return transformations.find(t=>t.matches(finding));}
 /** Runtime direction cannot establish semantic intent; accepted changes still need full validation. */
 export function directionRequirement(finding:Finding):'independent'|'dependent'|'unknown'{
