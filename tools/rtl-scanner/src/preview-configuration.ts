@@ -9,7 +9,7 @@ export const PREVIEW_CONFIGURATION='rtl-preview.config.json';
 export interface ConfiguredRoute {id:string;path:string;ltr:string;rtl:string}
 export interface ConfiguredApplication {viteConfig:string;entry:string;originalOrigin:string;readySelector:string;dataAdapter:'none'|'atlas';startupScript?:string;routes:ConfiguredRoute[]}
 export interface SourcePreviewBinding {source:string;sourceSelector?:string;context?:string;targetSelector:string;routes:{application:string;route:string}[]}
-export interface PreviewConfiguration {schemaVersion:1;applications:Record<string,ConfiguredApplication>;mappings:SourcePreviewBinding[];digest:string}
+export interface PreviewConfiguration {schemaVersion:1;applications:Record<string,ConfiguredApplication>;mappings:SourcePreviewBinding[];digest:string;builtinAtlas?:boolean}
 const fail=(message:string):never=>{throw Error('PREVIEW_CONFIGURATION_INVALID: '+message)};
 const object=(x:unknown):x is Record<string,unknown>=>!!x&&typeof x==='object'&&!Array.isArray(x);
 function shape(x:unknown,keys:string[],label:string):asserts x is Record<string,unknown>{if(!object(x)||Object.keys(x).some(k=>!keys.includes(k)))fail(label+' shape/unknown field');}
@@ -23,7 +23,7 @@ export async function previewFile(root:string,path:string,directoryAllowed=false
 async function configurationText(root:string){try{const path=join(root,PREVIEW_CONFIGURATION);if((await lstat(path)).isSymbolicLink())fail('symlink configuration');const value=await readFile(path,'utf8');if(value.length>200000)fail('size limit');return value}catch(e){if((e as NodeJS.ErrnoException).code==='ENOENT')return undefined;throw e}}
 export async function previewConfigurationDigest(root:string){const raw=await configurationText(root);return raw===undefined?hash(''):hash('preview-config\0'+raw);}
 export async function loadPreviewConfiguration(root:string):Promise<PreviewConfiguration>{
- const raw=await configurationText(root);if(raw===undefined)return {schemaVersion:1,applications:{},mappings:[],digest:hash('')};
+ const raw=await configurationText(root);if(raw===undefined){let builtinAtlas=false;try{const pkg=JSON.parse(await readFile(join(root,'package.json'),'utf8'));await previewFile(root,'apps/invoicing/src/components/InvoiceTable.tsx');await previewFile(root,'apps/procurement/vite.config.ts');builtinAtlas=pkg.name==='atlas-invoice';}catch{}return {schemaVersion:1,applications:{},mappings:[],digest:hash(''),builtinAtlas};}
  let x:unknown;try{x=JSON.parse(raw)}catch{fail('JSON parse')};shape(x,['schemaVersion','applications','mappings'],'root');
  if(x.schemaVersion!==1||!object(x.applications)||!Array.isArray(x.mappings))fail('schemaVersion/applications/mappings');
  const applications:Record<string,ConfiguredApplication>={};
@@ -53,7 +53,7 @@ export async function loadPreviewConfiguration(root:string):Promise<PreviewConfi
 export function configuredMapping(f:Finding,config:PreviewConfiguration):ContextMapping{
  const candidates=config.mappings.filter(m=>m.source===f.path&&(!m.context||m.context===f.context)&&(!m.sourceSelector||f.sourceMechanism==='css'&&f.context==='stylesheet/'+m.sourceSelector));
  if(candidates.length>1)return {kind:'unresolved',label:'Ambiguous configured mapping',selector:'',routes:[],evidence:[],limitation:'More than one configured locator matches this source context; choose one explicit source binding.'};
- if(!candidates.length)return exampleContextMapping(f);
+ if(!candidates.length){if(config.digest===hash('') && config.builtinAtlas)return exampleContextMapping(f);return {kind:'unresolved',label:'No mapped preview for this finding.',selector:'',routes:[],evidence:[],limitation:'No mapped preview for this finding.'};}
  const m=candidates[0],routes:ContextRoute[]=m.routes.map(ref=>{const app=config.applications[ref.application],r=app.routes.find(r=>r.id===ref.route)!;return {id:ref.application+':'+r.id,application:ref.application,path:r.path,label:ref.application+' · '+r.path,urls:{ltr:r.ltr,rtl:r.rtl}}});
  const mapping:ContextMapping={kind:'targets',label:'Configured source binding · runtime verification required',selector:m.targetSelector,routes,evidence:[PREVIEW_CONFIGURATION+' · '+m.source+' · '+(m.sourceSelector||m.context||'file locator')],configured:true,sourceSelector:m.sourceSelector,limitation:'Configuration declares this relationship; the real route, loaded source rule and rendered target must be checked before Verified.'};
  if(m.sourceSelector){try{const root=postcss.parse('.probe{'+f.original+'}');const decl=root.first?.type==='rule'?root.first.nodes.find(n=>n.type==='decl'):undefined;if(decl?.type==='decl')mapping.css={property:decl.prop,value:decl.value,selector:m.sourceSelector}}catch{/* Whole-rule findings still receive source-rule/target verification. */}}

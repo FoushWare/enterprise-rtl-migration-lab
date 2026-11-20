@@ -22,7 +22,7 @@ put('index.html','<!doctype html><html dir="ltr"><head><title>Tarball consumer</
 put('src/people.js',"export const people=[{id:'consumer-1',name:'Consumer / مستهلك'}];\n");put('src/people.d.ts','export const people:{id:string;name:string}[];\n');
 put('src/main.tsx',`import React from 'react';import {createRoot} from 'react-dom/client';import {people} from './people.js';import './reading.css';const selectedDirection=()=>new URLSearchParams(location.search).get('direction')==='rtl'?'rtl':'ltr';document.documentElement.dir=selectedDirection();fetch('/state.json').then(r=>r.json()).then((state:{label:string})=>createRoot(document.getElementById('root')!).render(<main><h1>Installed package fixture</h1>{people.map(person=><article className="contact-card" data-id={person.id} key={person.id}><h2 className="contact-name">{person.name}</h2><span>{state.label}</span><p className="pending-me" dir="ltr">Pending source stays unchanged</p></article>)}</main>));\n`);
 put('public/state.json',{label:'Ready'});
-put('src/reading.css','body{font:16px system-ui}main{width:640px}article{width:400px;padding:16px}.contact-card{margin-left:18px}.contact-name{text-align:left}.pending-me{padding-right:11px}\n');
+put('src/reading.css','body{font:16px system-ui}main{width:640px}article{width:400px;padding:16px}.contact-card{margin-left:18px}.contact-name{text-align:left}.pending-me{padding-right:11px}.unmapped{padding-left:6px}\n');
 put('tests/consumer.test.mjs',"import {test} from 'node:test';import assert from 'node:assert/strict';import {people} from '../src/people.js';test('fixture has a stable target',()=>assert.equal(people[0].id,'consumer-1'));\n");
 put('rtl-scanner.config.json',{schemaVersion:1,generatedStyleOwner:'unknown',ownership:{css:'custom-css'},approvals:[],exceptions:[],issueBindings:[],dynamicExceptions:[],roles:[]});
 put('rtl-project.config.json',{schemaVersion:1,scanRoots:['src','index.html'],copyPaths:['src','index.html','tests','public','vite.config.ts','tsconfig.json','package.json','package-lock.json'],packageManager:'npm',validation:{typecheck:['run','typecheck'],build:['run','build'],test:['run','test']}});
@@ -106,7 +106,39 @@ try{
  await localPage.locator('.component-toolbar').getByRole('button',{name:'RTL',exact:true}).click();
  await expect.poll(()=>localPage.evaluate(()=>window.__localDirectionEvidence.some(x=>x.page==='rtl'&&x.target==='ltr'&&x.status==='verified')),{timeout:30000}).toBe(true);
  await expect(localPage.locator('.component-before .embedded-state')).toHaveAttribute('data-context-status','verified',{timeout:30000});
- evidence.localOverride={findingId:localFinding.id,pageDirection:'rtl',targetDirection:'ltr',status:'verified'};save();await localPage.screenshot({path:join(workspace,'local-override.png'),fullPage:true});await localContext.close();
+ // Inspect every matching element in both actual preview frames and both page directions.
+ const localMeasurements=[];
+ for(const direction of ['LTR','RTL']){
+  await localPage.locator('.component-toolbar').getByRole('button',{name:direction,exact:true}).click();
+  for(const role of ['before','after']){
+   await expect(localPage.locator('.component-'+role+' .embedded-state')).toHaveAttribute('data-context-status','verified',{timeout:30000});
+   const frame=localPage.frameLocator('.component-'+role+' iframe');
+   await expect(frame.locator('html')).toHaveAttribute('dir',direction.toLowerCase());
+   const targets=await frame.locator('.pending-me').evaluateAll(nodes=>nodes.map(n=>({attribute:n.getAttribute('dir'),direction:getComputedStyle(n).direction,left:getComputedStyle(n).paddingLeft,right:getComputedStyle(n).paddingRight})));
+   assert.deepEqual(targets,[{attribute:'ltr',direction:'ltr',left:'0px',right:'11px'}]);localMeasurements.push({page:direction,role,targets});
+  }
+ }
+ // One selector can affect different local directions: the same logical candidate moves only RTL instances.
+ const mixed=await localContext.newPage();
+ for(const pageDirection of ['ltr','rtl']){
+  const sample=async css=>{await mixed.setContent(`<html dir="${pageDirection}"><style>.shared{${css}}</style><p class="shared" dir="ltr">LTR</p><p class="shared" dir="rtl">RTL</p></html>`);return mixed.locator('.shared').evaluateAll(ns=>ns.map(n=>({direction:getComputedStyle(n).direction,left:getComputedStyle(n).paddingLeft,right:getComputedStyle(n).paddingRight})));};
+  assert.deepEqual(await sample('padding-right:11px'),[{direction:'ltr',left:'0px',right:'11px'},{direction:'rtl',left:'0px',right:'11px'}]);
+  assert.deepEqual(await sample('padding-inline-end:11px'),[{direction:'ltr',left:'0px',right:'11px'},{direction:'rtl',left:'11px',right:'0px'}]);
+ }
+ evidence.localOverride={findingId:localFinding.id,measurements:localMeasurements,mixedSelector:'RTL target changes sides; LTR target remains equivalent'};save();await localPage.screenshot({path:join(workspace,'local-override.png'),fullPage:true});await localContext.close();
+ // Consecutive external-project selections must never inherit Atlas route or stale target state.
+ const unmapped=report.findings.find(f=>f.context==='stylesheet/.unmapped'),initial=report.findings.find(f=>f.ruleId==='RTL.DOCUMENT.INITIAL'),dynamic=report.findings.find(f=>f.ruleId==='RTL.RUNTIME.DIRECTION_UNKNOWN');assert.ok(unmapped&&initial&&dynamic);
+ const selectionContext=await browser.newContext({viewport:{width:1600,height:1000}}),selection=await selectionContext.newPage(),requests=[];
+ selection.on('request',r=>requests.push(r.url()+(r.postData()||'')));
+ const gotoFinding=async f=>{await selection.evaluate(id=>{history.pushState(null,'','?finding='+encodeURIComponent(id));dispatchEvent(new PopStateEvent('popstate'))},f.id);await expect(selection.locator('.finding-location')).toContainText(f.path,{timeout:30000});};
+ await selection.goto('http://127.0.0.1:4320/rtl-report-dashboard.html?finding='+encodeURIComponent(finding.id));await expect(selection.locator('.finding-location')).toContainText(finding.path);await expect(selection.locator('.component-before .embedded-state')).toHaveAttribute('data-context-status','verified',{timeout:60000});
+ await gotoFinding(unmapped);await expect(selection.locator('.component-before .embedded-state')).toContainText('No mapped preview for this finding.',{timeout:30000});assert.equal(await selection.locator('.component-review iframe').count(),0);
+ await gotoFinding(initial);await expect(selection.locator('.direction-information')).toContainText('source fact, not a detected defect');await expect(selection.locator('.direction-preview-status')).toHaveText('No mapped preview for this finding.');assert.equal(await selection.locator('.component-review iframe, .decision-card, .code-diff-card').count(),0);
+ await gotoFinding(dynamic);await expect(selection.locator('.direction-information')).toContainText('not inherently incorrect');await expect(selection.locator('.direction-information')).toContainText('not all application states');assert.equal(await selection.locator('.decision-card, .code-diff-card').count(),0);
+ await selection.reload();await expect(selection.locator('.direction-information')).toContainText('not inherently incorrect');assert.equal(await selection.locator('.component-review iframe').count(),0);
+ await gotoFinding(finding);await expect(selection.locator('.component-before .embedded-state')).toHaveAttribute('data-context-status','verified',{timeout:60000});await expect(selection.locator('.component-toolbar')).toContainText('/people');
+ assert.ok(requests.every(x=>!x.includes('/invoices')&&!x.includes('InvoiceTable.tsx')),JSON.stringify(requests.filter(x=>x.includes('/invoices')||x.includes('InvoiceTable.tsx'))));
+ evidence.selection={mapped:finding.id,unmapped:unmapped.id,initial:initial.id,dynamic:dynamic.id,result:'mapped, unmapped, initial and dynamic selections plus reload; no Atlas route/path'};await selection.screenshot({path:join(workspace,'selection-return-mapped.png'),fullPage:true});save();await selectionContext.close();
  evidence.status='Passed';save();console.log('CONSUMER_PASSED',JSON.stringify(evidence));
 }catch(e){evidence.status='Failed';evidence.error=e.stack;save();throw e}
 finally{await browser?.close();for(const c of children.reverse())if(c.exitCode===null&&c.signalCode===null){const done=new Promise(r=>c.once('exit',r));c.kill('SIGTERM');await done}}
