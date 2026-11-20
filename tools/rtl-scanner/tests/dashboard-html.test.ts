@@ -74,4 +74,7 @@ describe('dashboard HTML', () => {
     expect(onlyData.analysisFindings).toHaveLength(1);
     expect(dashboardHtml(toSchemaV2Presentation(informationOnly))).toContain('No reviewable findings.');
   });
+  it('keeps source line numbers visible while horizontally revealing a finding range', () => {
+    expect(dashboardHtml(toSchemaV2Presentation(report()))).toContain('.code-scroll .no{position:sticky;left:0');
+  });
 });
