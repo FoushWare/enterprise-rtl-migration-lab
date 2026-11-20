@@ -24,7 +24,7 @@ test('source apply and rollback reconcile current previews without migrating his
   await capture('analyzed');
   await expect(page.locator('.component-after .embedded-state')).toHaveAttribute('data-preparation-state','ready',{timeout:30000});
   await expect(page.locator('.component-after .embedded-state')).toHaveAttribute('data-state','ready',{timeout:30_000});
-  await page.getByRole('button',{name:'Approve fix',exact:true}).click();await expect(page.locator('.workflow-summary')).toContainText('1 accepted');
+  await page.getByRole('button',{name:'Approve fix',exact:true}).click();await page.getByRole('dialog',{name:'Proposed change approved'}).getByRole('button',{name:'Stay on this finding',exact:true}).click();await expect(page.locator('.workflow-summary')).toContainText('1 accepted');
   await page.getByRole('button',{name:'Validate changes',exact:true}).click();
   await expect(page.locator('.workflow-validation')).toContainText('Validation: Passed',{timeout:180_000});
   const before=await capture('validated');

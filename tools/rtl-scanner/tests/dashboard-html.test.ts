@@ -54,4 +54,24 @@ describe('dashboard HTML', () => {
     expect(data.scopeBreakdown.unresolvedReachability).toBeNull();
     expect(data.breakdowns.application).toEqual(data.scopeBreakdown.directApplications);
   });
+  it('keeps informational scanner records out of review data while retaining them in analysis data', () => {
+    const base = report();
+    const informational: Report['findings'][number] = { ...base.findings[0]!, id: 'info-1', ruleId: 'RTL.DOCUMENT.INITIAL', category: 'INFORMATIONAL', severity: 'Info', title: 'Initial HTML direction' };
+    const mixed: Report = { ...base, findings: [...base.findings, informational] };
+    const mixedData = toDashboardData(toSchemaV2Presentation(mixed));
+    expect(mixedData.findings).toBe(1);
+    expect(Object.values(mixedData.queue).flat().map(f => f.id)).toEqual(['f1']);
+    expect(mixedData.analysisFindings.map(f => f.id)).toEqual(['f1', 'info-1']);
+    expect(mixedData.uniqueAffectedFiles).toBe(1);
+    expect(mixed.findings).toHaveLength(2);
+
+    const informationOnly: Report = { ...base, findings: [informational] };
+    const onlyData = toDashboardData(toSchemaV2Presentation(informationOnly));
+    expect(onlyData.findings).toBe(0);
+    expect(onlyData.explorer.initialFindingId).toBeNull();
+    expect(onlyData.explorer.root.findingCount).toBe(0);
+    expect(onlyData.explorer.root.files).toEqual([]);
+    expect(onlyData.analysisFindings).toHaveLength(1);
+    expect(dashboardHtml(toSchemaV2Presentation(informationOnly))).toContain('No reviewable findings.');
+  });
 });

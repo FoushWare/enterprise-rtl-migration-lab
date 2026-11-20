@@ -16,7 +16,7 @@ for(const mode of (process.env.RTL_REPRO_ROLLBACK||process.env.RTL_ROLLBACK_DELI
  await page.goto('?finding='+encodeURIComponent(finding.id),{waitUntil:'domcontentloaded'});await enterReview(page,mode);
  await expect(page.locator('.after-card pre')).toHaveText('<bdi dir="auto">{i.id}</bdi>');await expect(page.locator('.component-before .embedded-state')).toHaveAttribute('data-context-status','verified',{timeout:30000});
  await expect(page.locator('.component-after .embedded-state')).toHaveAttribute('data-preparation-state','ready',{timeout:30000});await expect(page.locator('.component-after .embedded-state')).toHaveAttribute('data-context-status','verified',{timeout:30000});
- await page.getByRole('button',{name:'Approve fix',exact:true}).click();await expect(page.locator('.workflow-summary')).toContainText('1 accepted');
+ await page.getByRole('button',{name:'Approve fix',exact:true}).click();await page.getByRole('dialog',{name:'Proposed change approved'}).getByRole('button',{name:'Stay on this finding',exact:true}).click();await expect(page.locator('.workflow-summary')).toContainText('1 accepted');
  await page.getByRole('button',{name:'Validate changes',exact:true}).click();await expect(page.locator('.workflow-validation')).toContainText('Validation: Passed',{timeout:180000});
  const historical=await active();await page.getByRole('button',{name:/^Apply \d+ accepted changes? to source$/}).click();await expect(page.locator('.workflow-summary')).toContainText('Applied');expect(readFileSync(join(env.project,source),'utf8')).not.toBe(original);
  const applied=(await get('/review/workflows/'+historical.id)).workflow;
