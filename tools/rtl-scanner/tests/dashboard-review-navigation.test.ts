@@ -14,3 +14,5 @@ it('does not cycle deferred or flagged items and counts rejected separately',()=
 it('uses supplied scope only and retains within-file ordering',()=>{
  const n=model({findings:findings.slice(2),visibleIds:['css1','css2'],currentId:'css1',decisions:{}});expect(n.label).toBe('Next finding');expect(n.target?.id).toBe('css2');expect(n.total).toBe(2);
 });
+
+it('never offers navigation back to the same sole pending finding',()=>{const n=model({findings:[findings[0]],visibleIds:['name'],currentId:'name',decisions:{}});expect(n.target).toBeUndefined();expect(n.label).toBe('Review summary');expect(n.unresolved).toHaveLength(1)});

@@ -12,7 +12,7 @@ export function reviewNavigationModel(input: {
  const paths=[...new Set(findings.map(f=>f.path))],pathAt=paths.indexOf(current?.path||'');
  const orderedPaths=[...paths.slice(pathAt+1),...paths.slice(0,pathAt+1)];
  const destination=orderedPaths.flatMap(path=>pending.filter(f=>f.path===path&&path!==current?.path));
- const target=pending.length?(following||destination.find(f=>visible.has(f.id))||destination[0]||pending.find(f=>visible.has(f.id))||pending[0]):undefined;
+ const target=pending.length?(following||destination.find(f=>visible.has(f.id))||destination[0]||pending.find(f=>visible.has(f.id)&&f.id!==currentId)||pending.find(f=>f.id!==currentId)):undefined;
  const outsideFilters=!!target&&!visible.has(target.id),crossFile=!!target&&target.path!==current?.path;
  const label=!target?'Review summary':crossFile?'Continue to next file':outsideFilters?'Continue outside filters':'Next finding';
  return {file,at,previous:file[at-1],target,label,crossFile,outsideFilters,pending,unresolved,
