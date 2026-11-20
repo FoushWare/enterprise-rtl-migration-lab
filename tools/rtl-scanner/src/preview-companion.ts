@@ -113,7 +113,7 @@ const server = createServer(async (request, response) => {
   if (url.pathname.startsWith('/review/workflows')) {
     try {
       if(request.method==='GET'&&url.pathname==='/review/workflows'&&url.searchParams.get('history')==='1')return send(response,200,{workflows:await workflowStore.exclusive(async()=>workflowStore.list().map(w=>workflowStore.view(w))),projectRoot});
-      const match = url.pathname.match(/^\/review\/workflows(?:\/([^/]+)(?:\/(change|runtime|validate|apply|rollback|preview|resume|prepare-preview))?)?$/);
+      const match = url.pathname.match(/^\/review\/workflows(?:\/([^/]+)(?:\/(change|runtime|validate|apply|rollback|preview|resume|remaining|prepare-preview))?)?$/);
       if (!match) throw new Error('WORKFLOW_ROUTE_NOT_FOUND');
       const id = match[1], action = match[2];
       if (request.method === 'GET') {
@@ -127,9 +127,10 @@ const server = createServer(async (request, response) => {
         if (action === 'change') return workflowStore.change(id, input.findingId, input);
         if (action === 'prepare-preview') return workflowStore.preparePreview(id,input);
         if (action === 'runtime') { return workflowStore.runtime(id,input.application); }
-        if (action === 'validate') return workflowStore.validate(id);
-        if (action === 'apply') return workflowStore.apply(id, input.confirmation);
+        if (action === 'validate') return input.operationId?workflowStore.runOperation(id,'validate',input.operationId,()=>workflowStore.validate(id)):workflowStore.validate(id);
+        if (action === 'apply') return input.operationId?workflowStore.runOperation(id,'apply',input.operationId,()=>workflowStore.apply(id,input.confirmation)):workflowStore.apply(id,input.confirmation);
         if (action === 'rollback') return workflowStore.rollback(id, input.confirmation);
+        if (action === 'remaining') return workflowStore.reviewRemaining(id);
         if (action === 'resume') return workflowStore.resumeAfterRollback(id);
         throw new Error('WORKFLOW_ACTION_REQUIRED');
       });

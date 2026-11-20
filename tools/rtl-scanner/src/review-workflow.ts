@@ -20,11 +20,12 @@ import { ControlledApplyService, type ApplyReceipt } from './controlled-apply.js
 const run = promisify(execFile);
 const sha = (text: string) => createHash('sha256').update(text).digest('hex');
 export type FindingDecision = 'Pending' | 'Accepted' | 'Rejected' | 'Deferred' | 'Flagged';
-export interface WorkflowEntry { finding: Finding; patch?: PatchRequest; reason: string; applied: boolean; decision: FindingDecision; notes: string; history: { decision: FindingDecision; notes: string; at: string }[] }
+export interface WorkflowOperation { id:string; kind:'validate'|'apply'; state:'Running'|'Succeeded'|'Failed'|'Uncertain'; count:number; at:string; error?:string }
+export interface WorkflowEntry { carriedFrom?:{workflowId:string;findingId:string;decision:FindingDecision}; finding: Finding; patch?: PatchRequest; reason: string; applied: boolean; decision: FindingDecision; notes: string; history: { decision: FindingDecision; notes: string; at: string }[] }
 export interface WorkflowCheck { name: string; state: 'Passed' | 'Failed' | 'Unavailable' | 'Error' | 'Not run' | 'Not configured' | 'Not applicable'; detail: string; kind?: 'project' | 'scanner' | 'runtime'; command?: string; scope?: string }
 export interface WorkflowValidation { state: 'Passed' | 'Failed' | 'Unavailable'; signature: string; checks: WorkflowCheck[]; at: string; hashes: Record<string, string>; directionEvidence?: ScopedDirectionEvidence }
 export interface ReviewWorkflow {
-  id: string; root: string; supersededBy?: string; rolledBackAt?: string; resumedFrom?: string; previewConfigDigest?:string; inputDigest: string; policyDigest: string; mode: 'one-by-one' | 'apply-first'; scope: string[];
+  validationInvalidation?:string; operations?:WorkflowOperation[]; continuedFrom?:string; id: string; root: string; supersededBy?: string; rolledBackAt?: string; resumedFrom?: string; previewConfigDigest?:string; inputDigest: string; policyDigest: string; mode: 'one-by-one' | 'apply-first'; scope: string[];
   entries: WorkflowEntry[]; baseline: Record<string, string>; sourcePaths: Record<string, string>; session?: ReviewSession;
   validation?: WorkflowValidation; receipts?: ApplyReceipt[]; state: 'Reviewing' | 'Applying' | 'Applied' | 'Rolled Back'; createdAt: string;
 }
@@ -55,6 +56,7 @@ export class ReviewWorkflowStore {
       if (data.version !== 1 || !Array.isArray(data.workflows)) throw new Error('WORKFLOW_STORE_INVALID');
       this.workflows = data.workflows.filter(w => w.root === this.root);
       for (const w of this.workflows) {
+        for(const op of w.operations??[])if(op.state==='Running'){op.state='Uncertain';op.error='Server restarted during operation. Inspect operation details and source receipts before retrying.';}
         if (w.session) w.session.runtime = undefined;
         if (w.state === 'Applying') w.receipts = await this.applyService.recoverAcceptedFileReceipts(w.id);
       }
@@ -116,6 +118,35 @@ export class ReviewWorkflowStore {
     await this.persist(); return w;
   }
   /** Resume analysis only. Historical decisions, candidates and validation never enter the new review. */
+  async runOperation(id:string,kind:'validate'|'apply',operationId:string,run:()=>Promise<ReviewWorkflow>) {
+    if(!/^[a-zA-Z0-9-]{8,100}$/.test(operationId))throw Error('INVALID_OPERATION_ID');
+    const w=this.get(id),prior=w.operations?.find(op=>op.id===operationId);
+    if(prior){if(prior.kind!==kind)throw Error('OPERATION_IDENTITY_MISMATCH');return w;}
+    if(w.operations?.some(op=>['Running','Uncertain'].includes(op.state)))throw Error('OPERATION_RECONCILIATION_REQUIRED');
+    const op:WorkflowOperation={id:operationId,kind,state:'Running',count:w.entries.filter(e=>e.decision==='Accepted'&&included(e)).length,at:new Date().toISOString()};
+    (w.operations??=[]).push(op);await this.persist();
+    try{await run();op.state=kind==='apply'?w.state==='Applied'?'Succeeded':'Failed':w.validation?.state==='Passed'?'Succeeded':'Failed';if(op.state==='Failed')op.error=w.validation?.checks.filter(c=>['Failed','Unavailable','Error'].includes(c.state)&&!c.name.startsWith('live-preview:')).map(c=>c.name+': '+c.detail).join('\n')||'Validation requirements were not satisfied.';}
+    catch(error){op.state='Failed';op.error=error instanceof Error?error.message:String(error);if(w.state==='Applying')op.error+=' Source write may be partial; inspect receipts and use protected rollback.';}
+    await this.persist();return w;
+  }
+  async reviewRemaining(id:string):Promise<ReviewWorkflow> {
+    const historical=this.get(id);if(historical.state!=='Applied')throw Error('SUCCESSFUL_APPLY_REQUIRED');
+    const report=await verifiedSourceTransition(this.root,historical),prior=this.workflows.find(w=>w.continuedFrom===id);
+    if(prior){await this.fresh(prior);return prior;}
+    const next=await this.begin({inputDigest:report.inputDigest,policyDigest:report.policyDigest,mode:historical.mode,scope:historical.scope},historical);
+    delete next.resumedFrom;next.continuedFrom=id;
+    for(const old of historical.entries.filter(e=>e.decision!=='Accepted')){
+      const start=old.finding.range.start.offset,end=old.finding.range.end.offset;
+      const patches=historical.entries.filter(e=>e.finding.path===old.finding.path&&e.decision==='Accepted'&&e.applied&&e.patch).map(e=>e.patch!);
+      if(patches.some(p=>p.startOffset<end&&p.endOffset>start))continue;
+      const shift=patches.filter(p=>p.endOffset<=start).reduce((n,p)=>n+p.replacement.length-(p.endOffset-p.startOffset),0);
+      const matches=next.entries.filter(e=>e.finding.path===old.finding.path&&e.finding.ruleId===old.finding.ruleId&&e.finding.context===old.finding.context&&e.finding.sourceMechanism===old.finding.sourceMechanism&&e.finding.original===old.finding.original&&e.finding.range.start.offset===start+shift&&e.finding.range.end.offset===end+shift);
+      const oldMatches=historical.entries.filter(e=>e.finding.path===old.finding.path&&e.finding.range.start.offset===start&&e.finding.range.end.offset===end);
+      if(matches.length!==1||oldMatches.length!==1||historical.baseline[old.finding.path]?.slice(start,end)!==old.finding.original)continue;
+      const entry=matches[0];entry.decision=old.decision;entry.notes=old.notes;entry.history=[...old.history];entry.carriedFrom={workflowId:id,findingId:old.finding.id,decision:old.decision};
+    }
+    await this.persist();return next;
+  }
   async resumeAfterRollback(id:string):Promise<ReviewWorkflow> {
     const historical=this.get(id);
     if(historical.state!=='Rolled Back')throw Error('SUCCESSFUL_ROLLBACK_REQUIRED');
@@ -177,7 +208,7 @@ export class ReviewWorkflowStore {
     if (!w.session) w.session = await createReviewSession(this.root,Object.hasOwn(w.baseline,REVIEW_SOURCE)?REVIEW_SOURCE:w.entries.find(e=>e.patch)?.finding.path);
     if (w.session.runtime) w.session = await stopCandidateRuntime(w.session);
     for (const path of new Set(w.entries.filter(e => e.patch).map(e => e.finding.path))) await writeFile(await validateProjectSourcePath(w.session.candidateRoot, path), composeWorkflowFile(w.baseline[path], w.entries.filter(e => included(e) && e.patch!.path === path).map(e => e.patch!)), 'utf8');
-    w.session.candidateSha256 = sha(await readFile(join(w.session.candidateRoot, w.session.sourcePath), 'utf8')); w.validation = undefined;
+    w.session.candidateSha256 = sha(await readFile(join(w.session.candidateRoot, w.session.sourcePath), 'utf8'));if(w.validation)w.validationInvalidation='The accepted candidate changed; previous validation no longer applies. Validate the new accepted subset.'; w.validation = undefined;
   }
   async runtime(id: string,application?:string): Promise<ReviewWorkflow> {
     const w = this.get(id); await this.fresh(w); await this.candidateFresh(w);

@@ -24,6 +24,7 @@ it('authorizes only the exact receipt-bound source transition, preserving histor
     w.receipts=await apply.applyAcceptedFiles(w.id,[{path,before:w.baseline[path],after}],'APPLY_CONFIRMED');w.state='Applied';
     const current=await scan(root);
     w.validation={state:'Passed',signature:'historical-fixture',hashes:{},at:new Date().toISOString(),checks:[{name:'scanner',state:'Passed',detail:JSON.stringify({before:before.inputDigest,after:current.inputDigest})}]};
+    const opId='validation-operation-test';let executions=0;await store.runOperation(w.id,'validate',opId,async()=>{executions++;return w});await store.runOperation(w.id,'validate',opId,async()=>{executions++;return w});expect(executions).toBe(1);expect(w.operations?.find(o=>o.id===opId)?.state).toBe('Succeeded');
     const historical=JSON.stringify(w);
     expect((await verifiedSourceTransition(root,w)).inputDigest).toBe(current.inputDigest);expect(current.inputDigest).not.toBe(before.inputDigest);expect(JSON.stringify(w)).toBe(historical);
     await writeFile(join(root,path),after+'// external edit');await expect(verifiedSourceTransition(root,w)).rejects.toThrow('DASHBOARD_SOURCE_IDENTITY_MISMATCH');await writeFile(join(root,path),after);
