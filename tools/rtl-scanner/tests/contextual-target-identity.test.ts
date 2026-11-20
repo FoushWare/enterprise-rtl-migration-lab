@@ -78,8 +78,9 @@ describe('contextual target identity & safe restoration', () => {
     const allNodes = [nodeA, nodeB, nodeC1, nodeC2, nodeAnon];
 
     const location = { pathname: '/contacts', search: '', origin: 'http://127.0.0.1:4318', replace: () => {} };
-    const getComputedStyle = () => ({ display: 'block', visibility: 'visible', getPropertyValue: () => '' });
+    const getComputedStyle = () => ({ direction: 'rtl', display: 'block', visibility: 'visible', getPropertyValue: () => '' });
     const context = {
+      setInterval: () => 0,
       location,
       innerWidth: 1024,
       innerHeight: 768,

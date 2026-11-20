@@ -101,7 +101,7 @@ export class ReviewWorkflowStore {
     }
     const entries = report.findings.filter(f => !scope.length || scope.includes(f.path)).map(finding => {
       const entry: WorkflowEntry = { finding, reason: '', applied: false, decision: 'Pending', notes: '', history: [] };
-      try { if (!report.complete) throw new Error('INCOMPLETE_SCAN_REQUIRES_MANUAL_RESOLUTION'); if (finding.exceptionReason) throw new Error('POLICY_EXCEPTION_REQUIRES_REVIEW'); const proposal=proposeTransformation(finding,baseline[finding.path]);entry.patch=proposal.patch;entry.reason=proposal.transformationId+': '+proposal.reason; }
+      try { if (!report.complete) throw new Error('INCOMPLETE_SCAN_REQUIRES_MANUAL_RESOLUTION'); if (report.diagnostics.some(d => d.code === 'RUNTIME_DIRECTION_UNKNOWN')) throw new Error('RUNTIME_DIRECTION_EVIDENCE_REQUIRED'); if (finding.exceptionReason) throw new Error('POLICY_EXCEPTION_REQUIRES_REVIEW'); const proposal=proposeTransformation(finding,baseline[finding.path]);entry.patch=proposal.patch;entry.reason=proposal.transformationId+': '+proposal.reason; }
       catch (error) { entry.reason = `${error instanceof Error ? error.message : 'UNSUPPORTED'}: inspect code and resolve manually; no automatic change.`; }
       return entry;
     });
@@ -210,6 +210,7 @@ export class ReviewWorkflowStore {
   }
   async validate(id: string): Promise<ReviewWorkflow> {
     const w = this.get(id); this.ensureReviewing(w); await this.fresh(w);
+    if ((await scan(this.root)).diagnostics.some(d=>d.code==='RUNTIME_DIRECTION_UNKNOWN')) throw new Error('RUNTIME_DIRECTION_EVIDENCE_REQUIRED');
     if (!w.entries.some(e => e.decision === 'Accepted' && included(e))) throw new Error('ACCEPTED_CHANGES_REQUIRED');
     if (w.session) await this.candidateFresh(w);
     // The final candidate contains only explicit acceptances. Pending batch edits remain pending in the inventory.
@@ -292,6 +293,7 @@ export class ReviewWorkflowStore {
   }
   async apply(id: string, confirmation: string): Promise<ReviewWorkflow> {
     const w = this.get(id); if(w.supersededBy)throw Error('HISTORICAL_REVIEW_LOCKED'); if (w.state === 'Applied') return w;
+    if ((await scan(this.root)).diagnostics.some(d=>d.code==='RUNTIME_DIRECTION_UNKNOWN')) throw new Error('RUNTIME_DIRECTION_EVIDENCE_REQUIRED');
     if (!w.validation || w.validation.state !== 'Passed' || w.validation.signature !== signature(w)) throw new Error('VALIDATED_ACCEPTED_CANDIDATE_REQUIRED');
     const evidenceIssue=workflowValidationEvidenceIssue(w);if(evidenceIssue)throw Error('VALIDATION_EVIDENCE_MISSING: '+evidenceIssue);
     if (w.state === 'Reviewing') await this.fresh(w);
