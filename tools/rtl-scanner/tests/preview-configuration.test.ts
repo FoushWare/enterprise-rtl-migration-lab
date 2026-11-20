@@ -28,7 +28,7 @@ it('binds JSX text expressions independently through existing class selectors, i
  const report=await scan(root),name=report.findings.find(f=>f.original==='{person.name}')!,email=report.findings.find(f=>f.original==='{person.email}')!;
  expect(name).toBeTruthy();expect(email).toBeTruthy();for(const wrapped of [false,true]){
  if(wrapped)await writeFile(join(root,file),source.replace('{person.name}','<bdi dir="auto">{person.name}</bdi>').replace('{person.email}','<bdi dir="auto">{person.email}</bdi>'));
- const config=await loadPreviewConfiguration(root);expect(configuredMapping(name,config)).toMatchObject({selector:'.contact-name',configured:true});expect(configuredMapping(email,config)).toMatchObject({selector:'.contact-email',configured:true});expect(configuredMapping({...name,original:'{other.name}'},config).kind).toBe('unresolved');
+ const currentSource=await readFile(join(root,file),'utf8'),at=(f:typeof name)=>({...f,range:{start:{...f.range.start,offset:currentSource.indexOf(f.original)},end:{...f.range.end,offset:currentSource.indexOf(f.original)+f.original.length}}}),currentName=at(name),currentEmail=at(email);const config=await loadPreviewConfiguration(root);expect(configuredMapping(currentName,config)).toMatchObject({selector:'.contact-name',configured:true});expect(configuredMapping(currentEmail,config)).toMatchObject({selector:'.contact-email',configured:true});expect(configuredMapping({...name,original:'{other.name}'},config).kind).toBe('unresolved');
  }
  }finally{await rm(root,{recursive:true,force:true})}
 });

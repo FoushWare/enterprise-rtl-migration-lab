@@ -31,7 +31,8 @@ export async function writePreviewRuntimeConfig(root: string, identity: PreviewR
     if(!report.complete)throw Error('CONTEXT_SCAN_INCOMPLETE');
     runtimeIdentity.inputDigest=report.inputDigest;runtimeIdentity.policyDigest=report.policyDigest;
     for (const path of report.files) sourceHashes[path] = createHash('sha256').update(await readFile(join(root,path))).digest('hex');
-    bindings = report.findings.map(f=>({finding:{id:f.id,path:f.path},mapping:configuredMapping(f,configuration)})).filter(b=>b.mapping.routes.some(r=>r.application===application));
+    const bindingConfiguration=options.contextRoot?await loadPreviewConfiguration(options.contextRoot):configuration;
+    bindings = report.findings.map(f=>({finding:{id:f.id,path:f.path},mapping:configuredMapping(f,bindingConfiguration)})).filter(b=>b.mapping.routes.some(r=>r.application===application));
     // Candidate CSS inspection reuses the shared proposal; no second transformation inventory.
     if(options.contextRoot&&options.contextRoot!==root){
       const {proposeTransformation}=await import('./transformations.js');
