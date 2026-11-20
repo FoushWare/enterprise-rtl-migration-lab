@@ -77,6 +77,7 @@ function installContextPreview(config){
     if(!resolveData(request))return;
     const key=[request.nonce,request.findingId,request.routeId].join('|');
     if(!active||active.key!==key){active={key,mapping:binding.mapping,instance:request.instance,request};lastScroll='';preparing=true;try{await until(()=>document.querySelector(config.readySelector||'#root > *'));if(routeMatches(route,request))await prepare(route,binding.mapping)}finally{if(active?.key===key)preparing=false}}
+    else if(preparing)return;
     if(active?.key!==key)return;active.instance=request.instance;active.request=request;
     if(request.command==='reveal-navigation'){document.querySelector('.mobile-menu')?.click();await wait(80)}
     if(request.command==='reset-data'&&storageKey&&validSeed(request.seedData)){localStorage.setItem(storageKey,request.seedData);const next=new URL(route.path,location.origin);for(const key of ['demo','lang']){const value=new URLSearchParams(location.search).get(key);if(value)next.searchParams.set(key,value)}location.replace(next.href);return}
