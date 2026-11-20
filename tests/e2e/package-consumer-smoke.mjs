@@ -20,7 +20,7 @@ put('vite.config.ts',"import {defineConfig} from 'vite';export default defineCon
 put('tsconfig.json',{compilerOptions:{target:'ES2022',module:'ESNext',moduleResolution:'Bundler',jsx:'react-jsx',strict:true,skipLibCheck:true,esModuleInterop:true},include:['src']});
 put('index.html','<!doctype html><html dir="ltr"><head><title>Tarball consumer</title></head><body><div id="root"></div><script type="module" src="/src/main.tsx"></script></body></html>');
 put('src/people.js',"export const people=[{id:'consumer-1',name:'Consumer / مستهلك'}];\n");put('src/people.d.ts','export const people:{id:string;name:string}[];\n');
-put('src/main.tsx',`import React from 'react';import {createRoot} from 'react-dom/client';import {people} from './people.js';import './reading.css';const selectedDirection=()=>new URLSearchParams(location.search).get('direction')==='rtl'?'rtl':'ltr';document.documentElement.dir=selectedDirection();fetch('/state.json').then(r=>r.json()).then((state:{label:string})=>createRoot(document.getElementById('root')!).render(<main><h1>Installed package fixture</h1>{people.map(person=><article className="contact-card" data-id={person.id} key={person.id}><h2 className="contact-name">{person.name}</h2><span>{state.label}</span><p className="pending-me">Pending source stays unchanged</p></article>)}</main>));\n`);
+put('src/main.tsx',`import React from 'react';import {createRoot} from 'react-dom/client';import {people} from './people.js';import './reading.css';const selectedDirection=()=>new URLSearchParams(location.search).get('direction')==='rtl'?'rtl':'ltr';document.documentElement.dir=selectedDirection();fetch('/state.json').then(r=>r.json()).then((state:{label:string})=>createRoot(document.getElementById('root')!).render(<main><h1>Installed package fixture</h1>{people.map(person=><article className="contact-card" data-id={person.id} key={person.id}><h2 className="contact-name">{person.name}</h2><span>{state.label}</span><p className="pending-me" dir="ltr">Pending source stays unchanged</p></article>)}</main>));\n`);
 put('public/state.json',{label:'Ready'});
 put('src/reading.css','body{font:16px system-ui}main{width:640px}article{width:400px;padding:16px}.contact-card{margin-left:18px}.contact-name{text-align:left}.pending-me{padding-right:11px}\n');
 put('tests/consumer.test.mjs',"import {test} from 'node:test';import assert from 'node:assert/strict';import {people} from '../src/people.js';test('fixture has a stable target',()=>assert.equal(people[0].id,'consumer-1'));\n");
@@ -96,6 +96,17 @@ try{
  independent=await call('/'+independent.id+'/validate',{});assert.equal(independent.validationPresentation.status,'Passed');assert.equal(independent.applyEligibility.eligible,true);
  independent=await call('/'+independent.id+'/apply',{confirmation:'APPLY_CONFIRMED'});assert.equal(independent.state,'Applied');assert.match(readFileSync(join(project,'src/main.tsx'),'utf8'),/<bdi dir="auto">\{person.name\}<\/bdi>/);
  independent=await call('/'+independent.id+'/rollback',{confirmation:'ROLLBACK_CONFIRMED'});assert.equal(independent.state,'Rolled Back');assert.deepEqual(hashes(),initialHashes);evidence.independent={findingId:bidi.id,result:'accepted, validated, applied and rolled back under unresolved runtime direction'};save();
+ // A mapped LTR child in an RTL page is a valid local override, not a page-direction mismatch.
+ const localFinding=report.findings.find(f=>f.context==='stylesheet/.pending-me');assert.ok(localFinding);
+ await call('',{mode:'one-by-one',scope:[],inputDigest:report.inputDigest,policyDigest:report.policyDigest,restart:true});
+ const localContext=await browser.newContext({viewport:{width:1600,height:1000}}),localPage=await localContext.newPage();
+ await localPage.addInitScript(()=>{window.__localDirectionEvidence=[];addEventListener('message',e=>{if(e.data?.type==='rtl-context-status'&&e.data.role==='original')window.__localDirectionEvidence.push({page:e.data.dir,target:e.data.targets?.[0]?.effectiveDirection,status:e.data.targetStatus})})});
+ await localPage.goto('http://127.0.0.1:4320/rtl-report-dashboard.html?finding='+encodeURIComponent(localFinding.id));await localPage.getByRole('button',{name:'Start manual review',exact:true}).click();
+ await expect(localPage.locator('.component-before .embedded-state')).toHaveAttribute('data-context-status','verified',{timeout:60000});
+ await localPage.locator('.component-toolbar').getByRole('button',{name:'RTL',exact:true}).click();
+ await expect.poll(()=>localPage.evaluate(()=>window.__localDirectionEvidence.some(x=>x.page==='rtl'&&x.target==='ltr'&&x.status==='verified')),{timeout:30000}).toBe(true);
+ await expect(localPage.locator('.component-before .embedded-state')).toHaveAttribute('data-context-status','verified',{timeout:30000});
+ evidence.localOverride={findingId:localFinding.id,pageDirection:'rtl',targetDirection:'ltr',status:'verified'};save();await localPage.screenshot({path:join(workspace,'local-override.png'),fullPage:true});await localContext.close();
  evidence.status='Passed';save();console.log('CONSUMER_PASSED',JSON.stringify(evidence));
 }catch(e){evidence.status='Failed';evidence.error=e.stack;save();throw e}
 finally{await browser?.close();for(const c of children.reverse())if(c.exitCode===null&&c.signalCode===null){const done=new Promise(r=>c.once('exit',r));c.kill('SIGTERM');await done}}
