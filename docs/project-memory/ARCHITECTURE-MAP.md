@@ -101,3 +101,7 @@ The [publishable package manifest](../../tools/rtl-scanner/package.json) now own
 ## Published package boundary — verified 2026-11-19
 
 The existing public [`rtl-analyzer`](https://github.com/FoushWare/rtl-analyzer) package is built under `packages/rtl-analyzer` in its release repository. Its `rtl-analyzer` standalone router bundles the private implementation from this lab through a pinned submodule; it does not install a public `@atlas/rtl-scanner` dependency. See the [release-preparation record](../rtl-analyzer-v3/published-release-preparation-2026-11-19.md) for verified registry versions, source lineage, compatible commands, candidate checks and publication triggers. This supersedes only earlier assumptions about which manifest to publish.
+
+## Guided finding review usability — verified 2026-11-20
+
+The [dashboard client](../../tools/rtl-scanner/src/dashboard-client.ts), [workflow renderer](../../tools/rtl-scanner/src/dashboard-review-workflow.ts) and [dashboard data adapter](../../tools/rtl-scanner/src/dashboard-data.ts) keep exact source-range reveal inside the code scroll container, show approval confirmation only after a persisted Accepted decision, and exclude information-only rows from review counts while preserving scanner records for rescan/export. Typecheck, build and 405 scanner tests passed. A disposable browser run captured the filtered dashboard/source highlight, but the full persisted-approval walkthrough did not complete; preview preparation failure remains a separate unresolved issue. Ahmed acceptance remains pending.
