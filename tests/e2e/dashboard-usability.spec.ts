@@ -32,7 +32,7 @@ test('persisted approval, review navigation, information exclusion and readable 
  const approval=()=>page.getByRole('button',{name:'Approve proposed change',exact:true});
  // A failed write must announce failure and leave the success dialog absent.
  await page.route('**/review/workflows/*/change',route=>route.request().postDataJSON().action==='Accepted'?route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({error:'TEST_APPROVAL_FAILURE'})}):route.continue());
- await approval().click();await expect(page.locator('.analysis-status')).toHaveText('TEST_APPROVAL_FAILURE');await expect(page.getByRole('dialog',{name:'Proposed change approved'})).toHaveCount(0);expect((await active()).entries.find((e:any)=>e.finding.id===f.id).decision).toBe('Pending');
+ await approval().click();await expect(page.locator('.analysis-status')).toHaveText('Blocked: TEST_APPROVAL_FAILURE');await expect(page.getByRole('dialog',{name:'Proposed change approved'})).toHaveCount(0);expect((await active()).entries.find((e:any)=>e.finding.id===f.id).decision).toBe('Pending');
  await page.unroute('**/review/workflows/*/change');
  // Hold the actual persisted response while trying a duplicate submission.
  let release!:()=>void,arrived!:()=>void;const hold=new Promise<void>(r=>release=r),persisted=new Promise<void>(r=>arrived=r);
