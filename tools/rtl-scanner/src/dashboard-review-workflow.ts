@@ -126,7 +126,9 @@ const reviewWorkflow=(()=>{
       const feedback=el('p',noteFeedback.get(noteKey)|| (draft&&draft.value!==e.notes?'Unsaved draft retained for this finding.':''));feedback.setAttribute('role','status');
       noteBox.append(action('Save note',async()=>{const result=await change(f,'notes',notes.value);noteDrafts.delete(noteKey);noteFeedback.set(noteKey,'Note saved.');return result;}));
       const cancel=el('button','Cancel');cancel.disabled=busy;cancel.onclick=()=>{noteDrafts.delete(noteKey);noteFeedback.set(noteKey,'Unsaved edits discarded. Saved note retained.');render()};noteBox.append(cancel);controls.append(noteBox,feedback);
-      actions.append(action(e.decision==='Accepted'?'Already accepted':f.ruleId==='RTL.CSS.PHYSICAL'?'Approve proposed change':'Approve fix',()=>approve(f,e.notes),locked||!e.patch||!e.applied||e.decision==='Accepted'));
+      const approveButton=action(e.decision==='Accepted'?'Already accepted':f.ruleId==='RTL.CSS.PHYSICAL'?'Approve proposed change':'Approve fix',()=>{},locked||!e.patch||!e.applied||e.decision==='Accepted');
+      // approve owns the save operation so its persisted result can open the dialog.
+      approveButton.onclick=()=>approve(f,e.notes);actions.append(approveButton);
       const visible=window.rtlDashboardVisibleFindings?.()||[],at=visible.findIndex(row=>row.id===f.id),last=at<0||at===visible.length-1,nextStep=el('button',last?'Review summary':'Next finding');nextStep.type='button';nextStep.disabled=locked;nextStep.className='persistent-next-finding';nextStep.onclick=()=>{if(last)showReviewSummary();else{window.dispatchEvent(new CustomEvent('rtl-dashboard-select',{detail:visible[at+1].id}));requestAnimationFrame(()=>document.querySelector('.details>h2')?.focus({preventScroll:true}))}};actions.append(nextStep);
       actions.append(action('Reject fix',()=>change(f,'Rejected',e.notes),locked));
       actions.append(action('Defer',()=>change(f,'Deferred',e.notes),locked));
