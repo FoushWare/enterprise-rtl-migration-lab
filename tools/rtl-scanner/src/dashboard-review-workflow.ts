@@ -84,7 +84,7 @@ ${batchReviewClientSource}
   const paintPreview=(f,state,reason='')=>embeddedReview.preparation(f,{state,reason,busy:busy||!!previewFlight});
   function retryPreview(f){if(busy||previewFlight||s.finding?.id!==f.id)return;previewAttempts.delete(previewKey(f,embeddedReview.capability(f)));embeddedReview.refresh(f);}
   async function automaticPreview(){
-    const f=s.finding;if(!f||!workflow||sourceContextError||reloading||uncertainOperation||window.rtlEntryPending||batchOpen)return;
+    const f=s.finding;if(!f||!workflow||sourceContextError||reloading||uncertainOperation||window.rtlEntryPending||batchOpen||(busy&&!previewFlight))return;
     const e=workflow.entries.find(e=>e.finding.id===f.id),c=embeddedReview.capability(f);
     if(workflow.state!=='Reviewing'||!e?.patch||['Rejected','Deferred','Flagged'].includes(e.decision)){paintPreview(f,'unsupported',workflow.state!=='Reviewing'?'Historical review; current candidate preparation is unavailable.':!e?.patch?e?.reason||'Finding outside the current review scope.':e.decision+' decision; automatic preparation will not restore this patch.');return;}
     const key=previewKey(f,c),attempt=previewAttempts.get(key),runtimeCurrent=workflow.session?.runtime?.status==='healthy';

@@ -244,12 +244,16 @@ export class ReviewWorkflowStore {
       if(e.decision==='Pending')e.applied=!reason;
     }
     await this.writeComposition(w);await this.persist();
-    for(const e of w.entries.filter(e=>e.batch?.state==='ready'&&!['Rejected','Deferred','Flagged'].includes(e.decision))){
-      try{await captureScopedDirectionEvidence(this.root,w,[e],async application=>{await initializeOriginalPreview(this.root,application);await this.runtime(id,application)})}
-      catch(error){e.batch={state:'blocked',reason:'Preview verification failed: '+(error instanceof Error?error.message:String(error))};if(e.decision==='Pending')e.applied=false;}
+    const targets=w.entries.filter(e=>e.batch?.state==='ready'&&!['Rejected','Deferred','Flagged'].includes(e.decision));
+    const verify=(entries:WorkflowEntry[])=>captureScopedDirectionEvidence(this.root,w,entries,async application=>{await initializeOriginalPreview(this.root,application);await this.runtime(id,application)});
+    if(targets.length)try{await verify(targets)}catch{
+      // A partially supported batch isolates failures without weakening any target proof.
+      for(const e of targets)try{await verify([e])}catch(error){e.batch={state:'blocked',reason:'Preview verification failed: '+(error instanceof Error?error.message:String(error))};}
     }
-    // Removing an unavailable patch recomposes from immutable coordinates and invalidates old evidence.
-    await this.writeComposition(w);w.batchPreparation='ready';w.batchPreparedAt=new Date().toISOString();await this.persist();return w;
+    const unavailable=targets.filter(e=>e.batch?.state==='blocked'&&e.decision==='Pending');
+    for(const e of unavailable)e.applied=false;
+    if(unavailable.length)await this.writeComposition(w);
+    w.batchPreparation='ready';w.batchPreparedAt=new Date().toISOString();await this.persist();return w;
   }
   async approveBatch(id:string,findingIds:string[]):Promise<ReviewWorkflow>{
     const w=this.get(id);this.ensureReviewing(w);await this.fresh(w);if(w.mode!=='apply-first'||w.batchPreparation!=='ready')throw Error('PREPARE_BATCH_BEFORE_APPROVAL');
