@@ -21,11 +21,11 @@ const run = promisify(execFile);
 const sha = (text: string) => createHash('sha256').update(text).digest('hex');
 export type FindingDecision = 'Pending' | 'Accepted' | 'Rejected' | 'Deferred' | 'Flagged';
 export interface WorkflowOperation { id:string; kind:'validate'|'apply'; state:'Running'|'Succeeded'|'Failed'|'Uncertain'; count:number; at:string; error?:string }
-export interface WorkflowEntry { carriedFrom?:{workflowId:string;findingId:string;decision:FindingDecision}; finding: Finding; patch?: PatchRequest; reason: string; applied: boolean; decision: FindingDecision; notes: string; history: { decision: FindingDecision; notes: string; at: string }[] }
+export interface WorkflowEntry { batch?:{state:'ready'|'blocked';reason:string}; carriedFrom?:{workflowId:string;findingId:string;decision:FindingDecision}; finding: Finding; patch?: PatchRequest; reason: string; applied: boolean; decision: FindingDecision; notes: string; history: { decision: FindingDecision; notes: string; at: string }[] }
 export interface WorkflowCheck { name: string; state: 'Passed' | 'Failed' | 'Unavailable' | 'Error' | 'Not run' | 'Not configured' | 'Not applicable'; detail: string; kind?: 'project' | 'scanner' | 'runtime'; command?: string; scope?: string }
 export interface WorkflowValidation { state: 'Passed' | 'Failed' | 'Unavailable'; signature: string; checks: WorkflowCheck[]; at: string; hashes: Record<string, string>; directionEvidence?: ScopedDirectionEvidence }
 export interface ReviewWorkflow {
-  validationInvalidation?:string; operations?:WorkflowOperation[]; continuedFrom?:string; id: string; root: string; supersededBy?: string; rolledBackAt?: string; resumedFrom?: string; previewConfigDigest?:string; inputDigest: string; policyDigest: string; mode: 'one-by-one' | 'apply-first'; scope: string[];
+  batchPreparedAt?:string; batchPreparation?:'running'|'ready'; validationInvalidation?:string; operations?:WorkflowOperation[]; continuedFrom?:string; id: string; root: string; supersededBy?: string; rolledBackAt?: string; resumedFrom?: string; previewConfigDigest?:string; inputDigest: string; policyDigest: string; mode: 'one-by-one' | 'apply-first'; scope: string[];
   entries: WorkflowEntry[]; baseline: Record<string, string>; sourcePaths: Record<string, string>; session?: ReviewSession;
   validation?: WorkflowValidation; receipts?: ApplyReceipt[]; state: 'Reviewing' | 'Applying' | 'Applied' | 'Rolled Back'; createdAt: string;
 }
@@ -229,6 +229,37 @@ export class ReviewWorkflowStore {
     const prepared=await this.runtime(id,input.application);
     if(prepared.session?.runtime?.status!=='healthy')throw Error(prepared.session?.runtime?.error||'CANDIDATE_RUNTIME_UNAVAILABLE');
     return prepared;
+  }
+  /** Explicit batch preparation verifies real mapped targets before offering batch approval. */
+  async prepareBatch(id:string):Promise<ReviewWorkflow>{
+    const w=this.get(id);this.ensureReviewing(w);await this.fresh(w);if(w.mode!=='apply-first')throw Error('BATCH_MODE_REQUIRED');
+    if(w.session)await this.candidateFresh(w);
+    w.batchPreparation='running';await this.persist();
+    let config:Awaited<ReturnType<typeof loadPreviewConfiguration>>|undefined;
+    try{config=await loadPreviewConfiguration(this.root)}catch{/* Each entry receives an honest mapping blocker. */}
+    for(const e of w.entries){
+      const mapping=config&&configuredMapping(e.finding,config);
+      const reason=!e.patch?e.reason:!mapping?.configured||!mapping.routes.length?'No verified preview target: explicit page/element mapping is required.':directionRequirement(e.finding)==='unknown'?'Runtime direction strategy is unknown.':'';
+      e.batch=reason?{state:'blocked',reason}:{state:'ready',reason:'Prepared in the isolated candidate; pending explicit approval.'};
+      if(e.decision==='Pending')e.applied=!reason;
+    }
+    await this.writeComposition(w);await this.persist();
+    for(const e of w.entries.filter(e=>e.batch?.state==='ready'&&!['Rejected','Deferred','Flagged'].includes(e.decision))){
+      try{await captureScopedDirectionEvidence(this.root,w,[e],async application=>{await initializeOriginalPreview(this.root,application);await this.runtime(id,application)})}
+      catch(error){e.batch={state:'blocked',reason:'Preview verification failed: '+(error instanceof Error?error.message:String(error))};if(e.decision==='Pending')e.applied=false;}
+    }
+    // Removing an unavailable patch recomposes from immutable coordinates and invalidates old evidence.
+    await this.writeComposition(w);w.batchPreparation='ready';w.batchPreparedAt=new Date().toISOString();await this.persist();return w;
+  }
+  async approveBatch(id:string,findingIds:string[]):Promise<ReviewWorkflow>{
+    const w=this.get(id);this.ensureReviewing(w);await this.fresh(w);if(w.mode!=='apply-first'||w.batchPreparation!=='ready')throw Error('PREPARE_BATCH_BEFORE_APPROVAL');
+    if(!Array.isArray(findingIds)||!findingIds.length||new Set(findingIds).size!==findingIds.length||findingIds.length>w.entries.length)throw Error('INVALID_BATCH_SELECTION');
+    const selected=findingIds.map(id=>w.entries.find(e=>e.finding.id===id));
+    if(selected.some(e=>!e?.patch||e.batch?.state!=='ready'||e.decision!=='Pending'))throw Error('BATCH_SELECTION_NOT_ELIGIBLE');
+    if(w.session)await this.candidateFresh(w);
+    const previous=selected.map(e=>({...e!,history:[...e!.history]}));
+    for(const e of selected){e!.applied=true;e!.decision='Accepted';e!.history.push({decision:'Accepted',notes:e!.notes,at:new Date().toISOString()})}
+    try{await this.writeComposition(w);await this.persist();return w}catch(error){selected.forEach((e,i)=>Object.assign(e!,previous[i]));throw error}
   }
   async preview(id: string, findingId: string, mode: string): Promise<unknown> {
     const w = this.get(id); const e = w.entries.find(e => e.finding.id === findingId);

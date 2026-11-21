@@ -9,4 +9,5 @@ export async function enterReview(page:Page,mode='one-by-one') {
  const resume=page.getByRole('button',{name:'Resume existing review',exact:true});
  const saved=await page.evaluate(()=>localStorage.getItem('rtl-review-workflow'));
  if(saved===mode&&await resume.count())await resume.click();else await page.getByRole('button',{name:mode==='one-by-one'?'Start manual review':'Prepare all & review',exact:true}).click();
+ if(mode==='apply-first'){await expect(page.locator('.batch-review')).toBeVisible({timeout:120000});await page.locator('.batch-review').getByRole('button',{name:'View diff',exact:true}).first().click();}
 }

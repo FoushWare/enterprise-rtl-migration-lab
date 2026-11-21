@@ -1,3 +1,4 @@
+import { batchReviewClientSource } from './dashboard-batch-review.js';
 import { operationFlowClientSource } from './dashboard-operation-flow.js';
 import { reviewNavigationModel } from './dashboard-review-navigation.js';
 import { reviewDetailsClientSource } from './dashboard-review-details.js';
@@ -42,6 +43,7 @@ const reviewWorkflow=(()=>{
   const action=(name,fn,disabled=false)=>{const b=el('button',name);b.disabled=busy||!!uncertainOperation||disabled;b.onclick=()=>{const menu=b.closest('.session-overflow');if(menu){setOverflow(false,true);}operate(fn,name)};return b};
   const change=(f,kind,notes)=>api(endpoint+'/'+workflow.id+'/change',{findingId:f.id,action:kind,notes:notes||''});
 ${operationFlowClientSource}
+${batchReviewClientSource}
   function closeApproval(dialog,restore=true){if(dialog?.open)dialog.close();dialog?.remove();if(restore&&s.finding){const heading=document.querySelector('.finding-title');heading?.focus({preventScroll:true})}}
   const navigationModel=${reviewNavigationModel.toString()};
   function navigation(){
@@ -82,7 +84,7 @@ ${operationFlowClientSource}
   const paintPreview=(f,state,reason='')=>embeddedReview.preparation(f,{state,reason,busy:busy||!!previewFlight});
   function retryPreview(f){if(busy||previewFlight||s.finding?.id!==f.id)return;previewAttempts.delete(previewKey(f,embeddedReview.capability(f)));embeddedReview.refresh(f);}
   async function automaticPreview(){
-    const f=s.finding;if(!f||!workflow||sourceContextError||reloading||uncertainOperation||window.rtlEntryPending)return;
+    const f=s.finding;if(!f||!workflow||sourceContextError||reloading||uncertainOperation||window.rtlEntryPending||batchOpen)return;
     const e=workflow.entries.find(e=>e.finding.id===f.id),c=embeddedReview.capability(f);
     if(workflow.state!=='Reviewing'||!e?.patch||['Rejected','Deferred','Flagged'].includes(e.decision)){paintPreview(f,'unsupported',workflow.state!=='Reviewing'?'Historical review; current candidate preparation is unavailable.':!e?.patch?e?.reason||'Finding outside the current review scope.':e.decision+' decision; automatic preparation will not restore this patch.');return;}
     const key=previewKey(f,c),attempt=previewAttempts.get(key),runtimeCurrent=workflow.session?.runtime?.status==='healthy';
@@ -108,13 +110,19 @@ ${operationFlowClientSource}
     }finally{previewFlight=null;busy=false;if(!reloading)render();}
   }
   window.addEventListener('rtl-context-preview-updated',event=>{if(workflow?.id===event.detail.workflowId&&s.finding?.id===event.detail.findingId)automaticPreview();});
+  function ensureSessionDetails(){
+    const host=document.querySelector('.panel-controls');if(!host)return;
+    let button=host.querySelector('[data-review-details]');if(!button){button=el('button','Session details','panel-toggle-btn');button.dataset.reviewDetails='true';const findings=host.querySelector('[aria-label="Findings"]');if(findings)findings.after(button);else host.append(button)}
+    button.hidden=!workflow&&!history?.length;button.onclick=()=>reviewDetails.open(button,workflow?.state==='Reviewing'?workflow:null,workflow?.state!=='Reviewing'?[workflow,...(history||[])].filter(Boolean):history);
+  }
   function sessionToolbar(){
+    ensureSessionDetails();
     const source=document.querySelector('.code-scroll'),code=source?.parentElement,pane=code?.parentElement,meta=code?.querySelector('.meta');if(!pane||!code||!source)return;if(meta)pane.insertBefore(meta,code);const previous=pane.querySelector('.review-session-toolbar'),menuOpen=previous?.querySelector('.session-overflow')?.open??overflowOpen,focused=previous?.contains(document.activeElement)?document.activeElement:null,focusKey=focused?.dataset.sessionAction,focusLabel=focused?.textContent,focusPrimary=focused?.classList.contains('session-primary');previous?.remove();
     const bar=el('section','','review-session-toolbar');bar.setAttribute('aria-label','Review session');bar.setAttribute('aria-busy',String(busy));pane.insertBefore(bar,code);
     const historical=sourceContextError||workflow?.state!=='Reviewing',current=workflow,selected=workflow?.entries.filter(e=>e.decision==='Accepted').length||0;
     const identity=el('div','','session-identity');identity.title=workflow?(workflow.mode==='one-by-one'?'One by one review':'Prepare all, then review'):'Review session';identity.append(el('strong',(historical?'Historical operation · '+workflow?.state+' · ':restored?'Restored review · ':'Current review · ')+(workflow?.mode==='apply-first'?'Prepare all, then review':'One by one')),el('span',selected+' accepted'+(historical?' · '+(workflow?.state||'Loading'):''),'workflow-summary'));bar.append(identity);
     const status=current?.validationPresentation?.status||'Not run',summary=el('span',(historical?'Historical validation: ':'Validation: ')+status,'workflow-validation session-validation');summary.dataset.status=status;summary.title=current?.validationPresentation?.explanation||'Historical validation cannot validate this review.';bar.append(summary);
-    const detailButton=el('button','Session details');detailButton.dataset.reviewDetails='true';detailButton.onclick=()=>reviewDetails.open(detailButton,current,historical?[workflow,...(Array.isArray(history)?history:history?[history]:[])].filter(Boolean):history);bar.append(detailButton);
+
     const eligible=!sourceContextError&&workflow?.applyEligibility?.eligible;
     const applyLabel=selected===1?'Apply 1 accepted change to source':'Apply '+selected+' accepted changes to source';
     const validateLabel='Validate changes';
@@ -144,9 +152,10 @@ ${operationFlowClientSource}
   window.rtlRenderReviewIndicators=()=>{updateDecisionIndicators();paintNavigation()};
   const indicatorStyle=el('style');indicatorStyle.textContent='.finding{position:relative;padding-inline-end:34px!important}.finding>strong,.finding>small{overflow-wrap:anywhere;min-width:0}.finding-decision{position:absolute;inset-inline-end:10px;top:50%;transform:translateY(-50%);width:18px;text-align:center;font:700 17px/1.2 system-ui;color:#a3adbb;pointer-events:none}.finding-decision[data-tone=accepted]{color:#55dc9e}.finding-decision[data-tone=rejected]{color:#ff8193}.finding-decision[data-tone=deferred]{color:#ffd166}.finding-decision[data-tone=flagged]{color:#c39aff}';document.head.append(indicatorStyle);
   function render(){
+    ensureSessionDetails();renderBatch();
     const summaryDialog=document.querySelector('.review-summary-dialog');if(summaryDialog&&summaryDialog.dataset.snapshot!==summarySnapshot()){const label=document.activeElement?.textContent;summaryDialog.close();summaryDialog.remove();showReviewSummary();[...document.querySelectorAll('.review-summary-dialog button')].find(b=>b.textContent===label&&!b.disabled)?.focus();}
     workflowButton.disabled=busy||!!previewFlight||!!uncertainOperation;updateDecisionIndicators();paintNavigation();
-    const f=s.finding;if(!localStorage.getItem('rtl-review-workflow')&&window.rtlEntryPending)return;if(!f){sessionToolbar();reviewDetails.update(workflow?.state==='Reviewing'?workflow:null,workflow?.state!=='Reviewing'?[workflow,...(history||[])].filter(Boolean):history);return;}
+    const f=s.finding;if(!localStorage.getItem('rtl-review-workflow')&&window.rtlEntryPending||batchOpen)return;if(!f){sessionToolbar();reviewDetails.update(workflow?.state==='Reviewing'?workflow:null,workflow?.state!=='Reviewing'?[workflow,...(history||[])].filter(Boolean):history);return;}
     normalizeComponentReview();normalizeDecision();sessionToolbar();
     const card=document.querySelector('.decision-card'),component=document.querySelector('.component-review');if(!card)return;
     card.classList.add('workflow-owned');card.querySelectorAll('.workflow-controls').forEach(n=>n.remove());
@@ -199,8 +208,8 @@ ${operationFlowClientSource}
   }
   // Companion health/recovery also rebuilds detail directly. Restore workflow and Before after every rebuild.
   const workflowDetail=detail;detail=f=>{reviewDetails.close();embeddedReview.select(null);workflowDetail(f);render()};
-  let entryRestart=false;window.addEventListener('rtl-review-resume',()=>{window.rtlEntryPending=false;if(workflow)localStorage.setItem('rtl-review-workflow',workflow.mode);render();if(workflow?.state==='Applied')operationResult(workflow.operations?.filter(o=>o.kind==='apply').at(-1));else recoverOperationResult()});
-  window.addEventListener('rtl-review-workflow-entered',event=>{window.rtlEntryPending=false;entryRestart=!!event.detail.restart;embeddedReview.select(null);workflow=null;history=null;scope=event.detail.scope;operate(async()=>{const result=await restore(true,event.detail.mode);entryRestart=false;return result})});
+  let entryRestart=false;window.addEventListener('rtl-review-resume',()=>{window.rtlEntryPending=false;if(workflow)localStorage.setItem('rtl-review-workflow',workflow.mode);if(workflow?.mode==='apply-first'&&workflow.state==='Reviewing'&&workflow.batchPreparedAt)batchOpen=true;render();if(workflow?.state==='Applied')operationResult(workflow.operations?.filter(o=>o.kind==='apply').at(-1));else recoverOperationResult()});
+  window.addEventListener('rtl-review-workflow-entered',event=>{window.rtlEntryPending=false;entryRestart=!!event.detail.restart;embeddedReview.select(null);batchOpen=false;workflow=null;history=null;scope=event.detail.scope;if(event.detail.mode==='apply-first')operationWindow('Preparing batch','Preparing supported fixes in an isolated candidate…',true);operate(async()=>{const result=await restore(true,event.detail.mode);workflow=result.workflow;entryRestart=false;if(workflow.mode==='apply-first'){operationWindow('Preparing batch','Preparing supported fixes in an isolated candidate…',true);return await prepareBatchOverview()}return result},'Preparing review').then(()=>{if(operationDialog?.querySelector('h2')?.textContent==='Preparing batch')dismissOperation();render()})});
   window.addEventListener('rtl-context-runtime-request',event=>{if(workflow?.id===event.detail.workflowId)operate(()=>api(endpoint+'/'+workflow.id+'/runtime',{application:event.detail.application}))});
   // Reload restores persisted state without initiating batch application again.
   setTimeout(async()=>{await operate(()=>restore(false,localStorage.getItem('rtl-review-workflow')||'one-by-one'));if(operationEntryTransition){window.rtlEntryPending=false;recoverOperationResult()}else if(sessionStorage.getItem(operationKey)){window.rtlEntryPending=false;recoverOperationResult()}else{window.rtlEntryPending=true;showWorkflowScreen()}},0);

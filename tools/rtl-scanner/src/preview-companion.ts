@@ -113,7 +113,7 @@ const server = createServer(async (request, response) => {
   if (url.pathname.startsWith('/review/workflows')) {
     try {
       if(request.method==='GET'&&url.pathname==='/review/workflows'&&url.searchParams.get('history')==='1')return send(response,200,{workflows:await workflowStore.exclusive(async()=>workflowStore.list().map(w=>workflowStore.view(w))),projectRoot});
-      const match = url.pathname.match(/^\/review\/workflows(?:\/([^/]+)(?:\/(change|runtime|validate|apply|rollback|preview|resume|remaining|prepare-preview))?)?$/);
+      const match = url.pathname.match(/^\/review\/workflows(?:\/([^/]+)(?:\/(change|runtime|validate|apply|rollback|preview|resume|remaining|prepare-preview|prepare-batch|approve-batch))?)?$/);
       if (!match) throw new Error('WORKFLOW_ROUTE_NOT_FOUND');
       const id = match[1], action = match[2];
       if (request.method === 'GET') {
@@ -125,6 +125,8 @@ const server = createServer(async (request, response) => {
       const w = await workflowStore.exclusive(async () => {
         if (!id) return workflowStore.begin(input);
         if (action === 'change') return workflowStore.change(id, input.findingId, input);
+        if (action === 'prepare-batch') return workflowStore.prepareBatch(id);
+        if (action === 'approve-batch') return workflowStore.approveBatch(id,input.findingIds);
         if (action === 'prepare-preview') return workflowStore.preparePreview(id,input);
         if (action === 'runtime') { return workflowStore.runtime(id,input.application); }
         if (action === 'validate') return input.operationId?workflowStore.runOperation(id,'validate',input.operationId,()=>workflowStore.validate(id)):workflowStore.validate(id);

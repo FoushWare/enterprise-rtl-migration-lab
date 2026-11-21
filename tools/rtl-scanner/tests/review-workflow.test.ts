@@ -23,6 +23,15 @@ async function fixture() {
   await store.load(); return {root,store,apply,audit};
 }
 describe('multi-finding workflow safety',()=>{
+  it('explicit batch preparation excludes unmapped entries and rejects forged batch selections without source writes',async()=>{
+    const {root,store}=await fixture();try{const report=await scan(root),w=await store.begin({...report,mode:'apply-first'}),before=await readFile(join(root,file),'utf8'),e=w.entries.find(e=>e.patch)!;
+      await store.change(w.id,e.finding.id,{action:'notes',notes:'Keep my draft-backed saved note'});
+      await expect(store.approveBatch(w.id,[e.finding.id])).rejects.toThrow('PREPARE_BATCH_BEFORE_APPROVAL');
+      await store.prepareBatch(w.id);expect(w.batchPreparation).toBe('ready');expect(w.batchPreparedAt).toBeTruthy();expect(w.entries.filter(e=>e.batch?.state==='ready')).toHaveLength(0);expect(w.entries.every(e=>!e.applied)).toBe(true);expect(e.notes).toBe('Keep my draft-backed saved note');
+      await expect(store.approveBatch(w.id,[e.finding.id])).rejects.toThrow('BATCH_SELECTION_NOT_ELIGIBLE');await expect(store.approveBatch(w.id,[])).rejects.toThrow('INVALID_BATCH_SELECTION');
+      expect(w.entries.every(e=>e.decision==='Pending')).toBe(true);expect(await readFile(join(root,file),'utf8')).toBe(before);
+    }finally{await rm(root,{recursive:true,force:true})}
+  });
   for(const mode of ['one-by-one','apply-first'] as const)it(mode+' resumes a verified rollback as idempotent analysis only, retaining immutable history',async()=>{
     const {root,store,apply}=await fixture();try{
       const second='apps/invoicing/src/components/Other.tsx';await writeFile(join(root,second),'export const Other=({a}:{a:{id:string}})=><span>{a.id}</span>;');
