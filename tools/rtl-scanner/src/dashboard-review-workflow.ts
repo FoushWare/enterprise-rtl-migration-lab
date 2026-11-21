@@ -199,6 +199,8 @@ ${batchReviewClientSource}
     const validation=el('p','Current review · '+(e?.decision||'Pending')+' · '+(e?.applied?(e.decision==='Accepted'?'Accepted for validation':'Review preview only'):'Not in review preview'),'current-review-status workflow-decision');controls.append(validation);
     // These legacy one-patch operations remain available to API regressions; this workflow owns its distinct lifecycle.
     card.querySelectorAll('.reviewer-context,.apply-advanced').forEach(n=>n.hidden=true);
+    // A context event received during a mutation must be retried after the busy state clears.
+    if(!busy&&!batchOpen)queueMicrotask(automaticPreview);
   }
   async function restore(create=false,mode=localStorage.getItem('rtl-review-workflow')){
     if(!mode)return;const result=await api(pendingSourceTransition?.workflowId?endpoint+'/'+pendingSourceTransition.workflowId:endpoint+'?'+new URLSearchParams({inputDigest:dashboardSnapshot.inputDigest,policyDigest:dashboardSnapshot.policyDigest,mode}));
