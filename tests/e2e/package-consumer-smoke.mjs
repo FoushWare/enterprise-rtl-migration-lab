@@ -97,7 +97,6 @@ try{
  independent=await call('/'+independent.id+'/rollback',{confirmation:'ROLLBACK_CONFIRMED'});assert.equal(independent.state,'Rolled Back');assert.deepEqual(hashes(),initialHashes);evidence.independent={findingId:bidi.id,result:'accepted, validated, applied and rolled back under unresolved runtime direction'};save();
  // A mapped LTR child in an RTL page is a valid local override, not a page-direction mismatch.
  const localFinding=report.findings.find(f=>f.context==='stylesheet/.pending-me');assert.ok(localFinding);
- await call('',{mode:'one-by-one',scope:[],inputDigest:report.inputDigest,policyDigest:report.policyDigest,restart:true});
  const localContext=await browser.newContext({viewport:{width:1600,height:1000}}),localPage=await localContext.newPage();
  await localPage.addInitScript(()=>{window.__localDirectionEvidence=[];addEventListener('message',e=>{if(e.data?.type==='rtl-context-status'&&e.data.role==='original')window.__localDirectionEvidence.push({page:e.data.dir,target:e.data.targets?.[0]?.effectiveDirection,status:e.data.targetStatus})})});
  await localPage.goto('http://127.0.0.1:4320/rtl-report-dashboard.html?finding='+encodeURIComponent(localFinding.id));await localPage.getByRole('button',{name:'Start manual review',exact:true}).click();
