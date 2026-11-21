@@ -55,7 +55,9 @@ export class ReviewWorkflowStore {
       const data = JSON.parse(await readFile(this.path, 'utf8')) as { version: number; workflows: ReviewWorkflow[] };
       if (data.version !== 1 || !Array.isArray(data.workflows)) throw new Error('WORKFLOW_STORE_INVALID');
       this.workflows = data.workflows.filter(w => w.root === this.root);
+      const current=await scan(this.root);
       for (const w of this.workflows) {
+        if(w.state==='Reviewing'&&w.inputDigest===current.inputDigest&&w.policyDigest===current.policyDigest){const ids=new Set(current.findings.filter(f=>!['INFORMATIONAL','INTENTIONAL_LTR'].includes(f.category)&&f.ruleId!=='RTL.RUNTIME.DIRECTION_UNKNOWN').map(f=>f.id));w.entries=w.entries.filter(e=>!!e.patch||ids.has(e.finding.id));for(const e of w.entries)if(!e.patch)e.reason=e.finding.rationale+' '+e.finding.treatment+' No supported candidate patch; approval unavailable.';}
         for(const op of w.operations??[])if(op.state==='Running'){op.state='Uncertain';op.error='Server restarted during operation. Inspect operation details and source receipts before retrying.';}
         if (w.session) w.session.runtime = undefined;
         if (w.state === 'Applying') w.receipts = await this.applyService.recoverAcceptedFileReceipts(w.id);
@@ -103,10 +105,10 @@ export class ReviewWorkflowStore {
       sourcePaths[path] = await validateProjectSourcePath(this.root, path);
       baseline[path] = await readFile(sourcePaths[path], 'utf8');
     }
-    const entries = report.findings.filter(f => !scope.length || scope.includes(f.path)).map(finding => {
+    const entries = report.findings.filter(f => !['INFORMATIONAL','INTENTIONAL_LTR'].includes(f.category)&&f.ruleId!=='RTL.RUNTIME.DIRECTION_UNKNOWN'&&(!scope.length || scope.includes(f.path))).map(finding => {
       const entry: WorkflowEntry = { finding, reason: '', applied: false, decision: 'Pending', notes: '', history: [] };
-      try { if (!report.complete) throw new Error('INCOMPLETE_SCAN_REQUIRES_MANUAL_RESOLUTION'); if (report.diagnostics.some(d => d.code === 'RUNTIME_DIRECTION_UNKNOWN') && directionRequirement(finding) === 'unknown') throw new Error('RUNTIME_DIRECTION_STRATEGY_UNKNOWN'); if (finding.exceptionReason) throw new Error('POLICY_EXCEPTION_REQUIRES_REVIEW'); const proposal=proposeTransformation(finding,baseline[finding.path]);entry.patch=proposal.patch;entry.reason=proposal.transformationId+': '+proposal.reason; }
-      catch (error) { entry.reason = `${error instanceof Error ? error.message : 'UNSUPPORTED'}: inspect code and resolve manually; no automatic change.`; }
+      try { if (!report.complete) throw new Error('INCOMPLETE_SCAN_REQUIRES_MANUAL_RESOLUTION'); if (finding.exceptionReason) throw new Error('POLICY_EXCEPTION_REQUIRES_REVIEW'); const proposal=proposeTransformation(finding,baseline[finding.path]);entry.patch=proposal.patch;entry.reason=proposal.transformationId+': '+proposal.reason; }
+      catch (error) { entry.reason = `${error instanceof Error ? error.message : 'UNSUPPORTED'}: ${finding.rationale} ${finding.treatment} No supported candidate patch; approval unavailable.`; }
       return entry;
     });
     const conflicting = entries.filter(e => e.patch && entries.some(other => other !== e && other.patch && other.patch.path === e.patch!.path && other.patch.startOffset < e.patch!.endOffset && e.patch!.startOffset < other.patch.endOffset));

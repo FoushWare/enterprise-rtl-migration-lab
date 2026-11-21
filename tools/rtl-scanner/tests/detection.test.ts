@@ -45,3 +45,9 @@ it('RTL string in a predicate does not prove RTL output',()=>{const r=jsx('impor
 it('unresolved document direction remains an explicit nonblocking diagnostic',()=>expect(jsx('document.documentElement.dir=getDirection();').diagnostics).toContainEqual(expect.objectContaining({code:'RUNTIME_DIRECTION_UNKNOWN',blocking:false})));
 it('cache presence is not assumed configured RTL processing',()=>{const r=jsx('import {CacheProvider} from "@emotion/react";document.documentElement.dir="rtl";<CacheProvider value={cache}/>;');expect(r.findings.some(f=>f.ruleId==='RTL.RUNTIME.CACHE_UNVERIFIED')).toBe(true);expect(r.diagnostics.some(d=>d.blocking)).toBe(true);expect(r.findings.some(f=>f.ruleId==='RTL.RUNTIME.CACHE')).toBe(false);});
 it('semantic approval cannot nominate an unrelated logical property',()=>{const p=policy();p.approvals=[{path:'a.css',context:'stylesheet/.x',property:'margin-left',value:'2px',owner:'custom-css',logicalProperty:'color',reason:'reviewed',reviewedBy:'fixture',sourceDigest:hash('.x{margin-left:2px}')}];expect(css('.x{margin-left:2px}',p)[0].category).toBe('MANUAL_REVIEW');});
+
+it('does not flag symmetric two-value padding with nested functions as RTL risk',()=>{
+ expect(css('.topbar{padding:12px max(24px,calc((100vw - 1180px)/2))}').filter(f=>f.ruleId==='RTL.CSS.SHORTHAND')).toHaveLength(0);
+ expect(css('.x{padding:1px 2px 3px 4px}').some(f=>f.ruleId==='RTL.CSS.SHORTHAND')).toBe(true);
+ expect(css('.x{padding:var(--edges)}').some(f=>f.ruleId==='RTL.CSS.SHORTHAND')).toBe(true);
+});

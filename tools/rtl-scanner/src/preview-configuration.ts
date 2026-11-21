@@ -61,7 +61,7 @@ export async function loadPreviewConfiguration(root:string):Promise<PreviewConfi
  return {schemaVersion:1,applications,mappings,digest:hash('preview-config\0'+raw)};
 }
 export function configuredMapping(f:Finding,config:PreviewConfiguration):ContextMapping{
- const candidates=config.mappings.filter(m=>m.source===f.path&&(!m.context||m.context===f.context)&&(!m.sourceSelector||(f.sourceMechanism==='css'?f.context==='stylesheet/'+m.sourceSelector:m.sourceExpressions?.some(e=>e.text===f.original&&e.start===f.range.start.offset&&e.end===f.range.end.offset))));
+ const candidates=config.mappings.filter(m=>m.source===f.path&&(!m.context||m.context===f.context)&&(!m.sourceSelector||(f.sourceMechanism==='css'?(m.context?f.context===m.context:f.context==='stylesheet/'+m.sourceSelector):m.sourceExpressions?.some(e=>e.text===f.original&&e.start===f.range.start.offset&&e.end===f.range.end.offset))));
  if(candidates.length>1)return {kind:'unresolved',label:'Ambiguous configured mapping',selector:'',routes:[],evidence:[],limitation:'More than one configured locator matches this source context; choose one explicit source binding.'};
  if(!candidates.length){if(config.digest===hash('') && config.builtinAtlas)return exampleContextMapping(f);return {kind:'unresolved',label:'No mapped preview for this finding.',selector:'',routes:[],evidence:[],limitation:'No mapped preview for this finding.'};}
  const m=candidates[0],routes:ContextRoute[]=m.routes.map(ref=>{const app=config.applications[ref.application],r=app.routes.find(r=>r.id===ref.route)!;return {id:ref.application+':'+r.id,application:ref.application,path:r.path,label:ref.application+' · '+r.path,urls:{ltr:r.ltr,rtl:r.rtl}}});
