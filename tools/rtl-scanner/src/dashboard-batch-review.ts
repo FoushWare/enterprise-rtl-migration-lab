@@ -5,7 +5,7 @@ export const batchReviewClientSource=String.raw`
   function batchFindingLabel(f){const prop=(f.original||'').split(':')[0];return f.ruleId==='RTL.CSS.PHYSICAL'?'Review physical '+(prop.startsWith('padding')?'padding':prop.startsWith('margin')?'margin':prop.startsWith('border')?'border':'alignment'):f.ruleId==='RTL.BIDI.ISOLATION'?'Review '+(f.original?.includes('email')?'email':'name')+' direction':by.get(f.id)?.title||f.message||f.ruleId;}
   const reviewableBatchEntries=()=>workflow?.entries.filter(e=>all.some(f=>f.id===e.finding.id))||[];
   const batchEligible=e=>e.batch?.state==='ready'&&!!e.patch&&e.decision==='Pending';
-  function openBatch(focus=true){if(!workflow||workflow.mode!=='apply-first')return;batchOpen=true;renderBatch();const list=document.querySelector('.batch-table-wrap');if(list)list.scrollTop=batchListScroll;scrollTo(0,batchScroll);if(focus)requestAnimationFrame(()=>document.querySelector('.batch-review h1')?.focus({preventScroll:true}));requestAnimationFrame(()=>{scrollTo(0,batchScroll);const list=document.querySelector('.batch-table-wrap');if(list)list.scrollTop=batchListScroll});}
+  function openBatch(focus=true){if(!workflow||sourceContextError||workflow.mode!=='apply-first')return;batchOpen=true;renderBatch();const list=document.querySelector('.batch-table-wrap');if(list)list.scrollTop=batchListScroll;scrollTo(0,batchScroll);if(focus)requestAnimationFrame(()=>document.querySelector('.batch-review h1')?.focus({preventScroll:true}));requestAnimationFrame(()=>{scrollTo(0,batchScroll);const list=document.querySelector('.batch-table-wrap');if(list)list.scrollTop=batchListScroll});}
   let batchListScroll=0;
   function openBatchDetail(f){batchScroll=scrollY;batchListScroll=document.querySelector('.batch-table-wrap')?.scrollTop||0;batchOpen=false;document.querySelector('.batch-review')?.remove();document.querySelector('.workspace').hidden=false;selectReviewFinding(f);renderBatch();requestAnimationFrame(()=>scrollTo(0,Math.max(0,document.querySelector('.workspace').offsetTop-16)));}
   async function prepareBatchOverview(){
@@ -17,7 +17,7 @@ export const batchReviewClientSource=String.raw`
   function renderBatch(){
     const workspace=document.querySelector('.workspace');if(!workspace)return;
     let back=document.querySelector('.batch-back');if(workflow?.mode==='apply-first'&&workflow.state==='Reviewing'&&!batchOpen){if(!back){back=el('button','Back to batch','panel-toggle-btn batch-back');back.onclick=()=>openBatch();document.querySelector('.panel-controls')?.append(back)}}else back?.remove();
-    if(!batchOpen||!workflow||workflow.mode!=='apply-first'||workflow.state!=='Reviewing'||!workflow.batchPreparedAt){document.querySelector('.batch-review')?.remove();workspace.hidden=false;return}
+    if(!batchOpen||!workflow||workflow.mode!=='apply-first'||workflow.state!=='Reviewing'||!workflow.batchPreparedAt||sourceContextError){document.querySelector('.batch-review')?.remove();workspace.hidden=false;return}
     workspace.hidden=true;if(batchOwner!==workflow.id){batchOwner=workflow.id;batchSelection.clear();batchListScroll=0;batchScroll=0}
     const entries=reviewableBatchEntries(),ready=entries.filter(e=>e.batch?.state==='ready'&&e.patch),pending=ready.filter(batchEligible),approved=entries.filter(e=>e.decision==='Accepted'),manual=entries.filter(e=>e.batch?.state!=='ready'||!e.patch||['Deferred','Flagged'].includes(e.decision));
     const ids=new Set(pending.map(e=>e.finding.id));for(const id of batchSelection)if(!ids.has(id))batchSelection.delete(id);
