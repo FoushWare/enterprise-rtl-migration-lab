@@ -33,6 +33,15 @@ export async function captureScopedDirectionEvidence(root:string,w:ReviewWorkflo
        await page.locator(app.readySelector).first().waitFor({state:'visible',timeout:10000});
        await page.waitForFunction(expectedMode=>getComputedStyle(document.documentElement).direction===expectedMode,mode,{timeout:10000});
        await page.locator(mapping.selector).first().waitFor({state:'visible',timeout:10000});
+       // Sample the rendered state after startup transitions, not at a nondeterministic animation frame.
+       await page.evaluate(()=>new Promise<void>(done=>requestAnimationFrame(()=>requestAnimationFrame(()=>done()))));
+       await page.waitForFunction(selector=>{
+        const targets = [...document.querySelectorAll(selector)];
+        const elements = new Set<Element>();
+        for(const target of targets) for(let element:Element|null=target;element;element=element.parentElement) elements.add(element);
+        return targets.length>0 && [...elements].every(element=>element.getAnimations().every(animation=>
+          !(animation.pending || animation.playState==='running') || !Number.isFinite(animation.effect?.getComputedTiming().endTime)));
+       },mapping.selector,{timeout:10000});
        const state=await page.evaluate(({selector,expectedUrl,sourceSelector,path,icon})=>{
         const nodes=[...document.querySelectorAll(selector)];if(!nodes.length||nodes.length>100)throw Error('DIRECTION_EVIDENCE_TARGET_COUNT');
         const url=new URL(location.href),expected=new URL(expectedUrl);if(url.pathname!==expected.pathname||url.search!==expected.search||url.hash)throw Error('DIRECTION_EVIDENCE_ROUTE_CHANGED');
