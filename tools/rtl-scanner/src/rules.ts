@@ -1,5 +1,6 @@
 import ts from 'typescript';
 import {hasIsolation} from './codemod.js';
+import {hasMirroredCssOffset} from './css-configured-proposal.js';
 import {cssIconAnchors} from './css-icons.js';
 import { analyzeRuntimeDirection } from './runtime-direction.js';
 import valueParser from 'postcss-value-parser';
@@ -46,7 +47,7 @@ export function detect(evidence:Evidence[],sources:Map<string,string>,policy:Pol
    const tokens=valueParser(v).nodes.filter(n=>n.type!=='space'&&n.type!=='comment');const simple=tokens.every(n=>n.type==='word');const words=tokens.map(n=>valueParser.stringify(n));
    const asymmetric=p==='border-radius'?words.length>1&&new Set(words).size>1:words.length===4&&words[1]!==words[3];
    if(asymmetric||!simple&&!(p!=='border-radius'&&words.length>=1&&words.length<=3&&tokens.every(n=>n.type==='word'||n.type==='function'&&n.value.toLowerCase()!=='var'))&&words.length>0&&!/^[-\d.%pxemauto ]+$/.test(v))add('RTL.CSS.SHORTHAND','Shorthand needs side/corner review',e,'MANUAL_REVIEW','Shorthand may encode unequal physical sides, elliptical corners or unresolved values.','Review tokenized values and cascade; do not split functions or reverse corner order blindly.',owner,[e],simple?'High':'Medium');
-  }else if((p==='transform'&&/translateX\((?!0\))/i.test(v))||(/^(transform-origin|background-position|box-shadow)$/.test(p)&&/left|right|\d/.test(v))||p==='order'||p==='flex-direction'&&v==='row-reverse'||/^grid-(column|row|area)/.test(p)&&!/^auto$/.test(v)&&!/^1\s*\/\s*-1$/.test(v))add('RTL.GEOMETRY.ORDER','Directional geometry or explicit order',e,'MANUAL_REVIEW','Transform/axis/order semantics require geometric and reading-order decisions.','Review spatial intent, focus order and companion positioning; no numeric sign reversal.',owner,[e],'Medium');
+  }else if(!hasMirroredCssOffset(e,evidence)&&((p==='transform'&&/translateX\((?!0\))/i.test(v))||(/^(transform-origin|background-position|box-shadow)$/.test(p)&&/left|right|\d/.test(v))||p==='order'||p==='flex-direction'&&v==='row-reverse'||/^grid-(column|row|area)/.test(p)&&!/^auto$/.test(v)&&!/^1\s*\/\s*-1$/.test(v)))add('RTL.GEOMETRY.ORDER','Directional geometry or explicit order',e,'MANUAL_REVIEW','Transform/axis/order semantics require geometric and reading-order decisions.','Review spatial intent, focus order and companion positioning; no numeric sign reversal.',owner,[e],'Medium');
  }
  for(const [path,text] of sources)if(path.endsWith('.css'))for(const a of cssIconAnchors(path,text))add('RTL.ICON.PROGRESSION','Explicit progression icon needs direction-aware rendering',a,'MANUAL_REVIEW','Author supplied rtl-icon: progression-right semantic metadata; rendered ownership and icon-only targeting still require review.','Review icon-only targeting, LTR baseline, inherited direction and existing transforms before mirroring.',policy.ownership.css??'unknown',[],'High');
  // Generic syntax evidence: imports and JSX/data flow are inspected, never executed.

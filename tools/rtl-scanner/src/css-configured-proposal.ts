@@ -1,8 +1,28 @@
 import postcss, { type Declaration } from 'postcss';
 import { directionalProperty, propertyConflict } from './directional-properties.js';
-import { hash, type Finding } from './model.js';
+import { hash, type Evidence, type Finding } from './model.js';
 
 export const CSS_CONFIGURED_TRANSFORMATION_ID = 'css-configured-intent';
+
+const offsetVariable = (context:string,property:string) => '--rtl-offset-' + hash(context+'\0'+property).slice(0,16);
+function parseOffset(property:string,value:string) {
+  if (property === 'transform') return /^translateX\((-?\d+(?:\.\d+)?)(%|px)\)$/.exec(value);
+  if (property === 'box-shadow') return /^(-?\d+(?:\.\d+)?)(px)\s+0(?:px)?\s+\d+(?:\.\d+)?px\s+#[\da-f]{3,8}$/i.exec(value);
+  return null;
+}
+
+/** Suppress the physical-offset finding only when both literal directional branches are present. */
+export function hasMirroredCssOffset(declaration:Evidence,evidence:Evidence[]):boolean {
+  if (declaration.mechanism !== 'css' || !['transform','box-shadow'].includes(declaration.property)) return false;
+  const variable = offsetVariable(declaration.context,declaration.property);
+  const use = new RegExp(`var\\(${variable}, (-?\\d+(?:\\.\\d+)?(?:%|px))\\)`).exec(declaration.value);
+  if (!use) return false;
+  const offset = parseOffset(declaration.property,declaration.value.replace(use[0],use[1]));
+  if (!offset || Number(offset[1]) === 0) return false;
+  const definitions = evidence.filter(e=>e.path===declaration.path && e.mechanism==='css' && e.property===variable);
+  return definitions.length===2 && definitions.some(e=>e.context===declaration.context && e.value===use[1])
+    && definitions.some(e=>e.context===declaration.context+'/&:dir(rtl)' && e.value===String(-Number(offset[1]))+offset[2]);
+}
 
 function replacementFor(declaration: Declaration, finding: Finding): string {
   const rule = declaration.parent;
@@ -32,10 +52,9 @@ function replacementFor(declaration: Declaration, finding: Finding): string {
     return serialize(['start-start','start-end','end-end','end-start'].map((corner,i)=>declaration.clone({prop:`border-${corner}-radius`,value:radii[i]})));
   }
   if (intent.kind !== 'mirror-offset') throw Error('CSS_INTENT_UNKNOWN');
-  const offset = prop === 'transform' ? /^translateX\((-?\d+(?:\.\d+)?)(%|px)\)$/.exec(value)
-    : prop === 'box-shadow' ? /^(-?\d+(?:\.\d+)?)(px)\s+0(?:px)?\s+\d+(?:\.\d+)?px\s+#[\da-f]{3,8}$/i.exec(value) : null;
+  const offset = parseOffset(prop,value);
   if (!offset || Number(offset[1]) === 0) throw Error('CSS_INTENT_LITERAL_HORIZONTAL_OFFSET_REQUIRED');
-  const variable = '--rtl-offset-' + hash(finding.context+'\0'+prop).slice(0,16);
+  const variable = offsetVariable(finding.context,prop);
   const literal = offset[1]+offset[2];
   base.value = value.replace(literal,`var(${variable}, ${literal})`);
   // Nest a direction-specific variable on the same target. Keep the original property and specificity.
