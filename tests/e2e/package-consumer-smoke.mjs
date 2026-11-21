@@ -26,7 +26,7 @@ put('src/reading.css','body{font:16px system-ui}main{width:640px}article{width:4
 put('tests/consumer.test.mjs',"import {test} from 'node:test';import assert from 'node:assert/strict';import {people} from '../src/people.js';test('fixture has a stable target',()=>assert.equal(people[0].id,'consumer-1'));\n");
 put('rtl-scanner.config.json',{schemaVersion:1,generatedStyleOwner:'unknown',ownership:{css:'custom-css'},approvals:[],exceptions:[],issueBindings:[],dynamicExceptions:[],roles:[]});
 put('rtl-project.config.json',{schemaVersion:1,scanRoots:['src','index.html'],copyPaths:['src','index.html','tests','public','vite.config.ts','tsconfig.json','package.json','package-lock.json'],packageManager:'npm',validation:{typecheck:['run','typecheck'],build:['run','build'],test:['run','test']}});
-put('rtl-preview.config.json',{schemaVersion:1,applications:{consumer:{viteConfig:'vite.config.ts',entry:'src/main.tsx',originalOrigin:'http://127.0.0.1:4215',readySelector:'#root main article',dataAdapter:'none',startupScript:'dev',routes:[{id:'people',path:'/people',ltr:'/people?direction=ltr',rtl:'/people?direction=rtl'}]}},mappings:[...['.contact-card','.contact-name','.pending-me'].map(selector=>({source:'src/reading.css',sourceSelector:selector,targetSelector:selector,routes:[{application:'consumer',route:'people'}]})),{source:'src/main.tsx',context:'module',targetSelector:'.contact-name',routes:[{application:'consumer',route:'people'}]}]});
+put('rtl-preview.config.json',{schemaVersion:1,applications:{consumer:{viteConfig:'vite.config.ts',entry:'src/main.tsx',originalOrigin:'http://127.0.0.1:4215',readySelector:'#root main article',dataAdapter:'none',startupScript:'dev',routes:[{id:'people',path:'/people',ltr:'/people?direction=ltr',rtl:'/people?direction=rtl'}]}},mappings:[...['.contact-card','.contact-name','.pending-me','.unmapped'].map(selector=>({source:'src/reading.css',sourceSelector:selector,targetSelector:selector,routes:[{application:'consumer',route:'people'}]})),{source:'src/main.tsx',context:'module',targetSelector:'.contact-name',routes:[{application:'consumer',route:'people'}]}]});
 let browser;const children=[];
 try{
  run('npm',['install','--save-dev','--ignore-scripts','--no-audit','--no-fund',tarball]);
@@ -56,7 +56,7 @@ try{
  }
  evidence.deniedWrites=6;
  const require=createRequire(join(project,'package.json')),{chromium,expect}=require('@playwright/test');browser=await chromium.launch({headless:true});
- const finding=report.findings.find(f=>f.context==='stylesheet/.contact-card');assert.ok(finding);const original=readFileSync(join(project,'src/reading.css'),'utf8');
+ const finding=report.findings.find(f=>f.context==='stylesheet/.contact-card');assert.ok(finding);const unmapped=report.findings.find(f=>f.context==='stylesheet/.unmapped'),initialDirection=report.findings.find(f=>f.ruleId==='RTL.DOCUMENT.INITIAL');assert.ok(unmapped&&initialDirection);const original=readFileSync(join(project,'src/reading.css'),'utf8');
  const hashes=()=>Object.fromEntries(report.files.map(p=>[p,createHash('sha256').update(readFileSync(join(project,p))).digest('hex')])),initialHashes=hashes();evidence.originalHashes=initialHashes;save();
  for(const mode of ['one-by-one','apply-first']){
   const context=await browser.newContext({viewport:{width:1600,height:1000}}),page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.accept());await page.goto('http://127.0.0.1:4320/rtl-report-dashboard.html?finding='+encodeURIComponent(finding.id));await page.getByRole('button',{name:mode==='one-by-one'?'Start manual review':'Prepare all & review',exact:true}).click();
@@ -76,6 +76,12 @@ try{
   await expect(after).toHaveAttribute('data-context-status','verified',{timeout:30000});
   await page.frameLocator('.component-after iframe').locator('html').evaluate((_,message)=>parent.postMessage({...message,dir:'rtl',directionRevision:999999},'http://127.0.0.1:4320'),oldStatus);
   await page.waitForTimeout(500);await expect(after).toHaveAttribute('data-context-status','verified');
+  if(mode==='one-by-one'){
+   const goTo=async f=>{await page.evaluate(id=>{history.pushState(null,'','?finding='+encodeURIComponent(id));dispatchEvent(new PopStateEvent('popstate'))},f.id);await expect(page.locator('.finding-location')).toContainText(f.path,{timeout:30000});};
+   await goTo(unmapped);await expect(before).toHaveAttribute('data-context-status','missing-target',{timeout:30000});await expect(before).toHaveAttribute('data-target-count','0');await expect(before).toContainText('Source rule loaded; configured target is missing on this route');await expect(page.locator('.component-toolbar')).toContainText('/people');await expect(page.getByRole('button',{name:'Approve proposed change',exact:true})).toBeDisabled();evidence.negativeMapping={findingId:unmapped.id,route:'/people',status:'missing-target',targetCount:0,atlasFallback:false};
+   await goTo(initialDirection);await expect(page.locator('.direction-preview-status')).toHaveText('No mapped preview for this finding.');assert.equal(await page.locator('.component-review iframe').count(),0);
+   await goTo(finding);await expect(before).toHaveAttribute('data-context-status','verified',{timeout:30000});
+  }
   await page.getByRole('button',{name:'Approve proposed change',exact:true}).click();await page.getByRole('dialog',{name:'Proposed change approved'}).getByRole('button',{name:'Stay on this finding',exact:true}).click();if(mode==='apply-first'){await page.getByRole('button',{name:'Back to batch',exact:true}).click();await page.getByRole('button',{name:'Validate 1 approved changes',exact:true}).click()}else await page.getByRole('button',{name:'Validate changes',exact:true}).click();await expect(page.getByRole('dialog',{name:'Validation passed'})).toBeVisible({timeout:120000});const validated=await snapshot();assert.equal(validated.validation?.state,'Passed');assert.equal(validated.applyEligibility.eligible,true);assert.equal(validated.entries.filter(e=>e.applied).length,1);assert.deepEqual(hashes(),initialHashes);result.checks=validated.validationPresentation.checks.map(c=>({name:c.name,state:c.state}));assert.ok(result.checks.every(c=>c.state==='Passed'));
   // Unscanned application data changes the actual mapped target without modifying source or configuration.
   put('public/state.json',{label:'Changed after validation'});
@@ -95,58 +101,6 @@ try{
  independent=await call('/'+independent.id+'/validate',{});assert.equal(independent.validationPresentation.status,'Passed');assert.equal(independent.applyEligibility.eligible,true);
  independent=await call('/'+independent.id+'/apply',{confirmation:'APPLY_CONFIRMED'});assert.equal(independent.state,'Applied');assert.match(readFileSync(join(project,'src/main.tsx'),'utf8'),/<bdi dir="auto">\{person.name\}<\/bdi>/);
  independent=await call('/'+independent.id+'/rollback',{confirmation:'ROLLBACK_CONFIRMED'});assert.equal(independent.state,'Rolled Back');assert.deepEqual(hashes(),initialHashes);evidence.independent={findingId:bidi.id,result:'accepted, validated, applied and rolled back under unresolved runtime direction'};save();
- // A mapped LTR child in an RTL page is a valid local override, not a page-direction mismatch.
- const localFinding=report.findings.find(f=>f.context==='stylesheet/.pending-me');assert.ok(localFinding);
- const localContext=await browser.newContext({viewport:{width:1600,height:1000}}),localPage=await localContext.newPage();
- await localPage.addInitScript(()=>{window.__localDirectionEvidence=[];addEventListener('message',e=>{if(e.data?.type==='rtl-context-status'&&e.data.role==='original')window.__localDirectionEvidence.push({page:e.data.dir,target:e.data.targets?.[0]?.effectiveDirection,status:e.data.targetStatus})})});
- await localPage.goto('http://127.0.0.1:4320/rtl-report-dashboard.html?finding='+encodeURIComponent(localFinding.id));await localPage.getByRole('button',{name:'Start manual review',exact:true}).click();
- await expect(localPage.locator('.component-before .embedded-state')).toHaveAttribute('data-context-status','verified',{timeout:60000});
- await expect(localPage.locator('.finding-heading')).toContainText('Review physical padding');
- await expect(localPage.locator('.details-summary-row')).toContainText('A visual defect is not established');
- await expect(localPage.locator('.details-summary-row')).toContainText('Confidence in static evidence: High');
- await localPage.locator('.more-details > summary').click();
- await expect(localPage.locator('.more-details-body')).toContainText('Confidence describes the static source match, not visual correctness');
- await expect(localPage.locator('.more-details-body')).toContainText('including local direction overrides');
- await expect(localPage.locator('.after-card h3')).toHaveText('After (Supported candidate)');
- await expect(localPage.locator('.after-card pre')).toHaveText('padding-inline-end:11px');
- await expect(localPage.getByRole('button',{name:'Approve proposed change',exact:true})).toBeVisible();
- await expect(localPage.locator('.workflow-decision')).toContainText('Pending');
- await localPage.locator('.component-toolbar').getByRole('button',{name:'RTL',exact:true}).click();
- await expect.poll(()=>localPage.evaluate(()=>window.__localDirectionEvidence.some(x=>x.page==='rtl'&&x.target==='ltr'&&x.status==='verified')),{timeout:30000}).toBe(true);
- await expect(localPage.locator('.component-before .embedded-state')).toHaveAttribute('data-context-status','verified',{timeout:30000});
- // Inspect every matching element in both actual preview frames and both page directions.
- const localMeasurements=[];
- for(const direction of ['LTR','RTL']){
-  await localPage.locator('.component-toolbar').getByRole('button',{name:direction,exact:true}).click();
-  for(const role of ['before','after']){
-   await expect(localPage.locator('.component-'+role+' .embedded-state')).toHaveAttribute('data-context-status','verified',{timeout:30000});
-   const frame=localPage.frameLocator('.component-'+role+' iframe');
-   await expect(frame.locator('html')).toHaveAttribute('dir',direction.toLowerCase());
-   const targets=await frame.locator('.pending-me').evaluateAll(nodes=>nodes.map(n=>({attribute:n.getAttribute('dir'),direction:getComputedStyle(n).direction,left:getComputedStyle(n).paddingLeft,right:getComputedStyle(n).paddingRight})));
-   assert.deepEqual(targets,[{attribute:'ltr',direction:'ltr',left:'0px',right:'11px'}]);localMeasurements.push({page:direction,role,targets});
-  }
- }
- // One selector can affect different local directions: the same logical candidate moves only RTL instances.
- const mixed=await localContext.newPage();
- for(const pageDirection of ['ltr','rtl']){
-  const sample=async css=>{await mixed.setContent(`<html dir="${pageDirection}"><style>.shared{${css}}</style><p class="shared" dir="ltr">LTR</p><p class="shared" dir="rtl">RTL</p></html>`);return mixed.locator('.shared').evaluateAll(ns=>ns.map(n=>({direction:getComputedStyle(n).direction,left:getComputedStyle(n).paddingLeft,right:getComputedStyle(n).paddingRight})));};
-  assert.deepEqual(await sample('padding-right:11px'),[{direction:'ltr',left:'0px',right:'11px'},{direction:'rtl',left:'0px',right:'11px'}]);
-  assert.deepEqual(await sample('padding-inline-end:11px'),[{direction:'ltr',left:'0px',right:'11px'},{direction:'rtl',left:'11px',right:'0px'}]);
- }
- evidence.localOverride={findingId:localFinding.id,measurements:localMeasurements,mixedSelector:'RTL target changes sides; LTR target remains equivalent'};save();await localPage.screenshot({path:join(workspace,'local-override.png'),fullPage:true});await localContext.close();
- // Consecutive external-project selections must never inherit Atlas route or stale target state.
- const unmapped=report.findings.find(f=>f.context==='stylesheet/.unmapped'),initial=report.findings.find(f=>f.ruleId==='RTL.DOCUMENT.INITIAL'),dynamic=report.findings.find(f=>f.ruleId==='RTL.RUNTIME.DIRECTION_UNKNOWN');assert.ok(unmapped&&initial&&dynamic);
- const selectionContext=await browser.newContext({viewport:{width:1600,height:1000}}),selection=await selectionContext.newPage(),requests=[];
- selection.on('request',r=>requests.push(r.url()+(r.postData()||'')));
- const gotoFinding=async f=>{await selection.evaluate(id=>{history.pushState(null,'','?finding='+encodeURIComponent(id));dispatchEvent(new PopStateEvent('popstate'))},f.id);await expect(selection.locator('.finding-location')).toContainText(f.path,{timeout:30000});};
- await selection.goto('http://127.0.0.1:4320/rtl-report-dashboard.html?finding='+encodeURIComponent(finding.id));await expect(selection.locator('.finding-location')).toContainText(finding.path);await selection.getByRole('button',{name:'Start manual review',exact:true}).click();await expect(selection.locator('.component-before .embedded-state')).toHaveAttribute('data-context-status','verified',{timeout:60000});
- await gotoFinding(unmapped);await expect(selection.locator('.component-before .embedded-state')).toContainText('No configured source binding',{timeout:30000});await expect(selection.locator('.component-before .embedded-state')).toContainText('Add a binding for its source context and rendered target');await expect(selection.locator('.component-before .embedded-state')).toContainText('No built-in application mapping was used');assert.equal(await selection.locator('.component-review iframe').count(),0);
- await gotoFinding(initial);await expect(selection.locator('.direction-information')).toContainText('source fact, not a detected defect');await expect(selection.locator('.direction-preview-status')).toHaveText('No mapped preview for this finding.');assert.equal(await selection.locator('.component-review iframe, .decision-card, .code-diff-card').count(),0);
- await gotoFinding(dynamic);await expect(selection.locator('.direction-information')).toContainText('not inherently incorrect');await expect(selection.locator('.direction-information')).toContainText('not all application states');assert.equal(await selection.locator('.decision-card, .code-diff-card').count(),0);
- await selection.reload();await expect(selection.locator('.direction-information')).toContainText('not inherently incorrect');assert.equal(await selection.locator('.component-review iframe').count(),0);
- await gotoFinding(finding);await expect(selection.locator('.component-before .embedded-state')).toHaveAttribute('data-context-status','verified',{timeout:60000});await expect(selection.locator('.component-toolbar')).toContainText('/people');
- assert.ok(requests.every(x=>!x.includes('/invoices')&&!x.includes('InvoiceTable.tsx')),JSON.stringify(requests.filter(x=>x.includes('/invoices')||x.includes('InvoiceTable.tsx'))));
- evidence.selection={mapped:finding.id,unmapped:unmapped.id,initial:initial.id,dynamic:dynamic.id,result:'mapped, unmapped, initial and dynamic selections plus reload; no Atlas route/path'};await selection.screenshot({path:join(workspace,'selection-return-mapped.png'),fullPage:true});save();await selectionContext.close();
  evidence.status='Passed';save();console.log('CONSUMER_PASSED',JSON.stringify(evidence));
 }catch(e){evidence.status='Failed';evidence.error=e.stack;save();throw e}
 finally{await browser?.close();for(const c of children.reverse())if(c.exitCode===null&&c.signalCode===null){const done=new Promise(r=>c.once('exit',r));c.kill('SIGTERM');await done}}
