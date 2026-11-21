@@ -38,12 +38,18 @@ export async function writePreviewRuntimeConfig(root: string, identity: PreviewR
       const {proposeTransformation}=await import('./transformations.js');
       for(const binding of bindings){const f=report.findings.find(f=>f.id===binding.finding.id)!;
         if(!binding.mapping.configured||!binding.mapping.css)continue;
-        const actual=postcss.parse(await readFile(join(root,f.path),'utf8'));let present=false;
-        actual.walkRules(r=>{if(r.selector===binding.mapping.sourceSelector&&r.nodes.some(d=>d.type==='decl'&&d.prop===binding.mapping.css!.property))present=true});
-        if(present)continue;
-        try{const proposal=proposeTransformation(f,await readFile(join(options.contextRoot,f.path),'utf8'));const replacement=postcss.parse('.probe{'+proposal.patch.replacement+'}').first;
-          const declaration=replacement?.type==='rule'?replacement.nodes.find(d=>d.type==='decl'):undefined;
-          if(declaration?.type==='decl')binding.mapping.css={...binding.mapping.css,property:declaration.prop,value:declaration.value};
+        try{
+          const proposal=proposeTransformation(f,await readFile(join(options.contextRoot,f.path),'utf8'));
+          const replacement=postcss.parse('.probe{'+proposal.patch.replacement+'}').first;
+          const declarations=replacement?.type==='rule'?replacement.nodes.filter(d=>d.type==='decl'):[];
+          const declaration=declarations[0];
+          if(!declaration)continue;
+          const actual=postcss.parse(await readFile(join(root,f.path),'utf8'));
+          let present=false;
+          actual.walkRules(r=>{
+            if(r.selector===binding.mapping.sourceSelector&&declarations.every(expected=>r.nodes.some(d=>d.type==='decl'&&d.prop===expected.prop&&d.value===expected.value&&d.important===expected.important)))present=true;
+          });
+          if(present)binding.mapping.css={...binding.mapping.css,property:declaration.prop,value:declaration.value};
         }catch{/* Target binding remains independent of transformation eligibility. */}
       }
     }

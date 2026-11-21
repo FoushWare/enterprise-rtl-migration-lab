@@ -58,7 +58,7 @@ export function validatePolicy(input: unknown, text: string): Policy {
   };
   const digest = (v: unknown, p: string) => { if (!/^[a-f0-9]{64}$/.test(str(v, p))) fail(p, 'expected lowercase SHA-256 digest'); };
   const rule = (v: unknown, p: string) => { if (!ruleIds.has(str(v, p))) fail(p, 'rule is not supported by this scanner', 'POLICY_UNSUPPORTED'); };
-  const top = object(input, '', ['schemaVersion', 'generatedStyleOwner', 'ownership', 'approvals', 'exceptions', 'issueBindings', 'dynamicExceptions', 'roles'], ['ownerOverrides']);
+  const top = object(input, '', ['schemaVersion', 'generatedStyleOwner', 'ownership', 'approvals', 'exceptions', 'issueBindings', 'dynamicExceptions', 'roles'], ['ownerOverrides', 'cssProposals']);
   if (top.schemaVersion !== 1) fail('/schemaVersion', 'only schemaVersion 1 is supported', 'POLICY_UNSUPPORTED');
   enumValue(top.generatedStyleOwner, '/generatedStyleOwner', ['mui-generated', 'unknown']);
   const ownership = object(top.ownership, '/ownership', [], [...mechanisms]);
@@ -73,15 +73,16 @@ export function validatePolicy(input: unknown, text: string): Policy {
     issueBindings: [['ruleId', 'path', 'contextIncludes', 'issueId'], ['originalIncludes']],
     dynamicExceptions: [['path', 'property', 'valueDigest', 'sourceDigest', 'reason'], []],
     roles: [['kind', 'path', 'className'], []],
+    cssProposals: [['path', 'context', 'property', 'value', 'kind', 'sourceDigest'], []],
     ownerOverrides: [['path', 'context', 'owner', 'reason'], []],
   };
   const identities: Record<string, string[]> = {
     approvals: ['path', 'context', 'property', 'value'], exceptions: ['ruleId', 'path', 'context', 'originalDigest'],
     issueBindings: ['ruleId', 'path', 'contextIncludes', 'originalIncludes', 'issueId'],
-    dynamicExceptions: ['path', 'property', 'valueDigest'], roles: ['kind', 'path', 'className'], ownerOverrides: ['path', 'context'],
+    dynamicExceptions: ['path', 'property', 'valueDigest'], roles: ['kind', 'path', 'className'], ownerOverrides: ['path', 'context'], cssProposals: ['path', 'context', 'property', 'value'],
   };
   for (const [name, [required, optional]] of Object.entries(shapes)) {
-    if (name === 'ownerOverrides' && !Object.hasOwn(top, name)) continue;
+    if ((name === 'ownerOverrides' || name === 'cssProposals') && !Object.hasOwn(top, name)) continue;
     const records = top[name];
     if (!Array.isArray(records) || records.length > 10000) fail(`/${name}`, 'expected bounded array');
     const seen = new Map<string, Record<string, unknown>>();
@@ -93,6 +94,7 @@ export function validatePolicy(input: unknown, text: string): Policy {
       if ('ruleId' in entry) rule(entry.ruleId, `${p}/ruleId`);
       if ('owner' in entry) enumValue(entry.owner, `${p}/owner`, owners);
       if ('category' in entry) enumValue(entry.category, `${p}/category`, ['INTENTIONAL_LTR', 'INFORMATIONAL']);
+      if (name === 'cssProposals') enumValue(entry.kind, `${p}/kind`, ['inline-edge', 'logical-corners', 'dom-order', 'mirror-offset']);
       if (name === 'roles') enumValue(entry.kind, `${p}/kind`, ['brand']);
       if (name === 'dynamicExceptions') enumValue(entry.property, `${p}/property`, ['background']);
       if (name === 'issueBindings' && !/^RTL-0[1-9]$/.test(entry.issueId as string)) fail(`${p}/issueId`, 'unsupported reference issue ID');

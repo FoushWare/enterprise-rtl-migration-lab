@@ -7,6 +7,7 @@ import { hash,range,type Evidence,type Finding,type Category,type Report,type Ra
 import type { Policy } from './policy.js';
 interface Anchor {path:string;range:Range;original:string;context:string;id:string}
 const plain=(v:string)=>v.replace(/^['"`]|['"`]$/g,'');
+const ownerIsLocalCss=(f:Finding)=>f.ownership==='custom-css'&&f.sourceMechanism==='css';
 const cssKey=(p:string)=>p.replace(/[A-Z]/g,c=>'-'+c.toLowerCase());
 export function detect(evidence:Evidence[],sources:Map<string,string>,policy:Policy,diagnostics:Report['diagnostics']):Finding[]{
  const findings:Finding[]=[];const findingOccurrences=new Map<string,number>();
@@ -15,7 +16,13 @@ export function detect(evidence:Evidence[],sources:Map<string,string>,policy:Pol
   const originalCategory=category;if(exception)category=exception.category;
   const key=ruleId+'|'+a.id;const occurrence=findingOccurrences.get(key)??0;findingOccurrences.set(key,occurrence+1);
   findings.push({id:ruleId+':'+hash(a.id+'|'+occurrence).slice(0,24),ruleId,ruleVersion:1,category,severity:category==='INFORMATIONAL'||category==='INTENTIONAL_LTR'?'Info':severity,confidence,title,sourceMechanism:'mechanism' in a?(a as Evidence).mechanism:'typescript-structure',applications:a.path.startsWith('apps/')?[a.path.split('/')[1]]:[],path:a.path,range:a.range,original:a.original,context:a.context,ownership,rationale,treatment,evidenceIds:refs.map(e=>e.id).sort(),relatedLocations:refs.filter(e=>e.id!==a.id).map(e=>({path:e.path,range:e.range})),issueIds:policy.issueBindings.filter(b=>b.ruleId===ruleId&&b.path===a.path&&a.context.includes(b.contextIncludes)&&(!b.originalIncludes||a.original.includes(b.originalIncludes))).map(b=>b.issueId).sort(),suggestion:exception?null:suggestion,limitation,...(exception?{exceptionReason:exception.reason,originalCategory}:{})});
-  return findings.at(-1)!;
+  const finding=findings.at(-1)!;
+  if(!exception && ownerIsLocalCss(finding) && refs[0]?.id===a.id){
+   const declaration=refs[0];
+   const intent=policy.cssProposals?.find(i=>i.path===a.path&&i.context===a.context&&i.property===declaration.property&&i.value===declaration.value);
+   if(intent)finding.cssProposal={kind:intent.kind,sourceDigest:intent.sourceDigest};
+  }
+  return finding;
  }
  for(const e of evidence){
   if(['tailwind-utility','bootstrap-utility'].includes(e.semantics)){
