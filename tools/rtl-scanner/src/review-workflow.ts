@@ -228,6 +228,7 @@ export class ReviewWorkflowStore {
     if(!entry.applied)await this.change(id,entry.finding.id,{action:'apply'});
     const prepared=await this.runtime(id,input.application);
     if(prepared.session?.runtime?.status!=='healthy')throw Error(prepared.session?.runtime?.error||'CANDIDATE_RUNTIME_UNAVAILABLE');
+    if(directionRequirement(entry.finding)==='dependent')await captureScopedDirectionEvidence(this.root,w,[entry],async application=>{await initializeOriginalPreview(this.root,application);await this.runtime(id,application)});
     return prepared;
   }
   /** Explicit batch preparation verifies real mapped targets before offering batch approval. */

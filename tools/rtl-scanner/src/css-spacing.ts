@@ -22,13 +22,17 @@ export function proposeCssSpacing(finding:Finding,source:string):{transformation
   if(!/^\.[a-zA-Z_][\w-]*$/.test(rule.selector))reject('CSS_SPACING_SIMPLE_CLASS_SELECTOR_REQUIRED');
   if(rule.nodes.some(n=>n.type!=='decl'&&n.type!=='comment'))reject('CSS_SPACING_UNSUPPORTED_RULE_CONTENT');
   if(rule.nodes.some(n=>n.type==='comment'&&/rtl-physical\s*:/i.test(n.text)))reject('CSS_SPACING_INTENTIONAL_PHYSICAL');
-  let writingMode=false,collision=false;
-  root!.walkDecls(n=>{if(n.prop.toLowerCase()==='writing-mode'&&n.value!=='horizontal-tb')writingMode=true;if(n.prop.toLowerCase()==='direction')writingMode=true});
-  if(writingMode)reject('CSS_SPACING_DIRECTION_OR_WRITING_MODE_REVIEW');
-  root!.walkRules(r=>{if(r!==rule&&(r.selector.includes(rule.selector)||r.selector.includes('*')))collision=true});
-  if(collision)reject('CSS_SPACING_CASCADE_SELECTOR_CONFLICT');
+  // A stylesheet selector alone cannot establish ancestry or co-matching classes.
+  // Proposal generation is syntactic; scoped browser evidence evaluates the actual
+  // cascade (including inheritance and active conditions) before validation/Apply.
+  // A directly declared non-horizontal mode is already conclusively unsupported.
+  if(rule.nodes.some(n=>n.type==='decl'&&n.prop.toLowerCase()==='writing-mode'&&n.value.trim()!=='horizontal-tb'))reject('CSS_SPACING_DIRECTION_OR_WRITING_MODE_REVIEW');
   const family=match![1];
-  if(rule.nodes.some(n=>{if(n===d||n.type!=='decl')return false;const prop=n.prop.toLowerCase();return prop==='all'||prop==='position'||prop==='writing-mode'||prop==='direction'||prop===family||prop.startsWith(family+'-inline')||prop.startsWith(family+'-block')||prop===d.prop}))reject('CSS_SPACING_CASCADE_DECLARATION_CONFLICT');
+  const conflicts=(prop:string)=>prop==='all'||prop===family||prop.startsWith(family+'-inline')||prop.startsWith(family+'-block')||prop.startsWith(family+'-left')||prop.startsWith(family+'-right');
+  let collision=false;
+  root!.walkRules(r=>{if(r!==rule&&(r.selector.includes(rule.selector)||r.selector.includes('*'))&&r.nodes.some(n=>n.type==='decl'&&conflicts(n.prop.toLowerCase())))collision=true});
+  if(collision)reject('CSS_SPACING_CASCADE_SELECTOR_CONFLICT');
+  if(rule.nodes.some(n=>n!==d&&n.type==='decl'&&(conflicts(n.prop.toLowerCase())||n.prop.toLowerCase()==='position')))reject('CSS_SPACING_CASCADE_DECLARATION_CONFLICT');
   const tokens=valueParser(d.value).nodes.filter(n=>n.type!=='space'&&n.type!=='comment');
   if(tokens.length!==1||tokens[0].type!=='word'||!/^(-?(?:\d*\.)?\d+(?:px|em|rem|%|vw|vh|ch|ex)?|auto)$/.test(tokens[0].value)||family==='padding'&&tokens[0].type==='word'&&(/^-/.test(tokens[0].value)||tokens[0].value==='auto'))reject('CSS_SPACING_UNSUPPORTED_VALUE');
   if(tokens[0].type==='word'&&/^-?(?:\d*\.)?\d+$/.test(tokens[0].value)&&Number(tokens[0].value)!==0)reject('CSS_SPACING_UNITLESS_LENGTH');

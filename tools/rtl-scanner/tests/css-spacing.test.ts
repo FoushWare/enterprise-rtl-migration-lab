@@ -23,8 +23,6 @@ for(const [source,reason] of [
  ['.one{margin-left:2px;margin-left:3px}','CASCADE_DECLARATION'],
  ['.one{margin-left:2px}.one{margin-right:3px}','CASCADE_SELECTOR'],
  ['.one{ /* rtl-physical: map coordinates */ margin-left:2px}','INTENTIONAL_PHYSICAL'],
- ['.one{direction:rtl;margin-left:2px}','DIRECTION_OR_WRITING_MODE'],
- ['.one{DIRECTION:rtl;margin-left:2px}','DIRECTION_OR_WRITING_MODE'],
  ['.one{MARGIN-INLINE-START:3px;margin-left:2px}','CASCADE_DECLARATION'],
  ['.one{writing-mode:vertical-rl;margin-left:2px}','DIRECTION_OR_WRITING_MODE'],
  ['@media(min-width:400px){.one{margin-left:2px}}','NESTED_OR_CONDITIONAL'],
@@ -52,4 +50,11 @@ it('both workflow modes compose portable CSS-only candidates in a separate minim
  await store.validate(w.id);expect(w.validation?.state).toBe('Unavailable');expect(w.validation?.checks.some(c=>c.name==='runtime'&&c.state==='Unavailable')).toBe(true);await expect(store.apply(w.id,'APPLY_CONFIRMED')).rejects.toThrow('VALIDATED_ACCEPTED_CANDIDATE_REQUIRED');
  }
  }finally{for(const candidate of candidates)await rm(candidate,{recursive:true,force:true});await rm(root,{recursive:true,force:true})}
+});
+
+it('does not infer target context from unrelated selectors; supports explicit local direction subject to scoped runtime evidence',()=>{
+ for(const source of ['.one{margin-left:auto}.nested-code{direction:ltr}.auto-copy{direction:auto}*{box-sizing:border-box}', '.one{direction:rtl;margin-left:auto}', '@media(min-width:1px){.other{writing-mode:vertical-rl}}.one{margin-left:auto}']){
+ const f=findings(source).find(f=>f.ruleId==='RTL.CSS.PHYSICAL')!;
+ expect(proposeTransformation(f,source).patch.replacement).toBe('margin-inline-start:auto');
+ }
 });
