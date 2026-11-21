@@ -108,7 +108,7 @@ try{
  await localPage.locator('.more-details > summary').click();
  await expect(localPage.locator('.more-details-body')).toContainText('Confidence describes the static source match, not visual correctness');
  await expect(localPage.locator('.more-details-body')).toContainText('including local direction overrides');
- await expect(localPage.locator('.after-card h3')).toHaveText('After (Proposed Change)');
+ await expect(localPage.locator('.after-card h3')).toHaveText('After (Supported candidate)');
  await expect(localPage.locator('.after-card pre')).toHaveText('padding-inline-end:11px');
  await expect(localPage.getByRole('button',{name:'Approve proposed change',exact:true})).toBeVisible();
  await expect(localPage.locator('.workflow-decision')).toContainText('Pending');
