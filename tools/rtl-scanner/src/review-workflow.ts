@@ -10,6 +10,7 @@ import { chromium } from '@playwright/test';
 import {loadProjectConfiguration,PROJECT_CONFIGURATION} from './project-configuration.js';
 import {previewConfigurationDigest,PREVIEW_CONFIGURATION,loadPreviewConfiguration,configuredMapping,routeUrl} from './preview-configuration.js';
 import { scan } from './scan.js';
+import { retryAcrossNavigation } from './page-navigation.js';
 import { verifiedSourceTransition } from './source-context.js';
 import type { Finding } from './model.js';
 import { directionRequirement, proposeTransformation } from './transformations.js';
@@ -361,14 +362,16 @@ export class ReviewWorkflowStore {
           const targets=[];
           for(const entry of entries){
             const mapping=configuredMapping(entry.finding,configuration);
+            const evidence=await retryAcrossNavigation(async()=>{
             await page.locator(mapping.selector).first().waitFor({state:'visible',timeout:10000});
-            const evidence=await page.evaluate(({selector,sourceSelector,path,bidi})=>{
+            return await page.evaluate(({selector,sourceSelector,path,bidi})=>{
               const nodes=[...document.querySelectorAll(selector)],styles=[...document.querySelectorAll('style[data-vite-dev-id],link[rel=stylesheet]')].filter(n=>{if(n.tagName==='LINK'){const u=new URL((n as HTMLLinkElement).href,location.href);return u.origin===location.origin&&decodeURIComponent(u.pathname)==='/'+path}return n.getAttribute('data-vite-dev-id')?.replaceAll('\\','/').endsWith('/'+path)});
               const rules:CSSStyleRule[]=[];function walk(items:CSSRuleList){for(const rule of items){if('selectorText' in rule)rules.push(rule as CSSStyleRule);else if('cssRules' in rule)walk((rule as CSSGroupingRule).cssRules);}}
               for(const style of styles)if((style as HTMLStyleElement).sheet)walk((style as HTMLStyleElement).sheet!.cssRules);
               const matched=!sourceSelector||rules.some(r=>r.selectorText.split(',').map(s=>s.trim()).includes(sourceSelector)&&nodes.some(n=>n.matches(r.selectorText)));
               return {path,selector,sourceRuleMatched:matched,count:nodes.length,bdi:!bidi||nodes.some(n=>n.matches('bdi[dir="auto"]')||n.querySelector('bdi[dir="auto"]')),computed:nodes.slice(0,5).map(n=>({direction:getComputedStyle(n).direction,textAlign:getComputedStyle(n).textAlign,insetInlineStart:getComputedStyle(n).insetInlineStart,insetInlineEnd:getComputedStyle(n).insetInlineEnd}))};
             },{selector:mapping.selector,sourceSelector:mapping.sourceSelector,path:entry.finding.path,bidi:entry.finding.ruleId==='RTL.BIDI.ISOLATION'});
+            });
             if(!evidence.sourceRuleMatched||!evidence.bdi)throw Error('CONFIGURED_SOURCE_TARGET_NOT_VERIFIED:'+entry.finding.path);
             targets.push(evidence);
           }
