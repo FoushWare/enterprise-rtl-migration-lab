@@ -214,4 +214,24 @@ describe('review workflow recovery after candidate loss', () => {
       await rm(env.root, { recursive: true, force: true });
     }
   });
+
+  it('companion shutdown disposes the candidate of a Reviewing workflow, and the next resume rebuilds it', async () => {
+    const env = await fixture();
+    try {
+      // A fresh review with a live candidate (not one that was already disposed in this store).
+      const report = await scan(env.root);
+      const w = await env.store.begin({ ...report, mode: 'apply-first' });
+      const live = w.session!.candidateRoot;
+      expect(await exists(live)).toBe(true);
+      await env.store.shutdown();
+      expect(await exists(live)).toBe(false);
+      const reloaded = await env.restart();
+      const finding = w.entries.find(e => e.patch)!.finding.id;
+      await expect(reloaded.preview(w.id, finding, 'ltr')).resolves.toBeDefined();
+      expect(await exists(reloaded.get(w.id)!.session!.candidateRoot)).toBe(true);
+      await disposeReviewSession(reloaded.get(w.id)!.session!);
+    } finally {
+      await rm(env.root, { recursive: true, force: true });
+    }
+  });
 });

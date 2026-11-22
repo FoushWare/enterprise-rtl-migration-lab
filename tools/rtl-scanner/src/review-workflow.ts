@@ -15,7 +15,7 @@ import { verifiedSourceTransition } from './source-context.js';
 import type { Finding } from './model.js';
 import { directionRequirement, proposeTransformation } from './transformations.js';
 import { approvedPreviewForSource } from './preview-manifest.js';
-import { copyCandidateRoot, createReviewSession, startCandidateRuntime, stopCandidateRuntime, validateProjectSourcePath, REVIEW_SOURCE, type PatchRequest, type ReviewSession } from './review-session.js';
+import { copyCandidateRoot, createReviewSession, disposeReviewSession, startCandidateRuntime, stopCandidateRuntime, validateProjectSourcePath, REVIEW_SOURCE, type PatchRequest, type ReviewSession } from './review-session.js';
 import { ControlledApplyService, type ApplyReceipt } from './controlled-apply.js';
 
 const run = promisify(execFile);
@@ -509,8 +509,12 @@ export class ReviewWorkflowStore {
   }
   /** Stops every candidate runtime in parallel (a failing stop never blocks the others) and always records the stopped state. Sessions and receipts stay for protected rollback. */
   async shutdown(): Promise<void> {
-    try { await Promise.allSettled(this.workflows.map(async w => { if (w.session) w.session = await stopCandidateRuntime(w.session); })); }
-    finally { await this.persist(); }
+    try {
+      await Promise.allSettled(this.workflows.map(async w => { if (w.session) w.session = await stopCandidateRuntime(w.session); }));
+      // Candidates of Reviewing workflows are disposable caches: resume rebuilds them from the persisted baseline and patches.
+      // Applied and rolled-back reviews keep theirs, because their baseline no longer matches the source after Apply.
+      await Promise.allSettled(this.workflows.filter(w => w.state === 'Reviewing' && w.session).map(w => disposeReviewSession(w.session!)));
+    } finally { await this.persist(); }
   }
   /** A finished Apply or Rollback no longer needs its candidate runtime; the session and receipts remain for protected rollback. */
   private async releaseRuntime(w: ReviewWorkflow): Promise<void> { if (w.session) w.session = await stopCandidateRuntime(w.session); }
