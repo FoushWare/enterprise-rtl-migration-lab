@@ -212,5 +212,14 @@ export async function stopCandidateRuntime(session: ReviewSession): Promise<Revi
   await Promise.all([...new Set([session.id, ...runtimes.keys(), ...runtimeStates.keys()])].filter(key => key === session.id || key.startsWith(session.id + ':')).map(key => stopRuntimeKey(session, key)));
   return { ...session, runtime: session.runtime ? { ...session.runtime, status: 'stopped' } : undefined };
 }
+/** Stops every runtime this process owns, whatever session it belongs to. Waits for starts in flight so none escapes. */
+export async function stopAllCandidateRuntimes(): Promise<void> {
+  await Promise.allSettled([...runtimeStarts.values()]);
+  await Promise.allSettled([...new Set([...runtimes.keys(), ...runtimeStates.keys()])].map(key => stopRuntimeKey({} as ReviewSession, key)));
+}
+/** Synchronous last resort for process exit: signal every owned runtime's process group. Never touches adopted or port-owning processes. */
+export function signalAllCandidateRuntimes(signal: NodeJS.Signals = 'SIGKILL'): void {
+  for (const child of runtimes.values()) signalOwnedRuntime(child, signal);
+}
 export async function disposeReviewSession(session: ReviewSession): Promise<void> { if (!inside(await realpath(tmpdir()), await realpath(session.candidateRoot))) throw new Error('INVALID_REVIEW_SESSION_ROOT'); await Promise.all([...runtimeStarts].filter(([key]) => key === session.id || key.startsWith(session.id + ':')).map(([, start]) => start.catch(() => undefined))); await stopCandidateRuntime(session); await rm(session.candidateRoot, { recursive: true, force: true }); }
 export const reviewSourceDirectory = (root: string) => dirname(validateReviewPath(root, REVIEW_SOURCE));

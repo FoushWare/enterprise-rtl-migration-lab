@@ -25,7 +25,7 @@ export interface WorkflowEntry { batch?:{state:'ready'|'blocked';reason:string};
 export interface WorkflowCheck { name: string; state: 'Passed' | 'Failed' | 'Unavailable' | 'Error' | 'Not run' | 'Not configured' | 'Not applicable'; detail: string; kind?: 'project' | 'scanner' | 'runtime'; command?: string; scope?: string }
 export interface WorkflowValidation { state: 'Passed' | 'Failed' | 'Unavailable'; signature: string; checks: WorkflowCheck[]; at: string; hashes: Record<string, string>; directionEvidence?: ScopedDirectionEvidence }
 export interface ReviewWorkflow {
-  batchPreparedAt?:string; batchPreparation?:'running'|'ready'; validationInvalidation?:string; operations?:WorkflowOperation[]; continuedFrom?:string; id: string; root: string; supersededBy?: string; rolledBackAt?: string; resumedFrom?: string; previewConfigDigest?:string; inputDigest: string; policyDigest: string; mode: 'one-by-one' | 'apply-first'; scope: string[];
+  batchPreparedAt?:string; batchPreparation?:'running'|'ready'; previewFocus?:string; validationInvalidation?:string; operations?:WorkflowOperation[]; continuedFrom?:string; id: string; root: string; supersededBy?: string; rolledBackAt?: string; resumedFrom?: string; previewConfigDigest?:string; inputDigest: string; policyDigest: string; mode: 'one-by-one' | 'apply-first'; scope: string[];
   entries: WorkflowEntry[]; baseline: Record<string, string>; sourcePaths: Record<string, string>; session?: ReviewSession;
   validation?: WorkflowValidation; receipts?: ApplyReceipt[]; state: 'Reviewing' | 'Applying' | 'Applied' | 'Rolled Back'; createdAt: string;
 }
@@ -44,6 +44,12 @@ export function composeWorkflowFile(before: string, patches: readonly PatchReque
   return result;
 }
 const included = (e: WorkflowEntry) => !!e.patch && e.applied && !['Rejected', 'Deferred', 'Flagged'].includes(e.decision);
+/** Entries whose patches the candidate files contain. In one-by-one review the candidate is a per-finding preview: it holds only the
+ * focused finding, so Live After always equals that finding's code diff. Validate and Apply recompose from accepted entries only. */
+export const candidateEntries = (w: ReviewWorkflow): WorkflowEntry[] => {
+  const focus = w.mode === 'one-by-one' && w.previewFocus ? w.entries.find(e => e.finding.id === w.previewFocus && included(e)) : undefined;
+  return focus ? [focus] : w.entries.filter(included);
+};
 const signature = (w: ReviewWorkflow) => sha(JSON.stringify(w.entries.filter(e => e.decision === 'Accepted' && included(e)).map(e => e.patch)));
 
 export class ReviewWorkflowStore {
@@ -170,7 +176,7 @@ export class ReviewWorkflowStore {
   private async candidateFresh(w: ReviewWorkflow): Promise<void> {
     if (!w.session) throw new Error('CANDIDATE_REQUIRED');
     for (const [path, before] of Object.entries(w.baseline)) {
-      const expected = composeWorkflowFile(before, w.entries.filter(e => included(e) && e.patch!.path === path).map(e => e.patch!));
+      const expected = composeWorkflowFile(before, candidateEntries(w).filter(e => e.patch!.path === path).map(e => e.patch!));
       const actual = await readFile(await validateProjectSourcePath(w.session.candidateRoot, path), 'utf8');
       if (actual !== expected) throw new Error('STALE_CANDIDATE_SOURCE');
     }
@@ -182,7 +188,7 @@ export class ReviewWorkflowStore {
     if (!w.session) w.session = await createReviewSession(this.root,Object.hasOwn(w.baseline,REVIEW_SOURCE)?REVIEW_SOURCE:w.entries.find(e=>e.patch)?.finding.path);
     if (w.session.runtime) w.session = await stopCandidateRuntime(w.session);
     for (const path of new Set(w.entries.filter(e => e.patch).map(e => e.finding.path))) {
-      const after = composeWorkflowFile(w.baseline[path], w.entries.filter(e => included(e) && e.patch!.path === path).map(e => e.patch!));
+      const after = composeWorkflowFile(w.baseline[path], candidateEntries(w).filter(e => e.patch!.path === path).map(e => e.patch!));
       await writeFile(await validateProjectSourcePath(w.session.candidateRoot, path), after, 'utf8');
     }
     w.session.candidateSha256 = sha(await readFile(join(w.session.candidateRoot, w.session.sourcePath), 'utf8'));
@@ -199,18 +205,37 @@ export class ReviewWorkflowStore {
     // Check the previous composition before changing membership.
     if (w.session) await this.candidateFresh(w);
     const previous = { ...e };
-    if (input.action === 'apply') { e.applied = true; if (['Rejected', 'Deferred', 'Flagged'].includes(e.decision)) e.decision = 'Pending'; }
-    else { e.decision = input.action as FindingDecision; e.notes = input.notes ?? ''; if (e.decision !== 'Accepted') e.applied = false; e.history.push({ decision: e.decision, notes: e.notes, at: new Date().toISOString() }); }
+    const previousState = this.previewState(w);
+    if (input.action === 'apply') { e.applied = true; if (['Rejected', 'Deferred', 'Flagged'].includes(e.decision)) e.decision = 'Pending'; w.previewFocus = undefined; /* explicit apply composes every applied entry; previews re-focus */ }
+    else { e.decision = input.action as FindingDecision; e.notes = input.notes ?? ''; if (e.decision !== 'Accepted') e.applied = false; if (w.previewFocus === e.finding.id && !included(e)) w.previewFocus = undefined; e.history.push({ decision: e.decision, notes: e.notes, at: new Date().toISOString() }); }
     // Rebuild from original coordinates, not from the previously patched content.
     try { await this.writeComposition(w); await this.persist(); return w; }
-    catch (error) { Object.assign(e, previous); throw error; }
+    catch (error) { Object.assign(e, previous); this.restorePreviewState(w, previousState); throw error; }
   }
-  private async writeComposition(w: ReviewWorkflow): Promise<void> {
-    if (!w.session && !w.entries.some(included)) { w.validation = undefined; return; }
+  /** One-by-one invariant: the only pending entry in the candidate is the focused one. Accepted entries keep their membership. */
+  private focusEntry(w: ReviewWorkflow, entry: WorkflowEntry): void {
+    if (w.mode !== 'one-by-one') return;
+    for (const other of w.entries) if (other !== entry && other.decision === 'Pending') other.applied = false;
+    w.previewFocus = entry.finding.id;
+  }
+  private previewState(w: ReviewWorkflow) { return { focus: w.previewFocus, applied: w.entries.map(e => e.applied) }; }
+  private restorePreviewState(w: ReviewWorkflow, state: { focus?: string; applied: boolean[] }): void { w.previewFocus = state.focus; w.entries.forEach((e, i) => { e.applied = state.applied[i]; }); }
+  /** Recompose the candidate from accepted entries only (no preview focus). Used before Apply so validated hashes still match after previews. */
+  private async restoreAcceptedCandidate(w: ReviewWorkflow): Promise<void> {
+    if (w.mode !== 'one-by-one' || (!w.previewFocus && !w.entries.some(e => e.decision !== 'Accepted' && e.applied))) return;
+    if (w.session) await this.candidateFresh(w);
+    w.previewFocus = undefined;
+    for (const e of w.entries) if (e.decision !== 'Accepted') e.applied = false;
+    await this.writeComposition(w, true); await this.persist();
+  }
+  private async writeComposition(w: ReviewWorkflow, preserveValidation = false): Promise<void> {
+    if (!w.session && !candidateEntries(w).length) { if (!preserveValidation) w.validation = undefined; return; }
     if (!w.session) w.session = await createReviewSession(this.root,Object.hasOwn(w.baseline,REVIEW_SOURCE)?REVIEW_SOURCE:w.entries.find(e=>e.patch)?.finding.path);
     if (w.session.runtime) w.session = await stopCandidateRuntime(w.session);
-    for (const path of new Set(w.entries.filter(e => e.patch).map(e => e.finding.path))) await writeFile(await validateProjectSourcePath(w.session.candidateRoot, path), composeWorkflowFile(w.baseline[path], w.entries.filter(e => included(e) && e.patch!.path === path).map(e => e.patch!)), 'utf8');
-    w.session.candidateSha256 = sha(await readFile(join(w.session.candidateRoot, w.session.sourcePath), 'utf8'));if(w.validation)w.validationInvalidation='The accepted candidate changed; previous validation no longer applies. Validate the new accepted subset.'; w.validation = undefined;
+    for (const path of new Set(w.entries.filter(e => e.patch).map(e => e.finding.path))) await writeFile(await validateProjectSourcePath(w.session.candidateRoot, path), composeWorkflowFile(w.baseline[path], candidateEntries(w).filter(e => e.patch!.path === path).map(e => e.patch!)), 'utf8');
+    w.session.candidateSha256 = sha(await readFile(join(w.session.candidateRoot, w.session.sourcePath), 'utf8'));
+    if (preserveValidation) return; // Preview-only recomposition: the accepted set (and its signature) did not change.
+    if(w.validation)w.validationInvalidation='The accepted candidate changed; previous validation no longer applies. Validate the new accepted subset.'; w.validation = undefined;
   }
   async runtime(id: string,application?:string): Promise<ReviewWorkflow> {
     const w = this.get(id); await this.fresh(w); await this.candidateFresh(w);
@@ -227,7 +252,14 @@ export class ReviewWorkflowStore {
     const mapping=configuredMapping(entry.finding,await loadPreviewConfiguration(this.root));
     if(!mapping.routes.some(r=>r.id===input.routeId&&r.application===input.application))throw Error('PREVIEW_MAPPING_UNAVAILABLE');
     if(w.session)await this.candidateFresh(w);
-    if(!entry.applied)await this.change(id,entry.finding.id,{action:'apply'});
+    if(w.mode==='one-by-one'){
+      // Live After must equal this finding's code diff: other pending findings leave the candidate. Validation of the accepted set is kept.
+      const unchanged=w.previewFocus===entry.finding.id&&entry.applied&&!w.entries.some(o=>o!==entry&&o.decision==='Pending'&&o.applied);
+      if(!unchanged){
+        const previousState=this.previewState(w);entry.applied=true;this.focusEntry(w,entry);
+        try{await this.writeComposition(w,true);await this.persist();}catch(error){this.restorePreviewState(w,previousState);throw error;}
+      }
+    }else if(!entry.applied)await this.change(id,entry.finding.id,{action:'apply'});
     const prepared=await this.runtime(id,input.application);
     if(prepared.session?.runtime?.status!=='healthy')throw Error(prepared.session?.runtime?.error||'CANDIDATE_RUNTIME_UNAVAILABLE');
     if(directionRequirement(entry.finding)==='dependent')await captureScopedDirectionEvidence(this.root,w,[entry],async application=>{await initializeOriginalPreview(this.root,application);await this.runtime(id,application)});
@@ -290,6 +322,7 @@ export class ReviewWorkflowStore {
     if (!w.entries.some(e => e.decision === 'Accepted' && included(e))) throw new Error('ACCEPTED_CHANGES_REQUIRED');
     if (w.session) await this.candidateFresh(w);
     // The final candidate contains only explicit acceptances. Pending batch edits remain pending in the inventory.
+    w.previewFocus = undefined;
     for (const e of w.entries) if (e.decision !== 'Accepted') e.applied = false;
     await this.writeComposition(w); await this.persist();
     const checks: WorkflowCheck[] = []; const hashes: Record<string, string> = {};
@@ -385,6 +418,7 @@ export class ReviewWorkflowStore {
         if (target !== w.sourcePaths[path] || (current !== sha(before) && current !== sha(after))) throw new Error('STALE_APPLY_SOURCE');
       }
     }
+    if (w.state === 'Reviewing') await this.restoreAcceptedCandidate(w);
     await this.candidateFresh(w);
     if(w.entries.some(e=>e.decision==='Accepted'&&included(e)&&directionRequirement(e.finding)==='dependent')){
       if(w.state!=='Reviewing'||!w.validation.directionEvidence)throw Error('DIRECTION_EVIDENCE_REVALIDATION_REQUIRED');
@@ -395,20 +429,26 @@ export class ReviewWorkflowStore {
     if (confirmation !== 'APPLY_CONFIRMED') throw new Error('APPLY_CONFIRMATION_REQUIRED');
     w.state = 'Applying'; await this.persist();
     const files = [...new Set(w.entries.filter(e => e.decision === 'Accepted' && included(e)).map(e => e.finding.path))].map(path => ({ path, before: w.baseline[path], after: composeWorkflowFile(w.baseline[path], w.entries.filter(e => e.decision === 'Accepted' && included(e) && e.finding.path === path).map(e => e.patch!)) }));
-    try { w.receipts = await this.applyService.applyAcceptedFiles(w.id, files, confirmation); w.state = 'Applied'; await this.persist(); return w; }
+    try { w.receipts = await this.applyService.applyAcceptedFiles(w.id, files, confirmation); w.state = 'Applied'; await this.persist(); await this.releaseRuntime(w).catch(() => undefined); await this.persist(); return w; }
     catch (error) { w.receipts = await this.applyService.recoverAcceptedFileReceipts(w.id); await this.persist(); throw error; }
   }
   async rollback(id: string, confirmation: string): Promise<ReviewWorkflow> {
     const w = this.get(id); if (confirmation !== 'ROLLBACK_CONFIRMED') throw new Error('ROLLBACK_CONFIRMATION_REQUIRED');
     if (w.state === 'Rolled Back') return w;
     if (!w.receipts?.length) throw new Error('APPLY_RECEIPTS_REQUIRED');
-    await this.applyService.rollbackAcceptedFiles(w.receipts); w.state = 'Rolled Back'; w.rolledBackAt=new Date().toISOString(); await this.persist(); return w;
+    await this.applyService.rollbackAcceptedFiles(w.receipts); w.state = 'Rolled Back'; w.rolledBackAt=new Date().toISOString(); await this.persist(); await this.releaseRuntime(w).catch(() => undefined); await this.persist(); return w;
   }
-  async shutdown(): Promise<void> { for (const w of this.workflows) if (w.session) w.session = await stopCandidateRuntime(w.session); await this.persist(); }
+  /** Stops every candidate runtime in parallel (a failing stop never blocks the others) and always records the stopped state. Sessions and receipts stay for protected rollback. */
+  async shutdown(): Promise<void> {
+    try { await Promise.allSettled(this.workflows.map(async w => { if (w.session) w.session = await stopCandidateRuntime(w.session); })); }
+    finally { await this.persist(); }
+  }
+  /** A finished Apply or Rollback no longer needs its candidate runtime; the session and receipts remain for protected rollback. */
+  private async releaseRuntime(w: ReviewWorkflow): Promise<void> { if (w.session) w.session = await stopCandidateRuntime(w.session); }
   view(w: ReviewWorkflow): unknown {
     const { baseline, sourcePaths: _paths, ...rest } = w;
     const files = [...new Set(w.entries.map(e => e.finding.path))].map(path => {
-      const before = baseline[path], after = composeWorkflowFile(before, w.entries.filter(e => included(e) && e.finding.path === path).map(e => e.patch!));
+      const before = baseline[path], after = composeWorkflowFile(before, candidateEntries(w).filter(e => e.finding.path === path).map(e => e.patch!));
       return { path, originalSha256: sha(before), candidateSha256: sha(after), before, after, diff: before === after ? 'No candidate changes.' : `--- ${path}\n+++ ${path}\n- ${before.split('\n').join('\n- ')}\n+ ${after.split('\n').join('\n+ ')}` };
     });
     const fresh=!!w.validation&&w.validation.signature===signature(w);

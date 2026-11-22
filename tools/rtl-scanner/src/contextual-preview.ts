@@ -4,7 +4,7 @@ import {loadPreviewConfiguration,configuredMapping,routeUrl} from './preview-con
 import { scan } from './scan.js';
 import { type PreviewApplication } from './example-preview-mappings.js';
 import { validateProjectSourcePath, candidateApplicationRuntime } from './review-session.js';
-import { composeWorkflowFile, type ReviewWorkflow } from './review-workflow.js';
+import { candidateEntries, composeWorkflowFile, type ReviewWorkflow } from './review-workflow.js';
 import { verifiedSourceTransition } from './source-context.js';
 import { classifyEligibility } from './eligibility.js';
 
@@ -42,9 +42,9 @@ export async function contextualPreview(root:string, query:URLSearchParams, work
   let candidate=null,candidateReason=historical?'No current candidate. Historical candidate, decisions and validation remain bound to the completed review; they do not validate this current analysis.':'No isolated candidate session. Original contextual review does not require a codemod or an apply action.';
   if(workflow?.session&&entry&&workflow.state==='Reviewing'){
     // Verify the selected candidate file against its immutable baseline and actual patch membership.
-    for(const [path,baseline] of Object.entries(workflow.baseline)){const expected=composeWorkflowFile(baseline,workflow.entries.filter(e=>e.patch?.path===path&&e.applied&&!['Rejected','Deferred','Flagged'].includes(e.decision)).map(e=>e.patch!));if(await readFile(await validateProjectSourcePath(workflow.session.candidateRoot,path),'utf8')!==expected)throw Error('STALE_CANDIDATE_SOURCE');}
+    for(const [path,baseline] of Object.entries(workflow.baseline)){const expected=composeWorkflowFile(baseline,candidateEntries(workflow).filter(e=>e.patch?.path===path).map(e=>e.patch!));if(await readFile(await validateProjectSourcePath(workflow.session.candidateRoot,path),'utf8')!==expected)throw Error('STALE_CANDIDATE_SOURCE');}
     const before=workflow.baseline[finding.path];
-    const expected=composeWorkflowFile(before,workflow.entries.filter(e=>e.patch?.path===finding.path&&e.applied&&!['Rejected','Deferred','Flagged'].includes(e.decision)).map(e=>e.patch!));
+    const expected=composeWorkflowFile(before,candidateEntries(workflow).filter(e=>e.patch?.path===finding.path).map(e=>e.patch!));
     const candidateSource=await readFile(await validateProjectSourcePath(workflow.session.candidateRoot,finding.path),'utf8');
     if(candidateSource!==expected)throw Error('STALE_CANDIDATE_SOURCE');
     const active=candidateApplicationRuntime(workflow.session,route.application);

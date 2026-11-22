@@ -102,7 +102,7 @@ ${batchReviewClientSource}
     const owner=workflow.id,operation={state:'preparing',reason:''};previewAttempts.set(key,operation);previewFlight=operation;busy=true;render();paintPreview(f,'preparing','Preparing the isolated candidate and starting its verified application route…');
     try{
       const result=await api(endpoint+'/'+owner+'/prepare-preview',{findingId:f.id,application:c.application,routeId:c.routeId,inputDigest:d.inputDigest,policyDigest:d.policyDigest});
-      if(workflow?.id===owner){workflow=result.workflow;operation.state='prepared';previewAttempts.set(previewKey(f,c),operation);}
+      if(workflow?.id===owner){workflow=result.workflow;operation.state='prepared';const next=previewKey(f,c);/* The candidate now shows this finding; the pre-prepare key can recur when another finding takes the preview focus, so it must not keep a stale 'prepared' attempt. */if(next!==key)previewAttempts.delete(key);previewAttempts.set(next,operation);}
     }catch(failure){
       operation.state='failed';operation.reason=failure.message;
       // A runtime failure may follow a successful isolated patch. Reconcile that exact workflow before retry.

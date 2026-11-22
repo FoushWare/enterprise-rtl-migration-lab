@@ -1,4 +1,4 @@
-import { initializeOriginalPreview, stopOwnedOriginalPreviews } from './original-preview-runtime.js';
+import { initializeOriginalPreview, signalOwnedOriginalPreviews, stopOwnedOriginalPreviews } from './original-preview-runtime.js';
 import {loadPreviewConfiguration} from './preview-configuration.js';
 import { contextualPreview } from './contextual-preview.js';
 import { verifiedSourceTransition, reconcileSourceRuntimes, reconcileSelectedFinding, type FindingSelection } from './source-context.js';
@@ -14,7 +14,7 @@ import { join, relative, resolve, sep } from 'node:path';
 import { createHash } from 'node:crypto';
 import { lstat, readFile } from 'node:fs/promises';
 import { PREVIEW_COMPANION_ORIGIN, previewManifest, validatedPreviewRoute } from './preview-manifest.js';
-import { applyReviewPatch, createReviewSession, disposeReviewSession, reviewSessionComparison, reviewSessionDiff, startCandidateRuntime, stopCandidateRuntime, validateProjectSourcePath, validateReviewIdentity, CANDIDATE_ORIGIN, REVIEW_SOURCE, type PatchRequest, type ReviewIdentity, type ReviewRecord, type ReviewSession } from './review-session.js';
+import { applyReviewPatch, createReviewSession, disposeReviewSession, signalAllCandidateRuntimes, stopAllCandidateRuntimes, reviewSessionComparison, reviewSessionDiff, startCandidateRuntime, stopCandidateRuntime, validateProjectSourcePath, validateReviewIdentity, CANDIDATE_ORIGIN, REVIEW_SOURCE, type PatchRequest, type ReviewIdentity, type ReviewRecord, type ReviewSession } from './review-session.js';
 import { DEFAULT_REVIEW_STORE_PATH, ReviewRecordStore, type MigrationDecision } from './review-store.js';
 import { DEFAULT_EVIDENCE_STORE_PATH, EvidenceSnapshotStore } from './evidence-store.js';
 import { ApplyAuditStore, ControlledApplyService } from './controlled-apply.js';
@@ -167,4 +167,14 @@ const server = createServer(async (request, response) => {
   if (match) { const result = validatedPreviewRoute(decodeURIComponent(match[1]), url.searchParams.get('mode') ?? ''); if (!result) return send(response, 404, { error: 'APPROVED_PREVIEW_NOT_FOUND' }); const sessionId = url.searchParams.get('session'); const session = sessionId ? sessions.get(sessionId) : undefined; if (sessionId && (!session || session.sourcePath !== result.mapping.source || (url.searchParams.has('findingId') && url.searchParams.get('findingId') !== session.patch?.findingId))) return send(response, 404, { error: 'PREVIEW_SESSION_IDENTITY_MISMATCH' }); const sourceSha256 = createHash('sha256').update(await readFile(await validateProjectSourcePath(cwd(), result.mapping.source))).digest('hex'); let originalAvailable = false; try { const probe = await fetch(applicationOrigin + '/__rtl_preview_identity', { signal: AbortSignal.timeout(1500) }); const identity = await probe.json() as { role?: string; sourceSha256?: string }; originalAvailable = probe.ok && identity.role === 'original' && identity.sourceSha256 === sourceSha256; } catch { /* optional original runtime */ } const candidateOrigin = session?.runtime?.status === 'healthy' ? session.runtime.origin : null; return send(response, 200, { manifestVersion: previewManifest.version, mappingId: result.mapping.id, source: result.mapping.source, application: result.mapping.application, owningRoute: result.mapping.owningRoute, mode: result.mode, route: result.route, url: `${candidateOrigin ?? applicationOrigin}${result.route}`, originalUrl: `${applicationOrigin}${result.route}`, originalAvailable, originalSourceSha256: sourceSha256, candidateOrigin, candidateSessionId: session?.id ?? null, candidateSourceSha256: session?.candidateSha256 ?? null, findingId: session?.patch?.findingId ?? null }); }
   return send(response, 404, { error: 'NOT_FOUND' });
 });
-let shuttingDown = false; const shutdown = async () => { if (shuttingDown) return; shuttingDown = true; stopOwnedOriginalPreviews(); await workflowStore.shutdown(); await Promise.all([...sessions.values()].map(session => disposeReviewSession(session).catch(() => undefined))); server.close(() => process.exit(0)); setTimeout(() => process.exit(1), 5000).unref(); }; process.once('SIGTERM', shutdown); process.once('SIGINT', shutdown); server.listen(port, host, () => console.log(`RTL preview companion listening on ${host}:${port}`));
+let shuttingDown = false;
+  // Idempotent: npm/npx forward the terminal's SIGINT, so the companion routinely receives it twice. A second signal must not abort the first shutdown.
+  const shutdown = async () => {
+    if (shuttingDown) return; shuttingDown = true;
+    setTimeout(() => process.exit(1), 8000).unref();
+    await Promise.allSettled([stopOwnedOriginalPreviews(), workflowStore.shutdown(), stopAllCandidateRuntimes(), ...[...sessions.values()].map(session => disposeReviewSession(session))]);
+    server.close(() => process.exit(0)); setTimeout(() => process.exit(1), 3000).unref();
+  };
+  for (const signal of ['SIGTERM', 'SIGINT', 'SIGHUP'] as const) process.on(signal, shutdown);
+  // Last resort for any exit path: never leave an owned runtime process group behind.
+  process.on('exit', () => { signalOwnedOriginalPreviews(); signalAllCandidateRuntimes(); }); server.listen(port, host, () => console.log(`RTL preview companion listening on ${host}:${port}`));

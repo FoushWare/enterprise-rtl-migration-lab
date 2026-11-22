@@ -51,6 +51,16 @@ export async function initializeOriginalPreview(root: string, application: strin
   }
 }
 
-export function stopOwnedOriginalPreviews() {
-  for (const child of children.values()) if (child.exitCode === null) signalOwnedRuntime(child);
+/** Signals every owned original runtime and waits for exit (SIGKILL after 2 s). Synchronous callers may ignore the promise. */
+export function stopOwnedOriginalPreviews(): Promise<void> {
+  return Promise.all([...children.values()].map(child => new Promise<void>(resolve => {
+    if (child.exitCode !== null || child.signalCode !== null) return resolve();
+    const timer = setTimeout(() => { signalOwnedRuntime(child, 'SIGKILL'); resolve(); }, 2000);
+    child.once('exit', () => { clearTimeout(timer); resolve(); });
+    signalOwnedRuntime(child);
+  }))).then(() => undefined);
+}
+/** Synchronous last resort for process exit. */
+export function signalOwnedOriginalPreviews(signal: NodeJS.Signals = 'SIGKILL'): void {
+  for (const child of children.values()) signalOwnedRuntime(child, signal);
 }

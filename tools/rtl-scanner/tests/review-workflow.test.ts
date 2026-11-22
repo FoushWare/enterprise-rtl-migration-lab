@@ -137,3 +137,59 @@ it('blocks Apply when a matching Passed record lacks required execution or candi
   w.validation={state:'Passed',signature:hash(JSON.stringify([entry.patch])),checks:[],hashes:{},at:new Date().toISOString()};await expect(store.apply(w.id,'APPLY_CONFIRMED')).rejects.toThrow('VALIDATION_EVIDENCE_MISSING');expect(await readFile(join(root,file),'utf8')).toBe(before);
  }finally{if(candidate)await rm(candidate,{recursive:true,force:true});await rm(root,{recursive:true,force:true})}
 });
+describe('one-by-one Live After matches the selected finding',()=>{
+ async function prepared(){
+  const {root,store}=await previewFixture();const {configuredMapping,loadPreviewConfiguration}=await import('../src/preview-configuration.js');const {vi}=await import('vitest');
+  const report=await scan(root),w=await store.begin({...report,mode:'one-by-one'}),supported=w.entries.filter(e=>e.patch);expect(supported.length).toBeGreaterThanOrEqual(2);
+  vi.spyOn(store,'runtime').mockImplementation(async()=>{w.session!.runtime={status:'healthy',port:4202,origin:'http://127.0.0.1:4202'};return w;});
+  const route=configuredMapping(supported[0].finding,await loadPreviewConfiguration(root)).routes[0];
+  const input=(e:typeof supported[number])=>({findingId:e.finding.id,application:route.application,routeId:route.id,inputDigest:report.inputDigest,policyDigest:report.policyDigest});
+  const expected=(e:typeof supported[number])=>composeWorkflowFile(w.baseline[file],[e.patch!]);
+  const candidate=async()=>readFile(join(w.session!.candidateRoot,file),'utf8');
+  return {root,store,w,supported,input,expected,candidate};
+ }
+ it('shows only the opened finding in both opening orders and after switching back',async()=>{
+  const {root,store,w,supported,input,expected,candidate}=await prepared();let dir:string|undefined;
+  try{
+   const [a,b]=supported;
+   await store.preparePreview(w.id,input(a));dir=w.session!.candidateRoot;expect(await candidate()).toBe(expected(a));
+   await store.preparePreview(w.id,input(b));expect(await candidate()).toBe(expected(b));expect(a.applied).toBe(false);expect(b.applied).toBe(true);
+   await store.preparePreview(w.id,input(a));expect(await candidate()).toBe(expected(a));expect(b.applied).toBe(false);
+   await store.preparePreview(w.id,input(b));expect(await candidate()).toBe(expected(b));await store.preparePreview(w.id,input(b));expect(await candidate()).toBe(expected(b));
+   expect(w.entries.every(e=>e.decision==='Pending')).toBe(true);
+  }finally{if(dir)await rm(dir,{recursive:true,force:true});await rm(root,{recursive:true,force:true})}
+ });
+ it('keeps accepted membership and validation while previewing another finding, and restores the accepted candidate',async()=>{
+  const {root,store,w,supported,input,expected,candidate}=await prepared();let dir:string|undefined;
+  try{
+   const [a,b]=supported;
+   await store.preparePreview(w.id,input(a));dir=w.session!.candidateRoot;await store.change(w.id,a.finding.id,{action:'Accepted'});
+   const validation={state:'Passed' as const,signature:'accepted',checks:[],at:'2026-11-22',hashes:{}};w.validation=validation;
+   await store.preparePreview(w.id,input(b));expect(await candidate()).toBe(expected(b));expect(a.decision).toBe('Accepted');expect(a.applied).toBe(true);expect(w.validation).toBe(validation);
+   await store.preparePreview(w.id,input(a));expect(await candidate()).toBe(expected(a));
+   await store.preparePreview(w.id,input(b));
+   await (store as unknown as {restoreAcceptedCandidate:(w:unknown)=>Promise<void>}).restoreAcceptedCandidate(w);
+   expect(await candidate()).toBe(expected(a));expect(b.applied).toBe(false);expect(b.decision).toBe('Pending');expect(w.previewFocus).toBeUndefined();expect(w.validation).toBe(validation);
+   await store.change(w.id,a.finding.id,{action:'Rejected'});expect(await candidate()).toBe(w.baseline[file]);
+  }finally{if(dir)await rm(dir,{recursive:true,force:true});await rm(root,{recursive:true,force:true})}
+ });
+ it('keeps contextual preview identity checks consistent with the focused candidate',async()=>{
+  const {root,store,w,supported,input,expected,candidate}=await prepared();let dir:string|undefined;
+  try{
+   const {contextualPreview}=await import('../src/contextual-preview.js');const [a,b]=supported;
+   await store.preparePreview(w.id,input(a));dir=w.session!.candidateRoot;await store.change(w.id,a.finding.id,{action:'Accepted'});
+   await store.preparePreview(w.id,input(b));expect(await candidate()).toBe(expected(b));
+   const query=(e:typeof a)=>new URLSearchParams({inputDigest:w.inputDigest,policyDigest:w.policyDigest,findingId:e.finding.id,routeId:input(e).routeId,mode:'ltr'});
+   await expect(contextualPreview(root,query(b),w)).resolves.toBeTruthy();await expect(contextualPreview(root,query(a),w)).resolves.toBeTruthy();
+   await writeFile(join(dir,file),(await candidate())+'// tampered');await expect(contextualPreview(root,query(b),w)).rejects.toThrow('STALE_CANDIDATE_SOURCE');
+  }finally{if(dir)await rm(dir,{recursive:true,force:true});await rm(root,{recursive:true,force:true})}
+ });
+ it('leaves batch review composition unchanged',async()=>{
+  const {root,store}=await previewFixture();let dir:string|undefined;
+  try{
+   const report=await scan(root),w=await store.begin({...report,mode:'apply-first'}),supported=w.entries.filter(e=>e.patch);
+   for(const e of supported)e.applied=true;await store.rebuild(w);dir=w.session?.candidateRoot;
+   expect(w.previewFocus).toBeUndefined();expect(await readFile(join(dir!,file),'utf8')).toBe(composeWorkflowFile(w.baseline[file],supported.map(e=>e.patch!)));
+  }finally{if(dir)await rm(dir,{recursive:true,force:true});await rm(root,{recursive:true,force:true})}
+ });
+});
