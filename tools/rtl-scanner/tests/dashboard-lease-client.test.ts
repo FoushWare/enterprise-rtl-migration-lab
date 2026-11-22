@@ -67,6 +67,7 @@ describe('dashboard lease client', () => {
     const client = createDashboardLeaseClient(env);
     client.remember({ application: 'dashboard', token: 'page-1' });
     expect(listeners.pagehide).toBeTypeOf('function');
+    expect(listeners['rtl-review-end']).toBeTypeOf('function');
     listeners.pagehide();
     expect(releaseBodies(sent)).toEqual([{ application: 'dashboard', lease: 'page-1' }]);
     expect(client.tokenFor('dashboard')).toBeUndefined();

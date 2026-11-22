@@ -7,8 +7,8 @@
  * - endSession() releases every token this page holds. Tokens are cleared before any request is sent, so repeated
  *   calls send nothing. The companion's release route rejects unknown or released tokens without stopping anything.
  * - The CLI-owned lease is never stored here; only tokens this page received are released.
- * - pagehide releases with keepalive so the request survives unload. The dashboard has no explicit end-of-review
- *   action, so leaving the page is the only session-end signal; keepalive makes that release survive unload.
+ * - Two session-end signals: the explicit `rtl-review-end` event (End Review) and `pagehide`, which uses keepalive so
+ *   the release survives unload.
  */
 export interface DashboardLeaseEnvironment {
   readonly origin: string;
@@ -43,5 +43,7 @@ export function createDashboardLeaseClient(env: DashboardLeaseEnvironment): Dash
     },
   };
   env.target.addEventListener('pagehide', () => client.endSession());
+  // Explicit end of the review session (the dashboard's End Review action dispatches this event).
+  env.target.addEventListener('rtl-review-end', () => client.endSession());
   return client;
 }
