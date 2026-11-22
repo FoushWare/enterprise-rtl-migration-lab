@@ -71,6 +71,10 @@ const leaseKey = (root: string, application: string) => root + '|' + application
 export function leaseOriginalPreview(root: string, application: string): string {
   return leases.acquire(leaseKey(root, application));
 }
+/** True when `token` is still a live lease for this application (lets a retried start reuse it). */
+export function hasOriginalLease(root: string, application: string, token: string): boolean {
+  return leases.has(leaseKey(root, application), token);
+}
 /**
  * Releases one session's lease. The server stops only when this was the last lease for it. Unknown or foreign
  * tokens throw ORIGINAL_LEASE_NOT_FOUND and change nothing. Only a child this runtime started is signalled.

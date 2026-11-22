@@ -1,5 +1,8 @@
 /** Verifies real source/route targets and notifies the workflow-owned preparation coordinator. */
+import { createDashboardLeaseClient } from './dashboard-lease-client.js';
 export const contextualPreviewClientSource = String.raw `
+${createDashboardLeaseClient.toString()}
+const dashboardLeases=createDashboardLeaseClient({origin:'http://127.0.0.1:4318',send:(url,init)=>fetch(url,init),target:window});
   const targetSelectionKey=(record,item)=>'rtl-context-target:'+JSON.stringify([record.projectRoot,d.inputDigest,d.policyDigest,record.workflowId,record.finding.id,record.finding.path,item.role,item.role==='candidate'?record.session?.id:record.historical?'current-source':'original',record.routeId]);
   function clearContextTargets(item){
     item.targetSignature=null;item.contextReport=null;item.lastVerifiedReport=null;item.verifiedMapping=null;item.fingerprint=null;
@@ -62,7 +65,9 @@ export const contextualPreviewClientSource = String.raw `
       // Original initialization never enters the candidate mutation/runtime path.
       if(!live(record,current.component)||record.routeToken!==token)return;
       if(info.route&&!info.original?.available){
-        try{info=await request('/contextual-preview/original?'+query,{method:'POST'});}catch(error){info.original={...info.original,reason:(info.original?.reason||'Original runtime unavailable.')+' Automatic original initialization failed: '+error.message+'. Retry context after runtime recovery.'};}
+        // Present this page's own lease back so a retry reuses it; the CLI's lease is never shown to the page.
+        const presented=new URLSearchParams(query);const held=dashboardLeases.tokenFor(info.route.application);if(held)presented.set('dashboardLease',held);
+        try{info=await request('/contextual-preview/original?'+presented,{method:'POST'});dashboardLeases.remember(info.originalLease);}catch(error){info.original={...info.original,reason:(info.original?.reason||'Original runtime unavailable.')+' Automatic original initialization failed: '+error.message+'. Retry context after runtime recovery.'};}
       }if(!live(record,current.component)||record.routeToken!==token)return;
       if(info.projectRoot!==record.projectRoot||info.findingId!==f.id||info.path!==f.path||info.inputDigest!==d.inputDigest||info.policyDigest!==d.policyDigest||info.sessionId!==(record.session?.id||null))throw Error('PREVIEW_SESSION_IDENTITY_MISMATCH');
       record.contextResolving=false;record.contextInfo=info;record.routeId=info.route?.id;record.runtime=info.candidate?.available?{runtime:{origin:info.candidate.origin,status:'healthy'}}:null;if(info.original?.available){const u=new URL(info.original.origin);if(u.protocol==='http:'&&u.hostname==='127.0.0.1')originalOrigins.add(u.origin)}syncRoute(current);

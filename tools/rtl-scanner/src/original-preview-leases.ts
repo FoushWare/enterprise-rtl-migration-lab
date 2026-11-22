@@ -32,6 +32,11 @@ export class OriginalPreviewLeases {
     return { last: false };
   }
 
+  /** True when the token is still held for the key. Used to make a retried start idempotent. */
+  has(key: string, token: string): boolean {
+    return this.tokens.get(key)?.has(token) === true;
+  }
+
   /** Number of tokens held across every key. Zero means no session needs any original server. */
   count(): number {
     let total = 0;
