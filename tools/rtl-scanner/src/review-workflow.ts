@@ -51,7 +51,9 @@ export const candidateEntries = (w: ReviewWorkflow): WorkflowEntry[] => {
   const focus = w.mode === 'one-by-one' && w.previewFocus ? w.entries.find(e => e.finding.id === w.previewFocus && included(e)) : undefined;
   return focus ? [focus] : w.entries.filter(included);
 };
-const signature = (w: ReviewWorkflow) => sha(JSON.stringify(w.entries.filter(e => e.decision === 'Accepted' && included(e)).map(e => e.patch)));
+/** Apply refused because a candidate rebuild cleared the validation; the user must validate the accepted changes again. */
+export const VALIDATION_INVALIDATED_BY_REBUILD = 'VALIDATION_INVALIDATED_BY_REBUILD: the candidate was rebuilt after the review was resumed. Validate the accepted changes again before Apply.';
+export const signature = (w: ReviewWorkflow) => sha(JSON.stringify(w.entries.filter(e => e.decision === 'Accepted' && included(e)).map(e => e.patch)));
 
 /** Every baseline file in the candidate must equal its composed content; any mismatch is stale. */
 async function verifyCandidateRoot(w: ReviewWorkflow, candidateRoot: string): Promise<void> {
@@ -474,6 +476,13 @@ export class ReviewWorkflowStore {
   }
   async apply(id: string, confirmation: string): Promise<ReviewWorkflow> {
     const w = this.get(id); if(w.supersededBy)throw Error('HISTORICAL_REVIEW_LOCKED'); if (w.state === 'Applied') return w;
+    // A reviewing workflow whose candidate is missing is rebuilt before validation is checked. A rebuild clears validation,
+    // so Apply must see the post-rebuild state and refuse with a clear message instead of using a stale validation.
+    if (w.state === 'Reviewing' && w.session) {
+      const hadValidation = !!w.validation;
+      await this.candidateFresh(w);
+      if (hadValidation && !w.validation) throw new Error(VALIDATION_INVALIDATED_BY_REBUILD);
+    }
     if (!w.validation || w.validation.state !== 'Passed' || w.validation.signature !== signature(w)) throw new Error('VALIDATED_ACCEPTED_CANDIDATE_REQUIRED');
     const evidenceIssue=workflowValidationEvidenceIssue(w);if(evidenceIssue)throw Error('VALIDATION_EVIDENCE_MISSING: '+evidenceIssue);
     if(w.entries.some(e=>e.decision==='Accepted'&&included(e)&&directionRequirement(e.finding)==='unknown'))throw Error('RUNTIME_DIRECTION_STRATEGY_UNKNOWN');
@@ -489,6 +498,7 @@ export class ReviewWorkflowStore {
     }
     if (w.state === 'Reviewing') await this.restoreAcceptedCandidate(w);
     await this.candidateFresh(w);
+    if (!w.validation) throw new Error(VALIDATION_INVALIDATED_BY_REBUILD);
     if(w.entries.some(e=>e.decision==='Accepted'&&included(e)&&directionRequirement(e.finding)==='dependent')){
       if(w.state!=='Reviewing'||!w.validation.directionEvidence)throw Error('DIRECTION_EVIDENCE_REVALIDATION_REQUIRED');
       const current=await this.directionEvidence(w);if(!current||!sameScopedDirectionEvidence(w.validation.directionEvidence,current))throw Error('DIRECTION_EVIDENCE_STALE');

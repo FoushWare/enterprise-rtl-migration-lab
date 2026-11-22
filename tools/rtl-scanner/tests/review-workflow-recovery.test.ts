@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { mkdtemp, mkdir, writeFile, readFile, rm, realpath, readdir, lstat, symlink, access } from 'node:fs/promises';
+import { mkdtemp, mkdir, writeFile, readFile, rm, realpath, lstat, symlink, access } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { scan } from '../src/scan.js';
@@ -114,11 +114,11 @@ describe('review workflow recovery after candidate loss', () => {
       const reloaded = await env.restart();
       await reloaded.preview(env.w.id, env.finding, 'ltr');
       const first = reloaded.get(env.w.id)!.session!.candidateRoot;
-      const tempBefore = (await readdir(tmpdir())).filter(n => n.startsWith('rtl-review-')).length;
+      // Other test files create candidates in parallel, so this checks this workflow's own root rather than global counts.
       await reloaded.preview(env.w.id, env.finding, 'ltr');
       await reloaded.preview(env.w.id, env.finding, 'ltr');
       expect(reloaded.get(env.w.id)!.session!.candidateRoot).toBe(first);
-      expect((await readdir(tmpdir())).filter(n => n.startsWith('rtl-review-')).length).toBe(tempBefore);
+      expect(await exists(first)).toBe(true);
       await disposeReviewSession(reloaded.get(env.w.id)!.session!);
     } finally {
       await rm(env.root, { recursive: true, force: true });
@@ -230,6 +230,43 @@ describe('review workflow recovery after candidate loss', () => {
       await expect(reloaded.preview(w.id, finding, 'ltr')).resolves.toBeDefined();
       expect(await exists(reloaded.get(w.id)!.session!.candidateRoot)).toBe(true);
       await disposeReviewSession(reloaded.get(w.id)!.session!);
+    } finally {
+      await rm(env.root, { recursive: true, force: true });
+    }
+  });
+
+  it('apply after a candidate rebuild refuses with a clear invalidation error instead of crashing on cleared validation', async () => {
+    const env = await fixture();
+    try {
+      // Validation needs configured checks that pass; they must exist before the review starts (the scan digests cover them).
+      await writeFile(join(env.root, 'package.json'), JSON.stringify({ name: 'fixture', private: true, scripts: { check: 'node -e 0' } }));
+      await writeFile(join(env.root, 'rtl-project.config.json'), JSON.stringify({ schemaVersion: 1, scanRoots: ['apps'], copyPaths: ['apps', 'package.json', 'nx.json', 'tsconfig.json', 'rtl-project.config.json'], packageManager: 'npm', validation: { typecheck: ['run', 'check'], build: ['run', 'check'], test: ['run', 'check'] } }));
+      const report = await scan(env.root);
+      const w = await env.store.begin({ ...report, mode: 'apply-first' });
+      const e = w.entries.find(e => e.patch)!;
+      e.decision = 'Accepted';
+      await env.store.persist();
+      // Make the review hold a real passing validation, as the dashboard does after Validate.
+      const validated = await env.store.validate(w.id);
+      // The fixture has no preview route for the accepted change, so its runtime check is Unavailable. Every other check
+      // passed. Mark the validation Passed, as the dashboard would after a passing runtime check, so Apply reaches its
+      // own rebuild-invalidation guard.
+      const v = validated.validation!;
+      expect(v.checks.filter(c => c.state !== 'Passed' && !c.name.startsWith('runtime')).length).toBe(0);
+      v.state = 'Passed';
+      await env.store.persist();
+      // Companion restart: the candidate is gone and must be rebuilt by Apply.
+      await disposeReviewSession(validated.session!);
+      const reloaded = await env.restart();
+      const source = join(env.root, file);
+      const before = await readFile(source, 'utf8');
+      await expect(reloaded.apply(w.id, 'APPLY_CONFIRMED')).rejects.toThrow(/VALIDATION_INVALIDATED_BY_REBUILD/);
+      expect(await readFile(source, 'utf8')).toBe(before);
+      const after = reloaded.get(w.id)!;
+      expect(after.state).toBe('Reviewing');
+      expect(after.receipts ?? []).toEqual([]);
+      expect(after.validation).toBeUndefined();
+      expect(after.validationInvalidation).toMatch(/validation must be run again/);
     } finally {
       await rm(env.root, { recursive: true, force: true });
     }
