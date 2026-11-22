@@ -2,9 +2,10 @@ import { describe, expect, it } from 'vitest';
 import { createHash } from 'node:crypto';
 import { mkdtemp, readFile, rm, symlink, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { tmpdir } from 'node:os';
+import { homedir, tmpdir } from 'node:os';
+import { access, mkdir } from 'node:fs/promises';
 import { createServer } from 'node:http';
-import { applyReviewPatch, assertPortAvailable, clearReviewRecords, createReviewSession, getReviewRecord, reviewSessionComparison, REVIEW_FINDING_ID, REVIEW_SOURCE, runtimeCacheDir, saveReviewRecord, validatePatch, validateReviewIdentity, validateReviewPath } from '../src/review-session.js';
+import { applyReviewPatch, assertPortAvailable, clearReviewRecords, createReviewSession, disposeReviewSession, getReviewRecord, reviewSessionComparison, REVIEW_FINDING_ID, REVIEW_SOURCE, runtimeCacheDir, saveReviewRecord, validatePatch, validateReviewIdentity, validateReviewPath } from '../src/review-session.js';
 import { recoverCandidateSessionId } from '../src/review-approval.js';
 
 const sha = (value: string) => createHash('sha256').update(value).digest('hex');
@@ -123,3 +124,71 @@ describe('review session isolation', () => {
     finally { await rm(root, { recursive: true, force: true }); }
   });
 });
+
+describe('candidate disposal is idempotent and owned', () => {
+  async function fixtureProject() {
+    const root = await mkdtemp(join(tmpdir(), 'rtl-dispose-project-'));
+    await mkdir(join(root, 'apps/invoicing/src/components'), { recursive: true });
+    await writeFile(join(root, REVIEW_SOURCE), 'export const InvoiceTable = () => null;\n');
+    await writeFile(join(root, 'package.json'), JSON.stringify({ name: 'fixture', private: true }));
+    return root;
+  }
+  const exists = (path: string) => access(path).then(() => true, () => false);
+
+  it('disposes a candidate once, and a repeated dispose succeeds without error', async () => {
+    const root = await fixtureProject();
+    const session = await createReviewSession(root);
+    expect(await exists(session.candidateRoot)).toBe(true);
+    await disposeReviewSession(session);
+    expect(await exists(session.candidateRoot)).toBe(false);
+    await expect(disposeReviewSession(session)).resolves.toBeUndefined();
+    await expect(disposeReviewSession(session)).resolves.toBeUndefined();
+  });
+
+  it('succeeds when the candidate root was already removed by someone else', async () => {
+    const root = await fixtureProject();
+    const session = await createReviewSession(root);
+    await rm(session.candidateRoot, { recursive: true, force: true });
+    await expect(disposeReviewSession(session)).resolves.toBeUndefined();
+  });
+
+  it('disposing one session never removes another active session candidate', async () => {
+    const root = await fixtureProject();
+    const first = await createReviewSession(root);
+    const second = await createReviewSession(root);
+    await disposeReviewSession(first);
+    await disposeReviewSession(first);
+    expect(await exists(first.candidateRoot)).toBe(false);
+    expect(await exists(second.candidateRoot)).toBe(true);
+    expect(await readFile(join(second.candidateRoot, REVIEW_SOURCE), 'utf8')).toContain('InvoiceTable');
+    await disposeReviewSession(second);
+  });
+
+  it('refuses to remove a root outside the OS temporary directory and leaves it intact', async () => {
+    const outside = await mkdtemp(join(homedir(), '.rtl-dispose-guard-'));
+    try {
+      await writeFile(join(outside, 'keep.txt'), 'keep');
+      const fake = { id: 'fake', root: outside, candidateRoot: outside, sourcePath: REVIEW_SOURCE, state: 'Candidate Proposed', classification: 'Manual', originalSha256: '', createdAt: '' } as const;
+      await expect(disposeReviewSession(fake as never)).rejects.toThrow('INVALID_REVIEW_SESSION_ROOT');
+      expect(await readFile(join(outside, 'keep.txt'), 'utf8')).toBe('keep');
+    } finally {
+      await rm(outside, { recursive: true, force: true });
+    }
+  });
+
+  it('refuses a symlinked candidate root that points outside the temporary directory', async () => {
+    const target = await mkdtemp(join(homedir(), '.rtl-dispose-target-'));
+    const link = join(tmpdir(), `rtl-dispose-link-${Date.now()}`);
+    try {
+      await writeFile(join(target, 'keep.txt'), 'keep');
+      await symlink(target, link, 'dir');
+      const fake = { id: 'fake-link', root: target, candidateRoot: link, sourcePath: REVIEW_SOURCE, state: 'Candidate Proposed', classification: 'Manual', originalSha256: '', createdAt: '' } as const;
+      await expect(disposeReviewSession(fake as never)).rejects.toThrow('INVALID_REVIEW_SESSION_ROOT');
+      expect(await readFile(join(target, 'keep.txt'), 'utf8')).toBe('keep');
+    } finally {
+      await rm(link, { force: true });
+      await rm(target, { recursive: true, force: true });
+    }
+  });
+});
+
