@@ -77,10 +77,11 @@ export function validatePatch(text: string, patch: PatchRequest): void {
   if (!Number.isInteger(patch.startOffset) || !Number.isInteger(patch.endOffset) || patch.startOffset < 0 || patch.endOffset < patch.startOffset || patch.endOffset > text.length) throw new Error('INVALID_REVIEW_RANGE');
   if (digest(text.slice(patch.startOffset, patch.endOffset)) !== patch.expectedSha256) throw new Error('STALE_REVIEW_SOURCE');
 }
-export async function createReviewSession(root: string, sourcePath: string = REVIEW_SOURCE): Promise<ReviewSession> {
-  const source = sourcePath===REVIEW_SOURCE?validateReviewPath(root,sourcePath):await validateProjectSourcePath(root,sourcePath);
-  const sourceStat = await lstat(join(root,sourcePath));
-  if (!sourceStat.isFile()) throw new Error('REVIEW_SOURCE_NOT_REGULAR_FILE');
+/**
+ * Creates a new isolated candidate root: a filtered copy of the project in the OS temporary directory, with node_modules
+ * linked. The project itself is never written. Removes the new root again if the copy fails.
+ */
+export async function copyCandidateRoot(root: string, sourcePath: string): Promise<string> {
   const candidateRoot = await realpath(await mkdtemp(join(tmpdir(), 'rtl-review-')));
   try {
     const project=await loadProjectConfiguration(root);
@@ -88,6 +89,16 @@ export async function createReviewSession(root: string, sourcePath: string = REV
     const allowedTopLevel = new Set(['apps', 'libs', 'tests', 'tools', '.storybook', 'package.json', 'package-lock.json', 'nx.json', 'rtl-scanner.config.json','rtl-preview.config.json',PROJECT_CONFIGURATION, ...(project?.copyPaths.map(p=>p.split('/')[0])??[]), ...rootConfigs]);
     await cp(root, candidateRoot, { recursive: true, dereference: false, filter: (sourcePath) => { const relativePath = sourcePath.slice(root.length + 1); const parts = relativePath.split('/'); const top = parts[0] ?? ''; return relativePath === '' || (allowedTopLevel.has(top) && (!project || [PROJECT_CONFIGURATION,'rtl-preview.config.json','rtl-scanner.config.json',...rootConfigs,...project.copyPaths].some(p=>relativePath===p||relativePath.startsWith(p+'/')||p.startsWith(relativePath+'/'))) && !parts.some(part => ['node_modules', 'dist', '.nx', '.git', '.rtl-vite-cache'].includes(part))); } });
     await symlink(join(root, 'node_modules'), join(candidateRoot, 'node_modules'), 'dir');
+    await validateProjectSourcePath(candidateRoot, sourcePath);
+    return candidateRoot;
+  } catch (error) { await rm(candidateRoot, { recursive: true, force: true }); throw error; }
+}
+export async function createReviewSession(root: string, sourcePath: string = REVIEW_SOURCE): Promise<ReviewSession> {
+  const source = sourcePath===REVIEW_SOURCE?validateReviewPath(root,sourcePath):await validateProjectSourcePath(root,sourcePath);
+  const sourceStat = await lstat(join(root,sourcePath));
+  if (!sourceStat.isFile()) throw new Error('REVIEW_SOURCE_NOT_REGULAR_FILE');
+  const candidateRoot = await copyCandidateRoot(root, sourcePath);
+  try {
     const copied = await validateProjectSourcePath(candidateRoot, sourcePath);
     const text = await readFile(copied, 'utf8');
     return { id: randomUUID(), root: resolve(root), candidateRoot, sourcePath, state: 'Candidate Proposed', classification: 'Manual', originalSha256: digest(text), createdAt: new Date().toISOString() };

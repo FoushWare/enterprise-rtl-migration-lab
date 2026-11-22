@@ -2,8 +2,8 @@ import { captureScopedDirectionEvidence, sameScopedDirectionEvidence, type Scope
 import { initializeOriginalPreview } from './original-preview-runtime.js';
 import { configuredWorkflowChecks, workflowValidationPresentation, workflowValidationEvidenceIssue } from './workflow-validation.js';
 import { createHash, randomUUID } from 'node:crypto';
-import { mkdir, readFile, readdir, rename, realpath, writeFile } from 'node:fs/promises';
-import { dirname, join } from 'node:path';
+import { lstat, mkdir, readFile, readdir, rename, realpath, rm, writeFile } from 'node:fs/promises';
+import { basename, dirname, isAbsolute, join, relative } from 'node:path';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { chromium } from '@playwright/test';
@@ -15,7 +15,7 @@ import { verifiedSourceTransition } from './source-context.js';
 import type { Finding } from './model.js';
 import { directionRequirement, proposeTransformation } from './transformations.js';
 import { approvedPreviewForSource } from './preview-manifest.js';
-import { createReviewSession, startCandidateRuntime, stopCandidateRuntime, validateProjectSourcePath, REVIEW_SOURCE, type PatchRequest, type ReviewSession } from './review-session.js';
+import { copyCandidateRoot, createReviewSession, startCandidateRuntime, stopCandidateRuntime, validateProjectSourcePath, REVIEW_SOURCE, type PatchRequest, type ReviewSession } from './review-session.js';
 import { ControlledApplyService, type ApplyReceipt } from './controlled-apply.js';
 
 const run = promisify(execFile);
@@ -52,6 +52,37 @@ export const candidateEntries = (w: ReviewWorkflow): WorkflowEntry[] => {
   return focus ? [focus] : w.entries.filter(included);
 };
 const signature = (w: ReviewWorkflow) => sha(JSON.stringify(w.entries.filter(e => e.decision === 'Accepted' && included(e)).map(e => e.patch)));
+
+/** Every baseline file in the candidate must equal its composed content; any mismatch is stale. */
+async function verifyCandidateRoot(w: ReviewWorkflow, candidateRoot: string): Promise<void> {
+  for (const [path, before] of Object.entries(w.baseline)) {
+    const expected = composeWorkflowFile(before, candidateEntries(w).filter(e => e.patch!.path === path).map(e => e.patch!));
+    const actual = await readFile(await validateProjectSourcePath(candidateRoot, path), 'utf8');
+    if (actual !== expected) throw new Error('STALE_CANDIDATE_SOURCE');
+  }
+}
+
+/**
+ * Writes one file into a freshly created candidate root. Every existing ancestor must be a real directory and the
+ * target must not be a symlink, so nothing can be written outside the candidate root.
+ */
+async function writeCandidateFile(candidateRoot: string, path: string, text: string): Promise<void> {
+  if (!path || isAbsolute(path) || path.includes('\\') || path.split('/').some(part => part === '' || part === '..')) throw new Error('CANDIDATE_PATH_INVALID');
+  let current = candidateRoot;
+  const parts = path.split('/');
+  for (const part of parts.slice(0, -1)) {
+    current = join(current, part);
+    const stat = await lstat(current).catch(() => undefined);
+    if (!stat) await mkdir(current);
+    else if (stat.isSymbolicLink() || !stat.isDirectory()) throw new Error('CANDIDATE_PATH_ESCAPES_ROOT');
+  }
+  const target = join(current, basename(path));
+  const existing = await lstat(target).catch(() => undefined);
+  if (existing && (existing.isSymbolicLink() || !existing.isFile())) throw new Error('CANDIDATE_PATH_ESCAPES_ROOT');
+  const rel = relative(candidateRoot, target);
+  if (rel.startsWith('..') || isAbsolute(rel)) throw new Error('CANDIDATE_PATH_ESCAPES_ROOT');
+  await writeFile(target, text, 'utf8');
+}
 
 export class ReviewWorkflowStore {
   private workflows: ReviewWorkflow[] = [];
@@ -176,11 +207,46 @@ export class ReviewWorkflowStore {
   }
   private async candidateFresh(w: ReviewWorkflow): Promise<void> {
     if (!w.session) throw new Error('CANDIDATE_REQUIRED');
-    for (const [path, before] of Object.entries(w.baseline)) {
-      const expected = composeWorkflowFile(before, candidateEntries(w).filter(e => e.patch!.path === path).map(e => e.patch!));
-      const actual = await readFile(await validateProjectSourcePath(w.session.candidateRoot, path), 'utf8');
-      if (actual !== expected) throw new Error('STALE_CANDIDATE_SOURCE');
+    await this.ensureCandidate(w);
+    await verifyCandidateRoot(w, w.session!.candidateRoot);
+  }
+  /**
+   * Candidate directories are disposable caches. A missing root is rebuilt from the persisted baseline and patches;
+   * the session ID, decisions, patches, receipts and audit records are kept. Concurrent resumes of one workflow share
+   * a single rebuild.
+   */
+  private async ensureCandidate(w: ReviewWorkflow): Promise<void> {
+    if (!w.session) throw new Error('CANDIDATE_REQUIRED');
+    if (await lstat(w.session.candidateRoot).then(() => true, () => false)) return;
+    const pending = this.recovering.get(w.id);
+    if (pending) return pending;
+    const job = this.recoverCandidate(w).finally(() => { this.recovering.delete(w.id); });
+    this.recovering.set(w.id, job);
+    return job;
+  }
+  private recovering = new Map<string, Promise<void>>();
+  private async recoverCandidate(w: ReviewWorkflow): Promise<void> {
+    const session = w.session!;
+    // Source freshness: the project must still equal the recorded baseline and the project identity must be unchanged.
+    await this.fresh(w);
+    const candidateRoot = await copyCandidateRoot(this.root, session.sourcePath);
+    try {
+      for (const [path, before] of Object.entries(w.baseline)) {
+        const after = composeWorkflowFile(before, candidateEntries(w).filter(e => e.patch!.path === path).map(e => e.patch!));
+        await writeCandidateFile(candidateRoot, path, after);
+      }
+      // The rebuilt root must pass the same verification every resume uses before it replaces the persisted root.
+      await verifyCandidateRoot(w, candidateRoot);
+    } catch (error) {
+      await rm(candidateRoot, { recursive: true, force: true });
+      throw error;
     }
+    session.candidateRoot = candidateRoot;
+    session.runtime = undefined;
+    session.candidateSha256 = sha(await readFile(join(candidateRoot, session.sourcePath), 'utf8'));
+    w.validation = undefined;
+    w.validationInvalidation = 'Candidate rebuilt after the review was resumed; validation must be run again.';
+    await this.persist();
   }
   private ensureReviewing(w: ReviewWorkflow): void { if (w.supersededBy) throw new Error('HISTORICAL_REVIEW_LOCKED'); if (w.state !== 'Reviewing') throw new Error('WORKFLOW_LOCKED_' + w.state); }
   async rebuild(w: ReviewWorkflow): Promise<void> {
