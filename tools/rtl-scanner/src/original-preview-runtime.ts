@@ -8,6 +8,7 @@ import { writePreviewRuntimeConfig } from './preview-runtime.js';
 import { ORIGINAL_PREVIEW_ORIGINS } from './contextual-preview.js';
 
 import {spawnPreviewRuntime,signalOwnedRuntime} from './runtime-process.js';
+import { OriginalPreviewLeases } from './original-preview-leases.js';
 
 const starts = new Map<string, Promise<void>>();
 const children = new Map<string, ChildProcess>();
@@ -52,13 +53,40 @@ export async function initializeOriginalPreview(root: string, application: strin
 }
 
 /** Signals every owned original runtime and waits for exit (SIGKILL after 2 s). Synchronous callers may ignore the promise. */
-export function stopOwnedOriginalPreviews(): Promise<void> {
-  return Promise.all([...children.values()].map(child => new Promise<void>(resolve => {
+function stopChild(child: ChildProcess): Promise<void> {
+  return new Promise<void>(resolve => {
     if (child.exitCode !== null || child.signalCode !== null) return resolve();
     const timer = setTimeout(() => { signalOwnedRuntime(child, 'SIGKILL'); resolve(); }, 2000);
     child.once('exit', () => { clearTimeout(timer); resolve(); });
     signalOwnedRuntime(child);
-  }))).then(() => undefined);
+  });
+}
+export function stopOwnedOriginalPreviews(): Promise<void> {
+  return Promise.all([...children.values()].map(stopChild)).then(() => undefined);
+}
+
+const leases = new OriginalPreviewLeases();
+const leaseKey = (root: string, application: string) => root + '|' + application;
+/** Records one session's lease on an original server that is running (or was just started through initializeOriginalPreview). */
+export function leaseOriginalPreview(root: string, application: string): string {
+  return leases.acquire(leaseKey(root, application));
+}
+/**
+ * Releases one session's lease. The server stops only when this was the last lease for it. Unknown or foreign
+ * tokens throw ORIGINAL_LEASE_NOT_FOUND and change nothing. Only a child this runtime started is signalled.
+ */
+export async function releaseOriginalPreview(root: string, application: string, token: string): Promise<{ stopped: boolean; remaining: number }> {
+  const key = leaseKey(root, application);
+  const { last } = leases.release(key, token);
+  if (!last) return { stopped: false, remaining: leases.count() };
+  const child = children.get(key);
+  children.delete(key);
+  if (child) await stopChild(child);
+  return { stopped: true, remaining: leases.count() };
+}
+/** Total leases held by all sessions; used to decide whether an idle companion may exit. */
+export function originalLeaseCount(): number {
+  return leases.count();
 }
 /** Synchronous last resort for process exit. */
 export function signalOwnedOriginalPreviews(signal: NodeJS.Signals = 'SIGKILL'): void {

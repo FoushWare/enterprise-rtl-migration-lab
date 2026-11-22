@@ -1,4 +1,4 @@
-import { initializeOriginalPreview, signalOwnedOriginalPreviews, stopOwnedOriginalPreviews } from './original-preview-runtime.js';
+import { initializeOriginalPreview, leaseOriginalPreview, originalLeaseCount, releaseOriginalPreview, signalOwnedOriginalPreviews, stopOwnedOriginalPreviews } from './original-preview-runtime.js';
 import {loadPreviewConfiguration} from './preview-configuration.js';
 import { contextualPreview } from './contextual-preview.js';
 import { verifiedSourceTransition, reconcileSourceRuntimes, reconcileSelectedFinding, type FindingSelection } from './source-context.js';
@@ -65,11 +65,23 @@ async function previewCapabilities(){try{const configuration=await loadPreviewCo
 function send(response: ServerResponse, status: number, body: unknown): void { response.writeHead(status, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', 'access-control-allow-origin': DASHBOARD_ORIGIN, 'vary': 'Origin' }); response.end(JSON.stringify(body)); }
 async function body(request: IncomingMessage): Promise<any> { let value=''; for await (const chunk of request) value += chunk; if (value.length > 100_000) throw new Error('REQUEST_TOO_LARGE'); return JSON.parse(value || '{}'); }
 function requestUrl(request: IncomingMessage): URL { return new URL(request.url ?? '/', PREVIEW_COMPANION_ORIGIN); }
+// A companion started by the CLI (RTL_PREVIEW_EXIT_WHEN_IDLE=1) exits after it holds no session lease for a grace period.
+// A manually started companion never sets the flag and never exits on its own.
+const idleExitEnabled = process.env.RTL_PREVIEW_EXIT_WHEN_IDLE === '1';
+const idleGraceMs = Number(process.env.RTL_PREVIEW_IDLE_EXIT_MS ?? 15_000);
+let idleTimer: ReturnType<typeof setTimeout> | undefined;
+function armIdleExit(): void {
+  if (idleTimer) clearTimeout(idleTimer);
+  idleTimer = undefined;
+  if (!idleExitEnabled || originalLeaseCount() > 0) return;
+  idleTimer = setTimeout(() => { if (originalLeaseCount() === 0) void shutdown(); }, idleGraceMs);
+}
 const server = createServer(async (request, response) => {
+  if (idleExitEnabled && originalLeaseCount() === 0) armIdleExit();
   const url = requestUrl(request);
   if(shuttingDown)return send(response,503,{error:'COMPANION_SHUTTING_DOWN'});
   if (request.method === 'OPTIONS') { if (!isAllowedDashboardOrigin(request.headers.origin)) return send(response, 403, { error: 'ORIGIN_NOT_ALLOWED' }); response.writeHead(204, { 'access-control-allow-origin': DASHBOARD_ORIGIN, 'access-control-allow-methods': 'GET,POST,OPTIONS', 'access-control-allow-headers': 'content-type', 'access-control-max-age': '300', vary: 'Origin' }); return response.end(); }
-  const isReviewWrite = url.pathname === '/contextual-preview/original' || url.pathname.startsWith('/review/workflows') || url.pathname === '/review/sessions' || url.pathname === '/review/records' || url.pathname === '/review/decisions' || url.pathname === '/review/evidence' || url.pathname === '/review/manual-changes' || url.pathname === '/review/rescan' || url.pathname === '/review/apply' || url.pathname === '/review/rollback' || url.pathname === '/review/codemod/analyze' || /^\/review\/sessions\/[^/]+\/(patch|cleanup|runtime\/(start|stop)|codemod\/apply|validate|validation\/archive)$/.test(url.pathname);
+  const isReviewWrite = url.pathname === '/contextual-preview/original' || url.pathname === '/contextual-preview/original/release' || url.pathname.startsWith('/review/workflows') || url.pathname === '/review/sessions' || url.pathname === '/review/records' || url.pathname === '/review/decisions' || url.pathname === '/review/evidence' || url.pathname === '/review/manual-changes' || url.pathname === '/review/rescan' || url.pathname === '/review/apply' || url.pathname === '/review/rollback' || url.pathname === '/review/codemod/analyze' || /^\/review\/sessions\/[^/]+\/(patch|cleanup|runtime\/(start|stop)|codemod\/apply|validate|validation\/archive)$/.test(url.pathname);
   const dashboardRequest = isAllowedDashboardOrigin(request.headers.origin) || (!request.headers.origin && request.headers.referer?.startsWith(`${DASHBOARD_ORIGIN}/`));
   if (isReviewWrite && request.method === 'POST' && !dashboardRequest) return send(response, 403, { error: 'ORIGIN_NOT_ALLOWED' });
   if (request.method !== 'GET' && !(isReviewWrite && request.method === 'POST')) return send(response, 405, { error: 'GET_OR_REVIEW_POST_REQUIRED' });
@@ -102,9 +114,29 @@ const server = createServer(async (request, response) => {
         const workflow=url.searchParams.get('workflowId')?workflowStore.get(url.searchParams.get('workflowId')!):undefined;
         const before=await contextualPreview(projectRoot,url.searchParams,workflow);
         if(before.route&&!before.original.available)await initializeOriginalPreview(projectRoot,before.route.application);
-        return contextualPreview(projectRoot,url.searchParams,workflow);
-      });return send(response,200,result);
+        const after=await contextualPreview(projectRoot,url.searchParams,workflow);
+        // Every successful start issues this caller its own lease, even when the server was already running for another session.
+        // Older clients ignore `originalLease`; they keep the existing response fields unchanged.
+        if(after.route&&after.original.available===true){
+          const application=after.route.application;
+          return {...after,originalLease:{application,token:leaseOriginalPreview(projectRoot,application)}};
+        }
+        return after;
+      });armIdleExit();return send(response,200,result);
     }catch(error){return send(response,409,{error:error instanceof Error?error.message:'ORIGINAL_PREVIEW_FAILED'});}
+  }
+  if (url.pathname === '/contextual-preview/original/release' && request.method === 'POST') {
+    try {
+      const input=await body(request) as {application?:unknown;lease?:unknown};
+      if(typeof input.application!=='string'||typeof input.lease!=='string')throw new Error('ORIGINAL_LEASE_REQUEST_INVALID');
+      const application=input.application,token=input.lease;
+      const released=await workflowStore.exclusive(()=>releaseOriginalPreview(projectRoot,application,token));
+      armIdleExit();
+      return send(response,200,released);
+    }catch(error){
+      const code=error instanceof Error?error.message:'ORIGINAL_LEASE_FAILED';
+      return send(response,code==='ORIGINAL_LEASE_NOT_FOUND'?404:400,{error:code});
+    }
   }
   if (url.pathname === '/contextual-preview' && request.method === 'GET') {
     try { const result = await workflowStore.exclusive(() => contextualPreview(projectRoot,url.searchParams,url.searchParams.get('workflowId')?workflowStore.get(url.searchParams.get('workflowId')!):undefined));return send(response,200,result); }
@@ -177,4 +209,4 @@ let shuttingDown = false;
   };
   for (const signal of ['SIGTERM', 'SIGINT', 'SIGHUP'] as const) process.on(signal, shutdown);
   // Last resort for any exit path: never leave an owned runtime process group behind.
-  process.on('exit', () => { signalOwnedOriginalPreviews(); signalAllCandidateRuntimes(); }); server.listen(port, host, () => console.log(`RTL preview companion listening on ${host}:${port}`));
+  process.on('exit', () => { signalOwnedOriginalPreviews(); signalAllCandidateRuntimes(); }); server.listen(port, host, () => { console.log(`RTL preview companion listening on ${host}:${port}`); armIdleExit(); });
