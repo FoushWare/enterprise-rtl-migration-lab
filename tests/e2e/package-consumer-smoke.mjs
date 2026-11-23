@@ -7,6 +7,8 @@ import {createServer} from 'node:net';
 import {tmpdir} from 'node:os';
 import {join,resolve} from 'node:path';
 import {createRequire} from 'node:module';
+import {toolInvocation,binaryInvocation} from './tool-invocation.mjs';
+import {startStaticReportServer} from './static-report-server.mjs';
 const wrapper=process.argv.includes('--wrapper'),scanEntry=wrapper?['rtl-analyzer','scan']:['rtl-scanner'],previewEntry=wrapper?['rtl-analyzer','preview']:['rtl-preview'];
 const tarball=resolve(process.argv[2]||'');assert.ok(tarball.endsWith('.tgz'),'Pass the actual npm pack tarball');
 const workspace=mkdtempSync(join(realpathSync(tmpdir()),'rtl-package-consumer-')),project=join(workspace,'project'),reports=join(workspace,'reports'),state=join(workspace,'state');
@@ -16,7 +18,7 @@ const configuredProposal=process.env.RTL_SMOKE_CONFIGURED_PROPOSAL==='1';
 const proposal=configuredProposal?{before:'border-left:4px solid #279',after:'border-inline-start:4px solid #279',ltr:'borderLeftWidth',rtl:'borderRightWidth',width:'4px'}:{before:'margin-left:18px',after:'margin-inline-start:18px',ltr:'marginLeft',rtl:'marginRight',width:'18px'};
 const evidence={workspace,tarball,tarballSha256:createHash('sha256').update(readFileSync(tarball)).digest('hex'),entry:wrapper?'rtl-analyzer (wrapper)':'rtl-scanner (implementation)',node:process.version,commands:[],modes:[]},save=()=>writeFileSync(join(workspace,'smoke.json'),JSON.stringify(evidence,null,2)+'\n');
 const put=(p,v)=>writeFileSync(join(project,p),typeof v==='string'?v:JSON.stringify(v,null,2)+'\n');
-function run(command,args,expected=0){const r=spawnSync(command,args,{cwd:project,encoding:'utf8',timeout:300000}),log=`command-${evidence.commands.length}.log`;writeFileSync(join(workspace,log),(r.stdout||'')+(r.stderr||'')+(r.error?.message||''));evidence.commands.push({command,args,exit:r.status,log});save();assert.equal(r.status,expected,`${command} ${args.join(' ')}: ${r.stderr}`);return r.stdout;}
+function run(command,args,expected=0){const invocation=toolInvocation(command,args),r=spawnSync(invocation.file,invocation.args,{cwd:project,encoding:'utf8',timeout:300000}),log=`command-${evidence.commands.length}.log`;writeFileSync(join(workspace,log),(r.stdout||'')+(r.stderr||'')+(r.error?.message||''));evidence.commands.push({command,args,exit:r.status,log});save();assert.equal(r.status,expected,`${command} ${args.join(' ')}: ${r.stderr||''}${r.error?` [spawn error ${r.error.code??''}: ${r.error.message}]`:''}`);return r.stdout;}
 put('package.json',{name:'rtl-tarball-consumer',private:true,type:'module',scripts:{dev:'vite',typecheck:'tsc --noEmit',build:'vite build',test:'node --test tests/consumer.test.mjs'},dependencies:{react:'19.1.0','react-dom':'19.1.0'},devDependencies:{vite:'6.4.5',typescript:'~5.9.0','@types/react':'^19.1.0','@types/react-dom':'^19.1.0'}});
 put('vite.config.ts',"import {defineConfig} from 'vite';export default defineConfig({});\n");
 put('tsconfig.json',{compilerOptions:{target:'ES2022',module:'ESNext',moduleResolution:'Bundler',jsx:'react-jsx',strict:true,skipLibCheck:true,esModuleInterop:true},include:['src']});
@@ -30,7 +32,7 @@ put('tests/consumer.test.mjs',"import {test} from 'node:test';import assert from
 put('rtl-scanner.config.json',{schemaVersion:1,generatedStyleOwner:'unknown',ownership:{css:'custom-css'},approvals:[],exceptions:[],issueBindings:[],dynamicExceptions:[],roles:[],...(configuredProposal?{cssProposals:[{path:'src/reading.css',context:'stylesheet/.contact-card',property:'border-left',value:'4px solid #279',kind:'inline-edge',sourceDigest:createHash('sha256').update(css).digest('hex')}]}:{})});
 put('rtl-project.config.json',{schemaVersion:1,scanRoots:['src','index.html'],copyPaths:['src','index.html','tests','public','vite.config.ts','tsconfig.json','package.json','package-lock.json'],packageManager:'npm',validation:{typecheck:['run','typecheck'],build:['run','build'],test:['run','test']}});
 put('rtl-preview.config.json',{schemaVersion:1,applications:{consumer:{viteConfig:'vite.config.ts',entry:'src/main.tsx',originalOrigin:'http://127.0.0.1:4215',readySelector:'#root main article',dataAdapter:'none',startupScript:'dev',routes:[{id:'people',path:'/people',ltr:'/people?direction=ltr',rtl:'/people?direction=rtl'}]}},mappings:[...['.contact-card','.contact-name','.pending-me','.unmapped'].map(selector=>({source:'src/reading.css',sourceSelector:selector,targetSelector:selector,routes:[{application:'consumer',route:'people'}]})),{source:'src/main.tsx',context:'module',targetSelector:'.contact-name',routes:[{application:'consumer',route:'people'}]}]});
-let browser;const children=[];
+let browser;const children=[];let staticReports;
 try{
  run('npm',['install','--save-dev','--ignore-scripts','--no-audit','--no-fund',tarball]);
  assert.match(run('npx',['--no-install',...(wrapper?['rtl-analyzer']:scanEntry),'--help']),wrapper?/rtl-analyzer scan/:/Usage: rtl-scanner/);if(wrapper)evidence.version=run('npx',['--no-install','rtl-analyzer','--version']).trim();assert.match(run('npx',['--no-install',...previewEntry,'--help']),/Usage:.*rtl-preview/);run('npx',['--no-install',...previewEntry,'--unknown'],2);
@@ -50,7 +52,7 @@ try{
  evidence.reports=['rtl-report.json','rtl-report.md','rtl-report-structured.md','rtl-report-dashboard.html'].map(path=>({path,bytes:readFileSync(join(reports,path)).length}));run('npx',['--no-install','playwright','install','chromium']);
  for(const port of [4215,4318,4320])await new Promise((yes,no)=>{const s=createServer();s.once('error',no);s.listen(port,'127.0.0.1',()=>s.close(yes))});
  const env={...process.env,RTL_PROJECT_ROOT:project,RTL_REVIEW_STORE_PATH:join(state,'review-records-v1.json'),RTL_EVIDENCE_STORE_PATH:join(state,'review-evidence-v1.json'),RTL_MANUAL_CHANGE_STORE_PATH:join(state,'manual-changes-v1.json'),RTL_SCAN_MANIFEST_STORE_PATH:join(state,'scan-manifests-v1.json'),RTL_AUDIT_STORE_PATH:join(state,'apply-audit-v1.json'),RTL_APPLY_BACKUP_ROOT:join(state,'backups')};
- children.push(spawn(join(project,'node_modules/.bin/'+previewEntry[0]),previewEntry.slice(1),{cwd:project,env,stdio:['ignore','pipe','pipe']}));children.push(spawn('python3',['-m','http.server','4320','--bind','127.0.0.1','--directory',reports],{cwd:workspace,stdio:['ignore','pipe','pipe']}));
+ const previewLaunch=binaryInvocation(project,'rtl-analyzer',previewEntry[0],previewEntry.slice(1));children.push(spawn(previewLaunch.file,previewLaunch.args,{cwd:project,env,stdio:['ignore','pipe','pipe']}));staticReports=await startStaticReportServer({directory:reports,port:4320});
  for(const [i,c] of children.entries())for(const stream of [c.stdout,c.stderr])stream.on('data',b=>writeFileSync(join(workspace,`service-${i}.log`),b,{flag:'a'}));
  for(const url of ['http://127.0.0.1:4318/health','http://127.0.0.1:4320/rtl-report-dashboard.html']){let ready=false;for(let i=0;i<100;i++){try{if((await fetch(url)).ok){ready=true;break}}catch{}await new Promise(r=>setTimeout(r,100))}assert.ok(ready,url)}
  assert.equal((await fetch('http://127.0.0.1:4318/health').then(r=>r.json())).projectRoot,project);
@@ -106,4 +108,6 @@ try{
  independent=await call('/'+independent.id+'/rollback',{confirmation:'ROLLBACK_CONFIRMED'});assert.equal(independent.state,'Rolled Back');assert.deepEqual(hashes(),initialHashes);evidence.independent={findingId:bidi.id,result:'accepted, validated, applied and rolled back under unresolved runtime direction'};save();
  evidence.status='Passed';save();console.log('CONSUMER_PASSED',JSON.stringify(evidence));
 }catch(e){evidence.status='Failed';evidence.error=e.stack;save();throw e}
-finally{await browser?.close();for(const c of children.reverse())if(c.exitCode===null&&c.signalCode===null){const done=new Promise(r=>c.once('exit',r));c.kill('SIGTERM');await done}}
+finally{await browser?.close();for(const c of children.reverse())if(c.exitCode===null&&c.signalCode===null){const done=new Promise(r=>c.once('exit',r));c.kill('SIGTERM');await done}await staticReports?.close()}
+// Cleanup must release every smoke port; a leftover listener would make the next run fail for an unrelated reason.
+for(const port of [4215,4318,4320])await new Promise((yes,no)=>{const s=createServer();s.once('error',()=>no(new Error(`port ${port} is still in use after smoke cleanup`)));s.listen(port,'127.0.0.1',()=>s.close(yes))});
