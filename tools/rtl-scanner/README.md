@@ -111,6 +111,15 @@ Keep all six overrides together to isolate release tests. Keep backups for rollb
 
 Trusted project roots and ancestors must be protected against hostile concurrent replacement; symlink/path/hash guards are not a sandbox for untrusted project scripts. Static risk evidence cannot prove a universal computed cascade or certify arbitrary frameworks/browsers. Chromium is automated here; Safari certification and an existing real-world project acceptance remain pending. Ahmed's personal acceptance is not implied by test results.
 
+## Platform support
+
+- **macOS and Linux:** supported for scanning, live preview, review and Apply. Verified by the Ubuntu CI job and by local macOS test runs.
+- **Windows:** **not fully supported in v0.5.0.** Repository paths use POSIX form on every platform, and the scanner test suite runs on Windows CI, but these capabilities fail closed until secure filesystem support is implemented:
+  - **Source snippets:** Windows has no `O_NOFOLLOW`, so snippet reads are refused with `UNSUPPORTED_NOFOLLOW` and findings show as unavailable. Symlink, junction and reparse-point protection cannot be guaranteed by Node APIs alone.
+  - **Report publication:** refused with `unsupported platform/filesystem profile`. Reports are not written on Windows.
+- **Windows validation:** npm checks run through npm's own CLI with the running Node executable (no shell). When npm's CLI cannot be found, the check fails with an actionable error. `pnpm` and `yarn` validation commands are not supported on Windows in this release and fail with an explicit error; set `packageManager` to `npm` or validate on macOS or Linux.
+- **Not verified on Windows:** NTFS hard-link publication, junctions in project paths, nvm-windows installs, and pnpm or yarn projects.
+
 ## Build and pack from GitHub
 
 The publishable package root is `tools/rtl-scanner`; the repository root is private. From a checkout with `npm ci` completed:

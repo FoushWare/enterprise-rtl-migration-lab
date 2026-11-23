@@ -50,7 +50,9 @@ describe('Milestone 1 output architecture', () => {
       // Windows-form absolute paths are refused as ABSOLUTE before the existence check (see above); POSIX keeps EXISTS.
       await expect(planOutputPath(root, externalExisting, 'json')).rejects.toMatchObject({ code: process.platform === 'win32' ? 'ABSOLUTE' : 'EXISTS' });
       await symlink(join(root, 'reports'), join(root, 'linked'));
-      await expect(planOutputPath(root, join(root, 'linked', 'new.json'), 'json')).rejects.toThrow(/INPUT_TREE|SYMLINK/);
+      // Symlinked ancestors are rejected for a repository-relative path on every platform (Windows refuses the absolute form earlier).
+      await expect(planOutputPath(root, 'linked/new.json', 'json')).rejects.toThrow(/INPUT_TREE|SYMLINK/);
+      if (process.platform !== 'win32') await expect(planOutputPath(root, join(root, 'linked', 'new.json'), 'json')).rejects.toThrow(/INPUT_TREE|SYMLINK/);
       await rm(externalExisting, { force: true });
     } finally { await rm(root, { recursive: true, force: true }); await rm(external, { recursive: true, force: true }); }
   });

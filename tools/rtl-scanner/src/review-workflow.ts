@@ -5,6 +5,7 @@ import { createHash, randomUUID } from 'node:crypto';
 import { existsSync } from 'node:fs';
 import { lstat, mkdir, readFile, readdir, rename, realpath, rm, writeFile } from 'node:fs/promises';
 import { basename, dirname, isAbsolute, join, posix, relative } from 'node:path';
+import { packageManagerInvocation } from './package-manager-command.js';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { chromium } from '@playwright/test';
@@ -403,7 +404,10 @@ export class ReviewWorkflowStore {
       const args=project?project.validation[name]:pkg.scripts?.[name]?['run',name]:undefined;
       const configured=configuredWorkflowChecks(w).find(c=>c.name===name)!;
       if (!args) { checks.push(configured); continue; }
-      try { const result = await run(project?.packageManager??'npm', args, { cwd: w.session!.candidateRoot, env: { ...process.env, NX_DAEMON: 'false', NX_ISOLATE_PLUGINS: 'false' }, timeout: 180_000, maxBuffer: 2_000_000 }); checks.push({ ...configured, name, state: 'Passed', detail: (result.stdout + result.stderr).slice(-8000) }); }
+      const resolution = packageManagerInvocation(project?.packageManager ?? 'npm', args);
+      if (!resolution.ok) { checks.push({ ...configured, name, state: 'Error', detail: resolution.error }); continue; }
+      const invocation = resolution.invocation;
+      try { const result = await run(invocation.file, invocation.args, { cwd: w.session!.candidateRoot, env: { ...process.env, NX_DAEMON: 'false', NX_ISOLATE_PLUGINS: 'false' }, timeout: 180_000, maxBuffer: 2_000_000 }); checks.push({ ...configured, name, state: 'Passed', detail: (result.stdout + result.stderr).slice(-8000) }); }
       catch (error) { const failure = error as { stdout?: string; stderr?: string; message: string; code?: string | number; signal?: string }; checks.push({ ...configured, name, state: typeof failure.code === 'number' || failure.signal ? 'Failed' : 'Error', detail: ((failure.stdout ?? '') + (failure.stderr ?? '') + failure.message).slice(-8000) }); }
     }
     try {
