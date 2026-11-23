@@ -4,7 +4,7 @@ import { configuredWorkflowChecks, workflowValidationPresentation, workflowValid
 import { createHash, randomUUID } from 'node:crypto';
 import { existsSync } from 'node:fs';
 import { lstat, mkdir, readFile, readdir, rename, realpath, rm, writeFile } from 'node:fs/promises';
-import { basename, dirname, isAbsolute, join, relative } from 'node:path';
+import { basename, dirname, isAbsolute, join, posix, relative } from 'node:path';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { chromium } from '@playwright/test';
@@ -137,8 +137,9 @@ export class ReviewWorkflowStore {
     const projectConfigs: string[] = [];
     if(!project){
     for (const group of ['apps', 'libs']) for (const project of await readdir(join(this.root, group))) {
-      const directory = join(group, project);
-      for (const name of await readdir(join(this.root, directory))) if (/^(project\.json|tsconfig.*\.json|vite\.config\.[cm]?[jt]s)$/.test(name)) projectConfigs.push(join(directory, name));
+      // Repository-relative keys are POSIX on every platform; platform join() would produce backslashes on Windows.
+      const directory = posix.join(group, project);
+      for (const name of await readdir(join(this.root, directory))) if (/^(project\.json|tsconfig.*\.json|vite\.config\.[cm]?[jt]s)$/.test(name)) projectConfigs.push(posix.join(directory, name));
     }
     }
     const optionalConfigs=await Promise.all(['nx.json','rtl-scanner.config.json',PROJECT_CONFIGURATION].map(async path=>await readFile(join(this.root,path)).then(()=>path).catch(error=>{if(error.code==='ENOENT')return '';throw error})));

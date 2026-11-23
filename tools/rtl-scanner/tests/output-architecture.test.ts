@@ -47,7 +47,8 @@ describe('Milestone 1 output architecture', () => {
       await expect(planOutputPath(root, absoluteInTree, 'json')).rejects.toMatchObject({ code: process.platform === 'win32' ? 'ABSOLUTE' : 'INPUT_TREE' });
       const externalExisting = join(external, 'existing.json');
       await writeFile(externalExisting, '{}');
-      await expect(planOutputPath(root, externalExisting, 'json')).rejects.toMatchObject({ code: 'EXISTS' });
+      // Windows-form absolute paths are refused as ABSOLUTE before the existence check (see above); POSIX keeps EXISTS.
+      await expect(planOutputPath(root, externalExisting, 'json')).rejects.toMatchObject({ code: process.platform === 'win32' ? 'ABSOLUTE' : 'EXISTS' });
       await symlink(join(root, 'reports'), join(root, 'linked'));
       await expect(planOutputPath(root, join(root, 'linked', 'new.json'), 'json')).rejects.toThrow(/INPUT_TREE|SYMLINK/);
       await rm(externalExisting, { force: true });

@@ -92,13 +92,20 @@ export function validatePatch(text: string, patch: PatchRequest): void {
  * Creates a new isolated candidate root: a filtered copy of the project in the OS temporary directory, with node_modules
  * linked. The project itself is never written. Removes the new root again if the copy fails.
  */
+/**
+ * Converts a path reported by fs.cp into the repository-relative POSIX form that the copy allow-list is written in.
+ * fs.cp reports native separators (backslashes on Windows); the separator is a parameter so both forms are testable.
+ */
+export function repositoryRelativeFromCopyPath(root: string, copyPath: string, separator: string = sep): string {
+  return copyPath.slice(root.length + 1).split(separator).join('/');
+}
 export async function copyCandidateRoot(root: string, sourcePath: string): Promise<string> {
   const candidateRoot = await realpath(await mkdtemp(join(tmpdir(), 'rtl-review-')));
   try {
     const project=await loadProjectConfiguration(root);
     const rootConfigs = (await readdir(root)).filter(name => /^(tsconfig.*\.json|(?:vite|vitest|playwright|eslint)(?:\.[\w-]+)*\.config\.[cm]?[jt]s)$/.test(name));
     const allowedTopLevel = new Set(['apps', 'libs', 'tests', 'tools', '.storybook', 'package.json', 'package-lock.json', 'nx.json', 'rtl-scanner.config.json','rtl-preview.config.json',PROJECT_CONFIGURATION, ...(project?.copyPaths.map(p=>p.split('/')[0])??[]), ...rootConfigs]);
-    await cp(root, candidateRoot, { recursive: true, dereference: false, filter: (sourcePath) => { const relativePath = sourcePath.slice(root.length + 1); const parts = relativePath.split('/'); const top = parts[0] ?? ''; return relativePath === '' || (allowedTopLevel.has(top) && (!project || [PROJECT_CONFIGURATION,'rtl-preview.config.json','rtl-scanner.config.json',...rootConfigs,...project.copyPaths].some(p=>relativePath===p||relativePath.startsWith(p+'/')||p.startsWith(relativePath+'/'))) && !parts.some(part => ['node_modules', 'dist', '.nx', '.git', '.rtl-vite-cache'].includes(part))); } });
+    await cp(root, candidateRoot, { recursive: true, dereference: false, filter: (sourcePath) => { const relativePath = repositoryRelativeFromCopyPath(root, sourcePath); const parts = relativePath.split('/'); const top = parts[0] ?? ''; return relativePath === '' || (allowedTopLevel.has(top) && (!project || [PROJECT_CONFIGURATION,'rtl-preview.config.json','rtl-scanner.config.json',...rootConfigs,...project.copyPaths].some(p=>relativePath===p||relativePath.startsWith(p+'/')||p.startsWith(relativePath+'/'))) && !parts.some(part => ['node_modules', 'dist', '.nx', '.git', '.rtl-vite-cache'].includes(part))); } });
     await symlink(join(root, 'node_modules'), join(candidateRoot, 'node_modules'), 'dir');
     await validateProjectSourcePath(candidateRoot, sourcePath);
     return candidateRoot;
