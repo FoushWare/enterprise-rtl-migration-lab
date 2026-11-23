@@ -59,6 +59,26 @@ describe('smoke test package binary invocation', () => {
     expect(binaryInvocation('/smoke/project', 'rtl-analyzer', 'rtl-preview', ['--flag'], { platform: 'linux' })).toEqual({ file: '/smoke/project/node_modules/.bin/rtl-preview', args: ['--flag'] });
   });
 
+  it('builds the POSIX link with POSIX separators regardless of the host, including paths with spaces', () => {
+    const result = binaryInvocation('/smoke/my project', 'rtl-analyzer', 'rtl-preview', ['--name', 'a b'], { platform: 'darwin' });
+    expect(result).toEqual({ file: '/smoke/my project/node_modules/.bin/rtl-preview', args: ['--name', 'a b'] });
+    expect(result.file).not.toContain('\\');
+  });
+
+  it('keeps spaces in Windows project paths and separates arguments that contain spaces', () => {
+    const project = 'C:\\My Smoke\\project';
+    const entry = 'C:\\My Smoke\\project\\node_modules\\rtl-analyzer\\dist\\preview-cli.js';
+    const result = binaryInvocation(project, 'rtl-analyzer', 'rtl-preview', ['--name', 'a b'], { platform: 'win32', nodeExecutable: nodeExe, readText: metadata({ 'rtl-preview': 'dist/preview-cli.js' }), exists: onlyExisting(entry) });
+    expect(result).toEqual({ file: nodeExe, args: [entry, '--name', 'a b'] });
+  });
+
+  it('preserves UNC project paths on Windows', () => {
+    const project = '\\\\server\\share\\project';
+    const entry = '\\\\server\\share\\project\\node_modules\\rtl-analyzer\\dist\\preview-cli.js';
+    const result = binaryInvocation(project, 'rtl-analyzer', 'rtl-preview', [], { platform: 'win32', nodeExecutable: nodeExe, readText: metadata({ 'rtl-preview': 'dist/preview-cli.js' }), exists: onlyExisting(entry) });
+    expect(result).toEqual({ file: nodeExe, args: [entry] });
+  });
+
   it('runs the bin entry declared by the package through Node on Windows', () => {
     const entry = `${packageDir}\\dist\\preview-cli.js`;
     const result = binaryInvocation(projectDir, 'rtl-analyzer', 'rtl-preview', ['--port', '4320'], { platform: 'win32', nodeExecutable: nodeExe, readText: metadata({ 'rtl-preview': 'dist/preview-cli.js' }), exists: onlyExisting(entry) });

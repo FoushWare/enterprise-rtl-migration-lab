@@ -2,7 +2,7 @@
 // On Windows both are `.cmd` shims, and spawnSync cannot start a shim (it reports status null and an error). Their CLI entry
 // points are run through the running Node executable instead. Arguments stay separate items; nothing is interpolated.
 import { existsSync, readFileSync } from 'node:fs';
-import { join, win32 } from 'node:path';
+import { posix, win32 } from 'node:path';
 
 const entries = { npm: 'npm-cli.js', npx: 'npx-cli.js' };
 
@@ -33,7 +33,8 @@ export function binaryInvocation(projectDirectory, packageName, binName, args, {
   readText = (path) => readFileSync(path, 'utf8'),
   exists = existsSync,
 } = {}) {
-  if (platform !== 'win32') return { file: join(projectDirectory, 'node_modules', '.bin', binName), args: [...args] };
+  // The POSIX link path is built with POSIX rules, so the result depends only on the requested platform, not on the host.
+  if (platform !== 'win32') return { file: posix.join(projectDirectory, 'node_modules', '.bin', binName), args: [...args] };
   const packageDirectory = win32.join(projectDirectory, 'node_modules', packageName);
   const metadata = JSON.parse(readText(win32.join(packageDirectory, 'package.json')));
   const relative = metadata.bin?.[binName];
