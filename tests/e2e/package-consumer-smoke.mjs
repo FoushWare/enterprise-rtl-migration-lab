@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import {spawn,spawnSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
-import {mkdirSync,mkdtempSync,readFileSync,realpathSync,writeFileSync} from 'node:fs';
+import {mkdirSync,mkdtempSync,readdirSync,readFileSync,realpathSync,writeFileSync} from 'node:fs';
 import {createServer} from 'node:net';
 import {tmpdir} from 'node:os';
 import {join,resolve} from 'node:path';
@@ -32,10 +32,30 @@ put('tests/consumer.test.mjs',"import {test} from 'node:test';import assert from
 put('rtl-scanner.config.json',{schemaVersion:1,generatedStyleOwner:'unknown',ownership:{css:'custom-css'},approvals:[],exceptions:[],issueBindings:[],dynamicExceptions:[],roles:[],...(configuredProposal?{cssProposals:[{path:'src/reading.css',context:'stylesheet/.contact-card',property:'border-left',value:'4px solid #279',kind:'inline-edge',sourceDigest:createHash('sha256').update(css).digest('hex')}]}:{})});
 put('rtl-project.config.json',{schemaVersion:1,scanRoots:['src','index.html'],copyPaths:['src','index.html','tests','public','vite.config.ts','tsconfig.json','package.json','package-lock.json'],packageManager:'npm',validation:{typecheck:['run','typecheck'],build:['run','build'],test:['run','test']}});
 put('rtl-preview.config.json',{schemaVersion:1,applications:{consumer:{viteConfig:'vite.config.ts',entry:'src/main.tsx',originalOrigin:'http://127.0.0.1:4215',readySelector:'#root main article',dataAdapter:'none',startupScript:'dev',routes:[{id:'people',path:'/people',ltr:'/people?direction=ltr',rtl:'/people?direction=rtl'}]}},mappings:[...['.contact-card','.contact-name','.pending-me','.unmapped'].map(selector=>({source:'src/reading.css',sourceSelector:selector,targetSelector:selector,routes:[{application:'consumer',route:'people'}]})),{source:'src/main.tsx',context:'module',targetSelector:'.contact-name',routes:[{application:'consumer',route:'people'}]}]});
+// Runs a command that the v0.5.0 Windows contract must refuse: exit code 2 is required and the combined output is returned.
+function refused(args){const invocation=toolInvocation('npx',args),r=spawnSync(invocation.file,invocation.args,{cwd:project,encoding:'utf8',timeout:300000}),log=`command-${evidence.commands.length}.log`,output=(r.stdout||'')+(r.stderr||'');writeFileSync(join(workspace,log),output+(r.error?.message||''));evidence.commands.push({command:'npx',args,exit:r.status,log});save();assert.equal(r.status,2,`npx ${args.join(' ')}: expected refusal with exit 2; ${r.stderr||''}${r.error?` [spawn error ${r.error.code??''}: ${r.error.message}]`:''}`);return output;}
+// Windows v0.5.0 contract: dashboard/report publication is refused with the documented platform error and exit code 2, nothing
+// partial is created, and an existing report file is not overwritten. The full consumer workflow runs on Ubuntu.
+function verifyWindowsUnsupportedPublication(){
+  const reports=join(workspace,'contract-reports'),previous='previous report\n';
+  mkdirSync(reports,{recursive:true});writeFileSync(join(reports,'rtl-report.json'),previous);
+  const dashboard=refused(['--no-install',...scanEntry,'--root',project,'--format','dashboard','--output-dir',reports]);
+  assert.match(dashboard,/unsupported platform\/filesystem profile/);
+  assert.deepEqual(readdirSync(reports).sort(),['rtl-report.json'],'publication must not create partial or unexpected artifacts');
+  assert.equal(readFileSync(join(reports,'rtl-report.json'),'utf8'),previous,'an existing report must not be overwritten');
+  const oneCommand=refused(['--no-install','rtl-analyzer']);
+  assert.match(oneCommand,/Dashboard was not generated/);
+  evidence.status='Passed';evidence.windowsContract={platform:'win32',publication:'refused',exitCode:2,error:'unsupported platform/filesystem profile',existingFileUnchanged:true,artifacts:['rtl-report.json']};save();
+  console.log('CONSUMER_PASSED',JSON.stringify(evidence));
+}
 let browser;const children=[];let staticReports;
 try{
  run('npm',['install','--save-dev','--ignore-scripts','--no-audit','--no-fund',tarball]);
  assert.match(run('npx',['--no-install',...(wrapper?['rtl-analyzer']:scanEntry),'--help']),wrapper?/rtl-analyzer scan/:/Usage: rtl-scanner/);if(wrapper)evidence.version=run('npx',['--no-install','rtl-analyzer','--version']).trim();assert.match(run('npx',['--no-install',...previewEntry,'--help']),/Usage:.*rtl-preview/);run('npx',['--no-install',...previewEntry,'--unknown'],2);
+ if(process.platform==='win32'){
+  // v0.5.0 Windows contract: report publication is unsupported and refused before any write (see README "Platform support").
+  verifyWindowsUnsupportedPublication();
+ }else{
  if(wrapper){
   const metadata=JSON.parse(readFileSync(join(project,'node_modules/rtl-analyzer/package.json'),'utf8'));
   evidence.implementation=metadata.rtlAnalyzerImplementation;
@@ -107,6 +127,7 @@ try{
  independent=await call('/'+independent.id+'/apply',{confirmation:'APPLY_CONFIRMED'});assert.equal(independent.state,'Applied');assert.match(readFileSync(join(project,'src/main.tsx'),'utf8'),/<bdi dir="auto">\{person.name\}<\/bdi>/);
  independent=await call('/'+independent.id+'/rollback',{confirmation:'ROLLBACK_CONFIRMED'});assert.equal(independent.state,'Rolled Back');assert.deepEqual(hashes(),initialHashes);evidence.independent={findingId:bidi.id,result:'accepted, validated, applied and rolled back under unresolved runtime direction'};save();
  evidence.status='Passed';save();console.log('CONSUMER_PASSED',JSON.stringify(evidence));
+ }
 }catch(e){evidence.status='Failed';evidence.error=e.stack;save();throw e}
 finally{await browser?.close();for(const c of children.reverse())if(c.exitCode===null&&c.signalCode===null){const done=new Promise(r=>c.once('exit',r));c.kill('SIGTERM');await done}await staticReports?.close()}
 // Cleanup must release every smoke port; a leftover listener would make the next run fail for an unrelated reason.
