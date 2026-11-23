@@ -38,7 +38,8 @@ try{
   const metadata=JSON.parse(readFileSync(join(project,'node_modules/rtl-analyzer/package.json'),'utf8'));
   evidence.implementation=metadata.rtlAnalyzerImplementation;
   evidence.installed=JSON.parse(run('npm',['ls','--depth=0','--json'])).dependencies;
-  assert.match(run('npx',['--no-install','rtl-analyzer']),/<!doctype html>/);
+  // The default run writes the dashboard to its report file and reports the path on stderr; HTML is never echoed to stdout.
+  assert.doesNotMatch(run('npx',['--no-install','rtl-analyzer']),/<!doctype html>/i);
   const defaultLog=readFileSync(join(workspace,`command-${evidence.commands.length-1}.log`),'utf8');
   evidence.defaultDashboard=defaultLog.match(/Dashboard: (.+)/)?.[1];assert.ok(evidence.defaultDashboard);assert.ok(readFileSync(evidence.defaultDashboard).length>1000);
   for(const format of ['markdown','markdown-structured'])assert.ok(run('npx',['--no-install',...scanEntry,'--root',project,'--format',format]).length>100);
