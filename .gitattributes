@@ -1,0 +1,4 @@
+# Store text as LF in the repository and check it out as LF on every platform (Windows core.autocrlf=true would otherwise write CRLF).
+# Scanner digests pin raw file bytes, so line-ending conversion would change them.
+* text=auto eol=lf
+*.png binary

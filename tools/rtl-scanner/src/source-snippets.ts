@@ -1,6 +1,6 @@
 import { constants } from 'node:fs';
 import { lstat, open } from 'node:fs/promises';
-import { isAbsolute, join, normalize, relative, resolve, sep } from 'node:path';
+import { isAbsolute, join, posix, relative, resolve, sep } from 'node:path';
 import type { FileHandle } from 'node:fs/promises';
 import type { Finding } from './model.js';
 
@@ -17,7 +17,7 @@ const unavailable = (findingId: string, reason: SnippetUnavailableReason): Findi
 
 async function validatePath(root: string, path: string): Promise<{ absolute: string } | SnippetUnavailableReason> {
   if (pathError(path)) return 'INVALID_PATH';
-  const rootAbsolute = resolve(root), normalized = normalize(path), absolute = resolve(rootAbsolute, normalized), rel = relative(rootAbsolute, absolute);
+  const rootAbsolute = resolve(root), normalized = posix.normalize(path), absolute = resolve(rootAbsolute, normalized), rel = relative(rootAbsolute, absolute);
   if (rel === '..' || rel.startsWith(`..${sep}`) || isAbsolute(rel) || normalized !== path) return 'INVALID_PATH';
   try {
     const rootStat = await lstat(rootAbsolute); if (rootStat.isSymbolicLink()) return 'SYMLINK';

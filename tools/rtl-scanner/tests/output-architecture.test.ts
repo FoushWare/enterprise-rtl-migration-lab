@@ -39,7 +39,12 @@ describe('Milestone 1 output architecture', () => {
     try {
       await mkdir(join(root, 'reports'));
       await writeFile(join(root, 'reports', 'existing.json'), '{}');
-      await expect(planOutputPath(root, join(root, 'reports', 'existing.json'), 'json')).rejects.toMatchObject({ code: 'INPUT_TREE' });
+      // Repository-relative in-tree output is refused as INPUT_TREE on every platform.
+      await expect(planOutputPath(root, 'reports/existing.json', 'json')).rejects.toMatchObject({ code: 'INPUT_TREE' });
+      // An absolute in-tree path keeps the INPUT_TREE expectation on POSIX. Windows-form absolute paths are refused
+      // earlier, by design (the output contract is repository-relative POSIX), so Windows expects ABSOLUTE.
+      const absoluteInTree = join(root, 'reports', 'existing.json');
+      await expect(planOutputPath(root, absoluteInTree, 'json')).rejects.toMatchObject({ code: process.platform === 'win32' ? 'ABSOLUTE' : 'INPUT_TREE' });
       const externalExisting = join(external, 'existing.json');
       await writeFile(externalExisting, '{}');
       await expect(planOutputPath(root, externalExisting, 'json')).rejects.toMatchObject({ code: 'EXISTS' });

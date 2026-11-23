@@ -1,6 +1,6 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { cp, lstat, mkdtemp, readFile, readdir, realpath, rm, symlink, writeFile } from 'node:fs/promises';
-import { dirname, isAbsolute, join, normalize, relative, resolve, sep } from 'node:path';
+import { dirname, isAbsolute, join, posix, relative, resolve, sep } from 'node:path';
 import { tmpdir } from 'node:os';
 import { type ChildProcess } from 'node:child_process';
 import {spawnPreviewRuntime,signalOwnedRuntime} from './runtime-process.js';
@@ -44,7 +44,18 @@ export const reviewStatusTransitions: Record<ReviewStatus, readonly ReviewStatus
   'Rejected': ['Candidate Proposed', 'Needs Manual Investigation'],
 };
 export function reviewRecordKey(identity: ReviewIdentity): string { return recordKey(identity); }
-export function validateReviewIdentity(identity: ReviewIdentity): void { if (!identity || typeof identity.findingId !== 'string' || !identity.findingId.trim() || identity.findingId.length > 500 || typeof identity.sourcePath !== 'string' || !identity.sourcePath || isAbsolute(identity.sourcePath) || normalize(identity.sourcePath) !== identity.sourcePath || identity.sourcePath.split(/[\\/]/).includes('..') || identity.schemaVersion !== 2 || !identity.inputDigest || !identity.policyDigest) throw new Error('INVALID_REVIEW_IDENTITY'); }
+/**
+ * Repository-relative paths are POSIX on every platform, so the check must not use the platform path module:
+ * on Windows, `normalize('src/a.css')` returns `src\a.css`. Backslashes, drive letters, control characters and
+ * absolute forms are refused explicitly, and `..` segments are refused.
+ */
+export function isRepositoryRelativePath(value: unknown): value is string {
+  if (typeof value !== 'string' || value === '') return false;
+  if (/[\\\0\r\n]/.test(value) || /^[A-Za-z]:/.test(value)) return false;
+  if (posix.isAbsolute(value) || value.endsWith('/') || posix.normalize(value) !== value) return false;
+  return !value.split('/').includes('..');
+}
+export function validateReviewIdentity(identity: ReviewIdentity): void { if (!identity || typeof identity.findingId !== 'string' || !identity.findingId.trim() || identity.findingId.length > 500 || !isRepositoryRelativePath(identity.sourcePath) || identity.schemaVersion !== 2 || !identity.inputDigest || !identity.policyDigest) throw new Error('INVALID_REVIEW_IDENTITY'); }
 export function validateReviewRecordShape(input: Omit<ReviewRecord, 'timestamp'> & { timestamp?: string }): void { validateReviewIdentity(input); if (!Object.prototype.hasOwnProperty.call(input, 'status') || !reviewStatusTransitions[input.status]) throw new Error('INVALID_REVIEW_STATUS'); if (typeof input.reviewerNotes !== 'string' || input.reviewerNotes.length > 4000 || !Array.isArray(input.evidenceReferences) || input.evidenceReferences.length > 50 || input.evidenceReferences.some(reference => typeof reference !== 'string' || reference.length > 500)) throw new Error('REVIEW_EVIDENCE_TOO_LARGE'); if (input.candidateSessionId !== undefined && (typeof input.candidateSessionId !== 'string' || input.candidateSessionId.length > 100)) throw new Error('INVALID_CANDIDATE_SESSION_ID'); if (input.timestamp !== undefined && (!Number.isFinite(Date.parse(input.timestamp)))) throw new Error('INVALID_REVIEW_TIMESTAMP'); }
 export function getReviewRecord(identity: ReviewIdentity): ReviewRecord | null { validateReviewIdentity(identity); return reviewRecords.get(recordKey(identity)) ?? null; }
 export function saveReviewRecord(input: Omit<ReviewRecord, 'timestamp'> & { timestamp?: string }): ReviewRecord {
@@ -57,13 +68,13 @@ export function saveReviewRecord(input: Omit<ReviewRecord, 'timestamp'> & { time
 export function clearReviewRecords(): void { reviewRecords.clear(); }
 const inside = (root: string, target: string) => { const r = relative(root, target); return r === '' || (r !== '..' && !r.startsWith(`..${sep}`) && !isAbsolute(r)); };
 export function validateReviewPath(root: string, path: string): string {
-  if (!path || isAbsolute(path) || normalize(path) !== path || path.split(/[\\/]/).includes('..')) throw new Error('INVALID_REVIEW_PATH');
+  if (!isRepositoryRelativePath(path)) throw new Error('INVALID_REVIEW_PATH');
   const target = resolve(root, path);
   if (!inside(resolve(root), target) || path !== REVIEW_SOURCE) throw new Error('REVIEW_SOURCE_NOT_ALLOWED');
   return target;
 }
 export async function validateProjectSourcePath(root: string, path: string): Promise<string> {
-  if (!path || isAbsolute(path) || normalize(path) !== path || path.split(/[\\/]/).includes('..')) throw new Error('INVALID_REVIEW_PATH');
+  if (!isRepositoryRelativePath(path)) throw new Error('INVALID_REVIEW_PATH');
   const canonicalRoot = await realpath(resolve(root));
   const target = resolve(canonicalRoot, path);
   if (!inside(canonicalRoot, target)) throw new Error('REVIEW_SOURCE_NOT_ALLOWED');
