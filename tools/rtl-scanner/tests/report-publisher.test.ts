@@ -1,7 +1,7 @@
 import { realpathSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { describe, expect, it } from 'vitest';
-import { lstat, mkdir, readFile, symlink, writeFile, rm } from 'node:fs/promises';
+import { lstat, mkdir, readdir, readFile, symlink, writeFile, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { publishReports, publishArtifacts, PublicationError, type PublisherFs } from '../src/report-publisher.js';
 import * as fs from 'node:fs/promises';
@@ -14,9 +14,19 @@ async function dirs() {
 
 describe('report publication', () => {
   function injected(overrides:Partial<PublisherFs>={}):PublisherFs { return { lstat:fs.lstat, open:fs.open, link:fs.link, unlink:fs.unlink, platform:'darwin', ...overrides }; }
+  // Windows is not a supported publication profile in v0.5.0 (no secure no-overwrite publication yet). On that platform every
+  // publish must be refused before any artifact exists: no partial report, no overwrite, no unexpected file in the output directory.
+  async function expectUnsupportedProfileWithoutArtifacts(out: string, publish: () => Promise<unknown>, existing: Record<string, string> = {}): Promise<void> {
+    for (const [name, contents] of Object.entries(existing)) await writeFile(join(out, name), contents);
+    await expect(publish()).rejects.toBeInstanceOf(PublicationError);
+    await expect(publish()).rejects.toThrow('unsupported platform/filesystem profile');
+    expect((await readdir(out)).sort()).toEqual(Object.keys(existing).sort());
+    for (const [name, contents] of Object.entries(existing)) expect(await readFile(join(out, name), 'utf8')).toBe(contents);
+  }
   it('publishes deterministic JSON and Markdown bytes', async () => {
     const { root, out } = await dirs();
     try {
+      if (process.platform === 'win32') { await expectUnsupportedProfileWithoutArtifacts(out, () => publishReports(root, out, '{"complete":false}\n', '# report\n')); return; }
       await publishReports(root, out, '{"complete":false}\n', '# report\n');
       expect(await readFile(join(out, 'rtl-report.json'), 'utf8')).toBe('{"complete":false}\n');
       expect(await readFile(join(out, 'rtl-report.md'), 'utf8')).toBe('# report\n');
@@ -44,6 +54,11 @@ describe('report publication', () => {
     const linked = join(root, 'linked');
     try {
       await symlink(out, linked);
+      if (process.platform === 'win32') {
+        // Refused by the platform profile before the directory checks run; nothing may be written through the link.
+        await expectUnsupportedProfileWithoutArtifacts(out, () => publishReports(root, linked, 'j\n', 'm\n'));
+        return;
+      }
       await expect(publishReports(root, linked, 'j\n', 'm\n')).rejects.toThrow(/external|non-symlink/);
       await mkdir(join(root, 'nested'));
       await expect(publishReports(root, join(root, 'nested'), 'j\n', 'm\n')).rejects.toThrow(/external/);
@@ -98,6 +113,10 @@ describe('report publication', () => {
   it('publishes three artifacts successfully', async () => {
     const { root, out } = await dirs();
     try {
+      if (process.platform === 'win32') {
+        await expectUnsupportedProfileWithoutArtifacts(out, () => publishArtifacts(root, out, [{ name: 'rtl-report.json', contents: 'j\n' }]), { 'rtl-report.json': 'previous\n' });
+        return;
+      }
       await publishArtifacts(root, out, [
         { name: 'rtl-report.json', contents: 'j\n' },
         { name: 'rtl-report.md', contents: 'm\n' },
