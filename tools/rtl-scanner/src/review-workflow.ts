@@ -2,6 +2,7 @@ import { captureScopedDirectionEvidence, sameScopedDirectionEvidence, type Scope
 import { initializeOriginalPreview } from './original-preview-runtime.js';
 import { configuredWorkflowChecks, workflowValidationPresentation, workflowValidationEvidenceIssue } from './workflow-validation.js';
 import { createHash, randomUUID } from 'node:crypto';
+import { existsSync } from 'node:fs';
 import { lstat, mkdir, readFile, readdir, rename, realpath, rm, writeFile } from 'node:fs/promises';
 import { basename, dirname, isAbsolute, join, relative } from 'node:path';
 import { execFile } from 'node:child_process';
@@ -536,8 +537,12 @@ export class ReviewWorkflowStore {
     });
     const fresh=!!w.validation&&w.validation.signature===signature(w);
     const evidenceIssue=w.validation?workflowValidationEvidenceIssue(w):undefined;
-    const eligible=!evidenceIssue&&!w.supersededBy&&fresh&&w.validation?.state==='Passed'&&['Reviewing','Applying'].includes(w.state)&&w.entries.some(e=>e.decision==='Accepted'&&included(e));
-    const reason=w.supersededBy?'Historical review was superseded; start from the current review.':eligible?'Snapshot eligible under existing Apply policy: missing or explicitly excluded project commands are not required; scanner/runtime checks and source/candidate identity guards still apply.':w.state!=='Reviewing'&&w.state!=='Applying'?'Historical review cannot apply changes.':!w.entries.some(e=>e.decision==='Accepted'&&included(e))?'Approve at least one prepared change.':!fresh?'Validate the current accepted candidate before Apply.':evidenceIssue?evidenceIssue:'Resolve required checks: '+(w.validation?.checks.filter(c=>['Failed','Unavailable','Error','Not run'].includes(c.state)&&!c.name.startsWith('live-preview:')).map(c=>c.name+': '+c.state+' · '+c.detail.slice(0,180)).join('; ')||w.validation?.state);
-    return { ...rest, schemaVersion: 2, files, validationPresentation:workflowValidationPresentation(w,fresh), applyEligibility:{eligible,reason} };
+    // A missing candidate is detected without rebuilding it: viewing a review stays read-only, and Apply rebuilds on demand.
+    const candidateRecoveryRequired=w.state==='Reviewing'&&!!w.session&&!existsSync(w.session.candidateRoot);
+    const eligible=!candidateRecoveryRequired&&!evidenceIssue&&!w.supersededBy&&fresh&&w.validation?.state==='Passed'&&['Reviewing','Applying'].includes(w.state)&&w.entries.some(e=>e.decision==='Accepted'&&included(e));
+    const reason=w.supersededBy?'Historical review was superseded; start from the current review.':eligible?'Snapshot eligible under existing Apply policy: missing or explicitly excluded project commands are not required; scanner/runtime checks and source/candidate identity guards still apply.':candidateRecoveryRequired?'Revalidation required: the isolated candidate is missing. Validate the accepted changes again before Apply.':w.state!=='Reviewing'&&w.state!=='Applying'?'Historical review cannot apply changes.':!w.entries.some(e=>e.decision==='Accepted'&&included(e))?'Approve at least one prepared change.':!fresh?'Validate the current accepted candidate before Apply.':evidenceIssue?evidenceIssue:'Resolve required checks: '+(w.validation?.checks.filter(c=>['Failed','Unavailable','Error','Not run'].includes(c.state)&&!c.name.startsWith('live-preview:')).map(c=>c.name+': '+c.state+' · '+c.detail.slice(0,180)).join('; ')||w.validation?.state);
+    const presentation=workflowValidationPresentation(w,fresh);
+    const revalidation=candidateRecoveryRequired&&w.validation;
+    return { ...rest, schemaVersion: 2, files, candidateRecoveryRequired, validationPresentation:revalidation?{...presentation,status:'Revalidation required' as const,explanation:'The isolated candidate was removed when the review was stopped. Validate the accepted changes again; that rebuilds the candidate and checks it before Apply.'}:presentation, applyEligibility:{eligible,reason} };
   }
 }

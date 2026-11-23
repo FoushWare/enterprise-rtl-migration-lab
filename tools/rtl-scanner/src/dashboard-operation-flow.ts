@@ -16,7 +16,7 @@ export const operationFlowClientSource=String.raw`
     if(!op)return;
     const applied=op.kind==='apply'&&workflow.state==='Applied'&&op.state==='Succeeded',passed=op.kind==='validate'&&op.state==='Succeeded'&&workflow.applyEligibility?.eligible;
     const title=applied?'Changes applied':passed?'Validation passed':op.state==='Uncertain'||op.state==='Running'?'Operation status uncertain':op.kind==='validate'?'Validation did not pass':'Apply did not complete';
-    const message=applied?op.count+' accepted changes applied to original source. Current scan and historical operation are separate.':passed?op.count+' changes validated. Your original source files have not changed.':op.error||workflow.applyEligibility?.reason||'The request may have executed. Reconcile its server operation record before any retry.';
+    const message=applied?op.count+' accepted changes applied to original source. Current scan and historical operation are separate.':passed?op.count+' changes validated. Your original source files have not changed.':workflowErrorCopy(op.error||workflow.applyEligibility?.reason||'The request may have executed. Reconcile its server operation record before any retry.');
     const dialog=operationWindow(title,message);if(applied||passed){const icon=el('span','✓','operation-success');icon.setAttribute('role','img');icon.setAttribute('aria-label','Success');dialog.prepend(icon)}
     if(applied){
       opButton(dialog,'View applied changes / operation details',()=>{dismissOperation();document.querySelector('[data-review-details]')?.click()});

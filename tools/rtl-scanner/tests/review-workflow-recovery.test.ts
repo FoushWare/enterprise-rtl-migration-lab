@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { mkdtemp, mkdir, writeFile, readFile, rm, realpath, lstat, symlink, access } from 'node:fs/promises';
+import { mkdtemp, mkdir, writeFile, readFile, readdir, rm, realpath, lstat, symlink, access } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { scan } from '../src/scan.js';
-import { composeWorkflowFile, ReviewWorkflowStore } from '../src/review-workflow.js';
+import { composeWorkflowFile, ReviewWorkflowStore, signature } from '../src/review-workflow.js';
 import { ApplyAuditStore, ControlledApplyService } from '../src/controlled-apply.js';
 import { disposeReviewSession } from '../src/review-session.js';
 
@@ -268,6 +268,69 @@ describe('review workflow recovery after candidate loss', () => {
       expect(after.validation).toBeUndefined();
       expect(after.validationInvalidation).toMatch(/validation must be run again/);
     } finally {
+      await rm(env.root, { recursive: true, force: true });
+    }
+  });
+
+  it('reports Revalidation required with Apply ineligible while the candidate is missing, and rendering never rebuilds it', async () => {
+    const env = await reviewWithDisposedCandidate();
+    try {
+      const reloaded = await env.restart();
+      const stored = reloaded.get(env.w.id)!;
+      // A passing validation persisted before the restart: before this fix the view presented it as Apply-ready.
+      stored.validation = { state: 'Passed', signature: signature(stored), checks: [], hashes: {}, at: new Date().toISOString() } as never;
+      const view = reloaded.view(stored) as { candidateRecoveryRequired: boolean; applyEligibility: { eligible: boolean; reason: string }; validationPresentation: { status: string } };
+      expect(view.candidateRecoveryRequired).toBe(true);
+      expect(view.applyEligibility.eligible).toBe(false);
+      expect(view.applyEligibility.reason).toMatch(/Revalidation required/);
+      expect(view.validationPresentation.status).toBe('Revalidation required');
+      // Viewing is read-only: the missing candidate is not rebuilt until an explicit action needs it.
+      expect(await exists(stored.session!.candidateRoot)).toBe(false);
+    } finally {
+      await rm(env.root, { recursive: true, force: true });
+    }
+  });
+
+  it('a reconstruction that fails after the candidate copy leaves no record, source or temp change behind', async () => {
+    const env = await reviewWithDisposedCandidate();
+    const scratch = await mkdtemp(join(tmpdir(), 'rtl-recovery-failure-scratch-'));
+    const previousTmp = process.env.TMPDIR;
+    const snapshot = async () => {
+      const out: Record<string, string> = {};
+      for (const path of Object.keys(env.w.baseline)) out[path] = await readFile(join(env.root, path), 'utf8');
+      return out;
+    };
+    try {
+      const w = env.w;
+      const first = w.entries.find(e => e.patch)!;
+      first.decision = 'Accepted';
+      first.notes = 'keep this note';
+      // Forced failure: the stored patch no longer matches its original text, so composition throws after the candidate copy.
+      first.patch = { ...first.patch!, expectedSha256: 'f'.repeat(64) };
+      w.receipts = [{ auditId: 'audit-1', path: file, originalSha256: 'a', resultingSha256: 'b' } as never];
+      w.validation = { state: 'Passed', signature: signature(w), checks: [], hashes: {}, at: new Date().toISOString() } as never;
+      await env.store.persist();
+      const storeBefore = await readFile(env.store.path, 'utf8');
+      const sourceBefore = await snapshot();
+      const reloaded = await env.restart();
+      // Confine the failed copy to a scratch temp directory so any leaked candidate would be visible.
+      process.env.TMPDIR = scratch;
+      try {
+        await expect(reloaded.preview(w.id, env.finding, 'ltr')).rejects.toThrow(/STALE_PATCH_RANGE/);
+      } finally {
+        if (previousTmp === undefined) delete process.env.TMPDIR; else process.env.TMPDIR = previousTmp;
+      }
+      expect(await readdir(scratch)).toEqual([]);
+      expect(await readFile(env.store.path, 'utf8')).toBe(storeBefore);
+      expect(await snapshot()).toEqual(sourceBefore);
+      const resumed = reloaded.get(w.id)!;
+      expect(resumed.session!.candidateRoot).toBe(env.candidateBefore);
+      expect(resumed.receipts).toEqual(w.receipts);
+      expect(resumed.validation).toEqual(w.validation);
+      expect(resumed.entries.find(e => e.finding.id === first.finding.id)).toMatchObject({ decision: 'Accepted', notes: 'keep this note' });
+    } finally {
+      if (previousTmp === undefined) delete process.env.TMPDIR; else process.env.TMPDIR = previousTmp;
+      await rm(scratch, { recursive: true, force: true });
       await rm(env.root, { recursive: true, force: true });
     }
   });
