@@ -35,6 +35,8 @@ export class OriginalPreviewStartupError extends Error {
   }
 }
 
+/** How long an original dev server may take to answer its identity check. Must stay under the companion's 30 s request timeout. */
+const ORIGINAL_STARTUP_BUDGET_MS = 25_000;
 const starts = new Map<string, Promise<void>>();
 const children = new Map<string, ChildProcess>();
 /** Only call after authoritative report/mapping checks. No candidate is created or patched. */
@@ -73,7 +75,8 @@ export async function initializeOriginalPreview(root: string, application: strin
     }
     const startedAt = Date.now();
     const alive = () => child.exitCode === null && child.signalCode === null && !spawnError;
-    for (let attempt = 0; attempt < 100; attempt++) {
+    const startupDeadline = Date.now() + ORIGINAL_STARTUP_BUDGET_MS;
+    for (let attempt = 0; Date.now() < startupDeadline; attempt++) {
       try {
         const actual = await fetch(origin + '/__rtl_preview_identity', { signal: AbortSignal.timeout(500) }).then(r => r.json()) as { projectRoot: string; role: string; application: string; sourceSha256: string };
         if (actual.projectRoot === root && actual.role === 'original' && actual.application === application && actual.sourceSha256 === sourceSha256) return;

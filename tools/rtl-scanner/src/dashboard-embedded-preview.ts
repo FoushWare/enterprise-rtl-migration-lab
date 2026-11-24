@@ -4,7 +4,7 @@ export const embeddedPreviewClientSource = String.raw`
 const embeddedReview=(()=>{
   const records=new Map();let selected=null,view=null;
   const key=f=>[d.inputDigest,d.policyDigest,f.id,f.path].join('|');
-  const request=async(path,options)=>{let response;try{response=await window.rtlFetchCompanion(previewOrigin+path,options)}catch{throw Error('COMPANION_UNAVAILABLE')}const body=await response.json();if(!response.ok)throw Error(body.error||'PREVIEW_REQUEST_FAILED');return body};
+  const request=async(path,options)=>{let response;try{response=await window.rtlFetchCompanion(previewOrigin+path,options)}catch{throw Error((window.rtlPreviewNotReadyCode&&window.rtlPreviewNotReadyCode())||'COMPANION_UNAVAILABLE')}const body=await response.json();if(!response.ok)throw Error(body.error||'PREVIEW_REQUEST_FAILED');return body};
   const live=(record,node)=>selected===record.key&&node.isConnected;
   const status=(record,text)=>{if(selected!==record.key)return;const n=document.querySelector('.analysis-status');if(n)n.textContent=text};
   const workspaceLayout={position:'fixed',inset:'0',width:'100vw',height:'100vh','max-width':'none','max-height':'none','z-index':'10000',overflow:'hidden',display:'flex','flex-direction':'column','box-sizing':'border-box',margin:'0',padding:'8px','border-radius':'0',gap:'8px',background:'#0e1a2d',color:'#e9f0ff',font:'14px/1.4 Inter,ui-sans-serif,system-ui,sans-serif',transform:'none',animation:'none',transition:'none'};
@@ -119,7 +119,7 @@ const embeddedReview=(()=>{
         // Secondary external links always point to this exact candidate and direction.
         const routeButtons=current.component.querySelectorAll('.route-actions button');routeButtons.forEach((b,index)=>{b.disabled=false;b.onclick=async()=>{try{const route=await request(record.workflowId?'/review/workflows/'+record.workflowId+'/preview?'+new URLSearchParams({mode:index===0?'ltr':'rtl',findingId:f.id}):'/mappings/'+encodeURIComponent(f.previewMappingId)+'/preview?'+new URLSearchParams({mode:index===0?'ltr':'rtl',session:record.session.id,findingId:f.id}));if(live(record,current.component)&&route.candidateSessionId===record.session.id&&originAllowed(route.url,'candidate'))window.open(route.url,'_blank','noopener,noreferrer')}catch(error){status(record,error.message)}}});
       }
-    }catch(error){if(live(record,current.component)){for(const item of current.items){item.state.textContent=error.message==='COMPANION_UNAVAILABLE'?'Companion unavailable. Retry connection.':'Preview route unavailable: '+error.message;item.state.dataset.state='error'}}}
+    }catch(error){if(live(record,current.component)){for(const item of current.items){item.state.textContent=(window.rtlPreviewFailureText&&window.rtlPreviewFailureText(error.message))||(error.message==='COMPANION_UNAVAILABLE'?'Companion unavailable. Retry connection.':'Preview route unavailable: '+error.message);item.state.dataset.state='error'}}}
   }
   window.addEventListener('message',event=>{
     if(!view||view.record.contextual||selected!==view.record.key)return;const record=view.record,p=event.data;
