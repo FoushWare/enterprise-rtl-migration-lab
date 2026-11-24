@@ -23,6 +23,7 @@ async function recoverSourceContextOnce(){
     const badge=[...document.querySelectorAll('.status')].find(node=>node.textContent==='REPORT SNAPSHOT · SOURCE UNVERIFIED');
     if(badge)badge.textContent=d.complete?'SCAN COMPLETE':'SCAN INCOMPLETE';
     refresh();
+    window.dispatchEvent(new CustomEvent('rtl-source-context-restored'));
   }catch(error){sourceContextError=error.message;document.querySelectorAll('.source-context-status').forEach(node=>{node.textContent='Source context blocked: '+sourceContextError})}
 };
 // Single flight: the readiness event and the first-announcement wait can both ask for recovery; they share one request.
