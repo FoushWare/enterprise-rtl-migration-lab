@@ -70,11 +70,13 @@ function requestUrl(request: IncomingMessage): URL { return new URL(request.url 
 const idleExitEnabled = process.env.RTL_PREVIEW_EXIT_WHEN_IDLE === '1';
 const idleGraceMs = Number(process.env.RTL_PREVIEW_IDLE_EXIT_MS ?? 15_000);
 let idleTimer: ReturnType<typeof setTimeout> | undefined;
+// A start in progress holds no lease until it succeeds, so it counts as activity: the companion must not exit under it.
+let originalStartsInFlight = 0;
 function armIdleExit(): void {
   if (idleTimer) clearTimeout(idleTimer);
   idleTimer = undefined;
-  if (!idleExitEnabled || originalLeaseCount() > 0) return;
-  idleTimer = setTimeout(() => { if (originalLeaseCount() === 0) void shutdown(); }, idleGraceMs);
+  if (!idleExitEnabled || originalLeaseCount() > 0 || originalStartsInFlight > 0) return;
+  idleTimer = setTimeout(() => { if (originalLeaseCount() === 0 && originalStartsInFlight === 0) void shutdown(); }, idleGraceMs);
 }
 const server = createServer(async (request, response) => {
   if (idleExitEnabled && originalLeaseCount() === 0) armIdleExit();
@@ -109,6 +111,7 @@ const server = createServer(async (request, response) => {
     }catch(error){return send(response,409,{error:error instanceof Error?error.message:'SOURCE_CONTEXT_UNAVAILABLE'});}
   }
   if (url.pathname === '/contextual-preview/original' && request.method === 'POST') {
+    originalStartsInFlight++;
     try {
       // The original start can take tens of seconds. It runs outside the exclusive lock, so page reads (workflow, records,
       // routes) stay responsive while it starts. initializeOriginalPreview is idempotent per application, so concurrent
@@ -135,6 +138,9 @@ const server = createServer(async (request, response) => {
       // Startup diagnostics are bounded and redacted by the runtime; the page never receives raw child output.
       const message:string=error instanceof Error?error.message:'ORIGINAL_PREVIEW_FAILED';
       return send(response,409,error instanceof OriginalPreviewStartupError?{error:message,diagnostics:error.diagnostics}:{error:message});
+    } finally {
+      originalStartsInFlight--;
+      armIdleExit();
     }
   }
   if (url.pathname === '/contextual-preview/original/release' && request.method === 'POST') {
