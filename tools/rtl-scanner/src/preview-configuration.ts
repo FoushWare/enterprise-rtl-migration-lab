@@ -7,6 +7,8 @@ import postcss from 'postcss';
 import ts from 'typescript';
 
 export const PREVIEW_CONFIGURATION='rtl-preview.config.json';
+/** Time a dev server (original or candidate) may take to answer its identity check. Override with startupTimeoutMs. */
+export const DEFAULT_STARTUP_TIMEOUT_MS=60_000;
 export interface ConfiguredRoute {id:string;path:string;ltr:string;rtl:string}
 export interface ConfiguredApplication {viteConfig:string;entry:string;originalOrigin:string;readySelector:string;dataAdapter:'none'|'atlas';startupScript?:string;startupTimeoutMs?:number;routes:ConfiguredRoute[]}
 export interface SourcePreviewBinding {source:string;sourceSelector?:string;context?:string;sourceExpressions?:{text:string;start:number;end:number}[];targetSelector:string;routes:{application:string;route:string}[]}

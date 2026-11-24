@@ -7,7 +7,7 @@ import {spawnPreviewRuntime,signalOwnedRuntime} from './runtime-process.js';
 import { createServer as createNetServer } from 'node:net';
 import type { PreviewApplication } from './example-preview-mappings.js';
 import {loadProjectConfiguration,PROJECT_CONFIGURATION} from './project-configuration.js';
-import {loadPreviewConfiguration} from './preview-configuration.js';
+import {loadPreviewConfiguration,DEFAULT_STARTUP_TIMEOUT_MS} from './preview-configuration.js';
 import { writePreviewRuntimeConfig } from './preview-runtime.js';
 
 export const REVIEW_SOURCE = 'apps/invoicing/src/components/InvoiceTable.tsx';
@@ -225,7 +225,10 @@ async function startRuntime(session: ReviewSession, application: PreviewApplicat
   assignments[application]=port;
   const starting = { ...session,runtimePorts:assignments, candidateSha256: sourceSha256, runtime: { port, origin, status: 'starting' as const } };
   runtimeStates.set(key, starting);
-  for (let attempt = 0; attempt < 100; attempt++) { if (await ownedRuntimeHealthy(starting, application)) { const healthy = { ...starting, runtime: { ...starting.runtime, status: 'healthy' as const } }; runtimeStates.set(key, healthy); return healthy; } if (child.exitCode !== null || startupError.includes('EADDRINUSE')) break; await new Promise(resolveDelay => setTimeout(resolveDelay, 100)); }
+  // Same startup budget as the original: the application's startupTimeoutMs, or the default.
+  const candidateBudget = (await loadPreviewConfiguration(session.root).catch(() => undefined))?.applications[application]?.startupTimeoutMs ?? DEFAULT_STARTUP_TIMEOUT_MS;
+  const candidateDeadline = Date.now() + candidateBudget;
+  for (let attempt = 0; Date.now() < candidateDeadline; attempt++) { if (await ownedRuntimeHealthy(starting, application)) { const healthy = { ...starting, runtime: { ...starting.runtime, status: 'healthy' as const } }; runtimeStates.set(key, healthy); return healthy; } if (child.exitCode !== null || startupError.includes('EADDRINUSE')) break; await new Promise(resolveDelay => setTimeout(resolveDelay, 100)); }
   await stopRuntimeKey(starting, key);
   if (/EADDRINUSE|already in use/.test(startupError)) continue;
   return { ...starting, runtime: { ...starting.runtime, status: 'failed', error: startupError.trim() || 'CANDIDATE_IDENTITY_UNAVAILABLE' } };

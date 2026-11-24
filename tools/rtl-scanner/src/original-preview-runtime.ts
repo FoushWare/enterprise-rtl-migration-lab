@@ -3,7 +3,7 @@ import { createServer } from 'node:net';
 import { join } from 'node:path';
 import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { loadPreviewConfiguration } from './preview-configuration.js';
+import { loadPreviewConfiguration, DEFAULT_STARTUP_TIMEOUT_MS } from './preview-configuration.js';
 import { writePreviewRuntimeConfig } from './preview-runtime.js';
 import { ORIGINAL_PREVIEW_ORIGINS } from './contextual-preview.js';
 
@@ -36,7 +36,7 @@ export class OriginalPreviewStartupError extends Error {
 }
 
 /** Default time an original dev server may take to answer its identity check. Override per application with startupTimeoutMs in rtl-preview.config.json. */
-export const ORIGINAL_STARTUP_DEFAULT_MS = 60_000;
+export const ORIGINAL_STARTUP_DEFAULT_MS = DEFAULT_STARTUP_TIMEOUT_MS;
 const starts = new Map<string, Promise<void>>();
 const children = new Map<string, ChildProcess>();
 /** Only call after authoritative report/mapping checks. No candidate is created or patched. */

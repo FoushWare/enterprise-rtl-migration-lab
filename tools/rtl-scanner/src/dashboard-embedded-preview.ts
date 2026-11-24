@@ -193,7 +193,7 @@ const embeddedReview=(()=>{
     current.component.querySelector('[data-preview-retry]')?.remove();if(value.state==='unsupported'&&['Rejected','Deferred','Flagged'].includes(record.decision)&&record.manualPrepare&&!record.historical){const reconsider=el('button','Reconsider preview');reconsider.dataset.previewRetry='true';reconsider.disabled=!!value.busy;reconsider.onclick=record.manualPrepare;after.state.after(reconsider);}if(value.state==='failed'){const button=el('button','Retry preview');button.dataset.previewRetry='true';button.disabled=!!value.busy;button.onclick=record.retryPreview;after.state.after(button);}
     if(value.state!=='ready'){
       if(['failed','unsupported'].includes(value.state)){clearTimeout(after.timeout);after.box.replaceChildren();after.frame=null;after.ready=null;clearContextTargets(after);after.state.dataset.state=value.state==='failed'?'error':'unavailable';}
-      if(!after.targetRestoreFailed)setText(after.state,value.state==='failed'?'Preview preparation failed: '+value.reason+'. Retry preview.':value.state==='unsupported'?'Manual review required · No supported candidate preview. '+value.reason:value.reason||'Preparing isolated preview…');
+      if(!after.targetRestoreFailed)setText(after.state,value.state==='failed'?'Preview preparation failed: '+(/^[A-Z_]+$/.test(String(value.reason||''))?'the modified preview did not start in time':value.reason)+'. Retry preview.':value.state==='unsupported'?'Manual review required · No supported candidate preview. '+value.reason:value.reason||'Preparing isolated preview…');
     }
     syncControls(current);
   }
