@@ -193,8 +193,8 @@ const server = createServer(async (request, response) => {
       const id = match[1], action = match[2];
       if (request.method === 'GET') {
         if (action === 'preview' && id) return send(response, 200, await workflowStore.exclusive(() => workflowStore.preview(id, url.searchParams.get('findingId') ?? '', url.searchParams.get('mode') ?? '')));
-        // Read-only snapshot of in-memory state: it does not wait for a long preparation to finish.
-        const snapshot = (() => { const w = id ? workflowStore.get(id) : workflowStore.find(url.searchParams.get('inputDigest') ?? '', url.searchParams.get('policyDigest') ?? '', url.searchParams.get('mode') ?? ''); return w ? workflowStore.view(w) : null; })();
+        // Queued behind earlier accepted writes, so a read issued after a write sees that write (read-after-write order).
+        const snapshot = await workflowStore.exclusive(async () => { const w = id ? workflowStore.get(id) : workflowStore.find(url.searchParams.get('inputDigest') ?? '', url.searchParams.get('policyDigest') ?? '', url.searchParams.get('mode') ?? ''); return w ? workflowStore.view(w) : null; });
         return send(response, 200, { workflow: snapshot, projectRoot });
       }
       const input = await body(request);
