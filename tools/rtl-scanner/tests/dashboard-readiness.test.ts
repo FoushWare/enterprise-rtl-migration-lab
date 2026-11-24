@@ -65,7 +65,9 @@ describe('dashboard readiness without a page reload', () => {
     const page = await openDashboard({ state: 'starting' });
     expect(page.companion.sourceRequests).toBe(1);
     expect(page.dom.window.document.querySelectorAll('.finding').length).toBeGreaterThan(0);
-    expect(page.visibleText()).toContain('SOURCE UNVERIFIED');
+    // While starting, the page says so; it does not claim the source is unverified or the connection failed.
+    expect(page.visibleText()).toContain('LIVE PREVIEW STARTING');
+    expect(page.visibleText()).not.toContain('Failed to fetch');
     page.publish('ready');
     await settle();
     expect(page.companion.sourceRequests).toBe(2);
