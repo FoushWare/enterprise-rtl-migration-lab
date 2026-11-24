@@ -36,15 +36,19 @@ export async function writePreviewRuntimeConfig(root: string, identity: PreviewR
     // Candidate CSS inspection reuses the shared proposal; no second transformation inventory.
     if(options.contextRoot&&options.contextRoot!==root){
       const {proposeTransformation}=await import('./transformations.js');
-      for(const binding of bindings){const f=report.findings.find(f=>f.id===binding.finding.id)!;
+      // Each file is read and parsed once per configuration write, not once per binding; findings are looked up by id.
+      const findingById=new Map(report.findings.map(f=>[f.id,f]));const texts=new Map<string,Promise<string>>();const parsed=new Map<string,Promise<ReturnType<typeof postcss.parse>>>();
+      const contextText=(path:string)=>{let t=texts.get('context\0'+path);if(!t)texts.set('context\0'+path,t=readFile(join(options.contextRoot!,path),'utf8'));return t;};
+      const rootAst=(path:string)=>{let t=parsed.get(path);if(!t)parsed.set(path,t=readFile(join(root,path),'utf8').then(text=>postcss.parse(text)));return t;};
+      for(const binding of bindings){const f=findingById.get(binding.finding.id)!;
         if(!binding.mapping.configured||!binding.mapping.css)continue;
         try{
-          const proposal=proposeTransformation(f,await readFile(join(options.contextRoot,f.path),'utf8'));
+          const proposal=proposeTransformation(f,await contextText(f.path));
           const replacement=postcss.parse('.probe{'+proposal.patch.replacement+'}').first;
           const declarations=replacement?.type==='rule'?replacement.nodes.filter(d=>d.type==='decl'):[];
           const declaration=declarations[0];
           if(!declaration)continue;
-          const actual=postcss.parse(await readFile(join(root,f.path),'utf8'));
+          const actual=await rootAst(f.path);
           let present=false;
           actual.walkRules(r=>{
             if(r.selector===binding.mapping.sourceSelector&&declarations.every(expected=>r.nodes.some(d=>d.type==='decl'&&d.prop===expected.prop&&d.value===expected.value&&d.important===expected.important)))present=true;
