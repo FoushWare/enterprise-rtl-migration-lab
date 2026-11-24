@@ -1,3 +1,4 @@
+import { PreviewSupersession } from './preview-supersession.js';
 import { initializeOriginalPreview, hasOriginalLease, leaseOriginalPreview, originalLeaseCount, OriginalPreviewStartupError, releaseOriginalPreview, signalOwnedOriginalPreviews, stopOwnedOriginalPreviews } from './original-preview-runtime.js';
 import {loadPreviewConfiguration} from './preview-configuration.js';
 import { contextualPreview } from './contextual-preview.js';
@@ -72,13 +73,18 @@ const idleGraceMs = Number(process.env.RTL_PREVIEW_IDLE_EXIT_MS ?? 15_000);
 let idleTimer: ReturnType<typeof setTimeout> | undefined;
 // A start in progress holds no lease until it succeeds, so it counts as activity: the companion must not exit under it.
 let originalStartsInFlight = 0;
+// Any request still being handled (for example a preview preparation) keeps the companion alive until its response is closed.
+let requestsInFlight = 0;
+const supersession = new PreviewSupersession();
 function armIdleExit(): void {
   if (idleTimer) clearTimeout(idleTimer);
   idleTimer = undefined;
-  if (!idleExitEnabled || originalLeaseCount() > 0 || originalStartsInFlight > 0) return;
-  idleTimer = setTimeout(() => { if (originalLeaseCount() === 0 && originalStartsInFlight === 0) void shutdown(); }, idleGraceMs);
+  if (!idleExitEnabled || originalLeaseCount() > 0 || originalStartsInFlight > 0 || requestsInFlight > 0) return;
+  idleTimer = setTimeout(() => { if (originalLeaseCount() === 0 && originalStartsInFlight === 0 && requestsInFlight === 0) void shutdown(); }, idleGraceMs);
 }
 const server = createServer(async (request, response) => {
+  requestsInFlight++;
+  response.once('close', () => { requestsInFlight--; armIdleExit(); });
   if (idleExitEnabled && originalLeaseCount() === 0) armIdleExit();
   const url = requestUrl(request);
   if(shuttingDown)return send(response,503,{error:'COMPANION_SHUTTING_DOWN'});
@@ -157,27 +163,29 @@ const server = createServer(async (request, response) => {
     }
   }
   if (url.pathname === '/contextual-preview' && request.method === 'GET') {
-    try { const result = await workflowStore.exclusive(() => contextualPreview(projectRoot,url.searchParams,url.searchParams.get('workflowId')?workflowStore.get(url.searchParams.get('workflowId')!):undefined));return send(response,200,result); }
+    try { const result = await contextualPreview(projectRoot,url.searchParams,url.searchParams.get('workflowId')?workflowStore.get(url.searchParams.get('workflowId')!):undefined);return send(response,200,result); }
     catch(error){return send(response,409,{error:error instanceof Error?error.message:'CONTEXTUAL_PREVIEW_FAILED'});}
   }
   if (url.pathname.startsWith('/review/workflows')) {
     try {
-      if(request.method==='GET'&&url.pathname==='/review/workflows'&&url.searchParams.get('history')==='1')return send(response,200,{workflows:await workflowStore.exclusive(async()=>workflowStore.list().map(w=>workflowStore.view(w))),projectRoot});
+      if(request.method==='GET'&&url.pathname==='/review/workflows'&&url.searchParams.get('history')==='1')return send(response,200,{workflows:workflowStore.list().map(w=>workflowStore.view(w)),projectRoot});
       const match = url.pathname.match(/^\/review\/workflows(?:\/([^/]+)(?:\/(change|runtime|validate|apply|rollback|preview|resume|remaining|prepare-preview|prepare-batch|approve-batch))?)?$/);
       if (!match) throw new Error('WORKFLOW_ROUTE_NOT_FOUND');
       const id = match[1], action = match[2];
       if (request.method === 'GET') {
         if (action === 'preview' && id) return send(response, 200, await workflowStore.exclusive(() => workflowStore.preview(id, url.searchParams.get('findingId') ?? '', url.searchParams.get('mode') ?? '')));
-        const snapshot = await workflowStore.exclusive(async () => { const w = id ? workflowStore.get(id) : workflowStore.find(url.searchParams.get('inputDigest') ?? '', url.searchParams.get('policyDigest') ?? '', url.searchParams.get('mode') ?? ''); return w ? workflowStore.view(w) : null; });
+        // Read-only snapshot of in-memory state: it does not wait for a long preparation to finish.
+        const snapshot = (() => { const w = id ? workflowStore.get(id) : workflowStore.find(url.searchParams.get('inputDigest') ?? '', url.searchParams.get('policyDigest') ?? '', url.searchParams.get('mode') ?? ''); return w ? workflowStore.view(w) : null; })();
         return send(response, 200, { workflow: snapshot, projectRoot });
       }
       const input = await body(request);
+      const previewSeq = action === 'prepare-preview' && id ? supersession.begin(id) : 0;
       const w = await workflowStore.exclusive(async () => {
         if (!id) return workflowStore.begin(input);
         if (action === 'change') return workflowStore.change(id, input.findingId, input);
         if (action === 'prepare-batch') return workflowStore.prepareBatch(id);
         if (action === 'approve-batch') return workflowStore.approveBatch(id,input.findingIds);
-        if (action === 'prepare-preview') return workflowStore.preparePreview(id,input);
+        if (action === 'prepare-preview') { if (!supersession.isCurrent(id, previewSeq)) throw new Error('PREVIEW_SUPERSEDED'); return workflowStore.preparePreview(id,input); }
         if (action === 'runtime') { return workflowStore.runtime(id,input.application); }
         if (action === 'validate') return input.operationId?workflowStore.runOperation(id,'validate',input.operationId,()=>workflowStore.validate(id)):workflowStore.validate(id);
         if (action === 'apply') return input.operationId?workflowStore.runOperation(id,'apply',input.operationId,()=>workflowStore.apply(id,input.confirmation)):workflowStore.apply(id,input.confirmation);
