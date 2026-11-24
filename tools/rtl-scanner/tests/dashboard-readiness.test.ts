@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
 
 // jsdom ships without type declarations here; only the surface this test uses is typed.
-interface JsdomInstance { readonly window: Window & Record<string, any> }
+interface JsdomInstance { readonly window: Window & { [key: string]: unknown } }
 const { JSDOM } = createRequire(import.meta.url)('jsdom') as { JSDOM: new (html: string, options: Record<string, unknown>) => JsdomInstance };
 import { dashboardHtml } from '../src/dashboard-html.js';
 import { toSchemaV2Presentation } from '../src/presentation-adapter.js';
@@ -54,7 +54,8 @@ async function openDashboard(scenario: Scenario) {
   const publish = (state: string) => {
     companion.ready = state === 'ready';
     dom.window.rtlPreviewState = { state };
-    dom.window.dispatchEvent(new dom.window.CustomEvent('rtl-preview-state', { detail: { state, ready: state === 'ready' } }));
+    const Event = dom.window.CustomEvent as unknown as new (type: string, init: { detail: unknown }) => Event;
+    dom.window.dispatchEvent(new Event('rtl-preview-state', { detail: { state, ready: state === 'ready' } }));
   };
   await settle();
   return { dom, companion, visibleText, publish };
