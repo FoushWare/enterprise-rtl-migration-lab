@@ -1,4 +1,4 @@
-import { initializeOriginalPreview, hasOriginalLease, leaseOriginalPreview, originalLeaseCount, releaseOriginalPreview, signalOwnedOriginalPreviews, stopOwnedOriginalPreviews } from './original-preview-runtime.js';
+import { initializeOriginalPreview, hasOriginalLease, leaseOriginalPreview, originalLeaseCount, OriginalPreviewStartupError, releaseOriginalPreview, signalOwnedOriginalPreviews, stopOwnedOriginalPreviews } from './original-preview-runtime.js';
 import {loadPreviewConfiguration} from './preview-configuration.js';
 import { contextualPreview } from './contextual-preview.js';
 import { verifiedSourceTransition, reconcileSourceRuntimes, reconcileSelectedFinding, type FindingSelection } from './source-context.js';
@@ -127,7 +127,11 @@ const server = createServer(async (request, response) => {
         }
         return after;
       });armIdleExit();return send(response,200,result);
-    }catch(error){return send(response,409,{error:error instanceof Error?error.message:'ORIGINAL_PREVIEW_FAILED'});}
+    }catch(error){
+      // Startup diagnostics are bounded and redacted by the runtime; the page never receives raw child output.
+      const message:string=error instanceof Error?error.message:'ORIGINAL_PREVIEW_FAILED';
+      return send(response,409,error instanceof OriginalPreviewStartupError?{error:message,diagnostics:error.diagnostics}:{error:message});
+    }
   }
   if (url.pathname === '/contextual-preview/original/release' && request.method === 'POST') {
     try {

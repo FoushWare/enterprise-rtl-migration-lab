@@ -4,7 +4,7 @@ export const embeddedPreviewClientSource = String.raw`
 const embeddedReview=(()=>{
   const records=new Map();let selected=null,view=null;
   const key=f=>[d.inputDigest,d.policyDigest,f.id,f.path].join('|');
-  const request=async(path,options)=>{let response;try{response=await fetch(previewOrigin+path,options)}catch{throw Error('COMPANION_UNAVAILABLE')}const body=await response.json();if(!response.ok)throw Error(body.error||'PREVIEW_REQUEST_FAILED');return body};
+  const request=async(path,options)=>{let response;try{response=await window.rtlFetchCompanion(previewOrigin+path,options)}catch{throw Error('COMPANION_UNAVAILABLE')}const body=await response.json();if(!response.ok)throw Error(body.error||'PREVIEW_REQUEST_FAILED');return body};
   const live=(record,node)=>selected===record.key&&node.isConnected;
   const status=(record,text)=>{if(selected!==record.key)return;const n=document.querySelector('.analysis-status');if(n)n.textContent=text};
   const workspaceLayout={position:'fixed',inset:'0',width:'100vw',height:'100vh','max-width':'none','max-height':'none','z-index':'10000',overflow:'hidden',display:'flex','flex-direction':'column','box-sizing':'border-box',margin:'0',padding:'8px','border-radius':'0',gap:'8px',background:'#0e1a2d',color:'#e9f0ff',font:'14px/1.4 Inter,ui-sans-serif,system-ui,sans-serif',transform:'none',animation:'none',transition:'none'};

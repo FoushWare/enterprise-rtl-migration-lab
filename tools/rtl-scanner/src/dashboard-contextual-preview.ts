@@ -58,7 +58,7 @@ const dashboardLeases=createDashboardLeaseClient({origin:'http://127.0.0.1:4318'
   }
   async function contextRoutes(record,f,current){
     if(!current||!live(record,current.component))return;contextControls(current);
-    current.component.dataset.mappingMissing='false';current.component.querySelector('.mapping-unavailable')?.remove();const token=(record.routeToken||0)+1;record.routeToken=token;record.contextResolving=true;for(const item of current.items){item.state.dataset.state='loading';item.state.dataset.contextStatus='loading-route';item.state.textContent='Resolving current route and contextual target…'}
+    current.component.dataset.mappingMissing='false';current.component.querySelector('.mapping-unavailable')?.remove();const token=(record.routeToken||0)+1;record.routeToken=token;record.contextResolving=true;const stage=window.rtlPreviewState&&window.rtlPreviewState.state==='starting'?'Starting preview server…':'Resolving current route and contextual target…';for(const item of current.items){item.state.dataset.state='loading';item.state.dataset.contextStatus='loading-route';item.state.textContent=stage}
     try{
       const query=new URLSearchParams({inputDigest:d.inputDigest,policyDigest:d.policyDigest,findingId:f.id,mode:record.mode,...(record.workflowId?{workflowId:record.workflowId}:{}),...(record.routeId?{routeId:record.routeId}:{})});
       let info=await request('/contextual-preview?'+query);
@@ -85,6 +85,8 @@ const dashboardLeases=createDashboardLeaseClient({origin:'http://127.0.0.1:4318'
         current.component.dataset.mappingMissing='true';const unavailable=el('section','','mapping-unavailable');unavailable.setAttribute('role','status');unavailable.append(el('h3','Live preview unavailable'),el('p',info.review?.hasAutomaticFix?'This finding has no configured page/element mapping. Review the supported candidate in code; its visual effect has not been verified.':'Source requiring review. No configured page/element mapping or supported candidate patch is available. '+(f.rationale||'')));unavailable.append(el('p','Approval is unavailable without a verified page/element binding and required direction evidence. Review the code, choose Defer or Needs review, or configure an accurate preview binding.'));current.component.append(unavailable);
       }
       updateCandidateAction(current);syncRoute(current);
+      // Status messages that arrived while this resolution was running were ignored; ask every unready frame again.
+      for(const item of current.items){if(item.frame&&item.url&&!item.ready)contextProbe(item,record,f)}
       current.component.querySelectorAll('.route-actions button').forEach((button,index)=>{button.disabled=!info.candidate?.available;button.onclick=()=>{const url=new URL(info.candidate.urls?.[index?'rtl':'ltr']||info.candidate.url);if(!info.candidate.urls)url.searchParams.set('lang',index?'ar':'en');if(originAllowed(url.href,'candidate'))window.open(url.href,'_blank','noopener,noreferrer')}});
     }catch(error){if(live(record,current.component)&&record.routeToken===token){record.contextResolving=false;for(const item of current.items){clearTimeout(item.timeout);item.box.replaceChildren();item.frame=null;item.ready=null;clearContextTargets(item);item.state.dataset.state='error';item.state.dataset.contextStatus='unavailable';item.state.textContent='Context unavailable: '+error.message+'. Retry connection or restart the scoped application runtime.'}current.contextSummary.textContent='Context unavailable · '+error.message;updateCandidateAction(current)}}
   }

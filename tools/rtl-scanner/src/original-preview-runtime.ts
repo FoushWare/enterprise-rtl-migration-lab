@@ -7,8 +7,33 @@ import { loadPreviewConfiguration } from './preview-configuration.js';
 import { writePreviewRuntimeConfig } from './preview-runtime.js';
 import { ORIGINAL_PREVIEW_ORIGINS } from './contextual-preview.js';
 
-import {spawnPreviewRuntime,signalOwnedRuntime} from './runtime-process.js';
+import {spawnPreviewRuntime,signalOwnedRuntime,runtimeOutputTail,redactRuntimeOutput} from './runtime-process.js';
+import {loadProjectConfiguration} from './project-configuration.js';
 import { OriginalPreviewLeases } from './original-preview-leases.js';
+
+/** Why a start attempt failed. `output` is bounded and redacted; it never holds environment values. */
+export interface OriginalStartupDiagnostics {
+  readonly reason: 'exited' | 'spawn-error' | 'timeout';
+  readonly exitCode: number | null;
+  readonly signal: string | null;
+  readonly spawnErrorCode?: string;
+  /** Package manager or executable that was launched (no arguments, so no flags or paths leak). */
+  readonly command: string;
+  readonly startupScript?: string;
+  readonly cwd: string;
+  readonly port: number;
+  readonly waitedMs: number;
+  readonly output: string;
+}
+
+/** Thrown by initializeOriginalPreview. `message` stays the stable code so existing error handling keeps working. */
+export class OriginalPreviewStartupError extends Error {
+  readonly code = 'ORIGINAL_PREVIEW_STARTUP_FAILED';
+  constructor(readonly diagnostics: OriginalStartupDiagnostics) {
+    super('ORIGINAL_PREVIEW_STARTUP_FAILED');
+    this.name = 'OriginalPreviewStartupError';
+  }
+}
 
 const starts = new Map<string, Promise<void>>();
 const children = new Map<string, ChildProcess>();
@@ -27,7 +52,8 @@ export async function initializeOriginalPreview(root: string, application: strin
     if (url.protocol !== 'http:' || url.hostname !== '127.0.0.1') throw Error('UNAPPROVED_PREVIEW_ORIGIN');
     // Never stop or adopt a process by port. A running owned Vite observes wrapper updates.
     const owned = children.get(key);
-    if (!owned || owned.exitCode !== null || owned.signalCode !== null) {
+    const reusable = !!owned && owned.exitCode === null && owned.signalCode === null;
+    if (!reusable) {
       await new Promise<void>((resolve, reject) => {
         const probe = createServer(); probe.once('error', () => reject(Error('ORIGINAL_PREVIEW_PORT_OCCUPIED')));
         probe.listen(Number(url.port), '127.0.0.1', () => probe.close(() => resolve()));
@@ -36,19 +62,44 @@ export async function initializeOriginalPreview(root: string, application: strin
     const source = app?.entry ?? (application === 'invoicing' ? 'apps/invoicing/src/components/InvoiceTable.tsx' : 'apps/procurement/src/App.tsx');
     const sourceSha256 = createHash('sha256').update(await readFile(join(root, source))).digest('hex');
     const config = await writePreviewRuntimeConfig(root, { role: 'original', sessionId: 'original', sourceSha256 }, { application });
-    if (!owned || owned.exitCode !== null || owned.signalCode !== null) {
-      const child = await spawnPreviewRuntime(root,application,config,Number(url.port));
-      children.set(key, child); child.on('error', () => {});
+    let child: ChildProcess;
+    let spawnError: NodeJS.ErrnoException | undefined;
+    if (owned && reusable) {
+      child = owned;
+    } else {
+      child = await spawnPreviewRuntime(root, application, config, Number(url.port));
+      children.set(key, child);
+      child.on('error', error => { spawnError = error as NodeJS.ErrnoException; });
     }
+    const startedAt = Date.now();
+    const alive = () => child.exitCode === null && child.signalCode === null && !spawnError;
     for (let attempt = 0; attempt < 100; attempt++) {
       try {
         const actual = await fetch(origin + '/__rtl_preview_identity', { signal: AbortSignal.timeout(500) }).then(r => r.json()) as { projectRoot: string; role: string; application: string; sourceSha256: string };
         if (actual.projectRoot === root && actual.role === 'original' && actual.application === application && actual.sourceSha256 === sourceSha256) return;
       } catch { /* Wait only for this initialization; descriptors verify the complete identity next. */ }
-      if (children.get(key)?.exitCode !== null || children.get(key)?.signalCode !== null) break;
+      if (!alive()) break;
       await new Promise(resolve => setTimeout(resolve, 100));
     }
-    throw Error('ORIGINAL_PREVIEW_STARTUP_FAILED');
+    // Failed attempt: stop the runtime this attempt owns so a retry starts clean and nothing is orphaned.
+    const reason: OriginalStartupDiagnostics['reason'] = spawnError ? 'spawn-error' : alive() ? 'timeout' : 'exited';
+    if (children.get(key) === child) children.delete(key);
+    const scriptName = app?.startupScript;
+    const project = await loadProjectConfiguration(root).catch(() => undefined);
+    const diagnostics: OriginalStartupDiagnostics = {
+      reason,
+      exitCode: child.exitCode,
+      signal: child.signalCode,
+      ...(spawnError?.code ? { spawnErrorCode: spawnError.code } : {}),
+      command: scriptName ? project?.packageManager ?? 'npm' : process.execPath,
+      ...(scriptName ? { startupScript: scriptName } : {}),
+      cwd: root,
+      port: Number(url.port),
+      waitedMs: Date.now() - startedAt,
+      output: redactRuntimeOutput(runtimeOutputTail(child)),
+    };
+    await stopChild(child);
+    throw new OriginalPreviewStartupError(diagnostics);
   }
 }
 
