@@ -100,9 +100,8 @@ describe('dashboard readiness without a page reload', () => {
     const page = await openDashboard({});
     expect(page.companion.sourceRequests).toBe(1);
     expect(page.visibleText()).toContain('SOURCE UNVERIFIED');
-    // No preview session was ever started, so nothing is waited for and nothing is retried.
-    page.publish('ready');
-    await settle();
+    // A static report has no preview session and never receives readiness events: nothing is waited for or retried.
+    await settle(400);
     expect(page.companion.sourceRequests).toBe(1);
     expect(page.visibleText()).toContain('SOURCE UNVERIFIED');
   });

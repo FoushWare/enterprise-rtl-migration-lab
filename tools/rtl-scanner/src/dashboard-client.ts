@@ -12,7 +12,7 @@ const applySourceContext=(result)=>{d=result.data;sourceContext=result.transitio
 // The first load never waits: the report renders at once from the snapshot, as before.
 try{applySourceContext(await loadSourceContext((url)=>fetch(url)))}catch(error){sourceContextError=error.message}
 // A failed first load is retried once the live preview server is ready, so no manual refresh is needed.
-window.rtlRecoverSourceContext=async function(){
+async function recoverSourceContextOnce(){
   if(!sourceContextError)return;
   // The preview session may not have announced its state yet when the first request fails; wait for the first announcement.
   if(!window.rtlPreviewState)await new Promise(resolve=>window.addEventListener('rtl-preview-state',resolve,{once:true}));
@@ -25,6 +25,9 @@ window.rtlRecoverSourceContext=async function(){
     refresh();
   }catch(error){sourceContextError=error.message;document.querySelectorAll('.source-context-status').forEach(node=>{node.textContent='Source context blocked: '+sourceContextError})}
 };
+// Single flight: the readiness event and the first-announcement wait can both ask for recovery; they share one request.
+let sourceContextRecovering=null;
+window.rtlRecoverSourceContext=function(){if(!sourceContextError)return Promise.resolve();if(!sourceContextRecovering)sourceContextRecovering=recoverSourceContextOnce().finally(()=>{sourceContextRecovering=null});return sourceContextRecovering};
 if(sourceContextError)window.rtlRecoverSourceContext();
 // One reconciliation signal for everything that loaded while the preview was starting (routes, workflow, source context).
 window.addEventListener('rtl-preview-state',function(event){if(event.detail&&event.detail.state==='ready')window.dispatchEvent(new CustomEvent('rtl-preview-reconcile'))});
