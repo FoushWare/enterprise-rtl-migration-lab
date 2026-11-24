@@ -10,7 +10,8 @@ function runNode(script: string): Promise<ChildProcess> {
 
 describe('runtime output capture', () => {
   it('keeps only the most recent bounded tail of large output', async () => {
-    const child = await runNode(`process.stdout.write('head-marker'); process.stdout.write('x'.repeat(${RUNTIME_OUTPUT_LIMIT * 4})); process.stderr.write('tail-marker')`);
+    // One stream only: stdout and stderr are separate pipes, and their relative order is not guaranteed on Windows.
+    const child = await runNode(`process.stdout.write('head-marker'); process.stdout.write('x'.repeat(${RUNTIME_OUTPUT_LIMIT * 4})); process.stdout.write('tail-marker')`);
     const tail = runtimeOutputTail(child);
     expect(tail.length).toBeLessThanOrEqual(RUNTIME_OUTPUT_LIMIT);
     expect(tail.endsWith('tail-marker')).toBe(true);
