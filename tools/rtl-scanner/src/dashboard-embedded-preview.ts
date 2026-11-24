@@ -172,6 +172,8 @@ const embeddedReview=(()=>{
     }
   });
   document.addEventListener('focusin',event=>{if(view?.expanded&&!view.component.contains(event.target))view.workspace.querySelector('button').focus({preventScroll:true})});
+  // A selected finding whose routes were resolved while the preview was starting is resolved again once it is ready.
+  window.addEventListener('rtl-preview-reconcile',()=>{if(view&&view.record&&view.record.finding)routes(view.record,view.record.finding,view)});
   window.addEventListener('popstate',()=>{const id=new URLSearchParams(location.search).get('finding');if(view&&id&&by.has(id)&&id!==view.record.finding.id){closeWorkspace();select(id)}});
   // Browser history can replace the detail card without invoking the finding buttons.
   new MutationObserver(()=>{if(view&&(!view.component.isConnected||view.expanded?.portal&&!view.expanded.placeholder.isConnected))removeView()}).observe(document.body,{childList:true,subtree:true});

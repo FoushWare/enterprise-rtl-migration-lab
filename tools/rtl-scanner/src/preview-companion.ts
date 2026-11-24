@@ -110,10 +110,14 @@ const server = createServer(async (request, response) => {
   }
   if (url.pathname === '/contextual-preview/original' && request.method === 'POST') {
     try {
+      // The original start can take tens of seconds. It runs outside the exclusive lock, so page reads (workflow, records,
+      // routes) stay responsive while it starts. initializeOriginalPreview is idempotent per application, so concurrent
+      // callers share one runtime.
+      const workflowId=url.searchParams.get('workflowId');
+      const before=await workflowStore.exclusive(async()=>contextualPreview(projectRoot,url.searchParams,workflowId?workflowStore.get(workflowId):undefined));
+      if(before.route&&!before.original.available)await initializeOriginalPreview(projectRoot,before.route.application);
       const result=await workflowStore.exclusive(async()=>{
-        const workflow=url.searchParams.get('workflowId')?workflowStore.get(url.searchParams.get('workflowId')!):undefined;
-        const before=await contextualPreview(projectRoot,url.searchParams,workflow);
-        if(before.route&&!before.original.available)await initializeOriginalPreview(projectRoot,before.route.application);
+        const workflow=workflowId?workflowStore.get(workflowId):undefined;
         const after=await contextualPreview(projectRoot,url.searchParams,workflow);
         // Every successful start issues this caller its own lease, even when the server was already running for another session.
         // Older clients ignore `originalLease`; they keep the existing response fields unchanged.
