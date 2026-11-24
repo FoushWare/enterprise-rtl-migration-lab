@@ -1,4 +1,5 @@
 import { PreviewSupersession } from './preview-supersession.js';
+import { sweepOrphanedReviewWorkspaces } from './review-session.js';
 import { initializeOriginalPreview, hasOriginalLease, leaseOriginalPreview, originalLeaseCount, OriginalPreviewStartupError, releaseOriginalPreview, signalOwnedOriginalPreviews, stopOwnedOriginalPreviews } from './original-preview-runtime.js';
 import {loadPreviewConfiguration} from './preview-configuration.js';
 import { contextualPreview } from './contextual-preview.js';
@@ -87,6 +88,17 @@ function armIdleExit(): void {
   // While the dashboard is connected, the next check is when its heartbeat would expire; otherwise after the idle grace.
   const wait = dashboardConnected() ? lastDashboardHeartbeat + dashboardHeartbeatGraceMs - Date.now() : idleGraceMs;
   idleTimer = setTimeout(() => { idleTimer = undefined; if (originalLeaseCount() === 0 && originalStartsInFlight === 0 && requestsInFlight === 0 && !dashboardConnected()) void shutdown(); else armIdleExit(); }, Math.max(0, wait));
+}
+// Orphan recovery: remove candidate workspaces this tool created whose owner process is gone and no stored review references.
+// Unmarked (legacy) workspaces are reported only. A failure is reported; it never stops the companion.
+async function sweepStartupOrphans(): Promise<void> {
+  try {
+    const referenced = new Set(workflowStore.list().flatMap(w => (w.session?.candidateRoot ? [w.session.candidateRoot] : [])));
+    const result = await sweepOrphanedReviewWorkspaces({ referenced, graceMs: 10 * 60_000 });
+    if (result.removed.length || result.failures.length || result.legacyUnmarked.length)
+      console.log(`RTL preview companion: workspace sweep removed ${result.removed.length}, kept ${result.kept.length}, legacy unmarked ${result.legacyUnmarked.length}, failed ${result.failures.length}`);
+    for (const failure of result.failures) console.error(`RTL preview companion: workspace removal failed for ${failure.path}: ${failure.error}`);
+  } catch (error) { console.error(`RTL preview companion: workspace sweep failed: ${error instanceof Error ? error.message : String(error)}`); }
 }
 const server = createServer(async (request, response) => {
   requestsInFlight++;
@@ -237,9 +249,10 @@ let shuttingDown = false;
   const shutdown = async () => {
     if (shuttingDown) return; shuttingDown = true;
     setTimeout(() => process.exit(1), 8000).unref();
-    await Promise.allSettled([stopOwnedOriginalPreviews(), workflowStore.shutdown(), stopAllCandidateRuntimes(), ...[...sessions.values()].map(session => disposeReviewSession(session))]);
+    const steps = await Promise.allSettled([stopOwnedOriginalPreviews(), workflowStore.shutdown(), stopAllCandidateRuntimes(), ...[...sessions.values()].map(session => disposeReviewSession(session))]);
+    for (const step of steps) if (step.status === 'rejected') console.error(`RTL preview companion: shutdown step failed: ${step.reason instanceof Error ? step.reason.message : String(step.reason)}`);
     server.close(() => process.exit(0)); setTimeout(() => process.exit(1), 3000).unref();
   };
   for (const signal of ['SIGTERM', 'SIGINT', 'SIGHUP'] as const) process.on(signal, shutdown);
   // Last resort for any exit path: never leave an owned runtime process group behind.
-  process.on('exit', () => { signalOwnedOriginalPreviews(); signalAllCandidateRuntimes(); }); server.listen(port, host, () => { console.log(`RTL preview companion listening on ${host}:${port}`); armIdleExit(); });
+  process.on('exit', () => { signalOwnedOriginalPreviews(); signalAllCandidateRuntimes(); }); server.listen(port, host, () => { console.log(`RTL preview companion listening on ${host}:${port}`); armIdleExit(); void sweepStartupOrphans(); });

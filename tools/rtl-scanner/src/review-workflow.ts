@@ -27,7 +27,10 @@ export interface WorkflowOperation { id:string; kind:'validate'|'apply'; state:'
 export interface WorkflowEntry { batch?:{state:'ready'|'blocked';reason:string}; carriedFrom?:{workflowId:string;findingId:string;decision:FindingDecision}; finding: Finding; patch?: PatchRequest; reason: string; applied: boolean; decision: FindingDecision; notes: string; history: { decision: FindingDecision; notes: string; at: string }[] }
 export interface WorkflowCheck { name: string; state: 'Passed' | 'Failed' | 'Unavailable' | 'Error' | 'Not run' | 'Not configured' | 'Not applicable'; detail: string; kind?: 'project' | 'scanner' | 'runtime'; command?: string; scope?: string }
 export interface WorkflowValidation { state: 'Passed' | 'Failed' | 'Unavailable'; signature: string; checks: WorkflowCheck[]; at: string; hashes: Record<string, string>; directionEvidence?: ScopedDirectionEvidence }
+/** Outcome of removing a candidate workspace. Failures are recorded, never silently dropped. */
+export interface WorkspaceDisposal { state: 'disposed' | 'failed'; reason: 'superseded' | 'applied' | 'shutdown'; at: string; error?: string }
 export interface ReviewWorkflow {
+  workspaceDisposal?: WorkspaceDisposal;
   batchPreparedAt?:string; batchPreparation?:'running'|'ready'; previewFocus?:string; validationInvalidation?:string; operations?:WorkflowOperation[]; continuedFrom?:string; id: string; root: string; supersededBy?: string; rolledBackAt?: string; resumedFrom?: string; previewConfigDigest?:string; inputDigest: string; policyDigest: string; mode: 'one-by-one' | 'apply-first'; scope: string[];
   entries: WorkflowEntry[]; baseline: Record<string, string>; sourcePaths: Record<string, string>; session?: ReviewSession;
   validation?: WorkflowValidation; receipts?: ApplyReceipt[]; state: 'Reviewing' | 'Applying' | 'Applied' | 'Rolled Back'; createdAt: string;
@@ -157,7 +160,7 @@ export class ReviewWorkflowStore {
     const conflicting = entries.filter(e => e.patch && entries.some(other => other !== e && other.patch && other.patch.path === e.patch!.path && other.patch.startOffset < e.patch!.endOffset && e.patch!.startOffset < other.patch.endOffset));
     for (const e of conflicting) { e.reason = 'CONFLICTING_PATCH: overlapping transformations need manual resolution.'; e.patch = undefined; }
     const w: ReviewWorkflow = { id: randomUUID(), root: this.root, ...(resuming?{resumedFrom:resuming.id}:{}), previewConfigDigest,inputDigest: report.inputDigest, policyDigest: report.policyDigest, mode: input.mode, scope, entries, baseline, sourcePaths, state: 'Reviewing', createdAt: new Date().toISOString() };
-    if(input.restart&&prior&&restartable&&!resuming){if(prior.session)prior.session=await stopCandidateRuntime(prior.session);prior.supersededBy=w.id;}
+    if(input.restart&&prior&&restartable&&!resuming){if(prior.session){prior.session=await stopCandidateRuntime(prior.session);await this.disposeCandidate(prior,'superseded');}prior.supersededBy=w.id;}
     this.workflows.push(w);
     if (!resuming && w.mode === 'apply-first' && entries.some(e => e.patch)) { for (const e of entries) e.applied = !!e.patch; await this.rebuild(w); }
     await this.persist(); return w;
@@ -514,7 +517,7 @@ export class ReviewWorkflowStore {
     if (confirmation !== 'APPLY_CONFIRMED') throw new Error('APPLY_CONFIRMATION_REQUIRED');
     w.state = 'Applying'; await this.persist();
     const files = [...new Set(w.entries.filter(e => e.decision === 'Accepted' && included(e)).map(e => e.finding.path))].map(path => ({ path, before: w.baseline[path], after: composeWorkflowFile(w.baseline[path], w.entries.filter(e => e.decision === 'Accepted' && included(e) && e.finding.path === path).map(e => e.patch!)) }));
-    try { w.receipts = await this.applyService.applyAcceptedFiles(w.id, files, confirmation); w.state = 'Applied'; await this.persist(); await this.releaseRuntime(w).catch(() => undefined); await this.persist(); return w; }
+    try { w.receipts = await this.applyService.applyAcceptedFiles(w.id, files, confirmation); w.state = 'Applied'; await this.persist(); await this.releaseRuntime(w).catch(() => undefined); await this.disposeCandidate(w, 'applied'); await this.persist(); return w; }
     catch (error) { w.receipts = await this.applyService.recoverAcceptedFileReceipts(w.id); await this.persist(); throw error; }
   }
   async rollback(id: string, confirmation: string): Promise<ReviewWorkflow> {
@@ -528,9 +531,15 @@ export class ReviewWorkflowStore {
     try {
       await Promise.allSettled(this.workflows.map(async w => { if (w.session) w.session = await stopCandidateRuntime(w.session); }));
       // Candidates of Reviewing workflows are disposable caches: resume rebuilds them from the persisted baseline and patches.
-      // Applied and rolled-back reviews keep theirs, because their baseline no longer matches the source after Apply.
-      await Promise.allSettled(this.workflows.filter(w => w.state === 'Reviewing' && w.session).map(w => disposeReviewSession(w.session!)));
+      // Applied candidates were removed when Apply recorded its receipts; rollback needs receipts and backups, not the candidate.
+      await Promise.allSettled(this.workflows.filter(w => w.state === 'Reviewing' && w.session).map(w => this.disposeCandidate(w, 'shutdown')));
     } finally { await this.persist(); }
+  }
+  /** Removes this workflow's candidate workspace and records the outcome. Caller persists. */
+  async disposeCandidate(w: ReviewWorkflow, reason: WorkspaceDisposal['reason']): Promise<void> {
+    if (!w.session) return;
+    try { await disposeReviewSession(w.session); w.workspaceDisposal = { state: 'disposed', reason, at: new Date().toISOString() }; }
+    catch (error) { w.workspaceDisposal = { state: 'failed', reason, at: new Date().toISOString(), error: error instanceof Error ? error.message : String(error) }; }
   }
   /** A finished Apply or Rollback no longer needs its candidate runtime; the session and receipts remain for protected rollback. */
   private async releaseRuntime(w: ReviewWorkflow): Promise<void> { if (w.session) w.session = await stopCandidateRuntime(w.session); }

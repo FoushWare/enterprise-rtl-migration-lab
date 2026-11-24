@@ -2,7 +2,9 @@ import { createHash, randomUUID } from 'node:crypto';
 import { cp, lstat, mkdtemp, readFile, readdir, realpath, rm, symlink, writeFile } from 'node:fs/promises';
 import { dirname, isAbsolute, join, posix, relative, resolve, sep } from 'node:path';
 import { tmpdir } from 'node:os';
-import { type ChildProcess } from 'node:child_process';
+import { type ChildProcess, execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+const execFileAsync = promisify(execFile);
 import {spawnPreviewRuntime,signalOwnedRuntime} from './runtime-process.js';
 import { createServer as createNetServer } from 'node:net';
 import type { PreviewApplication } from './example-preview-mappings.js';
@@ -99,9 +101,20 @@ export function validatePatch(text: string, patch: PatchRequest): void {
 export function repositoryRelativeFromCopyPath(root: string, copyPath: string, separator: string = sep): string {
   return copyPath.slice(root.length + 1).split(separator).join('/');
 }
+/** Name of the ownership marker written at the root of every candidate workspace this module creates. */
+export const OWNER_MARKER = '.rtl-review-owner.json';
+const OWNER_SCHEMA = 'rtl-review-workspace-owner-v1';
+export interface WorkspaceOwnerMarker { schema: typeof OWNER_SCHEMA; owner: 'rtl-analyzer'; pid: number; processStart: string | null; createdAt: string }
+/** Process start time from the operating system (POSIX `ps`), used to tell a live owner from a reused process id. */
+export async function processStartTime(pid: number): Promise<string | null> {
+  if (process.platform === 'win32') return null;
+  try { const { stdout } = await execFileAsync('ps', ['-o', 'lstart=', '-p', String(pid)]); return stdout.trim() || null; } catch { return null; }
+}
 export async function copyCandidateRoot(root: string, sourcePath: string): Promise<string> {
   const candidateRoot = await realpath(await mkdtemp(join(tmpdir(), 'rtl-review-')));
   try {
+    const marker: WorkspaceOwnerMarker = { schema: OWNER_SCHEMA, owner: 'rtl-analyzer', pid: process.pid, processStart: await processStartTime(process.pid), createdAt: new Date().toISOString() };
+    await writeFile(join(candidateRoot, OWNER_MARKER), JSON.stringify(marker), { flag: 'wx', mode: 0o600 });
     const project=await loadProjectConfiguration(root);
     const rootConfigs = (await readdir(root)).filter(name => /^(tsconfig.*\.json|(?:vite|vitest|playwright|eslint)(?:\.[\w-]+)*\.config\.[cm]?[jt]s)$/.test(name));
     const allowedTopLevel = new Set(['apps', 'libs', 'tests', 'tools', '.storybook', 'package.json', 'package-lock.json', 'nx.json', 'rtl-scanner.config.json','rtl-preview.config.json',PROJECT_CONFIGURATION, ...(project?.copyPaths.map(p=>p.split('/')[0])??[]), ...rootConfigs]);
@@ -110,6 +123,42 @@ export async function copyCandidateRoot(root: string, sourcePath: string): Promi
     await validateProjectSourcePath(candidateRoot, sourcePath);
     return candidateRoot;
   } catch (error) { await rm(candidateRoot, { recursive: true, force: true }); throw error; }
+}
+export interface WorkspaceSweepResult { removed: string[]; kept: string[]; legacyUnmarked: string[]; failures: { path: string; error: string }[] }
+async function ownerIsAlive(marker: WorkspaceOwnerMarker): Promise<boolean> {
+  try { process.kill(marker.pid, 0); } catch (error) { return (error as NodeJS.ErrnoException).code === 'EPERM'; }
+  // Without a recorded start time identity cannot be verified, so the owner is treated as alive.
+  if (marker.processStart === null) return true;
+  return (await processStartTime(marker.pid)) === marker.processStart;
+}
+/**
+ * Removes orphaned candidate workspaces: marked by this module, owner process gone (or replaced), not referenced by any
+ * persisted or live review, and older than the grace period. Unmarked (legacy) workspaces are reported, never removed.
+ */
+export async function sweepOrphanedReviewWorkspaces(options: { root?: string; referenced: ReadonlySet<string>; graceMs: number; now?: number }): Promise<WorkspaceSweepResult> {
+  const base = await realpath(options.root ?? tmpdir());
+  const result: WorkspaceSweepResult = { removed: [], kept: [], legacyUnmarked: [], failures: [] };
+  const now = options.now ?? Date.now();
+  for (const name of await readdir(base)) {
+    if (!name.startsWith('rtl-review-')) continue;
+    const path = join(base, name);
+    const info = await lstat(path).catch(() => undefined);
+    if (!info?.isDirectory()) continue;
+    let marker: WorkspaceOwnerMarker;
+    try { marker = JSON.parse(await readFile(join(path, OWNER_MARKER), 'utf8')) as WorkspaceOwnerMarker; }
+    catch { result.legacyUnmarked.push(path); continue; }
+    const created = Date.parse(marker.createdAt);
+    if (marker.schema !== OWNER_SCHEMA || marker.owner !== 'rtl-analyzer' || !Number.isInteger(marker.pid) || !Number.isFinite(created)) { result.kept.push(path); continue; }
+    if (await ownerIsAlive(marker)) { result.kept.push(path); continue; }
+    const real = await realpath(path).catch(() => path);
+    if (options.referenced.has(real) || options.referenced.has(path) || now - created < options.graceMs) { result.kept.push(path); continue; }
+    try {
+      if (!inside(base, real)) throw new Error('OUTSIDE_SWEEP_ROOT');
+      await rm(real, { recursive: true, force: true });
+      result.removed.push(path);
+    } catch (error) { result.failures.push({ path, error: error instanceof Error ? error.message : String(error) }); }
+  }
+  return result;
 }
 export async function createReviewSession(root: string, sourcePath: string = REVIEW_SOURCE): Promise<ReviewSession> {
   const source = sourcePath===REVIEW_SOURCE?validateReviewPath(root,sourcePath):await validateProjectSourcePath(root,sourcePath);
