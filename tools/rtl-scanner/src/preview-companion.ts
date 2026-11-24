@@ -1,4 +1,4 @@
-import { initializeOriginalPreview, hasOriginalLease, leaseOriginalPreview, originalLeaseCount, releaseOriginalPreview, signalOwnedOriginalPreviews, stopOwnedOriginalPreviews } from './original-preview-runtime.js';
+import { initializeOriginalPreview, hasOriginalLease, leaseOriginalPreview, originalLeaseCount, OriginalPreviewStartupError, releaseOriginalPreview, signalOwnedOriginalPreviews, stopOwnedOriginalPreviews } from './original-preview-runtime.js';
 import {loadPreviewConfiguration} from './preview-configuration.js';
 import { contextualPreview } from './contextual-preview.js';
 import { verifiedSourceTransition, reconcileSourceRuntimes, reconcileSelectedFinding, type FindingSelection } from './source-context.js';
@@ -70,11 +70,13 @@ function requestUrl(request: IncomingMessage): URL { return new URL(request.url 
 const idleExitEnabled = process.env.RTL_PREVIEW_EXIT_WHEN_IDLE === '1';
 const idleGraceMs = Number(process.env.RTL_PREVIEW_IDLE_EXIT_MS ?? 15_000);
 let idleTimer: ReturnType<typeof setTimeout> | undefined;
+// A start in progress holds no lease until it succeeds, so it counts as activity: the companion must not exit under it.
+let originalStartsInFlight = 0;
 function armIdleExit(): void {
   if (idleTimer) clearTimeout(idleTimer);
   idleTimer = undefined;
-  if (!idleExitEnabled || originalLeaseCount() > 0) return;
-  idleTimer = setTimeout(() => { if (originalLeaseCount() === 0) void shutdown(); }, idleGraceMs);
+  if (!idleExitEnabled || originalLeaseCount() > 0 || originalStartsInFlight > 0) return;
+  idleTimer = setTimeout(() => { if (originalLeaseCount() === 0 && originalStartsInFlight === 0) void shutdown(); }, idleGraceMs);
 }
 const server = createServer(async (request, response) => {
   if (idleExitEnabled && originalLeaseCount() === 0) armIdleExit();
@@ -109,11 +111,16 @@ const server = createServer(async (request, response) => {
     }catch(error){return send(response,409,{error:error instanceof Error?error.message:'SOURCE_CONTEXT_UNAVAILABLE'});}
   }
   if (url.pathname === '/contextual-preview/original' && request.method === 'POST') {
+    originalStartsInFlight++;
     try {
+      // The original start can take tens of seconds. It runs outside the exclusive lock, so page reads (workflow, records,
+      // routes) stay responsive while it starts. initializeOriginalPreview is idempotent per application, so concurrent
+      // callers share one runtime.
+      const workflowId=url.searchParams.get('workflowId');
+      const before=await workflowStore.exclusive(async()=>contextualPreview(projectRoot,url.searchParams,workflowId?workflowStore.get(workflowId):undefined));
+      if(before.route&&!before.original.available)await initializeOriginalPreview(projectRoot,before.route.application);
       const result=await workflowStore.exclusive(async()=>{
-        const workflow=url.searchParams.get('workflowId')?workflowStore.get(url.searchParams.get('workflowId')!):undefined;
-        const before=await contextualPreview(projectRoot,url.searchParams,workflow);
-        if(before.route&&!before.original.available)await initializeOriginalPreview(projectRoot,before.route.application);
+        const workflow=workflowId?workflowStore.get(workflowId):undefined;
         const after=await contextualPreview(projectRoot,url.searchParams,workflow);
         // Every successful start issues this caller its own lease, even when the server was already running for another session.
         // Older clients ignore `originalLease`; they keep the existing response fields unchanged.
@@ -127,7 +134,14 @@ const server = createServer(async (request, response) => {
         }
         return after;
       });armIdleExit();return send(response,200,result);
-    }catch(error){return send(response,409,{error:error instanceof Error?error.message:'ORIGINAL_PREVIEW_FAILED'});}
+    }catch(error){
+      // Startup diagnostics are bounded and redacted by the runtime; the page never receives raw child output.
+      const message:string=error instanceof Error?error.message:'ORIGINAL_PREVIEW_FAILED';
+      return send(response,409,error instanceof OriginalPreviewStartupError?{error:message,diagnostics:error.diagnostics}:{error:message});
+    } finally {
+      originalStartsInFlight--;
+      armIdleExit();
+    }
   }
   if (url.pathname === '/contextual-preview/original/release' && request.method === 'POST') {
     try {

@@ -7,8 +7,10 @@ import postcss from 'postcss';
 import ts from 'typescript';
 
 export const PREVIEW_CONFIGURATION='rtl-preview.config.json';
+/** Time a dev server (original or candidate) may take to answer its identity check. Override with startupTimeoutMs. */
+export const DEFAULT_STARTUP_TIMEOUT_MS=60_000;
 export interface ConfiguredRoute {id:string;path:string;ltr:string;rtl:string}
-export interface ConfiguredApplication {viteConfig:string;entry:string;originalOrigin:string;readySelector:string;dataAdapter:'none'|'atlas';startupScript?:string;routes:ConfiguredRoute[]}
+export interface ConfiguredApplication {viteConfig:string;entry:string;originalOrigin:string;readySelector:string;dataAdapter:'none'|'atlas';startupScript?:string;startupTimeoutMs?:number;routes:ConfiguredRoute[]}
 export interface SourcePreviewBinding {source:string;sourceSelector?:string;context?:string;sourceExpressions?:{text:string;start:number;end:number}[];targetSelector:string;routes:{application:string;route:string}[]}
 export interface PreviewConfiguration {schemaVersion:1;applications:Record<string,ConfiguredApplication>;mappings:SourcePreviewBinding[];digest:string;builtinAtlas?:boolean}
 const fail=(message:string):never=>{throw Error('PREVIEW_CONFIGURATION_INVALID: '+message)};
@@ -30,7 +32,7 @@ export async function loadPreviewConfiguration(root:string):Promise<PreviewConfi
  const applications:Record<string,ConfiguredApplication>={};
  for(const [id,a] of Object.entries(x.applications as Record<string,unknown>)){
   if(!/^[a-z][a-z0-9-]{0,50}$/.test(id)||['__proto__','constructor','prototype'].includes(id))fail('application id');
-  shape(a,['viteConfig','entry','originalOrigin','readySelector','dataAdapter','routes','startupScript'],'application');previewRelativePath(a.viteConfig);previewRelativePath(a.entry);
+  shape(a,['viteConfig','entry','originalOrigin','readySelector','dataAdapter','routes','startupScript','startupTimeoutMs'],'application');if(a.startupTimeoutMs!==undefined&&(!Number.isInteger(a.startupTimeoutMs)||(a.startupTimeoutMs as number)<10000||(a.startupTimeoutMs as number)>180000))fail('startupTimeoutMs must be an integer from 10000 to 180000');previewRelativePath(a.viteConfig);previewRelativePath(a.entry);
   if(a.startupScript!==undefined&&(!text(a.startupScript,100)||!/^[-\w:]+$/.test(a.startupScript)))fail('startup script');
   if(!/[.][cm]?[jt]s$/.test(a.viteConfig)||!text(a.readySelector)||!['none','atlas'].includes(String(a.dataAdapter))||!Array.isArray(a.routes)||!a.routes.length)fail('runtime fields');
   let u:URL;try{u=new URL(String(a.originalOrigin))}catch{fail('origin')};if(u!.protocol!=='http:'||u!.hostname!=='127.0.0.1'||!u!.port||u!.origin!==a.originalOrigin||['4318','4320'].includes(u!.port)||Number(u!.port)>=4202&&Number(u!.port)<=4212)fail('loopback original origin required; dashboard/companion/candidate ports reserved');
