@@ -23,13 +23,15 @@ export const isOwnedShutdownStarted = (): boolean => shutdownStarted;
 export const markOwnedShutdownStarted = (): void => { shutdownStarted = true; };
 const delay = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, ms));
 
+// Windows has no process groups. There only the direct child is signalled and tracked; grandchildren are not reached.
+// Process-tree termination is unsupported on Windows (documented limitation), and this does not add it.
 function groupSignal(pgid: number, signal: NodeJS.Signals): void {
-  if (process.platform === 'win32') return;
+  if (process.platform === 'win32') { groups.get(pgid)?.child.kill(signal); return; }
   try { process.kill(-pgid, signal); } catch (error) { if ((error as NodeJS.ErrnoException).code !== 'ESRCH') throw error; }
 }
 /** True while any process remains in the group (including children that outlived their leader). */
 function groupAlive(pgid: number): boolean {
-  if (process.platform === 'win32') return false;
+  if (process.platform === 'win32') { const child = groups.get(pgid)?.child; return child !== undefined && child.exitCode === null && child.signalCode === null; }
   try { process.kill(-pgid, 0); return true; } catch (error) { return (error as NodeJS.ErrnoException).code === 'EPERM'; }
 }
 function pruneGroups(): void { for (const [pgid] of groups) if (!groupAlive(pgid)) groups.delete(pgid); }

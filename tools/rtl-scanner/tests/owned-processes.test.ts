@@ -5,10 +5,16 @@ import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { execOwned, processStartTime, spawnOwned, sweepOwnedManifests, terminateOwnedGroups } from '../src/owned-processes.js';
 
+// POSIX process groups, process-group signals and manifest recovery are unsupported on Windows (documented limitation).
+// Those tests are skipped there with that reason. Every other test runs on all platforms, and on Windows it checks the
+// direct-child behaviour that is supported there.
+const POSIX = process.platform !== 'win32';
+const posixIt = POSIX ? it : it.skip;
 const roots: string[] = [];
 const isolatedRoot = () => { const root = mkdtempSync(join(tmpdir(), 'rtl-owned-')); roots.push(root); return root; };
 const alive = (pid: number) => { try { process.kill(pid, 0); return true; } catch { return false; } };
 const waitFor = async (check: () => boolean, ms: number) => { const deadline = Date.now() + ms; while (Date.now() < deadline && !check()) await new Promise(r => setTimeout(r, 25)); return check(); };
+const exited = (child: { exitCode: number | null; signalCode: string | null }) => child.exitCode !== null || child.signalCode !== null;
 
 afterEach(async () => {
   await terminateOwnedGroups({ graceMs: 200 }).catch(() => undefined);
@@ -16,7 +22,24 @@ afterEach(async () => {
 });
 
 describe('owned process groups', () => {
-  it('terminates a group that ignores SIGTERM by escalating to SIGKILL, and reports the escalation', async () => {
+  it('terminates an owned direct child and leaves an unrelated process running (all platforms)', async () => {
+    const owned = spawnOwned(process.execPath, ['-e', 'setInterval(() => {}, 1000);'], { label: 'test-cross-platform', stdio: 'ignore' });
+    const unrelated = spawn(process.execPath, ['-e', 'setInterval(() => {}, 1000);'], { stdio: 'ignore' });
+    try {
+      await new Promise(r => setTimeout(r, 200));
+      const report = await terminateOwnedGroups({ graceMs: 1500 });
+      expect(report.terminated).toBeGreaterThanOrEqual(1);
+      expect(report.survivors).toEqual([]);
+      expect(await waitFor(() => exited(owned), 3000)).toBe(true);
+      expect(unrelated.exitCode).toBeNull();
+      expect(unrelated.signalCode).toBeNull();
+    } finally {
+      unrelated.kill('SIGKILL');
+      await waitFor(() => exited(unrelated), 2000);
+    }
+  });
+
+  posixIt('terminates a group that ignores SIGTERM by escalating to SIGKILL, and reports the escalation', async () => {
     const child = spawnOwned(process.execPath, ['-e', "process.on('SIGTERM', () => {}); setInterval(() => {}, 1000);"], { label: 'test-stubborn', stdio: 'ignore' });
     expect(child.pid).toBeGreaterThan(0);
     await new Promise(r => setTimeout(r, 300));
@@ -28,13 +51,14 @@ describe('owned process groups', () => {
     expect(child.signalCode).toBe('SIGKILL');
   });
 
-  it('stops a well-behaved owned child on SIGTERM without escalating', async () => {
+  it('stops a well-behaved owned child without leaving survivors', async () => {
     const child = spawnOwned(process.execPath, ['-e', 'setInterval(() => {}, 1000);'], { label: 'test-polite', stdio: 'ignore' });
     await new Promise(r => setTimeout(r, 200));
     const report = await terminateOwnedGroups({ graceMs: 1500 });
     expect(report.survivors).toEqual([]);
-    expect(await waitFor(() => child.exitCode !== null || child.signalCode !== null, 2000)).toBe(true);
-    expect(child.signalCode).toBe('SIGTERM');
+    expect(await waitFor(() => exited(child), 2000)).toBe(true);
+    // Windows has no SIGTERM delivery distinct from forced termination, so the signal name is asserted on POSIX only.
+    if (POSIX) expect(child.signalCode).toBe('SIGTERM');
   });
 
   it('bounds a command: a timeout stops the whole group and rejects with execFile-compatible fields', async () => {
@@ -51,6 +75,7 @@ describe('owned process groups', () => {
   });
 });
 
+// Manifest recovery relies on POSIX process groups and `ps` start-time identity; it is unsupported on Windows (documented).
 describe('owned-process manifest recovery', () => {
   const dead = async (): Promise<number> => {
     const child = spawnOwned(process.execPath, ['-e', '0'], { label: 'test-dead-owner', stdio: 'ignore' });
@@ -58,7 +83,7 @@ describe('owned-process manifest recovery', () => {
     return child.pid!;
   };
 
-  it('recovers a group whose manifest identity (start time and root) still matches, and only that group', async () => {
+  posixIt('recovers a group whose manifest identity (start time and root) still matches, and only that group', async () => {
     const directory = isolatedRoot();
     const root = join(directory, 'candidate-root');
     mkdirSync(root);
@@ -77,7 +102,7 @@ describe('owned-process manifest recovery', () => {
     orphan.unref();
   });
 
-  it('does not signal a group whose recorded start time no longer matches (possible PID reuse)', async () => {
+  posixIt('does not signal a group whose recorded start time no longer matches (possible PID reuse)', async () => {
     const directory = isolatedRoot();
     const root = join(directory, 'candidate-root');
     mkdirSync(root);
@@ -93,7 +118,7 @@ describe('owned-process manifest recovery', () => {
     expect(bystander.signalCode).toBeNull();
   });
 
-  it('never signals a group whose owner companion is still running', async () => {
+  posixIt('never signals a group whose owner companion is still running', async () => {
     const directory = isolatedRoot();
     const child = spawnOwned(process.execPath, ['-e', 'setInterval(() => {}, 1000);'], { label: 'test-live-owner', stdio: 'ignore' });
     await new Promise(r => setTimeout(r, 200));
