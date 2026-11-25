@@ -1,0 +1,92 @@
+name: Companion startup diagnostics (diagnostic only)
+# Runs the original apply-rollback -> Phase 5 sequence with opt-in companion startup diagnostics. Triggered only by pushes to
+# diagnostics/** and manual dispatch, so it does not change the PR checks. Diagnostics never change behaviour.
+on:
+  push:
+    branches:
+      - 'diagnostics/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  phase5-startup:
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npx playwright install chromium
+
+      - name: Environment
+        run: |
+          mkdir -p diagnostics
+          {
+            date -u
+            uname -a
+            node -v
+            sw_vers || true
+            sysctl -n hw.ncpu hw.memsize || true
+            df -h . || true
+            uptime || true
+          } > diagnostics/environment.txt 2>&1
+
+      - name: Original sequence step 1 - apply-rollback
+        run: |
+          set -o pipefail
+          npx playwright test --config=playwright.apply-rollback.config.ts tests/e2e/apply-rollback-disposable.spec.ts 2>&1 | tee diagnostics/apply-rollback.log
+
+      - name: Port 4318 and companion state before Phase 5
+        if: always()
+        run: |
+          {
+            date -u
+            echo "--- listeners on 4200, 4318, 4319, 4320"
+            lsof -nP -iTCP:4200 -iTCP:4318 -iTCP:4319 -iTCP:4320 -sTCP:LISTEN || echo "no listeners on these ports"
+            echo "--- companion, dev server and playwright processes"
+            ps -axo pid,ppid,lstart,etime,command | grep -E 'preview-companion|vite|http.server|playwright' | grep -v grep || echo "none"
+            echo "--- effective Phase 5 companion webServer definition"
+            grep -n 'preview-companion' playwright.phase5.config.ts | cut -c1-600 || true
+          } > diagnostics/before-phase5.txt 2>&1
+          cat diagnostics/before-phase5.txt
+
+      - name: Original sequence step 2 - Phase 5 with startup diagnostics
+        env:
+          RTL_PHASE5_DIAGNOSTICS: '1'
+          DEBUG: pw:webserver
+        run: |
+          set -o pipefail
+          npx playwright test --config=playwright.phase5.config.ts tests/e2e/phase5-progress.spec.ts 2>&1 | tee diagnostics/phase5.log
+
+      - name: Process and resource state after a failure
+        if: failure()
+        run: |
+          {
+            date -u
+            echo "--- processes"
+            ps -axo pid,ppid,lstart,etime,%cpu,%mem,state,command | head -200
+            echo "--- listeners"
+            lsof -nP -iTCP -sTCP:LISTEN || true
+            echo "--- memory and load"
+            vm_stat || true
+            uptime || true
+            echo "--- disk"
+            df -h || true
+          } > diagnostics/failure-state.txt 2>&1
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: companion-startup-diagnostics
+          path: |
+            diagnostics/
+            playwright-report/
+            test-results/
+          if-no-files-found: warn
+          retention-days: 14

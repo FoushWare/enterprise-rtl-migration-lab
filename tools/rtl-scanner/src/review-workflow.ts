@@ -1,4 +1,5 @@
 import { captureScopedDirectionEvidence, closeDirectionBrowser, sameScopedDirectionEvidence, type ScopedDirectionEvidence } from './scoped-direction-evidence.js';
+import { diag } from './startup-diagnostics.js';
 import { initializeOriginalPreview } from './original-preview-runtime.js';
 import { configuredWorkflowChecks, workflowValidationPresentation, workflowValidationEvidenceIssue } from './workflow-validation.js';
 import { createHash, randomUUID } from 'node:crypto';
@@ -99,7 +100,7 @@ export class ReviewWorkflowStore {
       const data = JSON.parse(await readFile(this.path, 'utf8')) as { version: number; workflows: ReviewWorkflow[] };
       if (data.version !== 1 || !Array.isArray(data.workflows)) throw new Error('WORKFLOW_STORE_INVALID');
       this.workflows = data.workflows.filter(w => w.root === this.root);
-      const current=await scan(this.root);
+      diag('startup scan start');const scanStarted=Date.now();const current=await scan(this.root);diag('startup scan done',{ms:Date.now()-scanStarted,findings:current.findings.length});
       for (const w of this.workflows) {
         if(w.state==='Reviewing'&&w.inputDigest===current.inputDigest&&w.policyDigest===current.policyDigest){const ids=new Set(current.findings.filter(f=>!['INFORMATIONAL','INTENTIONAL_LTR'].includes(f.category)&&f.ruleId!=='RTL.RUNTIME.DIRECTION_UNKNOWN').map(f=>f.id));w.entries=w.entries.filter(e=>!!e.patch||ids.has(e.finding.id));for(const e of w.entries)if(!e.patch)e.reason=e.finding.rationale+' '+e.finding.treatment+' No supported candidate patch; approval unavailable.';}
         for(const op of w.operations??[])if(op.state==='Running'){op.state='Uncertain';op.error='Server restarted during operation. Inspect operation details and source receipts before retrying.';}

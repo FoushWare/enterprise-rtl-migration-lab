@@ -11,6 +11,7 @@ import { toSchemaV2Presentation } from './presentation-adapter.js';
 import { toDashboardData } from './dashboard-data.js';
 import { extractSourceSnippets } from './source-snippets.js';
 import { ReviewWorkflowStore } from './review-workflow.js';
+import { diag, diagnosticsEnabled } from './startup-diagnostics.js';
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import { homedir } from 'node:os';
 import { join, relative, resolve, sep } from 'node:path';
@@ -33,21 +34,39 @@ import type { ScanManifest } from './scan-history.js';
 import { resolveTrustedProjectRoot } from './project-root.js';
 const host = '127.0.0.1'; const port = Number(process.env.RTL_PREVIEW_PORT ?? 4318); const applicationOrigin = 'http://127.0.0.1:4200';
 const sessions = new Map<string, ReviewSession>();
+diag('entry', { pid: process.pid, ppid: process.ppid, node: process.version, platform: process.platform, arch: process.arch });
+if (diagnosticsEnabled) {
+  process.on('exit', code => diag('process exit', { code }));
+  process.on('uncaughtException', error => { diag('uncaught exception', { message: error.message.slice(0, 300) }); process.exit(1); });
+  process.on('unhandledRejection', reason => { diag('unhandled rejection', { message: String(reason instanceof Error ? reason.message : reason).slice(0, 300) }); process.exit(1); });
+}
 const reviewStore = new ReviewRecordStore();
+diag('store load start', { store: 'review' });
 await reviewStore.load();
+diag('store load done', { store: 'review' });
 const evidenceStore = new EvidenceSnapshotStore();
+diag('store load start', { store: 'evidence' });
 await evidenceStore.load();
+diag('store load done', { store: 'evidence' });
+diag('project root resolve start');
 const projectRoot = await resolveTrustedProjectRoot();
+diag('project root resolved', { root: projectRoot });
 const cwd = (): string => projectRoot;
 const applyService = new ControlledApplyService(projectRoot);
 const auditStore = new ApplyAuditStore(process.env.RTL_AUDIT_STORE_PATH || join(homedir(), '.rtl-migration-analyzer', 'apply-audit-v1.json'));
 const workflowStore = new ReviewWorkflowStore(projectRoot, join(process.env.RTL_APPLY_BACKUP_ROOT || join(homedir(), '.rtl-migration-analyzer'), 'review-workflows-v1.json'), applyService, applicationOrigin);
+diag('store load start', { store: 'workflow' });
 await workflowStore.load();
+diag('store load done', { store: 'workflow' });
 const validations = new Map<string, ValidationResult>();
 const manualChangeStore = new ManualChangeStore();
+diag('store load start', { store: 'manual-change' });
 await manualChangeStore.load();
+diag('store load done', { store: 'manual-change' });
 const scanManifestStore = new ScanManifestStore();
+diag('store load start', { store: 'scan-manifest' });
 await scanManifestStore.load();
+diag('store load done', { store: 'scan-manifest' });
 const screenshotRoot = join(homedir(), '.rtl-migration-analyzer');
 const screenshotPath = (reference: string): string => {
   if (reference.length > 1000 || reference.startsWith('/') || reference.split(/[\\/]/).includes('..')) throw new Error('INVALID_SCREENSHOT_REFERENCE');
@@ -103,7 +122,14 @@ async function sweepStartupOrphans(): Promise<void> {
     for (const failure of result.failures) console.error(`RTL preview companion: workspace removal failed for ${failure.path}: ${failure.error}`);
   } catch (error) { console.error(`RTL preview companion: workspace sweep failed: ${error instanceof Error ? error.message : String(error)}`); }
 }
+diag('server create');
 const server = createServer(async (request, response) => {
+  if (diagnosticsEnabled) {
+    const requestStarted = Date.now();
+    const path = new URL(request.url ?? '/', 'http://127.0.0.1').pathname;
+    diag('request start', { method: request.method ?? '', path });
+    response.on('finish', () => diag('request finish', { method: request.method ?? '', path, status: response.statusCode, ms: Date.now() - requestStarted }));
+  }
   requestsInFlight++;
   response.once('close', () => { requestsInFlight--; armIdleExit(); });
   if (idleExitEnabled && originalLeaseCount() === 0) armIdleExit();
@@ -254,6 +280,7 @@ let shuttingDown = false;
   // workspaces; exit. Each step has its own deadline, and a hard deadline (ref'd, so it always fires) SIGKILLs the owned
   // groups and then this process if anything is still stuck.
   const shutdown = async () => {
+  diag('shutdown start');
     if (shuttingDown) return; shuttingDown = true;
     markOwnedShutdownStarted();
     const hard = setTimeout(() => { killOwnedGroupsSync(); process.kill(process.pid, 'SIGKILL'); }, COMPANION_SHUTDOWN_DEADLINE_MS);
@@ -285,4 +312,6 @@ if (Number.isInteger(ownerPid) && ownerPid > 0) {
   ownerWatch.unref();
 }
   // Last resort for any exit path: never leave an owned runtime process group behind.
-  process.on('exit', () => { killOwnedGroupsSync(); }); server.listen(port, host, () => { console.log(`RTL preview companion listening on ${host}:${port}`); armIdleExit(); void sweepStartupOrphans(); });
+  process.on('exit', () => { killOwnedGroupsSync(); }); if (diagnosticsEnabled) server.on('error', error => { diag('server error', { code: (error as NodeJS.ErrnoException).code ?? '', message: error.message.slice(0, 200) }); process.exit(1); });
+diag('listen call', { host, port });
+server.listen(port, host, () => { diag('listening', { host, port }); console.log(`RTL preview companion listening on ${host}:${port}`); armIdleExit(); void sweepStartupOrphans(); });
