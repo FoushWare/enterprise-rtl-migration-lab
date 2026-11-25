@@ -5,7 +5,9 @@ import { scan } from './scan.js';
 import { type ContextMapping, type PreviewApplication } from './example-preview-mappings.js';
 import { contextualBridgeSource } from './contextual-preview-bridge.js';
 import {loadPreviewConfiguration,configuredMapping,runtimeConfigName,previewFile} from './preview-configuration.js';
-import postcss from 'postcss';
+import postcss, { type Declaration } from 'postcss';
+// postcss declares AtRule's `type` as the base `string`, so `type === 'decl'` alone does not narrow the ChildNode union.
+const isDeclaration = (node: unknown): node is Declaration => (node as { type?: unknown }).type === 'decl';
 import { DASHBOARD_ORIGIN } from './companion-security.js';
 
 const scriptJson=(value:unknown)=>JSON.stringify(value).replaceAll('<','\\u003c').replaceAll('\u2028','\\u2028').replaceAll('\u2029','\\u2029');
@@ -45,13 +47,13 @@ export async function writePreviewRuntimeConfig(root: string, identity: PreviewR
         try{
           const proposal=proposeTransformation(f,await contextText(f.path));
           const replacement=postcss.parse('.probe{'+proposal.patch.replacement+'}').first;
-          const declarations=replacement?.type==='rule'?replacement.nodes.filter(d=>d.type==='decl'):[];
+          const declarations=replacement?.type==='rule'?replacement.nodes.filter(isDeclaration):[];
           const declaration=declarations[0];
           if(!declaration)continue;
           const actual=await rootAst(f.path);
           let present=false;
           actual.walkRules(r=>{
-            if(r.selector===binding.mapping.sourceSelector&&declarations.every(expected=>r.nodes.some(d=>d.type==='decl'&&d.prop===expected.prop&&d.value===expected.value&&d.important===expected.important)))present=true;
+            if(r.selector===binding.mapping.sourceSelector&&declarations.every(expected=>r.nodes.filter(isDeclaration).some(d=>d.prop===expected.prop&&d.value===expected.value&&d.important===expected.important)))present=true;
           });
           if(present)binding.mapping.css={...binding.mapping.css,property:declaration.prop,value:declaration.value};
         }catch{/* Target binding remains independent of transformation eligibility. */}
