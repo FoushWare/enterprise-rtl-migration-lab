@@ -30,9 +30,6 @@ const session = new DashboardSession({
     };
   },
 });
-await session.listen();
-await session.begin();
-
 let stopping = false;
 const stop = async (reason) => {
   if (stopping) return;
@@ -43,11 +40,15 @@ const stop = async (reason) => {
 };
 process.on('SIGTERM', () => void stop('SIGTERM'));
 process.on('SIGINT', () => void stop('SIGINT'));
+// Registered before any wait, so an owner that dies while the companion is still starting still ends this process.
 if (Number.isInteger(owner) && owner > 0) {
   setInterval(() => {
     try { process.kill(owner, 0); }
     catch (error) { if (error.code !== 'EPERM') void stop(`owner-gone:${owner}`); }
   }, 500).unref();
 }
-console.error(`DASHBOARD_SESSION_SERVER: listening port=${port} pid=${process.pid} owner=${Number.isInteger(owner) && owner > 0 ? owner : 'none'}`);
 setInterval(() => {}, 1 << 30);
+// Ready means ready: the port is opened only once the session has its companion, so the first page load is never "starting".
+await session.begin();
+await session.listen();
+console.error(`DASHBOARD_SESSION_SERVER: listening port=${port} pid=${process.pid} owner=${Number.isInteger(owner) && owner > 0 ? owner : 'none'}`);
