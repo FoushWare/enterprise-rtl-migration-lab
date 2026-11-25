@@ -57,7 +57,7 @@ async function expectExpanded(page:any,info:any){
   const workspace=page.locator('.component-review.embedded-expanded[role="dialog"]');
   await expect(workspace).toHaveAttribute('aria-modal','true');
   await expect(async()=>{
-    const detail=await workspace.evaluate((node:any)=>{const r=node.getBoundingClientRect(),s=getComputedStyle(node);return {box:{x:r.x,y:r.y,width:r.width,height:r.height},style:node.style.cssText,position:s.position,width:s.width,height:s.height,maxWidth:s.maxWidth,maxHeight:s.maxHeight,margin:s.margin,display:s.display,zoom:s.zoom,transform:s.transform,innerWidth,innerHeight,namespace:node.namespaceURI}});const native=detail.box;
+    const detail=await workspace.evaluate((node:any)=>{const r=node.getBoundingClientRect(),s=getComputedStyle(node);return {box:{x:r.x,y:r.y,width:r.width,height:r.height},style:node.style.cssText,position:s.position,width:s.width,height:s.height,maxWidth:s.maxWidth,maxHeight:s.maxHeight,margin:s.margin,display:s.display,zoom:(s as CSSStyleDeclaration & { zoom?: string }).zoom,transform:s.transform,innerWidth,innerHeight,namespace:node.namespaceURI}});const native=detail.box;
     const browser=await workspace.boundingBox();
     writeFileSync(info.outputPath('expanded-geometry.json'),JSON.stringify({detail,native,browser},null,2));
     expect(native).toEqual({x:0,y:0,width:1600,height:1000});expect(browser).toEqual(native);
