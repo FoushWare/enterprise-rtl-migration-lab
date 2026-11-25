@@ -56,6 +56,13 @@ jobs:
           } > diagnostics/before-phase5.txt 2>&1
           cat diagnostics/before-phase5.txt
 
+      - name: Runner load sampler (starts before Phase 5)
+        run: |
+          mkdir -p diagnostics
+          ( while true; do date -u +%FT%T.%3NZ; uptime; sleep 1; done ) > diagnostics/load.log 2>&1 &
+          echo $! > diagnostics/load-sampler.pid
+          sleep 2
+
       - name: Original sequence step 2 - Phase 5 with startup diagnostics
         env:
           RTL_PHASE5_DIAGNOSTICS: '1'
@@ -63,6 +70,12 @@ jobs:
         run: |
           set -o pipefail
           npx playwright test --config=playwright.phase5.config.ts tests/e2e/phase5-progress.spec.ts 2>&1 | tee diagnostics/phase5.log
+
+      - name: Stop runner load sampler
+        if: always()
+        run: |
+          if [ -f diagnostics/load-sampler.pid ]; then kill "$(cat diagnostics/load-sampler.pid)" 2>/dev/null || true; fi
+          echo "sampler stopped"
 
       - name: Process and resource state after a failure
         if: failure()
