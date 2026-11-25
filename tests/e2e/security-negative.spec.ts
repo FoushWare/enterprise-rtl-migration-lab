@@ -1,3 +1,5 @@
+import { openAdvancedValidation } from './dashboard-groups.js';
+import { disposeWorkspace, stopOwnedCompanion } from './owned-companion.js';
 import { createHash } from 'node:crypto';
 import { cpSync, existsSync, mkdirSync, mkdtempSync, realpathSync, readFileSync, renameSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -12,8 +14,8 @@ const sourcePath = 'apps/invoicing/src/components/InvoiceTable.tsx';
 const identity = { findingId: 'RTL.BIDI.ISOLATION:741d2ce2aec3a86cf2db37ea', sourcePath, inputDigest: '3011f559425f764e053dd89b48a060b24d79ce1d9a3eca068fb5e308fb81608a', policyDigest: 'fc82bc0137f0800c3c6818b55a14ef2ac9abaeb1b018d503834d9899183abf49', schemaVersion: 2 };
 const sha = (text: string) => createHash('sha256').update(text).digest('hex');
 const call = (path: string, body?: unknown) => new Promise<{ status: number; json: any }>((resolve, reject) => { const r = request({ host: '127.0.0.1', port, path, method: body === undefined ? 'GET' : 'POST', headers: body === undefined ? {} : { 'content-type': 'application/json', origin: 'http://127.0.0.1:4320' } }, res => { let text = ''; res.on('data', x => text += x); res.on('end', () => resolve({ status: res.statusCode ?? 0, json: JSON.parse(text || '{}') })); }); r.on('error', reject); if (body !== undefined) r.write(JSON.stringify(body)); r.end(); });
-const start = (root: string, state: string) => spawn(process.execPath, ['dist/tools/rtl-scanner/preview-companion.js'], { cwd: process.cwd(), env: { ...process.env, RTL_PREVIEW_PORT: String(port), RTL_PROJECT_ROOT: root, RTL_REVIEW_STORE_PATH: join(state, 'review-records-v1.json'), RTL_EVIDENCE_STORE_PATH: join(state, 'review-evidence-v1.json'), RTL_MANUAL_CHANGE_STORE_PATH: join(state, 'manual-changes-v1.json'), RTL_SCAN_MANIFEST_STORE_PATH: join(state, 'scan-manifests-v1.json'), RTL_AUDIT_STORE_PATH: join(state, 'apply-audit-v1.json'), RTL_APPLY_BACKUP_ROOT: join(state, 'backups') }, stdio: 'ignore' });
-const stop = async (child: ChildProcess) => { if (child.exitCode !== null) return; const done = new Promise<void>(resolve => child.once('exit', () => resolve())); child.kill('SIGTERM'); await done; };
+const start = (root: string, state: string) => spawn(process.execPath, ['dist/tools/rtl-scanner/preview-companion.js'], { cwd: process.cwd(), env: { ...process.env, RTL_PREVIEW_PORT: String(port), RTL_PROJECT_ROOT: root, RTL_REVIEW_STORE_PATH: join(state, 'review-records-v1.json'), RTL_EVIDENCE_STORE_PATH: join(state, 'review-evidence-v1.json'), RTL_MANUAL_CHANGE_STORE_PATH: join(state, 'manual-changes-v1.json'), RTL_SCAN_MANIFEST_STORE_PATH: join(state, 'scan-manifests-v1.json'), RTL_AUDIT_STORE_PATH: join(state, 'apply-audit-v1.json'), RTL_APPLY_BACKUP_ROOT: join(state, 'backups'), RTL_PREVIEW_OWNER_PID: String(process.pid) }, stdio: 'ignore' });
+const stop = (child: ChildProcess) => stopOwnedCompanion(child);
 let portableFixtureRoot: string;
 test.beforeAll(({}, workerInfo) => { const root = workerInfo.config.metadata?.portableFixtureRoot; if (typeof root !== 'string' || !root) throw new Error('PORTABLE_FIXTURE_UNAVAILABLE'); portableFixtureRoot = root; });
 const fixture = () => { if (!portableFixtureRoot) throw new Error('PORTABLE_FIXTURE_UNAVAILABLE'); const workspace = mkdtempSync(join(tmpdir(), 'rtl-security-')); const root = join(workspace, 'project'); const state = join(workspace, 'state'); mkdirSync(join(state, 'backups'), { recursive: true }); cpSync(portableFixtureRoot, root, { recursive: true }); return { workspace, root, state, source: join(root, sourcePath) }; };
@@ -30,7 +32,7 @@ const withCompanion = async (run: (f: ReturnType<typeof fixture>) => Promise<voi
     }
     if (!ready) throw new Error('OWNED_COMPANION_IDENTITY_UNAVAILABLE');
     await run(f);
-  } finally { await stop(child); }
+  } finally { await stop(child); disposeWorkspace(f.workspace); }
 };
 
 test('unauthorized apply is rejected without mutation or audit', async () => withCompanion(async f => { const before = readFileSync(f.source, 'utf8'); const result = await call('/review/apply', { identity, confirmation: 'APPLY_CONFIRMED' }); expect(result.status).toBe(400); expect(result.json.error).toBe('APPROVED_REVIEW_REQUIRED'); expect(readFileSync(f.source, 'utf8')).toBe(before); expect((await call('/review/audit?sourcePath=' + encodeURIComponent(sourcePath))).json.events).toEqual([]); }));
@@ -52,7 +54,7 @@ test('apply eligibility returns a handled error when the source is missing', asy
 
 test('approved stale source rejects authoritative apply', async ({ page }) => withCompanion(async f => {
   await page.goto('http://127.0.0.1:4320/rtl-report-dashboard.html?finding=' + encodeURIComponent(identity.findingId));
-  await expect(page.getByText('Codemod Dry Run')).toBeVisible();
+  await openAdvancedValidation(page); await expect(page.getByText('Codemod Dry Run')).toBeVisible();
   await page.getByRole('button', { name: 'Propose Candidate' }).click();
   await expect(page.getByText(/Candidate session .* created/)).toBeVisible({ timeout: 30_000 });
   await page.getByRole('button', { name: 'Start Candidate Preview' }).click();
