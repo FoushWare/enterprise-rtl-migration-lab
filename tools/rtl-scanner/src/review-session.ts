@@ -9,7 +9,7 @@ import {spawnPreviewRuntime,signalOwnedRuntime} from './runtime-process.js';
 import { createServer as createNetServer } from 'node:net';
 import type { PreviewApplication } from './example-preview-mappings.js';
 import {loadProjectConfiguration,PROJECT_CONFIGURATION} from './project-configuration.js';
-import {loadPreviewConfiguration,DEFAULT_STARTUP_TIMEOUT_MS} from './preview-configuration.js';
+import {loadPreviewConfiguration,DEFAULT_STARTUP_TIMEOUT_MS,runtimeConfigName} from './preview-configuration.js';
 import { writePreviewRuntimeConfig } from './preview-runtime.js';
 
 export const REVIEW_SOURCE = 'apps/invoicing/src/components/InvoiceTable.tsx';
@@ -240,20 +240,56 @@ export async function startCandidateRuntime(session: ReviewSession, application?
   runtimeStarts.set(key, operation);
   try { const next = await operation; return next; } finally { runtimeStarts.delete(key); }
 }
+/**
+ * Verifies a running candidate server for a new composition without restarting it: the server drops its cached module graph,
+ * and its identity must name this session, application and project, the composed state, and the candidate file on disk.
+ */
+async function reuseRuntime(session: ReviewSession, application: PreviewApplication, existing: ReviewSession, expectedSource: string): Promise<boolean> {
+  const child = runtimes.get(runtimeKey(session, application));
+  if (!child || child.exitCode !== null || child.signalCode !== null || !existing.runtime) return false;
+  try {
+    const refreshed = await fetch(existing.runtime.origin + '/__rtl_preview_refresh', { method: 'POST', signal: AbortSignal.timeout(2000) });
+    if (!refreshed.ok) return false;
+    const identity = await (await fetch(existing.runtime.origin + '/__rtl_preview_identity', { signal: AbortSignal.timeout(2000) })).json() as { sessionId?: string; role?: string; application?: string; projectRoot?: string; sourceSha256?: string; sourceHashes?: Record<string, string> };
+    const onDisk = digest(await readFile(await validateProjectSourcePath(session.candidateRoot, session.sourcePath), 'utf8'));
+    return identity.sessionId === session.id && identity.role === 'candidate' && identity.application === application
+      && identity.projectRoot === await realpath(session.candidateRoot) && identity.sourceSha256 === expectedSource && identity.sourceHashes?.[session.sourcePath] === onDisk;
+  } catch { return false; }
+}
+/**
+ * Marks a candidate's running server as no longer serving the current composition after its files changed. The server
+ * stays alive for reuse; nothing reports it as healthy until a verified reuse or a restart.
+ */
+export function markCandidateRuntimeStale(session: ReviewSession): ReviewSession {
+  for (const key of [...runtimeStates.keys()]) {
+    if (key !== session.id && !key.startsWith(session.id + ':')) continue;
+    const state = runtimeStates.get(key);
+    if (state?.runtime) runtimeStates.set(key, { ...state, runtime: { ...state.runtime, status: 'stopped' } });
+  }
+  return { ...session, runtime: session.runtime ? { ...session.runtime, status: 'stopped' } : undefined };
+}
 async function startRuntime(session: ReviewSession, application: PreviewApplication): Promise<ReviewSession> {
   const key = runtimeKey(session, application);
   const currentHash = digest(await readFile(await validateProjectSourcePath(session.candidateRoot,session.sourcePath), 'utf8'));
   if (session.candidateSha256 && currentHash !== session.candidateSha256) throw new Error('STALE_CANDIDATE_SOURCE');
-  const existing = runtimeStates.get(key);
-  if (existing && await ownedRuntimeHealthy({ ...existing, candidateSha256: session.candidateSha256 }, application)) return { ...session, runtime: existing.runtime };
-  if (existing) await stopRuntimeKey(existing, key);
   const dependencyMount = join(session.candidateRoot, 'node_modules');
   try { await symlink(join(session.root, 'node_modules'), dependencyMount, 'dir'); }
   catch (error) { if ((error as NodeJS.ErrnoException).code !== 'EEXIST' || await realpath(dependencyMount) !== await realpath(join(session.root, 'node_modules'))) throw error; }
   const sourceSha256 = digest(await readFile(await validateProjectSourcePath(session.candidateRoot,session.sourcePath), 'utf8'));
   if (session.candidateSha256 && sourceSha256 !== session.candidateSha256) throw new Error('STALE_CANDIDATE_SOURCE');
   const runtimeSourceHash = await runtimeIdentityHash(session,application);
+  const configPath = join(session.candidateRoot, '.rtl-preview', runtimeConfigName(application));
+  const configBefore = await readFile(configPath, 'utf8').catch(error => { if (error.code === 'ENOENT') return undefined; throw error; });
   const candidateConfig = await writePreviewRuntimeConfig(session.candidateRoot, { role: 'candidate', sessionId: session.id, sourceSha256: runtimeSourceHash }, { application, contextRoot: session.root });
+  // Reuse: the Vite configuration is static, so an unchanged configuration plus a verified state refresh keeps the running server.
+  // Anything that does not verify falls back to a full restart below.
+  const existing = runtimeStates.get(key);
+  if (existing && configBefore !== undefined && (await readFile(configPath, 'utf8')) === configBefore && await reuseRuntime(session, application, existing, runtimeSourceHash)) {
+    const reused = { ...existing.runtime!, status: 'healthy' as const };
+    runtimeStates.set(key, { ...existing, runtime: reused, candidateSha256: session.candidateSha256 });
+    return { ...session, runtime: reused };
+  }
+  if (existing) await stopRuntimeKey(existing, key);
   // Retain per-application origins through composition/restart; a stopped app's URL must not become another app in the same review.
   const assignments=session.runtimePorts??(session.runtimePorts={});
   const preferred=assignments[application];

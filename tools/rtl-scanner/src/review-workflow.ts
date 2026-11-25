@@ -17,7 +17,7 @@ import { verifiedSourceTransition } from './source-context.js';
 import type { Finding } from './model.js';
 import { directionRequirement, proposeTransformation } from './transformations.js';
 import { approvedPreviewForSource } from './preview-manifest.js';
-import { copyCandidateRoot, createReviewSession, disposeReviewSession, startCandidateRuntime, stopCandidateRuntime, validateProjectSourcePath, REVIEW_SOURCE, type PatchRequest, type ReviewSession } from './review-session.js';
+import { copyCandidateRoot, createReviewSession, disposeReviewSession, markCandidateRuntimeStale, startCandidateRuntime, stopCandidateRuntime, validateProjectSourcePath, REVIEW_SOURCE, type PatchRequest, type ReviewSession } from './review-session.js';
 import { ControlledApplyService, type ApplyReceipt } from './controlled-apply.js';
 
 const run = promisify(execFile);
@@ -306,8 +306,16 @@ export class ReviewWorkflowStore {
   private async writeComposition(w: ReviewWorkflow, preserveValidation = false): Promise<void> {
     if (!w.session && !candidateEntries(w).length) { if (!preserveValidation) w.validation = undefined; return; }
     if (!w.session) w.session = await createReviewSession(this.root,Object.hasOwn(w.baseline,REVIEW_SOURCE)?REVIEW_SOURCE:w.entries.find(e=>e.patch)?.finding.path);
-    if (w.session.runtime) w.session = await stopCandidateRuntime(w.session);
-    for (const path of new Set(w.entries.filter(e => e.patch).map(e => e.finding.path))) await writeFile(await validateProjectSourcePath(w.session.candidateRoot, path), composeWorkflowFile(w.baseline[path], candidateEntries(w).filter(e => e.patch!.path === path).map(e => e.patch!)), 'utf8');
+    // Only files whose composed content changed are rewritten. A running candidate server is kept: it is reused after a
+    // verified state refresh, or it is restarted by the runtime step. When nothing changed, its runtime stays valid.
+    let changed = false;
+    for (const path of new Set(w.entries.filter(e => e.patch).map(e => e.finding.path))) {
+      const target = await validateProjectSourcePath(w.session.candidateRoot, path);
+      const next = composeWorkflowFile(w.baseline[path], candidateEntries(w).filter(e => e.patch!.path === path).map(e => e.patch!));
+      const current = await readFile(target, 'utf8').catch(error => { if (error.code === 'ENOENT') return undefined; throw error; });
+      if (current !== next) { await writeFile(target, next, 'utf8'); changed = true; }
+    }
+    if (changed && w.session.runtime) w.session = markCandidateRuntimeStale(w.session);
     w.session.candidateSha256 = sha(await readFile(join(w.session.candidateRoot, w.session.sourcePath), 'utf8'));
     if (preserveValidation) return; // Preview-only recomposition: the accepted set (and its signature) did not change.
     if(w.validation)w.validationInvalidation='The accepted candidate changed; previous validation no longer applies. Validate the new accepted subset.'; w.validation = undefined;
