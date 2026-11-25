@@ -4,7 +4,7 @@ import {spawn,spawnSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {mkdirSync,mkdtempSync,readdirSync,readFileSync,realpathSync,rmSync,statSync,writeFileSync} from 'node:fs';
 import {createServer} from 'node:net';
-import {tmpdir} from 'node:os';
+import {tmpdir,userInfo} from 'node:os';
 import {join,resolve} from 'node:path';
 import {createRequire} from 'node:module';
 import {toolInvocation,binaryInvocation} from './tool-invocation.mjs';
@@ -80,8 +80,11 @@ try{
  for(const [i,c] of children.entries())for(const stream of [c.stdout,c.stderr])stream.on('data',b=>writeFileSync(join(workspace,`service-${i}.log`),b,{flag:'a'}));
  for(const url of ['http://127.0.0.1:4318/health','http://127.0.0.1:4320/rtl-report-dashboard.html']){let ready=false;for(let i=0;i<100;i++){try{if((await fetch(url)).ok){ready=true;break}}catch{}await new Promise(r=>setTimeout(r,100))}assert.ok(ready,url)}
  assert.equal((await fetch('http://127.0.0.1:4318/health').then(r=>r.json())).projectRootDigest,createHash('sha256').update(project).digest('hex'));
+ // Origin validation is checked after session authorization: a valid session with a foreign or missing Origin must still be refused.
+ const bootstrapFile=join(tmpdir(),'rtl-analyzer-auth-'+userInfo().uid,'companion-4318.json');
+ const session=await fetch('http://127.0.0.1:4318/auth/session',{method:'POST',headers:{'x-rtl-companion-bootstrap':JSON.parse(readFileSync(bootstrapFile,'utf8')).bootstrap}}).then(r=>r.json());
  for(const path of ['/review/manual-changes','/review/rescan','/review/workflows'])for(const origin of ['http://untrusted.invalid',undefined]){
-  const response=await fetch('http://127.0.0.1:4318'+path,{method:'POST',headers:{'content-type':'application/json',...(origin?{Origin:origin}:{})},body:'{malformed'});
+  const response=await fetch('http://127.0.0.1:4318'+path,{method:'POST',headers:{'content-type':'application/json','x-rtl-companion-session':session.token,...(origin?{Origin:origin}:{})},body:'{malformed'});
   assert.equal(response.status,403);assert.equal((await response.json()).error,'ORIGIN_NOT_ALLOWED');
  }
  evidence.deniedWrites=6;
