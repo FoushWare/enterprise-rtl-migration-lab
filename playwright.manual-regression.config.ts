@@ -1,5 +1,5 @@
 import { defineConfig } from '@playwright/test';
-import { dashboard, project, repo } from './tests/e2e/portable-fixture.mjs';
+import { dashboard, originalRuntimeConfig, project, repo } from './tests/e2e/portable-fixture.mjs';
 
 export default defineConfig({
   testDir: './tests/e2e',
@@ -10,7 +10,7 @@ export default defineConfig({
   use: { browserName: 'chromium', viewport: { width: 1440, height: 1000 } },
   webServer: [
     {
-      command: 'npx vite --config apps/invoicing/vite.config.ts --host 127.0.0.1 --port 4200 --strictPort',
+      command: `node "${repo}/node_modules/vite/bin/vite.js" --config "${originalRuntimeConfig}" --host 127.0.0.1 --port 4200 --strictPort`,
       cwd: project,
       url: 'http://127.0.0.1:4200/invoices',
       reuseExistingServer: false,
