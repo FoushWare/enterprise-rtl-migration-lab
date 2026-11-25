@@ -8,7 +8,7 @@ import {tmpdir,userInfo} from 'node:os';
 import {join,resolve} from 'node:path';
 import {createRequire} from 'node:module';
 import {toolInvocation,binaryInvocation} from './tool-invocation.mjs';
-import {startStaticReportServer} from './static-report-server.mjs';
+import {pathToFileURL} from 'node:url';
 const wrapper=process.argv.includes('--wrapper'),scanEntry=wrapper?['rtl-analyzer','scan']:['rtl-scanner'],previewEntry=wrapper?['rtl-analyzer','preview']:['rtl-preview'];
 const tarball=resolve(process.argv[2]||'');assert.ok(tarball.endsWith('.tgz'),'Pass the actual npm pack tarball');
 const smokeStartedAt=Date.now();
@@ -53,6 +53,7 @@ function verifyWindowsUnsupportedPublication(){
   console.log('CONSUMER_PASSED',JSON.stringify(evidence));
 }
 let browser;const children=[];let staticReports;
+async function startDashboardSession(project,directory){const dist=pathToFileURL(join(project,'node_modules/rtl-analyzer/dist')).href;const {DashboardSession}=await import(dist+'/dashboard-session.js');const {readCompanionBootstrap}=await import(dist+'/companion-auth.js');const session=new DashboardSession({dashboardDir:directory,port:4320,start:async()=>({state:'ready',stop:async()=>'not-held',companion:{origin:'http://127.0.0.1:4318',bootstrap:readCompanionBootstrap(4318)}})});await session.listen();await session.begin();return {close:()=>session.end()};}
 try{
  run('npm',['install','--save-dev','--ignore-scripts','--no-audit','--no-fund',tarball]);
  assert.match(run('npx',['--no-install',...(wrapper?['rtl-analyzer']:scanEntry),'--help']),wrapper?/rtl-analyzer scan/:/Usage: rtl-scanner/);if(wrapper)evidence.version=run('npx',['--no-install','rtl-analyzer','--version']).trim();assert.match(run('npx',['--no-install',...previewEntry,'--help']),/Usage:.*rtl-preview/);run('npx',['--no-install',...previewEntry,'--unknown'],2);
@@ -76,7 +77,8 @@ try{
  evidence.reports=['rtl-report.json','rtl-report.md','rtl-report-structured.md','rtl-report-dashboard.html'].map(path=>({path,bytes:readFileSync(join(reports,path)).length}));run('npx',['--no-install','playwright','install','chromium']);
  for(const port of [4215,4318,4320])await new Promise((yes,no)=>{const s=createServer();s.once('error',no);s.listen(port,'127.0.0.1',()=>s.close(yes))});
  const env={...process.env,RTL_PROJECT_ROOT:project,RTL_REVIEW_STORE_PATH:join(state,'review-records-v1.json'),RTL_EVIDENCE_STORE_PATH:join(state,'review-evidence-v1.json'),RTL_MANUAL_CHANGE_STORE_PATH:join(state,'manual-changes-v1.json'),RTL_SCAN_MANIFEST_STORE_PATH:join(state,'scan-manifests-v1.json'),RTL_AUDIT_STORE_PATH:join(state,'apply-audit-v1.json'),RTL_APPLY_BACKUP_ROOT:join(state,'backups')};
- const previewLaunch=binaryInvocation(project,'rtl-analyzer',previewEntry[0],previewEntry.slice(1));children.push(spawn(previewLaunch.file,previewLaunch.args,{cwd:project,env,stdio:['ignore','pipe','pipe']}));staticReports=await startStaticReportServer({directory:reports,port:4320});
+ const previewLaunch=binaryInvocation(project,'rtl-analyzer',previewEntry[0],previewEntry.slice(1));children.push(spawn(previewLaunch.file,previewLaunch.args,{cwd:project,env,stdio:['ignore','pipe','pipe']}));// The dashboard is served by the packaged DashboardSession, as the CLI serves it, so the page receives its companion session.
+ staticReports=await startDashboardSession(project,reports);
  for(const [i,c] of children.entries())for(const stream of [c.stdout,c.stderr])stream.on('data',b=>writeFileSync(join(workspace,`service-${i}.log`),b,{flag:'a'}));
  for(const url of ['http://127.0.0.1:4318/health','http://127.0.0.1:4320/rtl-report-dashboard.html']){let ready=false;for(let i=0;i<100;i++){try{if((await fetch(url)).ok){ready=true;break}}catch{}await new Promise(r=>setTimeout(r,100))}assert.ok(ready,url)}
  assert.equal((await fetch('http://127.0.0.1:4318/health').then(r=>r.json())).projectRootDigest,createHash('sha256').update(project).digest('hex'));
