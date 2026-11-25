@@ -245,6 +245,8 @@ export async function startCandidateRuntime(session: ReviewSession, application?
  * and its identity must name this session, application and project, the composed state, and the candidate file on disk.
  */
 async function reuseRuntime(session: ReviewSession, application: PreviewApplication, existing: ReviewSession, expectedSource: string): Promise<boolean> {
+  // Kill switch and verification control: RTL_PREVIEW_RUNTIME_REUSE=0 forces a full restart for every composition.
+  if (process.env.RTL_PREVIEW_RUNTIME_REUSE === '0') return false;
   const child = runtimes.get(runtimeKey(session, application));
   if (!child || child.exitCode !== null || child.signalCode !== null || !existing.runtime) return false;
   try {
