@@ -1,4 +1,5 @@
-import {spawn,type ChildProcess,type SpawnOptions} from 'node:child_process';
+import {type ChildProcess,type SpawnOptions} from 'node:child_process';
+import {spawnOwned} from './owned-processes.js';
 import {readFile} from 'node:fs/promises';
 import {join} from 'node:path';
 import {homedir} from 'node:os';
@@ -52,7 +53,8 @@ export async function spawnPreviewRuntime(root:string,application:string,config:
     command=project?.packageManager??'npm';args=['run',app.startupScript,...(command==='npm'?['--']:[]),...flags];
   }
   // A separate process group includes npm's Vite child. Never signal a port owner or an adopted PID.
-  const child=spawn(command,args,{cwd:root,stdio:['ignore','pipe','pipe'],...options,shell:false,detached:process.platform!=='win32'});
+  // The runtime watches this PID (see runtime-owner.ts) and exits when its companion is gone, even after SIGKILL.
+  const child=spawnOwned(command,args,{cwd:root,stdio:['ignore','pipe','pipe'],...options,env:{...(options.env??process.env),RTL_RUNTIME_OWNER_PID:String(process.pid)},shell:false,label:'runtime:'+application,root});
   captureRuntimeOutput(child);
   return child;
 }

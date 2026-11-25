@@ -6,6 +6,7 @@ import { type ChildProcess, execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 const execFileAsync = promisify(execFile);
 import {spawnPreviewRuntime,signalOwnedRuntime} from './runtime-process.js';
+import {isOwnedShutdownStarted} from './owned-processes.js';
 import { createServer as createNetServer } from 'node:net';
 import type { PreviewApplication } from './example-preview-mappings.js';
 import {loadProjectConfiguration,PROJECT_CONFIGURATION} from './project-configuration.js';
@@ -297,6 +298,7 @@ async function startRuntime(session: ReviewSession, application: PreviewApplicat
   const preferred=assignments[application];
   const ports=preferred?[preferred,...CANDIDATE_PORTS.filter(p=>p!==preferred)]:CANDIDATE_PORTS;
   for (const port of ports) {
+  if (isOwnedShutdownStarted()) throw new Error('COMPANION_SHUTTING_DOWN');
   if(Object.entries(assignments).some(([app,assigned])=>app!==application&&assigned===port))continue;
   if (reservedPorts.has(port)) continue;
   reservedPorts.add(port);
@@ -315,7 +317,7 @@ async function startRuntime(session: ReviewSession, application: PreviewApplicat
   // Same startup budget as the original: the application's startupTimeoutMs, or the default.
   const candidateBudget = (await loadPreviewConfiguration(session.root).catch(() => undefined))?.applications[application]?.startupTimeoutMs ?? DEFAULT_STARTUP_TIMEOUT_MS;
   const candidateDeadline = Date.now() + candidateBudget;
-  for (let attempt = 0; Date.now() < candidateDeadline; attempt++) { if (await ownedRuntimeHealthy(starting, application)) { const healthy = { ...starting, runtime: { ...starting.runtime, status: 'healthy' as const } }; runtimeStates.set(key, healthy); return healthy; } if (child.exitCode !== null || startupError.includes('EADDRINUSE')) break; await new Promise(resolveDelay => setTimeout(resolveDelay, 100)); }
+  for (let attempt = 0; Date.now() < candidateDeadline; attempt++) { if (await ownedRuntimeHealthy(starting, application)) { const healthy = { ...starting, runtime: { ...starting.runtime, status: 'healthy' as const } }; runtimeStates.set(key, healthy); return healthy; } if (child.exitCode !== null || startupError.includes('EADDRINUSE') || isOwnedShutdownStarted()) break; await new Promise(resolveDelay => setTimeout(resolveDelay, 100)); }
   await stopRuntimeKey(starting, key);
   if (/EADDRINUSE|already in use/.test(startupError)) continue;
   return { ...starting, runtime: { ...starting.runtime, status: 'failed', error: startupError.trim() || 'CANDIDATE_IDENTITY_UNAVAILABLE' } };

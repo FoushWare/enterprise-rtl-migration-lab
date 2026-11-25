@@ -64,9 +64,12 @@ export async function writePreviewRuntimeConfig(root: string, identity: PreviewR
   }
   const statePath = join(directory, runtimeConfigName(application) + '.state.json');
   const stateModulePath = fileURLToPath(new URL('./preview-runtime-state.js', import.meta.url));
+  const ownerModulePath = fileURLToPath(new URL('./runtime-owner.js', import.meta.url));
   const contents = `import { mergeConfig } from 'vite';
 import base from ${JSON.stringify('../'+viteConfig)};
 import { installRuntimeState, runtimeStateTags } from ${JSON.stringify(stateModulePath)};
+import { watchRuntimeOwner } from ${JSON.stringify(ownerModulePath)};
+watchRuntimeOwner();
 const statePath = ${JSON.stringify(statePath)};
 export default mergeConfig(base, {
   cacheDir:${JSON.stringify(join(root,'.rtl-vite-cache',identity.role,application))},

@@ -1,6 +1,7 @@
 import { PreviewSupersession } from './preview-supersession.js';
 import { sweepOrphanedReviewWorkspaces } from './review-session.js';
-import { initializeOriginalPreview, hasOriginalLease, leaseOriginalPreview, originalLeaseCount, OriginalPreviewStartupError, releaseOriginalPreview, signalOwnedOriginalPreviews, stopOwnedOriginalPreviews } from './original-preview-runtime.js';
+import { killOwnedGroupsSync, markOwnedShutdownStarted, removeOwnManifest, sweepOwnedManifests, terminateOwnedGroups, COMPANION_SHUTDOWN_DEADLINE_MS } from './owned-processes.js';
+import { initializeOriginalPreview, hasOriginalLease, leaseOriginalPreview, originalLeaseCount, OriginalPreviewStartupError, releaseOriginalPreview, stopOwnedOriginalPreviews } from './original-preview-runtime.js';
 import {loadPreviewConfiguration} from './preview-configuration.js';
 import { contextualPreview } from './contextual-preview.js';
 import { verifiedSourceTransition, reconcileSourceRuntimes, reconcileSelectedFinding, type FindingSelection } from './source-context.js';
@@ -16,7 +17,7 @@ import { join, relative, resolve, sep } from 'node:path';
 import { createHash } from 'node:crypto';
 import { lstat, readFile } from 'node:fs/promises';
 import { PREVIEW_COMPANION_ORIGIN, previewManifest, validatedPreviewRoute } from './preview-manifest.js';
-import { applyReviewPatch, createReviewSession, disposeReviewSession, signalAllCandidateRuntimes, stopAllCandidateRuntimes, reviewSessionComparison, reviewSessionDiff, startCandidateRuntime, stopCandidateRuntime, validateProjectSourcePath, validateReviewIdentity, CANDIDATE_ORIGIN, REVIEW_SOURCE, type PatchRequest, type ReviewIdentity, type ReviewRecord, type ReviewSession } from './review-session.js';
+import { applyReviewPatch, createReviewSession, disposeReviewSession, reviewSessionComparison, reviewSessionDiff, startCandidateRuntime, stopCandidateRuntime, validateProjectSourcePath, validateReviewIdentity, CANDIDATE_ORIGIN, REVIEW_SOURCE, type PatchRequest, type ReviewIdentity, type ReviewRecord, type ReviewSession } from './review-session.js';
 import { DEFAULT_REVIEW_STORE_PATH, ReviewRecordStore, type MigrationDecision } from './review-store.js';
 import { DEFAULT_EVIDENCE_STORE_PATH, EvidenceSnapshotStore } from './evidence-store.js';
 import { ApplyAuditStore, ControlledApplyService } from './controlled-apply.js';
@@ -93,6 +94,8 @@ function armIdleExit(): void {
 // Unmarked (legacy) workspaces are reported only. A failure is reported; it never stops the companion.
 async function sweepStartupOrphans(): Promise<void> {
   try {
+    const recovered = await sweepOwnedManifests();
+    if (recovered.recovered.length || recovered.skipped.length) console.log(`RTL preview companion: owned-process sweep recovered ${recovered.recovered.length}, skipped ${recovered.skipped.length} (identity not proven)`);
     const referenced = new Set(workflowStore.list().flatMap(w => (w.session?.candidateRoot ? [w.session.candidateRoot] : [])));
     const result = await sweepOrphanedReviewWorkspaces({ referenced, graceMs: 10 * 60_000 });
     if (result.removed.length || result.failures.length || result.legacyUnmarked.length)
@@ -246,12 +249,29 @@ const server = createServer(async (request, response) => {
 });
 let shuttingDown = false;
   // Idempotent: npm/npx forward the terminal's SIGINT, so the companion routinely receives it twice. A second signal must not abort the first shutdown.
+  // Bounded, deterministic shutdown. Order: stop accepting and drop open sockets; stop every owned process group
+  // (candidate runtimes, original runtime, validation commands) by group; persist workflow state; dispose session
+  // workspaces; exit. Each step has its own deadline, and a hard deadline (ref'd, so it always fires) SIGKILLs the owned
+  // groups and then this process if anything is still stuck.
   const shutdown = async () => {
     if (shuttingDown) return; shuttingDown = true;
-    setTimeout(() => process.exit(1), 8000).unref();
-    const steps = await Promise.allSettled([stopOwnedOriginalPreviews(), workflowStore.shutdown(), stopAllCandidateRuntimes(), ...[...sessions.values()].map(session => disposeReviewSession(session))]);
-    for (const step of steps) if (step.status === 'rejected') console.error(`RTL preview companion: shutdown step failed: ${step.reason instanceof Error ? step.reason.message : String(step.reason)}`);
-    server.close(() => process.exit(0)); setTimeout(() => process.exit(1), 3000).unref();
+    markOwnedShutdownStarted();
+    const hard = setTimeout(() => { killOwnedGroupsSync(); process.kill(process.pid, 'SIGKILL'); }, COMPANION_SHUTDOWN_DEADLINE_MS);
+    const failures: string[] = [];
+    const bounded = async (name: string, work: () => Promise<unknown>, ms: number) => {
+      let timer: NodeJS.Timeout | undefined;
+      try { await Promise.race([work(), new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('deadline exceeded')), ms); })]); }
+      catch (error) { failures.push(`${name}: ${error instanceof Error ? error.message : String(error)}`); }
+      finally { if (timer) clearTimeout(timer); }
+    };
+    server.closeAllConnections(); server.close();
+    await bounded('owned-process-groups', () => terminateOwnedGroups(), 4_000);
+    await bounded('workflows', () => workflowStore.shutdown(), 2_000);
+    await bounded('session-workspaces', () => Promise.all([...sessions.values()].map(session => disposeReviewSession(session))), 2_000);
+    await bounded('owned-manifest', removeOwnManifest, 500);
+    for (const failure of failures) console.error(`RTL preview companion: shutdown step failed: ${failure}`);
+    clearTimeout(hard);
+    process.exit(failures.length ? 1 : 0);
   };
   for (const signal of ['SIGTERM', 'SIGINT', 'SIGHUP'] as const) process.on(signal, shutdown);
 // The CLI that started this companion owns it. When that process is gone, the companion runs its normal shutdown (which
@@ -265,4 +285,4 @@ if (Number.isInteger(ownerPid) && ownerPid > 0) {
   ownerWatch.unref();
 }
   // Last resort for any exit path: never leave an owned runtime process group behind.
-  process.on('exit', () => { signalOwnedOriginalPreviews(); signalAllCandidateRuntimes(); }); server.listen(port, host, () => { console.log(`RTL preview companion listening on ${host}:${port}`); armIdleExit(); void sweepStartupOrphans(); });
+  process.on('exit', () => { killOwnedGroupsSync(); }); server.listen(port, host, () => { console.log(`RTL preview companion listening on ${host}:${port}`); armIdleExit(); void sweepStartupOrphans(); });

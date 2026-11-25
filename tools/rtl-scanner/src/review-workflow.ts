@@ -6,8 +6,6 @@ import { existsSync } from 'node:fs';
 import { lstat, mkdir, readFile, readdir, rename, realpath, rm, writeFile } from 'node:fs/promises';
 import { basename, dirname, isAbsolute, join, posix, relative } from 'node:path';
 import { packageManagerInvocation } from './package-manager-command.js';
-import { execFile } from 'node:child_process';
-import { promisify } from 'node:util';
 import { chromium } from '@playwright/test';
 import {loadProjectConfiguration,PROJECT_CONFIGURATION} from './project-configuration.js';
 import {previewConfigurationDigest,PREVIEW_CONFIGURATION,loadPreviewConfiguration,configuredMapping,routeUrl} from './preview-configuration.js';
@@ -20,7 +18,8 @@ import { approvedPreviewForSource } from './preview-manifest.js';
 import { copyCandidateRoot, createReviewSession, disposeReviewSession, markCandidateRuntimeStale, startCandidateRuntime, stopCandidateRuntime, validateProjectSourcePath, REVIEW_SOURCE, type PatchRequest, type ReviewSession } from './review-session.js';
 import { ControlledApplyService, type ApplyReceipt } from './controlled-apply.js';
 
-const run = promisify(execFile);
+const runOwnedCheck=(file:string,args:readonly string[],options:{cwd:string;env?:NodeJS.ProcessEnv;timeout:number;maxBuffer:number})=>execOwned(file,args,{...options,label:'validation-check'});
+import { execOwned } from './owned-processes.js';
 const sha = (text: string) => createHash('sha256').update(text).digest('hex');
 export type FindingDecision = 'Pending' | 'Accepted' | 'Rejected' | 'Deferred' | 'Flagged';
 export interface WorkflowOperation { id:string; kind:'validate'|'apply'; state:'Running'|'Succeeded'|'Failed'|'Uncertain'; count:number; at:string; error?:string }
@@ -429,7 +428,7 @@ export class ReviewWorkflowStore {
       const resolution = packageManagerInvocation(project?.packageManager ?? 'npm', args);
       if (!resolution.ok) { checks.push({ ...configured, name, state: 'Error', detail: resolution.error }); continue; }
       const invocation = resolution.invocation;
-      try { const result = await run(invocation.file, invocation.args, { cwd: w.session!.candidateRoot, env: { ...process.env, NX_DAEMON: 'false', NX_ISOLATE_PLUGINS: 'false' }, timeout: 180_000, maxBuffer: 2_000_000 }); checks.push({ ...configured, name, state: 'Passed', detail: (result.stdout + result.stderr).slice(-8000) }); }
+      try { const result = await runOwnedCheck(invocation.file, invocation.args, { cwd: w.session!.candidateRoot, env: { ...process.env, NX_DAEMON: 'false', NX_ISOLATE_PLUGINS: 'false' }, timeout: 180_000, maxBuffer: 2_000_000 }); checks.push({ ...configured, name, state: 'Passed', detail: (result.stdout + result.stderr).slice(-8000) }); }
       catch (error) { const failure = error as { stdout?: string; stderr?: string; message: string; code?: string | number; signal?: string }; checks.push({ ...configured, name, state: typeof failure.code === 'number' || failure.signal ? 'Failed' : 'Error', detail: ((failure.stdout ?? '') + (failure.stderr ?? '') + failure.message).slice(-8000) }); }
     }
     try {
