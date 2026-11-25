@@ -1,0 +1,80 @@
+name: Visual comparison (diagnostic only)
+on:
+  push:
+    branches:
+      - 'diagnostics/visual-compare'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  target:
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: f632178
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install chromium
+      - name: create-invoice on integration target f632178
+        run: |
+          set -o pipefail
+          npx playwright test tests/e2e/baseline.spec.ts -g "create-invoice" --reporter=list 2>&1 | tee visual-target.log
+      - name: Record commit and snapshot identity
+        if: always()
+        run: |
+          mkdir -p visual-evidence
+          git rev-parse HEAD > visual-evidence/commit.txt
+          shasum -a 256 tests/e2e/baseline.spec.ts-snapshots/create-invoice-ltr-darwin.png tests/e2e/baseline.spec.ts-snapshots/create-invoice-rtl-darwin.png > visual-evidence/snapshots.txt 2>&1 || true
+          cp visual-target.log visual-evidence/ 2>/dev/null || true
+          sw_vers > visual-evidence/runner.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: visual-target
+          path: |
+            visual-evidence/
+            test-results/
+            playwright-report/
+          if-no-files-found: warn
+
+  head:
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 12c2c6d65ad19c8d7dbab597ed541bcd27073ead
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install chromium
+      - name: create-invoice on feature head 12c2c6d
+        run: |
+          set -o pipefail
+          npx playwright test tests/e2e/baseline.spec.ts -g "create-invoice" --reporter=list 2>&1 | tee visual-head.log
+      - name: Record commit and snapshot identity
+        if: always()
+        run: |
+          mkdir -p visual-evidence
+          git rev-parse HEAD > visual-evidence/commit.txt
+          shasum -a 256 tests/e2e/baseline.spec.ts-snapshots/create-invoice-ltr-darwin.png tests/e2e/baseline.spec.ts-snapshots/create-invoice-rtl-darwin.png > visual-evidence/snapshots.txt 2>&1 || true
+          cp visual-head.log visual-evidence/ 2>/dev/null || true
+          sw_vers > visual-evidence/runner.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: visual-head
+          path: |
+            visual-evidence/
+            test-results/
+            playwright-report/
+          if-no-files-found: warn
