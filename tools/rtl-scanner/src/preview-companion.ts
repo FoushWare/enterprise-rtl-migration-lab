@@ -254,5 +254,15 @@ let shuttingDown = false;
     server.close(() => process.exit(0)); setTimeout(() => process.exit(1), 3000).unref();
   };
   for (const signal of ['SIGTERM', 'SIGINT', 'SIGHUP'] as const) process.on(signal, shutdown);
+// The CLI that started this companion owns it. When that process is gone, the companion runs its normal shutdown (which
+// disposes its candidate workspaces), even while an open dashboard tab keeps sending heartbeats.
+const ownerPid = Number(process.env.RTL_PREVIEW_OWNER_PID ?? '');
+if (Number.isInteger(ownerPid) && ownerPid > 0) {
+  const ownerWatch = setInterval(() => {
+    try { process.kill(ownerPid, 0); }
+    catch (error) { if ((error as NodeJS.ErrnoException).code !== 'EPERM') { clearInterval(ownerWatch); void shutdown(); } }
+  }, 2000);
+  ownerWatch.unref();
+}
   // Last resort for any exit path: never leave an owned runtime process group behind.
   process.on('exit', () => { signalOwnedOriginalPreviews(); signalAllCandidateRuntimes(); }); server.listen(port, host, () => { console.log(`RTL preview companion listening on ${host}:${port}`); armIdleExit(); void sweepStartupOrphans(); });
