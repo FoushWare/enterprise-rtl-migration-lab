@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import {spawn,spawnSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
-import {mkdirSync,mkdtempSync,readdirSync,readFileSync,realpathSync,writeFileSync} from 'node:fs';
+import {mkdirSync,mkdtempSync,readdirSync,readFileSync,realpathSync,rmSync,statSync,writeFileSync} from 'node:fs';
 import {createServer} from 'node:net';
 import {tmpdir} from 'node:os';
 import {join,resolve} from 'node:path';
@@ -11,6 +11,10 @@ import {toolInvocation,binaryInvocation} from './tool-invocation.mjs';
 import {startStaticReportServer} from './static-report-server.mjs';
 const wrapper=process.argv.includes('--wrapper'),scanEntry=wrapper?['rtl-analyzer','scan']:['rtl-scanner'],previewEntry=wrapper?['rtl-analyzer','preview']:['rtl-preview'];
 const tarball=resolve(process.argv[2]||'');assert.ok(tarball.endsWith('.tgz'),'Pass the actual npm pack tarball');
+const smokeStartedAt=Date.now();
+// Removes this run's temporary workspace and the dashboard folders that the packaged CLI created during the run. Folders older than
+// the run belong to someone else and are never touched.
+function disposeSmokeTemporaries(since){rmSync(workspace,{recursive:true,force:true});const temp=realpathSync(tmpdir());for(const name of readdirSync(temp)){if(!name.startsWith('rtl-analyzer-dashboard-'))continue;const path=join(temp,name);try{if(statSync(path).mtimeMs>=since-1000)rmSync(path,{recursive:true,force:true})}catch{}}}
 const workspace=mkdtempSync(join(realpathSync(tmpdir()),'rtl-package-consumer-')),project=join(workspace,'project'),reports=join(workspace,'reports'),state=join(workspace,'state');
 for(const p of [project,reports,state,join(project,'src'),join(project,'tests'),join(project,'public'),join(state,'backups')])mkdirSync(p,{recursive:true});
 console.log('CONSUMER_WORKSPACE',workspace);
@@ -129,6 +133,6 @@ try{
  evidence.status='Passed';save();console.log('CONSUMER_PASSED',JSON.stringify(evidence));
  }
 }catch(e){evidence.status='Failed';evidence.error=e.stack;save();throw e}
-finally{await browser?.close();for(const c of children.reverse())if(c.exitCode===null&&c.signalCode===null){const done=new Promise(r=>c.once('exit',r));c.kill('SIGTERM');await done}await staticReports?.close()}
+finally{await browser?.close();for(const c of children.reverse())if(c.exitCode===null&&c.signalCode===null){const done=new Promise(r=>c.once('exit',r));c.kill('SIGTERM');await done}await staticReports?.close();disposeSmokeTemporaries(smokeStartedAt)}
 // Cleanup must release every smoke port; a leftover listener would make the next run fail for an unrelated reason.
 for(const port of [4215,4318,4320])await new Promise((yes,no)=>{const s=createServer();s.once('error',()=>no(new Error(`port ${port} is still in use after smoke cleanup`)));s.listen(port,'127.0.0.1',()=>s.close(yes))});
