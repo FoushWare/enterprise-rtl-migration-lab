@@ -93,9 +93,24 @@ describe('multi-finding workflow safety',()=>{
       await writeFile(join(root,file),before+'// user edit');
       await expect(apply.rollbackAcceptedFiles(receipts)).rejects.toThrow('ROLLBACK_CONFLICT');
       expect(await readFile(join(root,file),'utf8')).toBe(before+'// user edit');expect(await readFile(join(root,second),'utf8')).toBe('export const value=2;');
+      // Authorized rollback rejected by a source integrity conflict: one structured ROLLBACK_FAILED record, hashes only.
+      const failures=(await audit.list()).filter(e=>e.type==='ROLLBACK_FAILED');
+      expect(failures).toHaveLength(1);
+      expect(failures[0]).toMatchObject({auditId:receipts[0].auditId,type:'ROLLBACK_FAILED',path:file,reason:'CURRENT_SOURCE_CHANGED',sourceSha256:receipts[0].originalSha256,backupPath:receipts[0].backupPath});
+      expect(failures[0].resultingSha256).toBe(hash(before+'// user edit'));
+      expect(JSON.stringify(await audit.list())).not.toContain('user edit');
+      expect(JSON.stringify(await audit.list())).not.toContain('export const View');
+      // A refused rollback is repeatable: a second attempt records its own failure and writes nothing.
+      await expect(apply.rollbackAcceptedFiles(receipts)).rejects.toThrow('ROLLBACK_CONFLICT');
+      expect((await audit.list()).filter(e=>e.type==='ROLLBACK_FAILED')).toHaveLength(2);
+      expect(await readFile(join(root,file),'utf8')).toBe(before+'// user edit');
       await writeFile(join(root,file),files[0].after);await apply.rollbackAcceptedFiles(receipts);
       expect(await readFile(join(root,file),'utf8')).toBe(before);expect(await readFile(join(root,second),'utf8')).toBe('export const value=1;');
+      expect((await audit.list()).filter(e=>e.type==='ROLLED_BACK')).toHaveLength(2);
+      // An untrusted receipt is refused without any audit record, authorized or not.
+      const beforeUntrusted=(await audit.list()).length;
       await expect(apply.rollbackAcceptedFiles([{...receipts[0],backupPath:'/untrusted'}])).rejects.toThrow('ROLLBACK_RECEIPT_UNTRUSTED');
+      expect((await audit.list()).length).toBe(beforeUntrusted);
     }finally{await rm(root,{recursive:true,force:true})}
   });
 });

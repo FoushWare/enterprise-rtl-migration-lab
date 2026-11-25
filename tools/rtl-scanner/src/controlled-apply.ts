@@ -81,13 +81,19 @@ export class ControlledApplyService {
   async rollbackAcceptedFiles(receipts: readonly ApplyReceipt[]): Promise<void> {
     const events = await this.audit.list();
     // Preflight the entire scope: a later user edit blocks every write in this rollback.
+    // Only a receipt that the journal trusts can be audited. An untrusted receipt is refused without an audit record.
+    // A trusted receipt whose source no longer matches its applied or original bytes is a source integrity conflict: it is
+    // recorded as ROLLBACK_FAILED with a structured reason and only hashes (never source content), then refused. Nothing
+    // is written, and the backups and the applied state are left as they are.
+    const conflicts: ApplyReceipt[] = [];
     for (const r of receipts) {
       const event = events.find(e => e.auditId === r.auditId && e.type === 'APPLY_PREPARED' && e.path === r.path && e.backupPath === r.backupPath && e.sourceSha256 === r.originalSha256 && e.resultingSha256 === r.appliedSha256);
       if (!event) throw new Error('ROLLBACK_RECEIPT_UNTRUSTED');
       const current = sha(await readNoFollow(await validateProjectSourcePath(this.repositoryRoot, r.path)));
-      if (current !== r.appliedSha256 && current !== r.originalSha256) throw new Error('ROLLBACK_CONFLICT');
+      if (current !== r.appliedSha256 && current !== r.originalSha256) { conflicts.push(r); await this.audit.append({ auditId: r.auditId, type: 'ROLLBACK_FAILED', path: r.path, sourceSha256: r.originalSha256, resultingSha256: current, backupPath: r.backupPath, timestamp: new Date().toISOString(), reason: 'CURRENT_SOURCE_CHANGED' }); continue; }
       if (sha(await readFile(r.backupPath, 'utf8')) !== r.originalSha256) throw new Error('ROLLBACK_BACKUP_MISMATCH');
     }
+    if (conflicts.length) throw new Error('ROLLBACK_CONFLICT');
     for (const r of receipts) {
       const path = await validateProjectSourcePath(this.repositoryRoot, r.path);
       const current = sha(await readNoFollow(path));
