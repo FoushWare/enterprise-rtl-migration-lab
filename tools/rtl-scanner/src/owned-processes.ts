@@ -6,7 +6,7 @@
 // deadline even if a promise never settles. A manifest per companion lets a later companion recover groups that a
 // crashed companion left behind, but only when the recorded process start time and root still match the live group.
 import { execFile, spawn, type ChildProcess, type SpawnOptions } from 'node:child_process';
-import { mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, readdir, rm, rmdir, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -118,7 +118,12 @@ async function writeManifest(): Promise<void> {
     await writeFile(path, JSON.stringify({ schema: 'rtl-owned-processes-v1', ownerPid: process.pid, entries }, null, 2), { mode: 0o600 });
   } catch { /* A manifest failure must never block shutdown; the live registry still terminates every owned group. */ }
 }
-export async function removeOwnManifest(): Promise<void> { await rm(manifestPath(ownedManifestDirectory(), process.pid), { force: true }).catch(() => undefined); }
+export async function removeOwnManifest(): Promise<void> {
+  const directory = ownedManifestDirectory();
+  await rm(manifestPath(directory, process.pid), { force: true }).catch(() => undefined);
+  // The directory is removed when no other companion's manifest remains; a non-empty directory is simply kept.
+  await rmdir(directory).catch(() => undefined);
+}
 
 export async function processStartTime(pid: number): Promise<string | null> {
   if (process.platform === 'win32') return null;
