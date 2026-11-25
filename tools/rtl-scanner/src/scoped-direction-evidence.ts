@@ -1,4 +1,4 @@
-import { chromium } from '@playwright/test';
+import { chromium, type Browser } from '@playwright/test';
 import { createHash } from 'node:crypto';
 import { configuredMapping, loadPreviewConfiguration, routeUrl } from './preview-configuration.js';
 import { contextualPreview } from './contextual-preview.js';
@@ -10,10 +10,26 @@ export interface ScopedDirectionEvidence { version: 1; inputDigest: string; poli
 export function sameScopedDirectionEvidence(a:ScopedDirectionEvidence|undefined,b:ScopedDirectionEvidence):boolean {
  return !!a && a.version===1 && JSON.stringify(a)===JSON.stringify(b);
 }
+// One Chromium per process for direction evidence: launching a browser per preparation dominated the navigation cost.
+// The browser is relaunched if it disconnects and closed when the companion shuts down. Pages are still per capture.
+let sharedDirectionBrowser: Promise<Browser> | undefined;
+async function directionBrowser(): Promise<Browser> {
+  if (sharedDirectionBrowser) {
+    const existing = await sharedDirectionBrowser;
+    if (existing.isConnected()) return existing;
+  }
+  sharedDirectionBrowser = chromium.launch({ headless: true });
+  return sharedDirectionBrowser;
+}
+export async function closeDirectionBrowser(): Promise<void> {
+  const pending = sharedDirectionBrowser;
+  sharedDirectionBrowser = undefined;
+  if (pending) await (await pending.catch(() => undefined))?.close().catch(() => undefined);
+}
 export async function captureScopedDirectionEvidence(root:string,w:ReviewWorkflow,entries:WorkflowEntry[],prepare:(application:string)=>Promise<void>):Promise<ScopedDirectionEvidence>{
  if(!w.session||!entries.length)throw Error('DIRECTION_EVIDENCE_CANDIDATE_REQUIRED');
  const config=await loadPreviewConfiguration(root),records:unknown[]=[];
- const browser=await chromium.launch({headless:true});
+ const browser=await directionBrowser();
  try {
   for(const entry of entries){
    const mapping=configuredMapping(entry.finding,config);
@@ -67,6 +83,6 @@ export async function captureScopedDirectionEvidence(root:string,w:ReviewWorkflo
     }
    }
   }
- }finally{await browser.close()}
+ }finally{/* The shared browser stays open for later captures; pages are closed per capture. */}
  return {version:1,inputDigest:w.inputDigest,policyDigest:w.policyDigest,configurationDigest:config.digest,sessionId:w.session.id,records};
 }

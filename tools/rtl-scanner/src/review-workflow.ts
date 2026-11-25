@@ -1,4 +1,4 @@
-import { captureScopedDirectionEvidence, sameScopedDirectionEvidence, type ScopedDirectionEvidence } from './scoped-direction-evidence.js';
+import { captureScopedDirectionEvidence, closeDirectionBrowser, sameScopedDirectionEvidence, type ScopedDirectionEvidence } from './scoped-direction-evidence.js';
 import { initializeOriginalPreview } from './original-preview-runtime.js';
 import { configuredWorkflowChecks, workflowValidationPresentation, workflowValidationEvidenceIssue } from './workflow-validation.js';
 import { createHash, randomUUID } from 'node:crypto';
@@ -203,6 +203,13 @@ export class ReviewWorkflowStore {
     if(prior){await this.fresh(prior);return prior;}
     return this.begin({inputDigest:report.inputDigest,policyDigest:report.policyDigest,mode:historical.mode,scope:historical.scope},historical);
   }
+  private verifiedDirectionGates=new Set<string>();
+  /** Identity of one preview state: the review, the source identity, the finding, and every composed file's content digest. */
+  private async directionGateKey(w: ReviewWorkflow, entry: WorkflowEntry): Promise<string> {
+    const parts: string[] = [w.id, w.inputDigest, w.policyDigest, entry.finding.id, w.previewFocus ?? ''];
+    for (const path of Object.keys(w.baseline).sort()) parts.push(path + ':' + sha(await readFile(await validateProjectSourcePath(w.session!.candidateRoot, path), 'utf8')));
+    return sha(parts.join('\n'));
+  }
   private async fresh(w: ReviewWorkflow): Promise<void> {
     if(await previewConfigurationDigest(this.root)!==(w.previewConfigDigest??sha('')))throw Error('PREVIEW_CONFIGURATION_CHANGED');
     if (await realpath(w.root) !== w.root || w.root !== this.root) throw new Error('PROJECT_ROOT_IDENTITY_MISMATCH');
@@ -345,7 +352,11 @@ export class ReviewWorkflowStore {
     }else if(!entry.applied)await this.change(id,entry.finding.id,{action:'apply'});
     const prepared=await this.runtime(id,input.application);
     if(prepared.session?.runtime?.status!=='healthy')throw Error(prepared.session?.runtime?.error||'CANDIDATE_RUNTIME_UNAVAILABLE');
-    if(directionRequirement(entry.finding)==='dependent')await captureScopedDirectionEvidence(this.root,w,[entry],async application=>{await initializeOriginalPreview(this.root,application);await this.runtime(id,application)});
+    if(directionRequirement(entry.finding)==='dependent'){
+      // The same finding over the same composition renders the same pages: a verified gate is reused, a failed one is never recorded.
+      const gateKey=await this.directionGateKey(w,entry);
+      if(!this.verifiedDirectionGates.has(gateKey)){await captureScopedDirectionEvidence(this.root,w,[entry],async application=>{await initializeOriginalPreview(this.root,application);await this.runtime(id,application)});this.verifiedDirectionGates.add(gateKey);}
+    }
     return prepared;
   }
   /** Explicit batch preparation verifies real mapped targets before offering batch approval. */
@@ -541,6 +552,7 @@ export class ReviewWorkflowStore {
       // Candidates of Reviewing workflows are disposable caches: resume rebuilds them from the persisted baseline and patches.
       // Applied candidates were removed when Apply recorded its receipts; rollback needs receipts and backups, not the candidate.
       await Promise.allSettled(this.workflows.filter(w => w.state === 'Reviewing' && w.session).map(w => this.disposeCandidate(w, 'shutdown')));
+      await closeDirectionBrowser();
     } finally { await this.persist(); }
   }
   /** Removes this workflow's candidate workspace and records the outcome. Caller persists. */
