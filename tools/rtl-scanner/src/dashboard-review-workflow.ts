@@ -62,7 +62,9 @@ ${batchReviewClientSource}
   function advance(){const n=navigation();if(n.target)selectReviewFinding(n.target,n.outsideFilters);else showReviewSummary();}
   function paintNavigation(){
     const n=navigation();let recovery=document.querySelector('.review-filter-recovery');if(!match().length&&n.hiddenUnresolved.length){if(!recovery){recovery=el('section','','review-filter-recovery');const text=el('p'),button=el('button','Continue outside filters');recovery.append(text,button);document.querySelector('.review-pane')?.prepend(recovery)}recovery.querySelector('p').textContent=n.hiddenUnresolved.length+' unresolved findings are hidden by search or finding filters. Continuing clears those filters; workspace scope stays selected.';recovery.querySelector('button').onclick=()=>selectReviewFinding(n.hiddenPending[0]||n.hiddenUnresolved[0],true);}else recovery?.remove();for(const b of document.querySelectorAll('.review-next')){b.textContent=n.label;b.title=stepDescription(n);b.disabled=busy;b.onclick=advance;}
-    for(const b of document.querySelectorAll('.review-previous')){b.disabled=busy||!n.previous;b.onclick=()=>selectReviewFinding(n.previous);}
+    // Preparing a candidate preview does not block navigation: only other mutating operations do. The latest selection wins when the preparation settles.
+    const mutating=busy&&!previewFlight;
+    for(const b of document.querySelectorAll('.review-previous')){b.disabled=mutating||!n.previous;b.onclick=()=>selectReviewFinding(n.previous);}
     const description=document.querySelector('.decision-card .review-next-destination');if(description){description.textContent=stepDescription(n);description.hidden=!description.textContent;}
     const counter=document.querySelector('.source-counter');if(counter)counter.textContent='In file: '+Math.max(0,n.at+1)+' of '+n.file.length+' · Project: '+n.pending.length+' pending / '+n.total;
   }
