@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+export const RUNTIME_DIR = process.env.RTL_E2E_RUNTIME ?? join(resolve(fileURLToPath(new URL('../..', import.meta.url))), '..', 'dist', 'tools', 'rtl-scanner');
 const repo = resolve(fileURLToPath(new URL('../..', import.meta.url)));
 const workspace = mkdtempSync(join(realpathSync(tmpdir()), 'rtl-analyzer-e2e-'));
 const project = join(workspace, 'project');
@@ -51,12 +52,12 @@ const previewConfiguration = {
 writeFileSync(join(project, 'rtl-preview.config.json'), JSON.stringify(previewConfiguration, null, 2));
 
 mkdirSync(dashboard, { recursive: true });
-execFileSync(process.execPath, [join(repo, 'dist/tools/rtl-scanner/cli.js'), '--root', project, '--format', 'dashboard', '--embed-source-snippets', '--output-dir', dashboard], { cwd: repo, stdio: 'ignore' });
+execFileSync(process.execPath, [join(RUNTIME_DIR, 'cli.js'), '--root', project, '--format', 'dashboard', '--embed-source-snippets', '--output-dir', dashboard], { cwd: repo, stdio: 'ignore' });
 
 // Generate the original runtime wrapper with the supported writer. Run in a child process so this module stays synchronous.
 const entrySha256 = createHash('sha256').update(readFileSync(join(project, 'apps/invoicing/src/main.tsx'))).digest('hex');
 const writerScript = `
-import { writePreviewRuntimeConfig } from ${JSON.stringify(join(repo, 'dist/tools/rtl-scanner/preview-runtime.js'))};
+import { writePreviewRuntimeConfig } from ${JSON.stringify(join(RUNTIME_DIR, 'preview-runtime.js'))};
 const path = await writePreviewRuntimeConfig(${JSON.stringify(project)}, { role: 'original', sessionId: 'original', sourceSha256: ${JSON.stringify(entrySha256)} }, { application: 'invoicing' });
 process.stdout.write(path);`;
 const originalRuntimeConfig = execFileSync(process.execPath, ['--input-type=module', '-e', writerScript], { cwd: repo, encoding: 'utf8' }).trim();

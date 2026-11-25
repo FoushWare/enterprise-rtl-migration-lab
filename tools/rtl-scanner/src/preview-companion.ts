@@ -264,8 +264,10 @@ let shuttingDown = false;
   // (candidate runtimes, original runtime, validation commands) by group; persist workflow state; dispose session
   // workspaces; exit. Each step has its own deadline, and a hard deadline (ref'd, so it always fires) SIGKILLs the owned
   // groups and then this process if anything is still stuck.
-  const shutdown = async () => {
+  const shutdown = async (reason: string = 'unknown') => {
     if (shuttingDown) return; shuttingDown = true;
+    const shutdownStartedAt = Date.now();
+    console.error(`RTL preview companion: shutdown started pid=${process.pid} owner=${Number.isInteger(ownerPid) && ownerPid > 0 ? ownerPid : 'none'} reason=${reason}`);
     markOwnedShutdownStarted();
     companionSessions.clear();
     removeCompanionBootstrap(port);
@@ -273,8 +275,9 @@ let shuttingDown = false;
     const failures: string[] = [];
     const bounded = async (name: string, work: () => Promise<unknown>, ms: number) => {
       let timer: NodeJS.Timeout | undefined;
-      try { await Promise.race([work(), new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('deadline exceeded')), ms); })]); }
-      catch (error) { failures.push(`${name}: ${error instanceof Error ? error.message : String(error)}`); }
+      const began = Date.now();
+      try { await Promise.race([work(), new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('deadline exceeded')), ms); })]); console.error(`RTL preview companion: shutdown step ${name} ok in ${Date.now() - began}ms`); }
+      catch (error) { failures.push(`${name}: ${error instanceof Error ? error.message : String(error)}`); console.error(`RTL preview companion: shutdown step ${name} failed after ${Date.now() - began}ms`); }
       finally { if (timer) clearTimeout(timer); }
     };
     server.closeAllConnections(); server.close();
@@ -284,18 +287,19 @@ let shuttingDown = false;
     await bounded('owned-manifest', removeOwnManifest, 500);
     for (const failure of failures) console.error(`RTL preview companion: shutdown step failed: ${failure}`);
     clearTimeout(hard);
+    console.error(`RTL preview companion: shutdown finished pid=${process.pid} in ${Date.now() - shutdownStartedAt}ms failures=${failures.length}`);
     process.exit(failures.length ? 1 : 0);
   };
-  for (const signal of ['SIGTERM', 'SIGINT', 'SIGHUP'] as const) process.on(signal, shutdown);
+  for (const signal of ['SIGTERM', 'SIGINT', 'SIGHUP'] as const) process.on(signal, () => { void shutdown(signal); });
 // The CLI that started this companion owns it. When that process is gone, the companion runs its normal shutdown (which
 // disposes its candidate workspaces), even while an open dashboard tab keeps sending heartbeats.
 const ownerPid = Number(process.env.RTL_PREVIEW_OWNER_PID ?? '');
 if (Number.isInteger(ownerPid) && ownerPid > 0) {
   const ownerWatch = setInterval(() => {
     try { process.kill(ownerPid, 0); }
-    catch (error) { if ((error as NodeJS.ErrnoException).code !== 'EPERM') { clearInterval(ownerWatch); void shutdown(); } }
+    catch (error) { if ((error as NodeJS.ErrnoException).code !== 'EPERM') { clearInterval(ownerWatch); void shutdown('owner-gone'); } }
   }, 2000);
   ownerWatch.unref();
 }
   // Last resort for any exit path: never leave an owned runtime process group behind.
-  process.on('exit', () => { killOwnedGroupsSync(); removeCompanionBootstrap(port); }); server.listen(port, host, () => { bootstrapSecret = writeCompanionBootstrap(port, projectRoot); console.log(`RTL preview companion listening on ${host}:${port}`); armIdleExit(); void sweepStartupOrphans(); });
+  process.on('exit', () => { killOwnedGroupsSync(); removeCompanionBootstrap(port); }); server.listen(port, host, () => { bootstrapSecret = writeCompanionBootstrap(port, projectRoot); console.log(`RTL preview companion listening on ${host}:${port} pid=${process.pid} owner=${Number.isInteger(ownerPid) && ownerPid > 0 ? ownerPid : 'none'}`); armIdleExit(); void sweepStartupOrphans(); });
