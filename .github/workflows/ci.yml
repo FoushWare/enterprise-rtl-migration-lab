@@ -1,7 +1,9 @@
 name: English LTR baseline
 on: [push, pull_request]
 jobs:
-  verify:
+  # Lint is a separate, visible failing check. It is not a dependency of verify, so a known lint baseline failure
+  # cannot hide typecheck, build, unit or E2E results. Lint is not suppressed or marked as passing.
+  lint:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -11,6 +13,16 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run lint
+
+  verify:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
       - run: npm run typecheck
       - run: npm run build
       - run: npm test

@@ -18,7 +18,6 @@ const findingId = 'RTL.BIDI.ISOLATION:741d2ce2aec3a86cf2db37ea';
 const dashboardOrigin = 'http://127.0.0.1:4320';
 const sha256 = (path) => createHash('sha256').update(readFileSync(path)).digest('hex');
 const report = JSON.parse(readFileSync(join(fixture.dashboard, 'rtl-report.json'), 'utf8'));
-const finding = report.findings.find((f) => f.id === findingId);
 
 /** A private copy of the fixture project and state for one test, so tests never share source bytes or workflows. */
 function freshWorkspace() {

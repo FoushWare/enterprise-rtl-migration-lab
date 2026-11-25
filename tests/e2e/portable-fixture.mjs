@@ -19,7 +19,8 @@ symlinkSync(join(repo, 'node_modules'), join(project, 'node_modules'), 'dir');
 // application's own Vite build directly. Validation still runs the declared build and typecheck scripts.
 const fixturePackage = JSON.parse(readFileSync(join(project, 'package.json'), 'utf8'));
 // The copied tree has no test files; the repository's vitest script would exit 1 on an empty include set.
-const { test: _repositoryTestScript, ...scriptsWithoutTests } = fixturePackage.scripts ?? {};
+const scriptsWithoutTests = { ...(fixturePackage.scripts ?? {}) };
+delete scriptsWithoutTests.test;
 fixturePackage.scripts = { ...scriptsWithoutTests, build: 'vite build --config apps/invoicing/vite.config.ts' };
 writeFileSync(join(project, 'package.json'), JSON.stringify(fixturePackage, null, 2));
 

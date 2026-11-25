@@ -2,7 +2,7 @@ import { createHash, randomUUID } from 'node:crypto';
 import { access, chmod, lstat, mkdir, open, readFile, rename, writeFile } from 'node:fs/promises';
 import { constants } from 'node:fs';
 import { join, dirname } from 'node:path';
-import { homedir, tmpdir } from 'node:os';
+import { homedir } from 'node:os';
 import { validateEvidenceSnapshot, type EvidenceSnapshot } from './evidence-store.js';
 import type { ReviewIdentity, ReviewRecord, PatchRequest } from './review-session.js';
 import { validateReviewIdentity, validateReviewPath, validatePatch, validateProjectSourcePath, REVIEW_SOURCE } from './review-session.js';

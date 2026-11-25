@@ -22,7 +22,6 @@ describe('local preview bridge', () => {
     const root = await mkdtemp(join(tmpdir(), 'rtl-embed-bridge-'));
     try {
       const configPath = await writePreviewRuntimeConfig(root, { role: 'candidate', sessionId: 'owned-session', sourceSha256: 'candidate-hash' });
-      const config = await readFile(configPath, 'utf8');
       const bridge = buildRuntimeBridge(readRuntimeStateSync(configPath + '.state.json'));
       const messages: unknown[] = []; let listener: (event: unknown) => void = () => undefined;
       const parent = { postMessage: (payload: unknown) => messages.push(payload) };

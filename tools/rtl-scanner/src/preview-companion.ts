@@ -1,7 +1,7 @@
 import { PreviewSupersession } from './preview-supersession.js';
 import { sweepOrphanedReviewWorkspaces } from './review-session.js';
 import { killOwnedGroupsSync, markOwnedShutdownStarted, removeOwnManifest, sweepOwnedManifests, terminateOwnedGroups, COMPANION_SHUTDOWN_DEADLINE_MS } from './owned-processes.js';
-import { initializeOriginalPreview, hasOriginalLease, leaseOriginalPreview, originalLeaseCount, OriginalPreviewStartupError, releaseOriginalPreview, stopOwnedOriginalPreviews } from './original-preview-runtime.js';
+import { initializeOriginalPreview, hasOriginalLease, leaseOriginalPreview, originalLeaseCount, OriginalPreviewStartupError, releaseOriginalPreview } from './original-preview-runtime.js';
 import {loadPreviewConfiguration} from './preview-configuration.js';
 import { contextualPreview } from './contextual-preview.js';
 import { verifiedSourceTransition, reconcileSourceRuntimes, reconcileSelectedFinding, type FindingSelection } from './source-context.js';

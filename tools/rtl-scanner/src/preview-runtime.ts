@@ -11,8 +11,6 @@ import postcss, { type Declaration } from 'postcss';
 const isDeclaration = (node: unknown): node is Declaration => (node as { type?: unknown }).type === 'decl';
 import { DASHBOARD_ORIGIN } from './companion-security.js';
 
-const scriptJson=(value:unknown)=>JSON.stringify(value).replaceAll('<','\\u003c').replaceAll('\u2028','\\u2028').replaceAll('\u2029','\\u2029');
-
 export interface PreviewRuntimeIdentity { role: 'original' | 'candidate'; sessionId: string; sourceSha256: string }
 
 /** Only generated local preview configs install this bridge; production app files stay untouched. */
