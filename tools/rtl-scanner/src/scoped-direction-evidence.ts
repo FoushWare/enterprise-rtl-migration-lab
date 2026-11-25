@@ -41,7 +41,8 @@ export async function captureScopedDirectionEvidence(root:string,w:ReviewWorkflo
      const info=await contextualPreview(root,query,w);
      if(!info.original?.available||!info.candidate?.available||!('origin' in info.original)||!('origin' in info.candidate))throw Error('DIRECTION_EVIDENCE_RUNTIME_IDENTITY_UNAVAILABLE');
      const values=[];
-     for(const [role,descriptor] of [['original',info.original],['candidate',info.candidate]] as const){
+     // Original and candidate pages of one mode are independent: they are captured concurrently, in the same order as before.
+     values.push(...await Promise.all(([['original',info.original],['candidate',info.candidate]] as const).map(async([role,descriptor])=>{
       const page=await browser.newPage({viewport:{width:1280,height:800},locale:'en-US',timezoneId:'UTC'}),errors:string[]=[];
       page.on('pageerror',e=>errors.push(e.message));
       try {
@@ -68,9 +69,9 @@ export async function captureScopedDirectionEvidence(root:string,w:ReviewWorkflo
        },{selector:mapping.selector,expectedUrl:expected,sourceSelector:mapping.sourceSelector||'',path:entry.finding.path,icon:entry.finding.ruleId==='RTL.ICON.PROGRESSION'});
        });
        if(errors.length)throw Error('DIRECTION_EVIDENCE_PAGE_ERROR');
-       values.push({role,sourceHash:descriptor.sourceHash,projectRoot:descriptor.projectRoot,runtimeSessionId:descriptor.runtimeSessionId,state});
+       return {role,sourceHash:descriptor.sourceHash,projectRoot:descriptor.projectRoot,runtimeSessionId:descriptor.runtimeSessionId,state};
       }finally{await page.close()}
-     }
+          })));
      const rechecked=await contextualPreview(root,query,w);
      if(!rechecked.original?.available||!rechecked.candidate?.available||!('sourceHash' in rechecked.original)||!('sourceHash' in rechecked.candidate)||rechecked.original.sourceHash!==values[0].sourceHash||rechecked.candidate.sourceHash!==values[1].sourceHash||rechecked.original.runtimeSessionId!==values[0].runtimeSessionId||rechecked.candidate.runtimeSessionId!==values[1].runtimeSessionId)throw Error('DIRECTION_EVIDENCE_RUNTIME_IDENTITY_CHANGED');
      const [before,after]=values;
