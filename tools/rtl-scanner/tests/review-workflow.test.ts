@@ -23,6 +23,16 @@ async function fixture() {
   await store.load(); return {root,store,apply,audit};
 }
 describe('multi-finding workflow safety',()=>{
+  it('begins a review in a single-application tree that has neither an apps nor a libs directory',async()=>{
+    const root=await realpath(await mkdtemp(join(tmpdir(),'rtl-workflow-single-')));
+    try{
+      await mkdir(join(root,'src'),{recursive:true});await writeFile(join(root,'src/Badge.tsx'),'export const Badge=({a}:{a:{id:string}})=><span>{a.id}</span>;');
+      await writeFile(join(root,'package.json'),'{}');await writeFile(join(root,'rtl-scanner.config.json'),JSON.stringify({schemaVersion:1,generatedStyleOwner:'unknown',ownership:{},approvals:[],exceptions:[],issueBindings:[],dynamicExceptions:[],roles:[]}));
+      const store=new ReviewWorkflowStore(root,join(root,'state/workflows.json'),new ControlledApplyService(root,new ApplyAuditStore(join(root,'state/audit.json')),join(root,'state/backups')));await store.load();
+      const report=await scan(root);const w=await store.begin({...report,mode:'one-by-one'});
+      expect(w.state).toBe('Reviewing');expect(w.entries.some(e=>e.finding.path==='src/Badge.tsx')).toBe(true);
+    }finally{await rm(root,{recursive:true,force:true})}
+  });
   it('explicit batch preparation excludes unmapped entries and rejects forged batch selections without source writes',async()=>{
     const {root,store}=await fixture();try{const report=await scan(root),w=await store.begin({...report,mode:'apply-first'}),before=await readFile(join(root,file),'utf8'),e=w.entries.find(e=>e.patch)!;
       await store.change(w.id,e.finding.id,{action:'notes',notes:'Keep my draft-backed saved note'});

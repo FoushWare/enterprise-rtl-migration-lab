@@ -139,7 +139,8 @@ export class ReviewWorkflowStore {
     const project=await loadProjectConfiguration(this.root);
     const projectConfigs: string[] = [];
     if(!project){
-    for (const group of ['apps', 'libs']) for (const project of await readdir(join(this.root, group))) {
+    // A project without an apps or libs directory (a single-application tree) has no project group to read.
+    for (const group of ['apps', 'libs']) for (const project of await readdir(join(this.root, group)).catch(error => { if ((error as NodeJS.ErrnoException).code === 'ENOENT') return [] as string[]; throw error; })) {
       // Repository-relative keys are POSIX on every platform; platform join() would produce backslashes on Windows.
       const directory = posix.join(group, project);
       for (const name of await readdir(join(this.root, directory))) if (/^(project\.json|tsconfig.*\.json|vite\.config\.[cm]?[jt]s)$/.test(name)) projectConfigs.push(posix.join(directory, name));
