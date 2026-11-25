@@ -2,12 +2,15 @@ import { createHash, randomUUID } from 'node:crypto';
 import { cp, lstat, mkdtemp, readFile, readdir, realpath, rm, symlink, writeFile } from 'node:fs/promises';
 import { dirname, isAbsolute, join, posix, relative, resolve, sep } from 'node:path';
 import { tmpdir } from 'node:os';
-import { type ChildProcess } from 'node:child_process';
+import { type ChildProcess, execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+const execFileAsync = promisify(execFile);
 import {spawnPreviewRuntime,signalOwnedRuntime} from './runtime-process.js';
+import {isOwnedShutdownStarted} from './owned-processes.js';
 import { createServer as createNetServer } from 'node:net';
 import type { PreviewApplication } from './example-preview-mappings.js';
 import {loadProjectConfiguration,PROJECT_CONFIGURATION} from './project-configuration.js';
-import {loadPreviewConfiguration,DEFAULT_STARTUP_TIMEOUT_MS} from './preview-configuration.js';
+import {loadPreviewConfiguration,DEFAULT_STARTUP_TIMEOUT_MS,runtimeConfigName} from './preview-configuration.js';
 import { writePreviewRuntimeConfig } from './preview-runtime.js';
 
 export const REVIEW_SOURCE = 'apps/invoicing/src/components/InvoiceTable.tsx';
@@ -99,9 +102,20 @@ export function validatePatch(text: string, patch: PatchRequest): void {
 export function repositoryRelativeFromCopyPath(root: string, copyPath: string, separator: string = sep): string {
   return copyPath.slice(root.length + 1).split(separator).join('/');
 }
+/** Name of the ownership marker written at the root of every candidate workspace this module creates. */
+export const OWNER_MARKER = '.rtl-review-owner.json';
+const OWNER_SCHEMA = 'rtl-review-workspace-owner-v1';
+export interface WorkspaceOwnerMarker { schema: typeof OWNER_SCHEMA; owner: 'rtl-analyzer'; pid: number; processStart: string | null; createdAt: string }
+/** Process start time from the operating system (POSIX `ps`), used to tell a live owner from a reused process id. */
+export async function processStartTime(pid: number): Promise<string | null> {
+  if (process.platform === 'win32') return null;
+  try { const { stdout } = await execFileAsync('ps', ['-o', 'lstart=', '-p', String(pid)]); return stdout.trim() || null; } catch { return null; }
+}
 export async function copyCandidateRoot(root: string, sourcePath: string): Promise<string> {
   const candidateRoot = await realpath(await mkdtemp(join(tmpdir(), 'rtl-review-')));
   try {
+    const marker: WorkspaceOwnerMarker = { schema: OWNER_SCHEMA, owner: 'rtl-analyzer', pid: process.pid, processStart: await processStartTime(process.pid), createdAt: new Date().toISOString() };
+    await writeFile(join(candidateRoot, OWNER_MARKER), JSON.stringify(marker), { flag: 'wx', mode: 0o600 });
     const project=await loadProjectConfiguration(root);
     const rootConfigs = (await readdir(root)).filter(name => /^(tsconfig.*\.json|(?:vite|vitest|playwright|eslint)(?:\.[\w-]+)*\.config\.[cm]?[jt]s)$/.test(name));
     const allowedTopLevel = new Set(['apps', 'libs', 'tests', 'tools', '.storybook', 'package.json', 'package-lock.json', 'nx.json', 'rtl-scanner.config.json','rtl-preview.config.json',PROJECT_CONFIGURATION, ...(project?.copyPaths.map(p=>p.split('/')[0])??[]), ...rootConfigs]);
@@ -110,6 +124,42 @@ export async function copyCandidateRoot(root: string, sourcePath: string): Promi
     await validateProjectSourcePath(candidateRoot, sourcePath);
     return candidateRoot;
   } catch (error) { await rm(candidateRoot, { recursive: true, force: true }); throw error; }
+}
+export interface WorkspaceSweepResult { removed: string[]; kept: string[]; legacyUnmarked: string[]; failures: { path: string; error: string }[] }
+async function ownerIsAlive(marker: WorkspaceOwnerMarker): Promise<boolean> {
+  try { process.kill(marker.pid, 0); } catch (error) { return (error as NodeJS.ErrnoException).code === 'EPERM'; }
+  // Without a recorded start time identity cannot be verified, so the owner is treated as alive.
+  if (marker.processStart === null) return true;
+  return (await processStartTime(marker.pid)) === marker.processStart;
+}
+/**
+ * Removes orphaned candidate workspaces: marked by this module, owner process gone (or replaced), not referenced by any
+ * persisted or live review, and older than the grace period. Unmarked (legacy) workspaces are reported, never removed.
+ */
+export async function sweepOrphanedReviewWorkspaces(options: { root?: string; referenced: ReadonlySet<string>; graceMs: number; now?: number }): Promise<WorkspaceSweepResult> {
+  const base = await realpath(options.root ?? tmpdir());
+  const result: WorkspaceSweepResult = { removed: [], kept: [], legacyUnmarked: [], failures: [] };
+  const now = options.now ?? Date.now();
+  for (const name of await readdir(base)) {
+    if (!name.startsWith('rtl-review-')) continue;
+    const path = join(base, name);
+    const info = await lstat(path).catch(() => undefined);
+    if (!info?.isDirectory()) continue;
+    let marker: WorkspaceOwnerMarker;
+    try { marker = JSON.parse(await readFile(join(path, OWNER_MARKER), 'utf8')) as WorkspaceOwnerMarker; }
+    catch { result.legacyUnmarked.push(path); continue; }
+    const created = Date.parse(marker.createdAt);
+    if (marker.schema !== OWNER_SCHEMA || marker.owner !== 'rtl-analyzer' || !Number.isInteger(marker.pid) || !Number.isFinite(created)) { result.kept.push(path); continue; }
+    if (await ownerIsAlive(marker)) { result.kept.push(path); continue; }
+    const real = await realpath(path).catch(() => path);
+    if (options.referenced.has(real) || options.referenced.has(path) || now - created < options.graceMs) { result.kept.push(path); continue; }
+    try {
+      if (!inside(base, real)) throw new Error('OUTSIDE_SWEEP_ROOT');
+      await rm(real, { recursive: true, force: true });
+      result.removed.push(path);
+    } catch (error) { result.failures.push({ path, error: error instanceof Error ? error.message : String(error) }); }
+  }
+  return result;
 }
 export async function createReviewSession(root: string, sourcePath: string = REVIEW_SOURCE): Promise<ReviewSession> {
   const source = sourcePath===REVIEW_SOURCE?validateReviewPath(root,sourcePath):await validateProjectSourcePath(root,sourcePath);
@@ -191,25 +241,64 @@ export async function startCandidateRuntime(session: ReviewSession, application?
   runtimeStarts.set(key, operation);
   try { const next = await operation; return next; } finally { runtimeStarts.delete(key); }
 }
+/**
+ * Verifies a running candidate server for a new composition without restarting it: the server drops its cached module graph,
+ * and its identity must name this session, application and project, the composed state, and the candidate file on disk.
+ */
+async function reuseRuntime(session: ReviewSession, application: PreviewApplication, existing: ReviewSession, expectedSource: string): Promise<boolean> {
+  // Kill switch and verification control: RTL_PREVIEW_RUNTIME_REUSE=0 forces a full restart for every composition.
+  if (process.env.RTL_PREVIEW_RUNTIME_REUSE === '0') return false;
+  const child = runtimes.get(runtimeKey(session, application));
+  if (!child || child.exitCode !== null || child.signalCode !== null || !existing.runtime) return false;
+  try {
+    const refreshed = await fetch(existing.runtime.origin + '/__rtl_preview_refresh', { method: 'POST', signal: AbortSignal.timeout(2000) });
+    if (!refreshed.ok) return false;
+    const identity = await (await fetch(existing.runtime.origin + '/__rtl_preview_identity', { signal: AbortSignal.timeout(2000) })).json() as { sessionId?: string; role?: string; application?: string; projectRoot?: string; sourceSha256?: string; sourceHashes?: Record<string, string> };
+    const onDisk = digest(await readFile(await validateProjectSourcePath(session.candidateRoot, session.sourcePath), 'utf8'));
+    return identity.sessionId === session.id && identity.role === 'candidate' && identity.application === application
+      && identity.projectRoot === await realpath(session.candidateRoot) && identity.sourceSha256 === expectedSource && identity.sourceHashes?.[session.sourcePath] === onDisk;
+  } catch { return false; }
+}
+/**
+ * Marks a candidate's running server as no longer serving the current composition after its files changed. The server
+ * stays alive for reuse; nothing reports it as healthy until a verified reuse or a restart.
+ */
+export function markCandidateRuntimeStale(session: ReviewSession): ReviewSession {
+  for (const key of [...runtimeStates.keys()]) {
+    if (key !== session.id && !key.startsWith(session.id + ':')) continue;
+    const state = runtimeStates.get(key);
+    if (state?.runtime) runtimeStates.set(key, { ...state, runtime: { ...state.runtime, status: 'stopped' } });
+  }
+  return { ...session, runtime: session.runtime ? { ...session.runtime, status: 'stopped' } : undefined };
+}
 async function startRuntime(session: ReviewSession, application: PreviewApplication): Promise<ReviewSession> {
   const key = runtimeKey(session, application);
   const currentHash = digest(await readFile(await validateProjectSourcePath(session.candidateRoot,session.sourcePath), 'utf8'));
   if (session.candidateSha256 && currentHash !== session.candidateSha256) throw new Error('STALE_CANDIDATE_SOURCE');
-  const existing = runtimeStates.get(key);
-  if (existing && await ownedRuntimeHealthy({ ...existing, candidateSha256: session.candidateSha256 }, application)) return { ...session, runtime: existing.runtime };
-  if (existing) await stopRuntimeKey(existing, key);
   const dependencyMount = join(session.candidateRoot, 'node_modules');
   try { await symlink(join(session.root, 'node_modules'), dependencyMount, 'dir'); }
   catch (error) { if ((error as NodeJS.ErrnoException).code !== 'EEXIST' || await realpath(dependencyMount) !== await realpath(join(session.root, 'node_modules'))) throw error; }
   const sourceSha256 = digest(await readFile(await validateProjectSourcePath(session.candidateRoot,session.sourcePath), 'utf8'));
   if (session.candidateSha256 && sourceSha256 !== session.candidateSha256) throw new Error('STALE_CANDIDATE_SOURCE');
   const runtimeSourceHash = await runtimeIdentityHash(session,application);
+  const configPath = join(session.candidateRoot, '.rtl-preview', runtimeConfigName(application));
+  const configBefore = await readFile(configPath, 'utf8').catch(error => { if (error.code === 'ENOENT') return undefined; throw error; });
   const candidateConfig = await writePreviewRuntimeConfig(session.candidateRoot, { role: 'candidate', sessionId: session.id, sourceSha256: runtimeSourceHash }, { application, contextRoot: session.root });
+  // Reuse: the Vite configuration is static, so an unchanged configuration plus a verified state refresh keeps the running server.
+  // Anything that does not verify falls back to a full restart below.
+  const existing = runtimeStates.get(key);
+  if (existing && configBefore !== undefined && (await readFile(configPath, 'utf8')) === configBefore && await reuseRuntime(session, application, existing, runtimeSourceHash)) {
+    const reused = { ...existing.runtime!, status: 'healthy' as const };
+    runtimeStates.set(key, { ...existing, runtime: reused, candidateSha256: session.candidateSha256 });
+    return { ...session, runtime: reused };
+  }
+  if (existing) await stopRuntimeKey(existing, key);
   // Retain per-application origins through composition/restart; a stopped app's URL must not become another app in the same review.
   const assignments=session.runtimePorts??(session.runtimePorts={});
   const preferred=assignments[application];
   const ports=preferred?[preferred,...CANDIDATE_PORTS.filter(p=>p!==preferred)]:CANDIDATE_PORTS;
   for (const port of ports) {
+  if (isOwnedShutdownStarted()) throw new Error('COMPANION_SHUTTING_DOWN');
   if(Object.entries(assignments).some(([app,assigned])=>app!==application&&assigned===port))continue;
   if (reservedPorts.has(port)) continue;
   reservedPorts.add(port);
@@ -228,7 +317,7 @@ async function startRuntime(session: ReviewSession, application: PreviewApplicat
   // Same startup budget as the original: the application's startupTimeoutMs, or the default.
   const candidateBudget = (await loadPreviewConfiguration(session.root).catch(() => undefined))?.applications[application]?.startupTimeoutMs ?? DEFAULT_STARTUP_TIMEOUT_MS;
   const candidateDeadline = Date.now() + candidateBudget;
-  for (let attempt = 0; Date.now() < candidateDeadline; attempt++) { if (await ownedRuntimeHealthy(starting, application)) { const healthy = { ...starting, runtime: { ...starting.runtime, status: 'healthy' as const } }; runtimeStates.set(key, healthy); return healthy; } if (child.exitCode !== null || startupError.includes('EADDRINUSE')) break; await new Promise(resolveDelay => setTimeout(resolveDelay, 100)); }
+  for (let attempt = 0; Date.now() < candidateDeadline; attempt++) { if (await ownedRuntimeHealthy(starting, application)) { const healthy = { ...starting, runtime: { ...starting.runtime, status: 'healthy' as const } }; runtimeStates.set(key, healthy); return healthy; } if (child.exitCode !== null || startupError.includes('EADDRINUSE') || isOwnedShutdownStarted()) break; await new Promise(resolveDelay => setTimeout(resolveDelay, 100)); }
   await stopRuntimeKey(starting, key);
   if (/EADDRINUSE|already in use/.test(startupError)) continue;
   return { ...starting, runtime: { ...starting.runtime, status: 'failed', error: startupError.trim() || 'CANDIDATE_IDENTITY_UNAVAILABLE' } };

@@ -23,6 +23,16 @@ async function fixture() {
   await store.load(); return {root,store,apply,audit};
 }
 describe('multi-finding workflow safety',()=>{
+  it('begins a review in a single-application tree that has neither an apps nor a libs directory',async()=>{
+    const root=await realpath(await mkdtemp(join(tmpdir(),'rtl-workflow-single-')));
+    try{
+      await mkdir(join(root,'src'),{recursive:true});await writeFile(join(root,'src/Badge.tsx'),'export const Badge=({a}:{a:{id:string}})=><span>{a.id}</span>;');
+      await writeFile(join(root,'package.json'),'{}');await writeFile(join(root,'rtl-scanner.config.json'),JSON.stringify({schemaVersion:1,generatedStyleOwner:'unknown',ownership:{},approvals:[],exceptions:[],issueBindings:[],dynamicExceptions:[],roles:[]}));
+      const store=new ReviewWorkflowStore(root,join(root,'state/workflows.json'),new ControlledApplyService(root,new ApplyAuditStore(join(root,'state/audit.json')),join(root,'state/backups')));await store.load();
+      const report=await scan(root);const w=await store.begin({...report,mode:'one-by-one'});
+      expect(w.state).toBe('Reviewing');expect(w.entries.some(e=>e.finding.path==='src/Badge.tsx')).toBe(true);
+    }finally{await rm(root,{recursive:true,force:true})}
+  });
   it('explicit batch preparation excludes unmapped entries and rejects forged batch selections without source writes',async()=>{
     const {root,store}=await fixture();try{const report=await scan(root),w=await store.begin({...report,mode:'apply-first'}),before=await readFile(join(root,file),'utf8'),e=w.entries.find(e=>e.patch)!;
       await store.change(w.id,e.finding.id,{action:'notes',notes:'Keep my draft-backed saved note'});
@@ -93,9 +103,24 @@ describe('multi-finding workflow safety',()=>{
       await writeFile(join(root,file),before+'// user edit');
       await expect(apply.rollbackAcceptedFiles(receipts)).rejects.toThrow('ROLLBACK_CONFLICT');
       expect(await readFile(join(root,file),'utf8')).toBe(before+'// user edit');expect(await readFile(join(root,second),'utf8')).toBe('export const value=2;');
+      // Authorized rollback rejected by a source integrity conflict: one structured ROLLBACK_FAILED record, hashes only.
+      const failures=(await audit.list()).filter(e=>e.type==='ROLLBACK_FAILED');
+      expect(failures).toHaveLength(1);
+      expect(failures[0]).toMatchObject({auditId:receipts[0].auditId,type:'ROLLBACK_FAILED',path:file,reason:'CURRENT_SOURCE_CHANGED',sourceSha256:receipts[0].originalSha256,backupPath:receipts[0].backupPath});
+      expect(failures[0].resultingSha256).toBe(hash(before+'// user edit'));
+      expect(JSON.stringify(await audit.list())).not.toContain('user edit');
+      expect(JSON.stringify(await audit.list())).not.toContain('export const View');
+      // A refused rollback is repeatable: a second attempt records its own failure and writes nothing.
+      await expect(apply.rollbackAcceptedFiles(receipts)).rejects.toThrow('ROLLBACK_CONFLICT');
+      expect((await audit.list()).filter(e=>e.type==='ROLLBACK_FAILED')).toHaveLength(2);
+      expect(await readFile(join(root,file),'utf8')).toBe(before+'// user edit');
       await writeFile(join(root,file),files[0].after);await apply.rollbackAcceptedFiles(receipts);
       expect(await readFile(join(root,file),'utf8')).toBe(before);expect(await readFile(join(root,second),'utf8')).toBe('export const value=1;');
+      expect((await audit.list()).filter(e=>e.type==='ROLLED_BACK')).toHaveLength(2);
+      // An untrusted receipt is refused without any audit record, authorized or not.
+      const beforeUntrusted=(await audit.list()).length;
       await expect(apply.rollbackAcceptedFiles([{...receipts[0],backupPath:'/untrusted'}])).rejects.toThrow('ROLLBACK_RECEIPT_UNTRUSTED');
+      expect((await audit.list()).length).toBe(beforeUntrusted);
     }finally{await rm(root,{recursive:true,force:true})}
   });
 });

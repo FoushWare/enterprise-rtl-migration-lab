@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { buildRuntimeBridge, readRuntimeStateSync } from '../src/preview-runtime-state.js';
 import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -20,8 +21,8 @@ describe('local preview bridge', () => {
   it('requires parent origin, source, runtime identity, finding and source hash before reporting real DOM', async () => {
     const root = await mkdtemp(join(tmpdir(), 'rtl-embed-bridge-'));
     try {
-      const config = await readFile(await writePreviewRuntimeConfig(root, { role: 'candidate', sessionId: 'owned-session', sourceSha256: 'candidate-hash' }), 'utf8');
-      const bridge = JSON.parse(config.match(/children:("(?:[^"\\]|\\.)*"),injectTo/)![1]);
+      const configPath = await writePreviewRuntimeConfig(root, { role: 'candidate', sessionId: 'owned-session', sourceSha256: 'candidate-hash' });
+      const bridge = buildRuntimeBridge(readRuntimeStateSync(configPath + '.state.json'));
       const messages: unknown[] = []; let listener: (event: unknown) => void = () => undefined;
       const parent = { postMessage: (payload: unknown) => messages.push(payload) };
       const link = { textContent: 'INV-2026-1048', getBoundingClientRect: () => ({ width: 100 }) };

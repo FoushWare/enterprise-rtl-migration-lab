@@ -1,4 +1,7 @@
-import { initializeOriginalPreview, hasOriginalLease, leaseOriginalPreview, originalLeaseCount, OriginalPreviewStartupError, releaseOriginalPreview, signalOwnedOriginalPreviews, stopOwnedOriginalPreviews } from './original-preview-runtime.js';
+import { PreviewSupersession } from './preview-supersession.js';
+import { sweepOrphanedReviewWorkspaces } from './review-session.js';
+import { killOwnedGroupsSync, markOwnedShutdownStarted, removeOwnManifest, sweepOwnedManifests, terminateOwnedGroups, COMPANION_SHUTDOWN_DEADLINE_MS } from './owned-processes.js';
+import { initializeOriginalPreview, hasOriginalLease, leaseOriginalPreview, originalLeaseCount, OriginalPreviewStartupError, releaseOriginalPreview } from './original-preview-runtime.js';
 import {loadPreviewConfiguration} from './preview-configuration.js';
 import { contextualPreview } from './contextual-preview.js';
 import { verifiedSourceTransition, reconcileSourceRuntimes, reconcileSelectedFinding, type FindingSelection } from './source-context.js';
@@ -14,7 +17,7 @@ import { join, relative, resolve, sep } from 'node:path';
 import { createHash } from 'node:crypto';
 import { lstat, readFile } from 'node:fs/promises';
 import { PREVIEW_COMPANION_ORIGIN, previewManifest, validatedPreviewRoute } from './preview-manifest.js';
-import { applyReviewPatch, createReviewSession, disposeReviewSession, signalAllCandidateRuntimes, stopAllCandidateRuntimes, reviewSessionComparison, reviewSessionDiff, startCandidateRuntime, stopCandidateRuntime, validateProjectSourcePath, validateReviewIdentity, CANDIDATE_ORIGIN, REVIEW_SOURCE, type PatchRequest, type ReviewIdentity, type ReviewRecord, type ReviewSession } from './review-session.js';
+import { applyReviewPatch, createReviewSession, disposeReviewSession, reviewSessionComparison, reviewSessionDiff, startCandidateRuntime, stopCandidateRuntime, validateProjectSourcePath, validateReviewIdentity, CANDIDATE_ORIGIN, REVIEW_SOURCE, type PatchRequest, type ReviewIdentity, type ReviewRecord, type ReviewSession } from './review-session.js';
 import { DEFAULT_REVIEW_STORE_PATH, ReviewRecordStore, type MigrationDecision } from './review-store.js';
 import { DEFAULT_EVIDENCE_STORE_PATH, EvidenceSnapshotStore } from './evidence-store.js';
 import { ApplyAuditStore, ControlledApplyService } from './controlled-apply.js';
@@ -72,21 +75,46 @@ const idleGraceMs = Number(process.env.RTL_PREVIEW_IDLE_EXIT_MS ?? 15_000);
 let idleTimer: ReturnType<typeof setTimeout> | undefined;
 // A start in progress holds no lease until it succeeds, so it counts as activity: the companion must not exit under it.
 let originalStartsInFlight = 0;
+// Any request still being handled (for example a preview preparation) keeps the companion alive until its response is closed.
+let requestsInFlight = 0;
+// An open dashboard keeps the companion alive by heartbeat; the page sends one every 10 s.
+const dashboardHeartbeatGraceMs = Number(process.env.RTL_PREVIEW_HEARTBEAT_GRACE_MS ?? 45_000);
+let lastDashboardHeartbeat = 0;
+function dashboardConnected(): boolean { return Date.now() - lastDashboardHeartbeat < dashboardHeartbeatGraceMs; }
+const supersession = new PreviewSupersession();
 function armIdleExit(): void {
   if (idleTimer) clearTimeout(idleTimer);
   idleTimer = undefined;
-  if (!idleExitEnabled || originalLeaseCount() > 0 || originalStartsInFlight > 0) return;
-  idleTimer = setTimeout(() => { if (originalLeaseCount() === 0 && originalStartsInFlight === 0) void shutdown(); }, idleGraceMs);
+  if (!idleExitEnabled || originalLeaseCount() > 0 || originalStartsInFlight > 0 || requestsInFlight > 0) return;
+  // While the dashboard is connected, the next check is when its heartbeat would expire; otherwise after the idle grace.
+  const wait = dashboardConnected() ? lastDashboardHeartbeat + dashboardHeartbeatGraceMs - Date.now() : idleGraceMs;
+  idleTimer = setTimeout(() => { idleTimer = undefined; if (originalLeaseCount() === 0 && originalStartsInFlight === 0 && requestsInFlight === 0 && !dashboardConnected()) void shutdown(); else armIdleExit(); }, Math.max(0, wait));
+}
+// Orphan recovery: remove candidate workspaces this tool created whose owner process is gone and no stored review references.
+// Unmarked (legacy) workspaces are reported only. A failure is reported; it never stops the companion.
+async function sweepStartupOrphans(): Promise<void> {
+  try {
+    const recovered = await sweepOwnedManifests();
+    if (recovered.recovered.length || recovered.skipped.length) console.log(`RTL preview companion: owned-process sweep recovered ${recovered.recovered.length}, skipped ${recovered.skipped.length} (identity not proven)`);
+    const referenced = new Set(workflowStore.list().flatMap(w => (w.session?.candidateRoot ? [w.session.candidateRoot] : [])));
+    const result = await sweepOrphanedReviewWorkspaces({ referenced, graceMs: 10 * 60_000 });
+    if (result.removed.length || result.failures.length || result.legacyUnmarked.length)
+      console.log(`RTL preview companion: workspace sweep removed ${result.removed.length}, kept ${result.kept.length}, legacy unmarked ${result.legacyUnmarked.length}, failed ${result.failures.length}`);
+    for (const failure of result.failures) console.error(`RTL preview companion: workspace removal failed for ${failure.path}: ${failure.error}`);
+  } catch (error) { console.error(`RTL preview companion: workspace sweep failed: ${error instanceof Error ? error.message : String(error)}`); }
 }
 const server = createServer(async (request, response) => {
+  requestsInFlight++;
+  response.once('close', () => { requestsInFlight--; armIdleExit(); });
   if (idleExitEnabled && originalLeaseCount() === 0) armIdleExit();
   const url = requestUrl(request);
   if(shuttingDown)return send(response,503,{error:'COMPANION_SHUTTING_DOWN'});
   if (request.method === 'OPTIONS') { if (!isAllowedDashboardOrigin(request.headers.origin)) return send(response, 403, { error: 'ORIGIN_NOT_ALLOWED' }); response.writeHead(204, { 'access-control-allow-origin': DASHBOARD_ORIGIN, 'access-control-allow-methods': 'GET,POST,OPTIONS', 'access-control-allow-headers': 'content-type', 'access-control-max-age': '300', vary: 'Origin' }); return response.end(); }
-  const isReviewWrite = url.pathname === '/contextual-preview/original' || url.pathname === '/contextual-preview/original/release' || url.pathname.startsWith('/review/workflows') || url.pathname === '/review/sessions' || url.pathname === '/review/records' || url.pathname === '/review/decisions' || url.pathname === '/review/evidence' || url.pathname === '/review/manual-changes' || url.pathname === '/review/rescan' || url.pathname === '/review/apply' || url.pathname === '/review/rollback' || url.pathname === '/review/codemod/analyze' || /^\/review\/sessions\/[^/]+\/(patch|cleanup|runtime\/(start|stop)|codemod\/apply|validate|validation\/archive)$/.test(url.pathname);
+  const isReviewWrite = url.pathname === '/dashboard/heartbeat' || url.pathname === '/contextual-preview/original' || url.pathname === '/contextual-preview/original/release' || url.pathname.startsWith('/review/workflows') || url.pathname === '/review/sessions' || url.pathname === '/review/records' || url.pathname === '/review/decisions' || url.pathname === '/review/evidence' || url.pathname === '/review/manual-changes' || url.pathname === '/review/rescan' || url.pathname === '/review/apply' || url.pathname === '/review/rollback' || url.pathname === '/review/codemod/analyze' || /^\/review\/sessions\/[^/]+\/(patch|cleanup|runtime\/(start|stop)|codemod\/apply|validate|validation\/archive)$/.test(url.pathname);
   const dashboardRequest = isAllowedDashboardOrigin(request.headers.origin) || (!request.headers.origin && request.headers.referer?.startsWith(`${DASHBOARD_ORIGIN}/`));
   if (isReviewWrite && request.method === 'POST' && !dashboardRequest) return send(response, 403, { error: 'ORIGIN_NOT_ALLOWED' });
   if (request.method !== 'GET' && !(isReviewWrite && request.method === 'POST')) return send(response, 405, { error: 'GET_OR_REVIEW_POST_REQUIRED' });
+  if (url.pathname === '/dashboard/heartbeat' && request.method === 'POST') { lastDashboardHeartbeat = Date.now(); return send(response, 200, { ok: true, graceMs: dashboardHeartbeatGraceMs }); }
   if (url.pathname === '/review/manual-changes' && request.method === 'POST') { try { const input = await body(request) as { beforeText?: string; afterText?: string } & ReviewIdentity; const identity = input as ReviewIdentity; validateReviewIdentity(identity); if (typeof input.beforeText !== 'string' || typeof input.afterText !== 'string' || input.beforeText.length > 200_000 || input.afterText.length > 200_000) throw new Error('MANUAL_CHANGE_TEXT_INVALID'); const current = await readFile(await validateProjectSourcePath(cwd(), identity.sourcePath), 'utf8'); const beforeHash = createHash('sha256').update(input.beforeText).digest('hex'); const afterHash = createHash('sha256').update(input.afterText).digest('hex'); if (input.afterText !== current) throw new Error('STALE_MANUAL_SOURCE'); if (beforeHash === afterHash) throw new Error('MANUAL_CHANGE_UNCHANGED'); const item = await manualChangeStore.append({ ...identity, beforeSourceSha256: beforeHash, afterSourceSha256: afterHash, beforeText: input.beforeText, afterText: input.afterText }); return send(response, 201, { change: item, validation: { state: 'Passed', sourceMatches: true, changed: true } }); } catch (error) { return send(response, 400, { error: error instanceof Error ? error.message : 'MANUAL_CHANGE_FAILED' }); } }
   if (url.pathname === '/review/lifecycle' && request.method === 'GET') { try { const identity = { findingId: url.searchParams.get('findingId') ?? '', sourcePath: url.searchParams.get('sourcePath') ?? '', inputDigest: url.searchParams.get('inputDigest') ?? '', policyDigest: url.searchParams.get('policyDigest') ?? '', schemaVersion: Number(url.searchParams.get('schemaVersion') ?? '') } as ReviewIdentity; const source = await readFile(await validateProjectSourcePath(cwd(), identity.sourcePath), 'utf8'); const sourceSha256 = createHash('sha256').update(source).digest('hex'); const evidence = evidenceStore.list(identity); const audit = (await auditStore.list()).filter(event => event.path === identity.sourcePath); return send(response, 200, { lifecycle: projectLifecycle({ decision: reviewStore.getDecision(identity), review: reviewStore.get(identity), evidence, audit, currentSourceSha256: sourceSha256 }), decision: reviewStore.getDecision(identity), review: reviewStore.get(identity), manualChanges: manualChangeStore.list(identity), sourceSha256 }); } catch (error) { return send(response, 400, { error: error instanceof Error ? error.message : 'LIFECYCLE_UNAVAILABLE' }); } }
   if (url.pathname === '/review/manual-changes') { try { const identity = { findingId: url.searchParams.get('findingId') ?? '', sourcePath: url.searchParams.get('sourcePath') ?? '', inputDigest: url.searchParams.get('inputDigest') ?? '', policyDigest: url.searchParams.get('policyDigest') ?? '', schemaVersion: Number(url.searchParams.get('schemaVersion') ?? '') } as ReviewIdentity; if (request.method === 'GET') return send(response, 200, { changes: manualChangeStore.list(identity) }); const input = await body(request) as { beforeText?: string; afterText?: string } & ReviewIdentity; if (input.findingId !== identity.findingId || input.sourcePath !== identity.sourcePath || input.inputDigest !== identity.inputDigest || input.policyDigest !== identity.policyDigest || input.schemaVersion !== identity.schemaVersion) throw new Error('MANUAL_CHANGE_IDENTITY_MISMATCH'); if (typeof input.beforeText !== 'string' || typeof input.afterText !== 'string' || input.beforeText.length > 200_000 || input.afterText.length > 200_000) throw new Error('MANUAL_CHANGE_TEXT_INVALID'); const current = await readFile(await validateProjectSourcePath(cwd(), identity.sourcePath), 'utf8'); const beforeHash = createHash('sha256').update(input.beforeText).digest('hex'); const afterHash = createHash('sha256').update(input.afterText).digest('hex'); if (input.afterText !== current) throw new Error('STALE_MANUAL_SOURCE'); if (beforeHash === afterHash) throw new Error('MANUAL_CHANGE_UNCHANGED'); const item = await manualChangeStore.append({ ...identity, beforeSourceSha256: beforeHash, afterSourceSha256: afterHash, beforeText: input.beforeText, afterText: input.afterText }); return send(response, 201, { change: item, validation: { state: 'Passed', sourceMatches: true, changed: true } }); } catch (error) { return send(response, 400, { error: error instanceof Error ? error.message : 'MANUAL_CHANGE_FAILED' }); } }
@@ -157,27 +185,29 @@ const server = createServer(async (request, response) => {
     }
   }
   if (url.pathname === '/contextual-preview' && request.method === 'GET') {
-    try { const result = await workflowStore.exclusive(() => contextualPreview(projectRoot,url.searchParams,url.searchParams.get('workflowId')?workflowStore.get(url.searchParams.get('workflowId')!):undefined));return send(response,200,result); }
+    try { const result = await contextualPreview(projectRoot,url.searchParams,url.searchParams.get('workflowId')?workflowStore.get(url.searchParams.get('workflowId')!):undefined);return send(response,200,result); }
     catch(error){return send(response,409,{error:error instanceof Error?error.message:'CONTEXTUAL_PREVIEW_FAILED'});}
   }
   if (url.pathname.startsWith('/review/workflows')) {
     try {
-      if(request.method==='GET'&&url.pathname==='/review/workflows'&&url.searchParams.get('history')==='1')return send(response,200,{workflows:await workflowStore.exclusive(async()=>workflowStore.list().map(w=>workflowStore.view(w))),projectRoot});
+      if(request.method==='GET'&&url.pathname==='/review/workflows'&&url.searchParams.get('history')==='1')return send(response,200,{workflows:workflowStore.list().map(w=>workflowStore.view(w)),projectRoot});
       const match = url.pathname.match(/^\/review\/workflows(?:\/([^/]+)(?:\/(change|runtime|validate|apply|rollback|preview|resume|remaining|prepare-preview|prepare-batch|approve-batch))?)?$/);
       if (!match) throw new Error('WORKFLOW_ROUTE_NOT_FOUND');
       const id = match[1], action = match[2];
       if (request.method === 'GET') {
         if (action === 'preview' && id) return send(response, 200, await workflowStore.exclusive(() => workflowStore.preview(id, url.searchParams.get('findingId') ?? '', url.searchParams.get('mode') ?? '')));
+        // Queued behind earlier accepted writes, so a read issued after a write sees that write (read-after-write order).
         const snapshot = await workflowStore.exclusive(async () => { const w = id ? workflowStore.get(id) : workflowStore.find(url.searchParams.get('inputDigest') ?? '', url.searchParams.get('policyDigest') ?? '', url.searchParams.get('mode') ?? ''); return w ? workflowStore.view(w) : null; });
         return send(response, 200, { workflow: snapshot, projectRoot });
       }
       const input = await body(request);
+      const previewSeq = action === 'prepare-preview' && id ? supersession.begin(id) : 0;
       const w = await workflowStore.exclusive(async () => {
         if (!id) return workflowStore.begin(input);
         if (action === 'change') return workflowStore.change(id, input.findingId, input);
         if (action === 'prepare-batch') return workflowStore.prepareBatch(id);
         if (action === 'approve-batch') return workflowStore.approveBatch(id,input.findingIds);
-        if (action === 'prepare-preview') return workflowStore.preparePreview(id,input);
+        if (action === 'prepare-preview') { if (!supersession.isCurrent(id, previewSeq)) throw new Error('PREVIEW_SUPERSEDED'); return workflowStore.preparePreview(id,input); }
         if (action === 'runtime') { return workflowStore.runtime(id,input.application); }
         if (action === 'validate') return input.operationId?workflowStore.runOperation(id,'validate',input.operationId,()=>workflowStore.validate(id)):workflowStore.validate(id);
         if (action === 'apply') return input.operationId?workflowStore.runOperation(id,'apply',input.operationId,()=>workflowStore.apply(id,input.confirmation)):workflowStore.apply(id,input.confirmation);
@@ -205,7 +235,7 @@ const server = createServer(async (request, response) => {
   if (url.pathname === '/review/apply/eligibility' && request.method === 'GET') { try { const identity = { findingId: url.searchParams.get('findingId') ?? '', sourcePath: url.searchParams.get('sourcePath') ?? '', inputDigest: url.searchParams.get('inputDigest') ?? '', policyDigest: url.searchParams.get('policyDigest') ?? '', schemaVersion: Number(url.searchParams.get('schemaVersion') ?? '') } as ReviewIdentity; const record = reviewStore.get(identity); const evidence = evidenceStore.list(identity); const approved = evidence.find(x => (x.decision === 'Approved' || x.decision === 'Ready for Review') && !!x.patch && !x.scannerAfter.findingPresent && x.browserDomValidation.length > 0); const ready = !!record && record.status === 'Approved' && !!approved; return send(response, 200, { ready, reason: ready ? null : (!record ? 'APPROVED_REVIEW_REQUIRED' : record.status !== 'Approved' ? 'APPROVED_REVIEW_REQUIRED' : !approved ? 'VALIDATION_EVIDENCE_REQUIRED' : 'APPLY_NOT_ELIGIBLE'), findingId: identity.findingId, sourcePath: identity.sourcePath, reviewStatus: record?.status ?? null, evidence: approved ? { snapshotId: approved.snapshotId, originalSourceSha256: approved.originalSourceSha256, candidateSourceSha256: approved.candidateSourceSha256, codeDiff: approved.codeDiff, patch: approved.patch } : null }); } catch (error) { return send(response, 400, { error: error instanceof Error ? error.message : 'APPLY_ELIGIBILITY_FAILED' }); } }
   if (url.pathname === '/review/audit' && request.method === 'GET') { try { const events = await auditStore.list(); const path = url.searchParams.get('sourcePath'); return send(response, 200, { events: path ? events.filter(x => x.path === path) : events }); } catch (error) { return send(response, 503, { error: error instanceof Error ? error.message : 'APPLY_AUDIT_UNREADABLE' }); } }
   if (url.pathname === '/review/rollback/eligibility' && request.method === 'GET') { try { const identity = { findingId: url.searchParams.get('findingId') ?? '', sourcePath: url.searchParams.get('sourcePath') ?? '', inputDigest: url.searchParams.get('inputDigest') ?? '', policyDigest: url.searchParams.get('policyDigest') ?? '', schemaVersion: Number(url.searchParams.get('schemaVersion') ?? '') } as ReviewIdentity; const record = reviewStore.get(identity); const evidence = evidenceStore.list(identity).find(x => (x.decision === 'Approved' || x.decision === 'Ready for Review') && x.patch && x.sourcePath === identity.sourcePath); const receipt = record?.status === 'Approved' && evidence ? await applyService.recoverRollbackReceipt(identity.sourcePath, evidence.originalSourceSha256, evidence.candidateSourceSha256) : null; return send(response, 200, { eligible: !!receipt, receipt: receipt ?? null, reason: receipt ? null : 'ROLLBACK_NOT_ELIGIBLE' }); } catch (error) { return send(response, 400, { error: error instanceof Error ? error.message : 'ROLLBACK_ELIGIBILITY_FAILED' }); } }
-  if (url.pathname === '/review/apply' && request.method === 'POST') { try { const report=await scan(cwd()); const input = await body(request) as { identity: ReviewIdentity; confirmation: string }; if(!report.complete) throw new Error('INCOMPLETE_SCAN_REQUIRES_MANUAL_RESOLUTION'); if(report.inputDigest!==input.identity.inputDigest||report.policyDigest!==input.identity.policyDigest)throw new Error('STALE_PROJECT_IDENTITY'); const currentFinding=report.findings.find(f=>f.id===input.identity.findingId&&f.path===input.identity.sourcePath);if(!currentFinding||directionRequirement(currentFinding)!=='independent')throw new Error('LEGACY_DIRECTION_DEPENDENT_APPLY_UNSUPPORTED'); const record = reviewStore.get(input.identity); if (!record) return send(response, 400, { error: 'APPROVED_REVIEW_REQUIRED' }); const evidence = evidenceStore.list(input.identity); const approved = evidence.find(x => (x.decision === 'Approved' || x.decision === 'Ready for Review') && x.patch); if (!approved?.patch) return send(response, 400, { error: 'PATCH_METADATA_REQUIRED' }); const proposal=proposeTransformation(currentFinding,await readFile(await validateProjectSourcePath(cwd(),currentFinding.path),'utf8')); if(!sameSupportedPatch(proposal.patch,approved.patch))throw new Error('UNSUPPORTED_CANDIDATE_PATCH'); const receipt = await applyService.apply({ identity: input.identity, confirmation: input.confirmation, reviewRecord: record, evidence, patch: approved.patch }); return send(response, 200, { receipt, state: 'APPLIED' }); } catch (error) { return send(response, 400, { error: error instanceof Error ? error.message : 'CONTROLLED_APPLY_FAILED', state: 'APPLY_FAILED' }); } }
+  if (url.pathname === '/review/apply' && request.method === 'POST') { try { const input = await body(request) as { identity: ReviewIdentity; confirmation: string }; validateReviewIdentity(input.identity); const record = reviewStore.get(input.identity); if (!record) return send(response, 400, { error: 'APPROVED_REVIEW_REQUIRED' }); const report=await scan(cwd()); if(!report.complete) throw new Error('INCOMPLETE_SCAN_REQUIRES_MANUAL_RESOLUTION'); if(report.inputDigest!==input.identity.inputDigest||report.policyDigest!==input.identity.policyDigest)throw new Error('STALE_PROJECT_IDENTITY'); const currentFinding=report.findings.find(f=>f.id===input.identity.findingId&&f.path===input.identity.sourcePath);if(!currentFinding||directionRequirement(currentFinding)!=='independent')throw new Error('LEGACY_DIRECTION_DEPENDENT_APPLY_UNSUPPORTED'); const evidence = evidenceStore.list(input.identity); const approved = evidence.find(x => (x.decision === 'Approved' || x.decision === 'Ready for Review') && x.patch); if (!approved?.patch) return send(response, 400, { error: 'PATCH_METADATA_REQUIRED' }); const proposal=proposeTransformation(currentFinding,await readFile(await validateProjectSourcePath(cwd(),currentFinding.path),'utf8')); if(!sameSupportedPatch(proposal.patch,approved.patch))throw new Error('UNSUPPORTED_CANDIDATE_PATCH'); const receipt = await applyService.apply({ identity: input.identity, confirmation: input.confirmation, reviewRecord: record, evidence, patch: approved.patch }); return send(response, 200, { receipt, state: 'APPLIED' }); } catch (error) { return send(response, 400, { error: error instanceof Error ? error.message : 'CONTROLLED_APPLY_FAILED', state: 'APPLY_FAILED' }); } }
   if (url.pathname === '/review/rollback' && request.method === 'POST') { try { await applyService.rollback(await body(request)); return send(response, 200, { state: 'ROLLED_BACK' }); } catch (error) { return send(response, 409, { error: error instanceof Error ? error.message : 'ROLLBACK_FAILED', state: 'ROLLBACK_FAILED' }); } }
   const diffMatch = url.pathname.match(/^\/review\/sessions\/([^/]+)\/diff$/);
   if (diffMatch && request.method === 'GET') { const session = sessions.get(decodeURIComponent(diffMatch[1])); if (!session) return send(response, 404, { error: 'REVIEW_SESSION_NOT_FOUND' }); const comparison = await reviewSessionComparison(session); return send(response, 200, { ...comparison, source: session.sourcePath, candidateSessionId: session.id }); }
@@ -219,12 +249,40 @@ const server = createServer(async (request, response) => {
 });
 let shuttingDown = false;
   // Idempotent: npm/npx forward the terminal's SIGINT, so the companion routinely receives it twice. A second signal must not abort the first shutdown.
+  // Bounded, deterministic shutdown. Order: stop accepting and drop open sockets; stop every owned process group
+  // (candidate runtimes, original runtime, validation commands) by group; persist workflow state; dispose session
+  // workspaces; exit. Each step has its own deadline, and a hard deadline (ref'd, so it always fires) SIGKILLs the owned
+  // groups and then this process if anything is still stuck.
   const shutdown = async () => {
     if (shuttingDown) return; shuttingDown = true;
-    setTimeout(() => process.exit(1), 8000).unref();
-    await Promise.allSettled([stopOwnedOriginalPreviews(), workflowStore.shutdown(), stopAllCandidateRuntimes(), ...[...sessions.values()].map(session => disposeReviewSession(session))]);
-    server.close(() => process.exit(0)); setTimeout(() => process.exit(1), 3000).unref();
+    markOwnedShutdownStarted();
+    const hard = setTimeout(() => { killOwnedGroupsSync(); process.kill(process.pid, 'SIGKILL'); }, COMPANION_SHUTDOWN_DEADLINE_MS);
+    const failures: string[] = [];
+    const bounded = async (name: string, work: () => Promise<unknown>, ms: number) => {
+      let timer: NodeJS.Timeout | undefined;
+      try { await Promise.race([work(), new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('deadline exceeded')), ms); })]); }
+      catch (error) { failures.push(`${name}: ${error instanceof Error ? error.message : String(error)}`); }
+      finally { if (timer) clearTimeout(timer); }
+    };
+    server.closeAllConnections(); server.close();
+    await bounded('owned-process-groups', () => terminateOwnedGroups(), 4_000);
+    await bounded('workflows', () => workflowStore.shutdown(), 2_000);
+    await bounded('session-workspaces', () => Promise.all([...sessions.values()].map(session => disposeReviewSession(session))), 2_000);
+    await bounded('owned-manifest', removeOwnManifest, 500);
+    for (const failure of failures) console.error(`RTL preview companion: shutdown step failed: ${failure}`);
+    clearTimeout(hard);
+    process.exit(failures.length ? 1 : 0);
   };
   for (const signal of ['SIGTERM', 'SIGINT', 'SIGHUP'] as const) process.on(signal, shutdown);
+// The CLI that started this companion owns it. When that process is gone, the companion runs its normal shutdown (which
+// disposes its candidate workspaces), even while an open dashboard tab keeps sending heartbeats.
+const ownerPid = Number(process.env.RTL_PREVIEW_OWNER_PID ?? '');
+if (Number.isInteger(ownerPid) && ownerPid > 0) {
+  const ownerWatch = setInterval(() => {
+    try { process.kill(ownerPid, 0); }
+    catch (error) { if ((error as NodeJS.ErrnoException).code !== 'EPERM') { clearInterval(ownerWatch); void shutdown(); } }
+  }, 2000);
+  ownerWatch.unref();
+}
   // Last resort for any exit path: never leave an owned runtime process group behind.
-  process.on('exit', () => { signalOwnedOriginalPreviews(); signalAllCandidateRuntimes(); }); server.listen(port, host, () => { console.log(`RTL preview companion listening on ${host}:${port}`); armIdleExit(); });
+  process.on('exit', () => { killOwnedGroupsSync(); }); server.listen(port, host, () => { console.log(`RTL preview companion listening on ${host}:${port}`); armIdleExit(); void sweepStartupOrphans(); });

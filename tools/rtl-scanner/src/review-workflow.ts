@@ -1,4 +1,4 @@
-import { captureScopedDirectionEvidence, sameScopedDirectionEvidence, type ScopedDirectionEvidence } from './scoped-direction-evidence.js';
+import { captureScopedDirectionEvidence, closeDirectionBrowser, sameScopedDirectionEvidence, type ScopedDirectionEvidence } from './scoped-direction-evidence.js';
 import { initializeOriginalPreview } from './original-preview-runtime.js';
 import { configuredWorkflowChecks, workflowValidationPresentation, workflowValidationEvidenceIssue } from './workflow-validation.js';
 import { createHash, randomUUID } from 'node:crypto';
@@ -6,8 +6,6 @@ import { existsSync } from 'node:fs';
 import { lstat, mkdir, readFile, readdir, rename, realpath, rm, writeFile } from 'node:fs/promises';
 import { basename, dirname, isAbsolute, join, posix, relative } from 'node:path';
 import { packageManagerInvocation } from './package-manager-command.js';
-import { execFile } from 'node:child_process';
-import { promisify } from 'node:util';
 import { chromium } from '@playwright/test';
 import {loadProjectConfiguration,PROJECT_CONFIGURATION} from './project-configuration.js';
 import {previewConfigurationDigest,PREVIEW_CONFIGURATION,loadPreviewConfiguration,configuredMapping,routeUrl} from './preview-configuration.js';
@@ -17,17 +15,21 @@ import { verifiedSourceTransition } from './source-context.js';
 import type { Finding } from './model.js';
 import { directionRequirement, proposeTransformation } from './transformations.js';
 import { approvedPreviewForSource } from './preview-manifest.js';
-import { copyCandidateRoot, createReviewSession, disposeReviewSession, startCandidateRuntime, stopCandidateRuntime, validateProjectSourcePath, REVIEW_SOURCE, type PatchRequest, type ReviewSession } from './review-session.js';
+import { copyCandidateRoot, createReviewSession, disposeReviewSession, markCandidateRuntimeStale, startCandidateRuntime, stopCandidateRuntime, validateProjectSourcePath, REVIEW_SOURCE, type PatchRequest, type ReviewSession } from './review-session.js';
 import { ControlledApplyService, type ApplyReceipt } from './controlled-apply.js';
 
-const run = promisify(execFile);
+const runOwnedCheck=(file:string,args:readonly string[],options:{cwd:string;env?:NodeJS.ProcessEnv;timeout:number;maxBuffer:number})=>execOwned(file,args,{...options,label:'validation-check'});
+import { execOwned } from './owned-processes.js';
 const sha = (text: string) => createHash('sha256').update(text).digest('hex');
 export type FindingDecision = 'Pending' | 'Accepted' | 'Rejected' | 'Deferred' | 'Flagged';
 export interface WorkflowOperation { id:string; kind:'validate'|'apply'; state:'Running'|'Succeeded'|'Failed'|'Uncertain'; count:number; at:string; error?:string }
 export interface WorkflowEntry { batch?:{state:'ready'|'blocked';reason:string}; carriedFrom?:{workflowId:string;findingId:string;decision:FindingDecision}; finding: Finding; patch?: PatchRequest; reason: string; applied: boolean; decision: FindingDecision; notes: string; history: { decision: FindingDecision; notes: string; at: string }[] }
 export interface WorkflowCheck { name: string; state: 'Passed' | 'Failed' | 'Unavailable' | 'Error' | 'Not run' | 'Not configured' | 'Not applicable'; detail: string; kind?: 'project' | 'scanner' | 'runtime'; command?: string; scope?: string }
 export interface WorkflowValidation { state: 'Passed' | 'Failed' | 'Unavailable'; signature: string; checks: WorkflowCheck[]; at: string; hashes: Record<string, string>; directionEvidence?: ScopedDirectionEvidence }
+/** Outcome of removing a candidate workspace. Failures are recorded, never silently dropped. */
+export interface WorkspaceDisposal { state: 'disposed' | 'failed'; reason: 'superseded' | 'applied' | 'shutdown'; at: string; error?: string }
 export interface ReviewWorkflow {
+  workspaceDisposal?: WorkspaceDisposal;
   batchPreparedAt?:string; batchPreparation?:'running'|'ready'; previewFocus?:string; validationInvalidation?:string; operations?:WorkflowOperation[]; continuedFrom?:string; id: string; root: string; supersededBy?: string; rolledBackAt?: string; resumedFrom?: string; previewConfigDigest?:string; inputDigest: string; policyDigest: string; mode: 'one-by-one' | 'apply-first'; scope: string[];
   entries: WorkflowEntry[]; baseline: Record<string, string>; sourcePaths: Record<string, string>; session?: ReviewSession;
   validation?: WorkflowValidation; receipts?: ApplyReceipt[]; state: 'Reviewing' | 'Applying' | 'Applied' | 'Rolled Back'; createdAt: string;
@@ -137,7 +139,8 @@ export class ReviewWorkflowStore {
     const project=await loadProjectConfiguration(this.root);
     const projectConfigs: string[] = [];
     if(!project){
-    for (const group of ['apps', 'libs']) for (const project of await readdir(join(this.root, group))) {
+    // A project without an apps or libs directory (a single-application tree) has no project group to read.
+    for (const group of ['apps', 'libs']) for (const project of await readdir(join(this.root, group)).catch(error => { if ((error as NodeJS.ErrnoException).code === 'ENOENT') return [] as string[]; throw error; })) {
       // Repository-relative keys are POSIX on every platform; platform join() would produce backslashes on Windows.
       const directory = posix.join(group, project);
       for (const name of await readdir(join(this.root, directory))) if (/^(project\.json|tsconfig.*\.json|vite\.config\.[cm]?[jt]s)$/.test(name)) projectConfigs.push(posix.join(directory, name));
@@ -157,7 +160,7 @@ export class ReviewWorkflowStore {
     const conflicting = entries.filter(e => e.patch && entries.some(other => other !== e && other.patch && other.patch.path === e.patch!.path && other.patch.startOffset < e.patch!.endOffset && e.patch!.startOffset < other.patch.endOffset));
     for (const e of conflicting) { e.reason = 'CONFLICTING_PATCH: overlapping transformations need manual resolution.'; e.patch = undefined; }
     const w: ReviewWorkflow = { id: randomUUID(), root: this.root, ...(resuming?{resumedFrom:resuming.id}:{}), previewConfigDigest,inputDigest: report.inputDigest, policyDigest: report.policyDigest, mode: input.mode, scope, entries, baseline, sourcePaths, state: 'Reviewing', createdAt: new Date().toISOString() };
-    if(input.restart&&prior&&restartable&&!resuming){if(prior.session)prior.session=await stopCandidateRuntime(prior.session);prior.supersededBy=w.id;}
+    if(input.restart&&prior&&restartable&&!resuming){if(prior.session){prior.session=await stopCandidateRuntime(prior.session);await this.disposeCandidate(prior,'superseded');}prior.supersededBy=w.id;}
     this.workflows.push(w);
     if (!resuming && w.mode === 'apply-first' && entries.some(e => e.patch)) { for (const e of entries) e.applied = !!e.patch; await this.rebuild(w); }
     await this.persist(); return w;
@@ -199,6 +202,13 @@ export class ReviewWorkflowStore {
     const prior=this.workflows.find(w=>w.resumedFrom===id);
     if(prior){await this.fresh(prior);return prior;}
     return this.begin({inputDigest:report.inputDigest,policyDigest:report.policyDigest,mode:historical.mode,scope:historical.scope},historical);
+  }
+  private verifiedDirectionGates=new Set<string>();
+  /** Identity of one preview state: the review, the source identity, the finding, and every composed file's content digest. */
+  private async directionGateKey(w: ReviewWorkflow, entry: WorkflowEntry): Promise<string> {
+    const parts: string[] = [w.id, w.inputDigest, w.policyDigest, entry.finding.id, w.previewFocus ?? ''];
+    for (const path of Object.keys(w.baseline).sort()) parts.push(path + ':' + sha(await readFile(await validateProjectSourcePath(w.session!.candidateRoot, path), 'utf8')));
+    return sha(parts.join('\n'));
   }
   private async fresh(w: ReviewWorkflow): Promise<void> {
     if(await previewConfigurationDigest(this.root)!==(w.previewConfigDigest??sha('')))throw Error('PREVIEW_CONFIGURATION_CHANGED');
@@ -303,8 +313,16 @@ export class ReviewWorkflowStore {
   private async writeComposition(w: ReviewWorkflow, preserveValidation = false): Promise<void> {
     if (!w.session && !candidateEntries(w).length) { if (!preserveValidation) w.validation = undefined; return; }
     if (!w.session) w.session = await createReviewSession(this.root,Object.hasOwn(w.baseline,REVIEW_SOURCE)?REVIEW_SOURCE:w.entries.find(e=>e.patch)?.finding.path);
-    if (w.session.runtime) w.session = await stopCandidateRuntime(w.session);
-    for (const path of new Set(w.entries.filter(e => e.patch).map(e => e.finding.path))) await writeFile(await validateProjectSourcePath(w.session.candidateRoot, path), composeWorkflowFile(w.baseline[path], candidateEntries(w).filter(e => e.patch!.path === path).map(e => e.patch!)), 'utf8');
+    // Only files whose composed content changed are rewritten. A running candidate server is kept: it is reused after a
+    // verified state refresh, or it is restarted by the runtime step. When nothing changed, its runtime stays valid.
+    let changed = false;
+    for (const path of new Set(w.entries.filter(e => e.patch).map(e => e.finding.path))) {
+      const target = await validateProjectSourcePath(w.session.candidateRoot, path);
+      const next = composeWorkflowFile(w.baseline[path], candidateEntries(w).filter(e => e.patch!.path === path).map(e => e.patch!));
+      const current = await readFile(target, 'utf8').catch(error => { if (error.code === 'ENOENT') return undefined; throw error; });
+      if (current !== next) { await writeFile(target, next, 'utf8'); changed = true; }
+    }
+    if (changed && w.session.runtime) w.session = markCandidateRuntimeStale(w.session);
     w.session.candidateSha256 = sha(await readFile(join(w.session.candidateRoot, w.session.sourcePath), 'utf8'));
     if (preserveValidation) return; // Preview-only recomposition: the accepted set (and its signature) did not change.
     if(w.validation)w.validationInvalidation='The accepted candidate changed; previous validation no longer applies. Validate the new accepted subset.'; w.validation = undefined;
@@ -334,7 +352,11 @@ export class ReviewWorkflowStore {
     }else if(!entry.applied)await this.change(id,entry.finding.id,{action:'apply'});
     const prepared=await this.runtime(id,input.application);
     if(prepared.session?.runtime?.status!=='healthy')throw Error(prepared.session?.runtime?.error||'CANDIDATE_RUNTIME_UNAVAILABLE');
-    if(directionRequirement(entry.finding)==='dependent')await captureScopedDirectionEvidence(this.root,w,[entry],async application=>{await initializeOriginalPreview(this.root,application);await this.runtime(id,application)});
+    if(directionRequirement(entry.finding)==='dependent'){
+      // The same finding over the same composition renders the same pages: a verified gate is reused, a failed one is never recorded.
+      const gateKey=await this.directionGateKey(w,entry);
+      if(!this.verifiedDirectionGates.has(gateKey)){await captureScopedDirectionEvidence(this.root,w,[entry],async application=>{await initializeOriginalPreview(this.root,application);await this.runtime(id,application)});this.verifiedDirectionGates.add(gateKey);}
+    }
     return prepared;
   }
   /** Explicit batch preparation verifies real mapped targets before offering batch approval. */
@@ -407,7 +429,7 @@ export class ReviewWorkflowStore {
       const resolution = packageManagerInvocation(project?.packageManager ?? 'npm', args);
       if (!resolution.ok) { checks.push({ ...configured, name, state: 'Error', detail: resolution.error }); continue; }
       const invocation = resolution.invocation;
-      try { const result = await run(invocation.file, invocation.args, { cwd: w.session!.candidateRoot, env: { ...process.env, NX_DAEMON: 'false', NX_ISOLATE_PLUGINS: 'false' }, timeout: 180_000, maxBuffer: 2_000_000 }); checks.push({ ...configured, name, state: 'Passed', detail: (result.stdout + result.stderr).slice(-8000) }); }
+      try { const result = await runOwnedCheck(invocation.file, invocation.args, { cwd: w.session!.candidateRoot, env: { ...process.env, NX_DAEMON: 'false', NX_ISOLATE_PLUGINS: 'false' }, timeout: 180_000, maxBuffer: 2_000_000 }); checks.push({ ...configured, name, state: 'Passed', detail: (result.stdout + result.stderr).slice(-8000) }); }
       catch (error) { const failure = error as { stdout?: string; stderr?: string; message: string; code?: string | number; signal?: string }; checks.push({ ...configured, name, state: typeof failure.code === 'number' || failure.signal ? 'Failed' : 'Error', detail: ((failure.stdout ?? '') + (failure.stderr ?? '') + failure.message).slice(-8000) }); }
     }
     try {
@@ -514,7 +536,7 @@ export class ReviewWorkflowStore {
     if (confirmation !== 'APPLY_CONFIRMED') throw new Error('APPLY_CONFIRMATION_REQUIRED');
     w.state = 'Applying'; await this.persist();
     const files = [...new Set(w.entries.filter(e => e.decision === 'Accepted' && included(e)).map(e => e.finding.path))].map(path => ({ path, before: w.baseline[path], after: composeWorkflowFile(w.baseline[path], w.entries.filter(e => e.decision === 'Accepted' && included(e) && e.finding.path === path).map(e => e.patch!)) }));
-    try { w.receipts = await this.applyService.applyAcceptedFiles(w.id, files, confirmation); w.state = 'Applied'; await this.persist(); await this.releaseRuntime(w).catch(() => undefined); await this.persist(); return w; }
+    try { w.receipts = await this.applyService.applyAcceptedFiles(w.id, files, confirmation); w.state = 'Applied'; await this.persist(); await this.releaseRuntime(w).catch(() => undefined); await this.disposeCandidate(w, 'applied'); await this.persist(); return w; }
     catch (error) { w.receipts = await this.applyService.recoverAcceptedFileReceipts(w.id); await this.persist(); throw error; }
   }
   async rollback(id: string, confirmation: string): Promise<ReviewWorkflow> {
@@ -528,9 +550,16 @@ export class ReviewWorkflowStore {
     try {
       await Promise.allSettled(this.workflows.map(async w => { if (w.session) w.session = await stopCandidateRuntime(w.session); }));
       // Candidates of Reviewing workflows are disposable caches: resume rebuilds them from the persisted baseline and patches.
-      // Applied and rolled-back reviews keep theirs, because their baseline no longer matches the source after Apply.
-      await Promise.allSettled(this.workflows.filter(w => w.state === 'Reviewing' && w.session).map(w => disposeReviewSession(w.session!)));
+      // Applied candidates were removed when Apply recorded its receipts; rollback needs receipts and backups, not the candidate.
+      await Promise.allSettled(this.workflows.filter(w => w.state === 'Reviewing' && w.session).map(w => this.disposeCandidate(w, 'shutdown')));
+      await closeDirectionBrowser();
     } finally { await this.persist(); }
+  }
+  /** Removes this workflow's candidate workspace and records the outcome. Caller persists. */
+  async disposeCandidate(w: ReviewWorkflow, reason: WorkspaceDisposal['reason']): Promise<void> {
+    if (!w.session) return;
+    try { await disposeReviewSession(w.session); w.workspaceDisposal = { state: 'disposed', reason, at: new Date().toISOString() }; }
+    catch (error) { w.workspaceDisposal = { state: 'failed', reason, at: new Date().toISOString(), error: error instanceof Error ? error.message : String(error) }; }
   }
   /** A finished Apply or Rollback no longer needs its candidate runtime; the session and receipts remain for protected rollback. */
   private async releaseRuntime(w: ReviewWorkflow): Promise<void> { if (w.session) w.session = await stopCandidateRuntime(w.session); }

@@ -10,6 +10,14 @@ import { classifyDiagnostics } from './coverage.js';
 import { hash, type Report } from './model.js';
 import {loadProjectConfiguration,PROJECT_CONFIGURATION} from './project-configuration.js';
 import {discover} from './discovery.js';
+// Bump when analysis output can change for identical inputs (rules, extraction, report shape).
+export const SCAN_CACHE_VERSION='rtl-scan-cache-v1';
+const SCAN_CACHE_LIMIT=2;
+const scanCache=new Map<string,Report>();
+/** Process-local cache counters (observability and tests only). */
+export const scanCacheStats={hits:0,misses:0};
+/** Test and maintenance hook: drops every cached report in this process. */
+export function clearScanCache():void{scanCache.clear();scanCacheStats.hits=0;scanCacheStats.misses=0;}
 export async function scan(root:string):Promise<Report> {
   const files:string[]=[], skipped:string[]=[];
   async function walk(relative:string){for(const e of (await readdir(join(root,relative),{withFileTypes:true})).sort((a,b)=>a.name<b.name?-1:1)){
@@ -28,10 +36,17 @@ export async function scan(root:string):Promise<Report> {
   }
   files.splice(0,files.length,...new Set(files));
   files.sort();const evidence:Report['evidence']=[],diagnostics:Report['diagnostics']=[],inputs:string[]=[],sources=new Map<string,string>();const policy=await loadPolicy(root);
-  for(const p of files){const s=await readFile(join(root,p),'utf8');inputs.push(p+'\0'+s);sources.set(p,s);if(s.length>2_000_000)throw new Error('Source exceeds size limit');const r=p.endsWith('.scss')?extractScss(p,s):p.endsWith('.css')?extractCss(p,s):p.endsWith('.html')?extractHtml(p,s):extractTypescript(p,s);evidence.push(...r.evidence);diagnostics.push(...r.diagnostics);}
+  for(const p of files){const s=await readFile(join(root,p),'utf8');inputs.push(p+'\0'+s);sources.set(p,s);if(s.length>2_000_000)throw new Error('Source exceeds size limit');}
   // Preview declarations are data-only context identity, not analyzed source or semantic approval.
   try {const path=join(root,'rtl-preview.config.json'),info=await lstat(path);if(info.isSymbolicLink())throw Error('PREVIEW_CONFIGURATION_SYMLINK');const text=await readFile(path,'utf8');if(text.length>200000)throw Error('PREVIEW_CONFIGURATION_SIZE');inputs.push('rtl-preview.config.json\0'+text);}catch(error){if((error as NodeJS.ErrnoException).code!=='ENOENT')throw error;}
   if(project)inputs.push(PROJECT_CONFIGURATION+'\0'+await readFile(join(root,PROJECT_CONFIGURATION),'utf8'));
+  // Cache key: every input the report depends on, including the raw policy text (audit locations) and the skipped list.
+  const inputDigest=hash(inputs.join('\0'));
+  const cacheKey=[SCAN_CACHE_VERSION,root,inputDigest,hash(policySourceText(policy)),hash(skipped.sort().join('\0'))].join('|');
+  const cached=scanCache.get(cacheKey);
+  if(cached){scanCacheStats.hits++;scanCache.delete(cacheKey);scanCache.set(cacheKey,cached);return structuredClone(cached);}
+  scanCacheStats.misses++;
+  for(const p of files){const s=sources.get(p)!;const r=p.endsWith('.scss')?extractScss(p,s):p.endsWith('.css')?extractCss(p,s):p.endsWith('.html')?extractHtml(p,s):extractTypescript(p,s);evidence.push(...r.evidence);diagnostics.push(...r.diagnostics);}
   const compare=(a:{path:string;range:{start:{offset:number}}},b:typeof a)=>a.path<b.path?-1:a.path>b.path?1:a.range.start.offset-b.range.start.offset;
   evidence.sort(compare);diagnostics.sort(compare);
   const occurrences=new Map<string,number>();
@@ -50,5 +65,7 @@ export async function scan(root:string):Promise<Report> {
   const findings=detect(evidence,sources,effectivePolicy,coverage);coverage.sort(compare);
   const count=(key:'category'|'severity'|'confidence')=>Object.fromEntries([...new Set(findings.map(f=>f[key]))].sort().map(v=>[v,findings.filter(f=>f[key]===v).length]));
   const metrics={byCategory:count('category'),bySeverity:count('severity'),byConfidence:count('confidence'),uniqueAffectedFiles:new Set(findings.map(f=>f.path)).size,referenceCaseIds:[...new Set(findings.flatMap(f=>f.issueIds))].sort()};
-  return {schemaVersion:2,kind:'rtl-risk-report',policyDigest:hash(JSON.stringify(policy)),inputDigest:hash(inputs.join('\0')),files,skipped:skipped.sort(),evidence,diagnostics:coverage,findings,metrics,complete:!coverage.some(d=>d.blocking)};
+  const report:Report={schemaVersion:2,kind:'rtl-risk-report',policyDigest:hash(JSON.stringify(policy)),inputDigest,files,skipped:skipped.sort(),evidence,diagnostics:coverage,findings,metrics,complete:!coverage.some(d=>d.blocking)};
+  scanCache.set(cacheKey,structuredClone(report));if(scanCache.size>SCAN_CACHE_LIMIT)scanCache.delete(scanCache.keys().next().value!);
+  return report;
 }

@@ -1,4 +1,4 @@
-import { chromium } from '@playwright/test';
+import { chromium, type Browser } from '@playwright/test';
 import { createHash } from 'node:crypto';
 import { configuredMapping, loadPreviewConfiguration, routeUrl } from './preview-configuration.js';
 import { contextualPreview } from './contextual-preview.js';
@@ -10,10 +10,26 @@ export interface ScopedDirectionEvidence { version: 1; inputDigest: string; poli
 export function sameScopedDirectionEvidence(a:ScopedDirectionEvidence|undefined,b:ScopedDirectionEvidence):boolean {
  return !!a && a.version===1 && JSON.stringify(a)===JSON.stringify(b);
 }
+// One Chromium per process for direction evidence: launching a browser per preparation dominated the navigation cost.
+// The browser is relaunched if it disconnects and closed when the companion shuts down. Pages are still per capture.
+let sharedDirectionBrowser: Promise<Browser> | undefined;
+async function directionBrowser(): Promise<Browser> {
+  if (sharedDirectionBrowser) {
+    const existing = await sharedDirectionBrowser;
+    if (existing.isConnected()) return existing;
+  }
+  sharedDirectionBrowser = chromium.launch({ headless: true });
+  return sharedDirectionBrowser;
+}
+export async function closeDirectionBrowser(): Promise<void> {
+  const pending = sharedDirectionBrowser;
+  sharedDirectionBrowser = undefined;
+  if (pending) await (await pending.catch(() => undefined))?.close().catch(() => undefined);
+}
 export async function captureScopedDirectionEvidence(root:string,w:ReviewWorkflow,entries:WorkflowEntry[],prepare:(application:string)=>Promise<void>):Promise<ScopedDirectionEvidence>{
  if(!w.session||!entries.length)throw Error('DIRECTION_EVIDENCE_CANDIDATE_REQUIRED');
  const config=await loadPreviewConfiguration(root),records:unknown[]=[];
- const browser=await chromium.launch({headless:true});
+ const browser=await directionBrowser();
  try {
   for(const entry of entries){
    const mapping=configuredMapping(entry.finding,config);
@@ -25,7 +41,8 @@ export async function captureScopedDirectionEvidence(root:string,w:ReviewWorkflo
      const info=await contextualPreview(root,query,w);
      if(!info.original?.available||!info.candidate?.available||!('origin' in info.original)||!('origin' in info.candidate))throw Error('DIRECTION_EVIDENCE_RUNTIME_IDENTITY_UNAVAILABLE');
      const values=[];
-     for(const [role,descriptor] of [['original',info.original],['candidate',info.candidate]] as const){
+     // Original and candidate pages of one mode are independent: they are captured concurrently, in the same order as before.
+     values.push(...await Promise.all(([['original',info.original],['candidate',info.candidate]] as const).map(async([role,descriptor])=>{
       const page=await browser.newPage({viewport:{width:1280,height:800},locale:'en-US',timezoneId:'UTC'}),errors:string[]=[];
       page.on('pageerror',e=>errors.push(e.message));
       try {
@@ -52,9 +69,9 @@ export async function captureScopedDirectionEvidence(root:string,w:ReviewWorkflo
        },{selector:mapping.selector,expectedUrl:expected,sourceSelector:mapping.sourceSelector||'',path:entry.finding.path,icon:entry.finding.ruleId==='RTL.ICON.PROGRESSION'});
        });
        if(errors.length)throw Error('DIRECTION_EVIDENCE_PAGE_ERROR');
-       values.push({role,sourceHash:descriptor.sourceHash,projectRoot:descriptor.projectRoot,runtimeSessionId:descriptor.runtimeSessionId,state});
+       return {role,sourceHash:descriptor.sourceHash,projectRoot:descriptor.projectRoot,runtimeSessionId:descriptor.runtimeSessionId,state};
       }finally{await page.close()}
-     }
+          })));
      const rechecked=await contextualPreview(root,query,w);
      if(!rechecked.original?.available||!rechecked.candidate?.available||!('sourceHash' in rechecked.original)||!('sourceHash' in rechecked.candidate)||rechecked.original.sourceHash!==values[0].sourceHash||rechecked.candidate.sourceHash!==values[1].sourceHash||rechecked.original.runtimeSessionId!==values[0].runtimeSessionId||rechecked.candidate.runtimeSessionId!==values[1].runtimeSessionId)throw Error('DIRECTION_EVIDENCE_RUNTIME_IDENTITY_CHANGED');
      const [before,after]=values;
@@ -67,6 +84,6 @@ export async function captureScopedDirectionEvidence(root:string,w:ReviewWorkflo
     }
    }
   }
- }finally{await browser.close()}
+ }finally{/* The shared browser stays open for later captures; pages are closed per capture. */}
  return {version:1,inputDigest:w.inputDigest,policyDigest:w.policyDigest,configurationDigest:config.digest,sessionId:w.session.id,records};
 }

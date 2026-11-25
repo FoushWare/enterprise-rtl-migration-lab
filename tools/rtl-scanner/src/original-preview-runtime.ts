@@ -8,6 +8,7 @@ import { writePreviewRuntimeConfig } from './preview-runtime.js';
 import { ORIGINAL_PREVIEW_ORIGINS } from './contextual-preview.js';
 
 import {spawnPreviewRuntime,signalOwnedRuntime,runtimeOutputTail,redactRuntimeOutput} from './runtime-process.js';
+import {isOwnedShutdownStarted} from './owned-processes.js';
 import {loadProjectConfiguration} from './project-configuration.js';
 import { OriginalPreviewLeases } from './original-preview-leases.js';
 
@@ -81,7 +82,7 @@ export async function initializeOriginalPreview(root: string, application: strin
         const actual = await fetch(origin + '/__rtl_preview_identity', { signal: AbortSignal.timeout(500) }).then(r => r.json()) as { projectRoot: string; role: string; application: string; sourceSha256: string };
         if (actual.projectRoot === root && actual.role === 'original' && actual.application === application && actual.sourceSha256 === sourceSha256) return;
       } catch { /* Wait only for this initialization; descriptors verify the complete identity next. */ }
-      if (!alive()) break;
+      if (!alive() || isOwnedShutdownStarted()) break;
       await new Promise(resolve => setTimeout(resolve, 100));
     }
     // Failed attempt: stop the runtime this attempt owns so a retry starts clean and nothing is orphaned.

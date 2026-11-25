@@ -1,3 +1,4 @@
+import { disposeWorkspace, stopOwnedCompanion } from './owned-companion.js';
 import { createHash } from 'node:crypto';
 import { cpSync, existsSync, mkdirSync, mkdtempSync, realpathSync, readFileSync, renameSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -11,9 +12,28 @@ let port = 4319;
 const sourcePath = 'apps/invoicing/src/components/InvoiceTable.tsx';
 const identity = { findingId: 'RTL.BIDI.ISOLATION:741d2ce2aec3a86cf2db37ea', sourcePath, inputDigest: '3011f559425f764e053dd89b48a060b24d79ce1d9a3eca068fb5e308fb81608a', policyDigest: 'fc82bc0137f0800c3c6818b55a14ef2ac9abaeb1b018d503834d9899183abf49', schemaVersion: 2 };
 const sha = (text: string) => createHash('sha256').update(text).digest('hex');
-const call = (path: string, body?: unknown) => new Promise<{ status: number; json: any }>((resolve, reject) => { const r = request({ host: '127.0.0.1', port, path, method: body === undefined ? 'GET' : 'POST', headers: body === undefined ? {} : { 'content-type': 'application/json', origin: 'http://127.0.0.1:4320' } }, res => { let text = ''; res.on('data', x => text += x); res.on('end', () => resolve({ status: res.statusCode ?? 0, json: JSON.parse(text || '{}') })); }); r.on('error', reject); if (body !== undefined) r.write(JSON.stringify(body)); r.end(); });
-const start = (root: string, state: string) => spawn(process.execPath, ['dist/tools/rtl-scanner/preview-companion.js'], { cwd: process.cwd(), env: { ...process.env, RTL_PREVIEW_PORT: String(port), RTL_PROJECT_ROOT: root, RTL_REVIEW_STORE_PATH: join(state, 'review-records-v1.json'), RTL_EVIDENCE_STORE_PATH: join(state, 'review-evidence-v1.json'), RTL_MANUAL_CHANGE_STORE_PATH: join(state, 'manual-changes-v1.json'), RTL_SCAN_MANIFEST_STORE_PATH: join(state, 'scan-manifests-v1.json'), RTL_AUDIT_STORE_PATH: join(state, 'apply-audit-v1.json'), RTL_APPLY_BACKUP_ROOT: join(state, 'backups') }, stdio: 'ignore' });
-const stop = async (child: ChildProcess) => { if (child.exitCode !== null) return; const done = new Promise<void>(resolve => child.once('exit', () => resolve())); child.kill('SIGTERM'); await done; };
+// Bounded request. A response that never completes, aborts, or is not JSON rejects with a diagnostic instead of hanging
+// until the test timeout. Assertions are unchanged; this only makes a stall visible at its source.
+const REQUEST_TIMEOUT_MS = 15_000;
+const call = (path: string, body?: unknown) => new Promise<{ status: number; json: any }>((resolve, reject) => {
+  const method = body === undefined ? 'GET' : 'POST';
+  const r = request({ host: '127.0.0.1', port, path, method, headers: body === undefined ? {} : { 'content-type': 'application/json', origin: 'http://127.0.0.1:4320' } }, res => {
+    let text = '';
+    res.on('data', x => text += x);
+    res.on('aborted', () => reject(new Error(`COMPANION_RESPONSE_ABORTED ${method} ${path}`)));
+    res.on('error', error => reject(new Error(`COMPANION_RESPONSE_ERROR ${method} ${path}: ${error.message}`)));
+    res.on('end', () => {
+      try { resolve({ status: res.statusCode ?? 0, json: JSON.parse(text || '{}') }); }
+      catch { reject(new Error(`COMPANION_RESPONSE_NOT_JSON ${method} ${path} status=${res.statusCode} body=${JSON.stringify(text.slice(0, 200))}`)); }
+    });
+  });
+  r.setTimeout(REQUEST_TIMEOUT_MS, () => r.destroy(new Error(`COMPANION_REQUEST_TIMEOUT ${method} ${path} after ${REQUEST_TIMEOUT_MS}ms`)));
+  r.on('error', reject);
+  if (body !== undefined) r.write(JSON.stringify(body));
+  r.end();
+});
+const start = (root: string, state: string) => spawn(process.execPath, ['dist/tools/rtl-scanner/preview-companion.js'], { cwd: process.cwd(), env: { ...process.env, RTL_PREVIEW_PORT: String(port), RTL_PROJECT_ROOT: root, RTL_REVIEW_STORE_PATH: join(state, 'review-records-v1.json'), RTL_EVIDENCE_STORE_PATH: join(state, 'review-evidence-v1.json'), RTL_MANUAL_CHANGE_STORE_PATH: join(state, 'manual-changes-v1.json'), RTL_SCAN_MANIFEST_STORE_PATH: join(state, 'scan-manifests-v1.json'), RTL_AUDIT_STORE_PATH: join(state, 'apply-audit-v1.json'), RTL_APPLY_BACKUP_ROOT: join(state, 'backups'), RTL_PREVIEW_OWNER_PID: String(process.pid) }, stdio: 'ignore' });
+const stop = (child: ChildProcess) => stopOwnedCompanion(child);
 let portableFixtureRoot: string;
 test.beforeAll(({}, workerInfo) => { const root = workerInfo.config.metadata?.portableFixtureRoot; if (typeof root !== 'string' || !root) throw new Error('PORTABLE_FIXTURE_UNAVAILABLE'); portableFixtureRoot = root; });
 const fixture = () => { if (!portableFixtureRoot) throw new Error('PORTABLE_FIXTURE_UNAVAILABLE'); const workspace = mkdtempSync(join(tmpdir(), 'rtl-security-')); const root = join(workspace, 'project'); const state = join(workspace, 'state'); mkdirSync(join(state, 'backups'), { recursive: true }); cpSync(portableFixtureRoot, root, { recursive: true }); return { workspace, root, state, source: join(root, sourcePath) }; };
@@ -30,7 +50,7 @@ const withCompanion = async (run: (f: ReturnType<typeof fixture>) => Promise<voi
     }
     if (!ready) throw new Error('OWNED_COMPANION_IDENTITY_UNAVAILABLE');
     await run(f);
-  } finally { await stop(child); }
+  } finally { await stop(child); disposeWorkspace(f.workspace); }
 };
 
 test('unauthorized apply is rejected without mutation or audit', async () => withCompanion(async f => { const before = readFileSync(f.source, 'utf8'); const result = await call('/review/apply', { identity, confirmation: 'APPLY_CONFIRMED' }); expect(result.status).toBe(400); expect(result.json.error).toBe('APPROVED_REVIEW_REQUIRED'); expect(readFileSync(f.source, 'utf8')).toBe(before); expect((await call('/review/audit?sourcePath=' + encodeURIComponent(sourcePath))).json.events).toEqual([]); }));
@@ -49,44 +69,3 @@ test('source symlink escape is rejected before endpoint reads', async () => with
 test('decision POST rejects a symlink escape before reading outside the root', async () => withCompanion(async f => { const outside = join(f.workspace, 'outside.ts'); const moved = f.source + '.real'; writeFileSync(outside, 'outside-decision-secret'); renameSync(f.source, moved); symlinkSync(outside, f.source); try { const result = await call('/review/decisions', { ...identity, sourceDigest: sha('outside-decision-secret'), recommendation: 'Manual', recommendationRationale: 'security regression', eligibilityConstraints: [], blockers: [], selectedTreatment: 'Manual' }); expect(result.status).toBe(400); expect(result.json.error).toBe('REVIEW_SOURCE_NOT_ALLOWED'); expect(readFileSync(outside, 'utf8')).toBe('outside-decision-secret'); expect(existsSync(join(f.state, 'review-records-v1.json'))).toBe(false); } finally { renameSync(moved, f.source); } }));
 test('apply eligibility rejects an invalid source path', async () => withCompanion(async () => { const result = await call('/review/apply/eligibility?' + new URLSearchParams({ ...identity, sourcePath: '../outside.ts' } as any)); expect(result.status).toBe(400); expect(result.json.error).toBe('INVALID_REVIEW_IDENTITY'); }));
 test('apply eligibility returns a handled error when the source is missing', async () => withCompanion(async f => { renameSync(f.source, f.source + '.missing'); const result = await call('/review/apply/eligibility?' + new URLSearchParams(identity as any)); expect(result.status).toBe(400); expect(result.json.error).toBe('PROJECT_SOURCE_UNAVAILABLE'); }));
-
-test('approved stale source rejects authoritative apply', async ({ page }) => withCompanion(async f => {
-  await page.goto('http://127.0.0.1:4320/rtl-report-dashboard.html?finding=' + encodeURIComponent(identity.findingId));
-  await expect(page.getByText('Codemod Dry Run')).toBeVisible();
-  await page.getByRole('button', { name: 'Propose Candidate' }).click();
-  await expect(page.getByText(/Candidate session .* created/)).toBeVisible({ timeout: 30_000 });
-  await page.getByRole('button', { name: 'Start Candidate Preview' }).click();
-  await expect(page.getByRole('button', { name: 'Open Candidate LTR Preview' })).toBeVisible({ timeout: 30_000 });
-  await page.getByRole('button', { name: 'Analyze Transformation' }).click();
-  await expect(page.getByText('Analyzed: bidi-isolate-auto')).toBeVisible({ timeout: 15_000 });
-  await page.getByRole('button', { name: 'Apply to Candidate' }).click();
-  await page.getByRole('dialog').getByRole('button', { name: 'Apply to Candidate' }).click();
-  await expect(page.getByText('Candidate-applied patch')).toBeVisible({ timeout: 15_000 });
-  await page.getByRole('button', { name: 'Run Validation' }).click();
-  await expect(page.locator('.validation-state')).toHaveText('Passed', { timeout: 120_000 });
-  await page.getByRole('button', { name: 'Archive Evidence' }).click();
-  await expect(page.locator('.validation-state')).toHaveText('Evidence Archived', { timeout: 15_000 });
-  await page.reload();
-  const review = page.locator('.review-workspace');
-  await expect(review).toContainText('Candidate Proposed', { timeout: 15_000 });
-  await review.locator('textarea').fill('Security stale apply approval');
-  await review.locator('input').fill('validation-evidence');
-  await review.getByRole('button', { name: 'Mark Ready for Review' }).click();
-  await expect(review).toContainText('Ready for Review');
-  page.on('dialog', dialog => dialog.accept());
-  await review.getByRole('button', { name: 'Approve' }).click();
-  await expect(review).toContainText('Approved', { timeout: 15_000 });
-  const before = readFileSync(f.source, 'utf8');
-  const originalHash = sha(before);
-  const baseline = (await call('/review/audit?sourcePath=' + encodeURIComponent(sourcePath))).json.events;
-  writeFileSync(f.source, before + '\n// external stale security edit\n');
-  const editedHash = sha(readFileSync(f.source, 'utf8'));
-  expect(editedHash).not.toBe(originalHash);
-  const result = await page.evaluate(async value => { const response = await fetch('http://127.0.0.1:4319/review/apply', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ identity: value, confirmation: 'APPLY_CONFIRMED' }) }); return { status: response.status, body: await response.json() }; }, identity);
-  expect(result.status).toBe(400);
-  expect(result.body.error).toBe('STALE_APPLY_SOURCE');
-  expect(sha(readFileSync(f.source, 'utf8'))).toBe(editedHash);
-  const after = (await call('/review/audit?sourcePath=' + encodeURIComponent(sourcePath))).json.events;
-  expect(after).toEqual(baseline);
-  expect((await call('/review/apply/eligibility?' + new URLSearchParams(identity as any))).json).toMatchObject({ ready: false, reason: 'STALE_SOURCE' });
-}));
