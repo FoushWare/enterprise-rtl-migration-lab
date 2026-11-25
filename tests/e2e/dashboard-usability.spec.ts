@@ -22,7 +22,7 @@ test('persisted approval, review navigation, information exclusion and readable 
  await page.waitForFunction(()=>typeof (window as any).rtlDashboardVisibleFindings==='function');
  expect(JSON.parse(await page.locator('#rtl-dashboard-data').textContent()||'{}').inputDigest).toBe(report.inputDigest);
  expect(sourceResponses).toContainEqual({url:expect.stringContaining('inputDigest='+report.inputDigest),status:200});
- const health=await request.get(origin+'/health').then(r=>r.json());expect(health.projectRoot).toBe(env.project);expect(health.applicationOrigin).toBe('http://127.0.0.1:'+env.appPort);
+ const health=await request.get(origin+'/health').then(r=>r.json());expect(health.projectRootDigest).toBe((await import('node:crypto')).createHash('sha256').update(env.project).digest('hex'));expect(health.applicationOrigin).toBe('http://127.0.0.1:'+env.appPort);
  await enterReview(page);await expect.poll(async()=>!!(await active())?.id).toBe(true);await page.waitForLoadState('networkidle');
  const priorId=(await active()).id;await page.getByRole('button',{name:'Review actions',exact:true}).click();await page.getByRole('menuitem',{name:'Start new review',exact:true}).click();await expect.poll(async()=>{const w=await active();return w.id!==priorId&&!!w.session?.runtime&&w.entries.find((e:any)=>e.finding.id===f.id)?.applied}).toBe(true);await ready();
  const original=readFileSync(join(env.project,'src/reading.css'),'utf8'),initial=await active();

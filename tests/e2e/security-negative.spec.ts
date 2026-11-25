@@ -45,7 +45,7 @@ const withCompanion = async (run: (f: ReturnType<typeof fixture>) => Promise<voi
     let ready = false;
     for (let i = 0; i < 100; i++) {
       if (child.exitCode !== null) throw new Error('OWNED_COMPANION_EXITED');
-      try { const health = await call('/health'); if (health.status === 200 && health.json.projectRoot === realpathSync(f.root)) { ready = true; break; } } catch {}
+      try { const health = await call('/health'); if (health.status === 200 && health.json.projectRootDigest === createHash('sha256').update(realpathSync(f.root)).digest('hex')) { ready = true; break; } } catch {}
       await new Promise(r => setTimeout(r, 50));
     }
     if (!ready) throw new Error('OWNED_COMPANION_IDENTITY_UNAVAILABLE');

@@ -79,7 +79,7 @@ try{
  const previewLaunch=binaryInvocation(project,'rtl-analyzer',previewEntry[0],previewEntry.slice(1));children.push(spawn(previewLaunch.file,previewLaunch.args,{cwd:project,env,stdio:['ignore','pipe','pipe']}));staticReports=await startStaticReportServer({directory:reports,port:4320});
  for(const [i,c] of children.entries())for(const stream of [c.stdout,c.stderr])stream.on('data',b=>writeFileSync(join(workspace,`service-${i}.log`),b,{flag:'a'}));
  for(const url of ['http://127.0.0.1:4318/health','http://127.0.0.1:4320/rtl-report-dashboard.html']){let ready=false;for(let i=0;i<100;i++){try{if((await fetch(url)).ok){ready=true;break}}catch{}await new Promise(r=>setTimeout(r,100))}assert.ok(ready,url)}
- assert.equal((await fetch('http://127.0.0.1:4318/health').then(r=>r.json())).projectRoot,project);
+ assert.equal((await fetch('http://127.0.0.1:4318/health').then(r=>r.json())).projectRootDigest,createHash('sha256').update(project).digest('hex'));
  for(const path of ['/review/manual-changes','/review/rescan','/review/workflows'])for(const origin of ['http://untrusted.invalid',undefined]){
   const response=await fetch('http://127.0.0.1:4318'+path,{method:'POST',headers:{'content-type':'application/json',...(origin?{Origin:origin}:{})},body:'{malformed'});
   assert.equal(response.status,403);assert.equal((await response.json()).error,'ORIGIN_NOT_ALLOWED');

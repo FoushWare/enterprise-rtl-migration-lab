@@ -13,7 +13,7 @@ test('manual-review findings keep both panes and a supported finding previews be
  const find=(selector:string)=>{const f=report.findings.find((x:any)=>typeof x.context==='string'&&x.context.endsWith('/'+selector)&&x.path==='src/lab.css');if(!f)throw Error('FINDING_NOT_FOUND '+selector);return f};
  const before=projectDigest(env.project),errors:string[]=[];
  page.on('pageerror',e=>errors.push(e.message));
- const health=await request.get(origin+'/health').then(r=>r.json());expect(health.projectRoot).toBe(env.project);
+ const health=await request.get(origin+'/health').then(r=>r.json());expect(health.projectRootDigest).toBe((await import('node:crypto')).createHash('sha256').update(env.project).digest('hex'));
  const accepted=async()=>{const r=await request.get(origin+'/review/workflows?'+new URLSearchParams({inputDigest:report.inputDigest,policyDigest:report.policyDigest,mode:'one-by-one'})).then(r=>r.json());return (r.workflow?.entries||[]).filter((e:any)=>e.decision==='Accepted').length};
  const visible=(l:ReturnType<Page['locator']>)=>expect(l).toBeVisible();
  const open=async(f:any)=>{await page.goto('?finding='+encodeURIComponent(f.id),{waitUntil:'domcontentloaded'});await page.waitForFunction(()=>typeof (window as any).rtlDashboardVisibleFindings==='function');await enterReview(page);await expect(page.locator('.component-before .embedded-state')).toHaveAttribute('data-context-status','verified',{timeout:30000})};
