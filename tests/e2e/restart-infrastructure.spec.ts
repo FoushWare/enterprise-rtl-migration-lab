@@ -5,6 +5,10 @@ import { join } from 'node:path';
 import { spawn, type ChildProcess } from 'node:child_process';
 import { request as httpRequest } from 'node:http';
 import { expect, test } from '@playwright/test';
+import { disposeWorkspace, stopOwnedCompanion } from './owned-companion.js';
+
+const createdWorkspaces: string[] = [];
+test.afterEach(() => { for (const dir of createdWorkspaces.splice(0)) disposeWorkspace(dir); });
 
 const companionPort = 4319;
 const fixtureSource = (testInfo: { config: { metadata?: Record<string, unknown> } }) => { const root = testInfo.config.metadata?.portableFixtureRoot; if (typeof root !== 'string' || !root) throw new Error('PORTABLE_FIXTURE_UNAVAILABLE'); return root; };
@@ -31,7 +35,7 @@ async function waitForHealth(): Promise<any> {
 }
 
 function startCompanion(root: string, state: string): ChildProcess {
-  return spawn(process.execPath, ['dist/tools/rtl-scanner/preview-companion.js'], {
+  const child = spawn(process.execPath, ['dist/tools/rtl-scanner/preview-companion.js'], {
     cwd: process.cwd(),
     env: {
       ...process.env,
@@ -43,20 +47,22 @@ function startCompanion(root: string, state: string): ChildProcess {
       RTL_SCAN_MANIFEST_STORE_PATH: join(state, 'scan-manifests-v1.json'),
       RTL_AUDIT_STORE_PATH: join(state, 'apply-audit-v1.json'),
       RTL_APPLY_BACKUP_ROOT: join(state, 'backups'),
+      RTL_PREVIEW_OWNER_PID: String(process.pid),
     },
     stdio: ['ignore', 'pipe', 'pipe'],
   });
+  child.stdout?.resume();
+  child.stderr?.resume();
+  return child;
 }
 
 async function stopOwned(child: ChildProcess): Promise<void> {
-  if (child.exitCode !== null) return;
-  const exited = new Promise<void>(resolve => child.once('exit', () => resolve()));
-  child.kill('SIGTERM');
-  await Promise.race([exited, new Promise((_, reject) => setTimeout(() => reject(new Error('COMPANION_SHUTDOWN_TIMEOUT')), 10_000))]);
+  await stopOwnedCompanion(child);
 }
 
 test('restart infrastructure reconnects the same owned companion', async ({ page }, testInfo) => {
   const workspace = mkdtempSync(join(tmpdir(), 'rtl-restart-'));
+  createdWorkspaces.push(workspace);
   const root = join(workspace, 'project');
   const state = join(workspace, 'state');
   mkdirSync(state, { recursive: true });
