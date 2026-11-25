@@ -1,0 +1,99 @@
+name: Companion startup diagnostics (diagnostic only)
+# Runs the original apply-rollback -> Phase 5 sequence with opt-in companion startup diagnostics. Triggered only by pushes to
+# diagnostics/** and manual dispatch, so it does not change the PR checks. Diagnostics never change behaviour.
+on:
+  push:
+    branches:
+      - 'diagnostics/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  phase5-startup:
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npx playwright install chromium
+
+      - name: Environment
+        run: |
+          mkdir -p diagnostics
+          {
+            date -u
+            uname -a
+            node -v
+            sw_vers || true
+            sysctl -n hw.ncpu hw.memsize || true
+            df -h . || true
+            uptime || true
+          } > diagnostics/environment.txt 2>&1
+
+      - name: Runner load sampler (starts before the sequence)
+        run: |
+          mkdir -p diagnostics
+          ( while true; do date -u +%FT%T.%3NZ; uptime; sleep 1; done ) > diagnostics/load.log 2>&1 &
+          echo $! > diagnostics/load-sampler.pid
+          sleep 2
+
+      - name: Verify order 1 - regression (apply-rollback, Phase 5, manual regression)
+        env:
+          RTL_PHASE5_DIAGNOSTICS: '1'
+          DEBUG: pw:webserver
+        run: |
+          set -o pipefail
+          npm run test:e2e:regression 2>&1 | tee diagnostics/regression.log
+
+      - name: Verify order 2 - workflow lifecycle
+        env:
+          DEBUG: pw:webserver
+        run: |
+          set -o pipefail
+          npm run test:e2e:workflow-lifecycle 2>&1 | tee diagnostics/workflow-lifecycle.log
+
+      - name: Verify order 3 - Node lifecycle and runtime reuse
+        run: |
+          set -o pipefail
+          node --test tests/e2e/workflow-lifecycle.e2e.mjs 2>&1 | tee diagnostics/node-lifecycle.log
+          node tests/e2e/runtime-reuse-equivalence.mjs 2>&1 | tee diagnostics/runtime-reuse.log
+
+      - name: Port and process state (always)
+        if: always()
+        run: |
+          {
+            date -u
+            echo "--- listeners on 4200, 4318, 4319, 4320"
+            lsof -nP -iTCP:4200 -iTCP:4318 -iTCP:4319 -iTCP:4320 -sTCP:LISTEN || echo "no listeners"
+            echo "--- processes"
+            ps -axo pid,ppid,lstart,etime,%cpu,%mem,command | grep -E 'preview-companion|vite|http.server|serve-dashboard|playwright' | grep -v grep || echo "none"
+          } > diagnostics/ports-and-processes.txt 2>&1
+          if [ -f diagnostics/load-sampler.pid ]; then kill "$(cat diagnostics/load-sampler.pid)" 2>/dev/null || true; fi
+
+      - name: Resource state after a failure
+        if: failure()
+        run: |
+          {
+            date -u
+            vm_stat || true
+            uptime || true
+            df -h || true
+          } > diagnostics/failure-state.txt 2>&1
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: companion-startup-diagnostics
+          path: |
+            diagnostics/
+            playwright-report/
+            test-results/
+          if-no-files-found: warn
+          retention-days: 14
