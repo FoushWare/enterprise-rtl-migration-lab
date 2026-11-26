@@ -9,7 +9,7 @@
 import { spawn } from 'node:child_process';
 import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:net';
-import { tmpdir } from 'node:os';
+import { tmpdir, userInfo } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
@@ -93,12 +93,20 @@ async function runMode(kind, reuse, browser) {
   const port = await freePort();
   const companion = startCompanion({ ...variant, port, reuse });
   const origin = `http://127.0.0.1:${port}`;
+  // The companion authorizes every route except health: mint this run's session from its owner-only bootstrap file.
+  let session;
   const post = async (path, body) => {
-    const response = await fetch(origin + path, { method: 'POST', headers: { 'content-type': 'application/json', origin: 'http://127.0.0.1:4320' }, body: JSON.stringify(body) });
+    const response = await fetch(origin + path, { method: 'POST', headers: { 'content-type': 'application/json', origin: 'http://127.0.0.1:4320', 'x-rtl-companion-session': session }, body: JSON.stringify(body) });
     return { status: response.status, json: await response.json().catch(() => ({})) };
   };
   try {
     for (let i = 0; i < 150; i++) { try { if ((await fetch(origin + '/health')).ok) break; } catch { /* not listening yet */ } await new Promise(r => setTimeout(r, 100)); }
+    {
+      const bootstrap = JSON.parse(readFileSync(join(tmpdir(), 'rtl-analyzer-auth-' + userInfo().uid, `companion-${port}.json`), 'utf8')).bootstrap;
+      const issued = await fetch(origin + '/auth/session', { method: 'POST', headers: { 'x-rtl-companion-bootstrap': bootstrap } });
+      if (issued.status !== 201) throw new Error(`SESSION_MINT_FAILED ${issued.status}`);
+      session = (await issued.json()).token;
+    }
     const report = await scan(variant.project);
     const extension = kind === 'jsx' ? 'jsx' : 'tsx';
     const bidi = report.findings
