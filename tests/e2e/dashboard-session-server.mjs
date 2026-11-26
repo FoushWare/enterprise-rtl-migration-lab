@@ -4,11 +4,11 @@
 //
 // Ownership: the harness supervisor passes its PID in RTL_HARNESS_OWNER_PID. This process exits when that supervisor is
 // gone, including after SIGKILL, so the dashboard never outlives the run that started it.
-import { join, resolve } from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { join } from 'node:path';
+import { pathToFileURL } from 'node:url';
+import { resolveScannerRuntime } from './runtime-path.mjs';
 
-const repo = resolve(fileURLToPath(new URL('../..', import.meta.url)));
-const runtime = process.env.RTL_E2E_RUNTIME ?? join(repo, '..', 'dist', 'tools', 'rtl-scanner');
+const runtime = resolveScannerRuntime();
 const { DashboardSession } = await import(pathToFileURL(join(runtime, 'dashboard-session.js')).href);
 const { readCompanionBootstrap } = await import(pathToFileURL(join(runtime, 'companion-auth.js')).href);
 
