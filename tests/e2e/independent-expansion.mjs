@@ -1,4 +1,5 @@
 // Standalone disposable Nx-shaped scanner target. No Atlas source, routes, providers or fixtures.
+import {createHash} from 'node:crypto';
 import {spawn,execFileSync} from 'node:child_process';
 import {mkdtempSync,realpathSync,mkdirSync,writeFileSync,readFileSync,symlinkSync,rmSync} from 'node:fs';
 import {join,resolve} from 'node:path';
@@ -26,6 +27,6 @@ async function stop(){if(stopping)return;stopping=true;for(const c of [tests,...
 process.on('SIGTERM',()=>void stop());process.on('SIGINT',()=>void stop());
 try{
  for(const url of ['http://127.0.0.1:4318/health','http://127.0.0.1:4320/rtl-report-dashboard.html','http://127.0.0.1:4200/']){let ready=false;for(let i=0;i<100;i++){try{const r=await fetch(url);if(r.ok){ready=true;break}}catch{}await new Promise(r=>setTimeout(r,100))}if(!ready)throw Error('Service unavailable '+url)}
- const health=await fetch('http://127.0.0.1:4318/health').then(r=>r.json());if(health.projectRoot!==project)throw Error('DISPOSABLE_COMPANION_ROOT_MISMATCH');
+ const health=await fetch('http://127.0.0.1:4318/health').then(r=>r.json());if(health.projectRootDigest!==createHash('sha256').update(project).digest('hex'))throw Error('DISPOSABLE_COMPANION_ROOT_MISMATCH');
  const output=resolve('test-results/independent-expansion-'+new Date().toISOString().replaceAll(':','-'));tests=spawn(process.execPath,['node_modules/@playwright/test/cli.js','test','--config=playwright.manual-preview.config.ts','tests/e2e/independent-expansion.spec.ts','--output='+output],{env:{...process.env,RTL_MANUAL_ENVIRONMENT:environment},stdio:'inherit'});process.exitCode=await new Promise(r=>tests.once('exit',code=>r(code??1)));console.log('INDEPENDENT_EVIDENCE',output);
 }finally{await stop()}

@@ -1,6 +1,7 @@
 import {enterReview} from './enter-review';
-import { test, expect } from '@playwright/test';
+import { test, expect } from './companion-test';
 import { readFileSync, writeFileSync, chmodSync, statSync } from 'node:fs';
+import { tmpdir, userInfo } from 'node:os';
 import { dirname, join } from 'node:path';
 import { createServer } from 'node:http';
 import { createHash } from 'node:crypto';
@@ -9,13 +10,16 @@ const origin='http://127.0.0.1:4318';
 const invoice='apps/invoicing/src/components/InvoiceTable.tsx',tokens='apps/invoicing/src/components/ReviewTokens.tsx';
 const sha=(s:string)=>createHash('sha256').update(s).digest('hex');
 test.describe.configure({mode:'serial'});
-for(const mode of ['one-by-one','apply-first'] as const)test(mode+' completes actual UI review, validation, accepted source application and protected rollback',async({page,request},info)=>{
+for(const mode of ['apply-first','one-by-one'] as const)test(mode+' completes actual UI review, validation, accepted source application and protected rollback',async({page,request},info)=>{
   test.setTimeout(240_000);
   const root=info.config.metadata.portableFixtureRoot as string;
   if(!root?.includes('rtl-analyzer-e2e-'))throw Error('DISPOSABLE_TARGET_REQUIRED');
   const env=JSON.parse(readFileSync(process.env.RTL_MANUAL_ENVIRONMENT!,'utf8'));
   const report=JSON.parse(readFileSync(join(env.dashboard,'rtl-report.json'),'utf8'));
-  const snapshot=()=>request.get(origin+'/review/workflows?'+new URLSearchParams({inputDigest:report.inputDigest,policyDigest:report.policyDigest,mode})).then(r=>r.json()).then(r=>r.workflow);
+  // The companion's sessions are in memory: a restart revokes the session that the request context was configured with. After a restart, mint a live session from the owner-only bootstrap file.
+  let liveSession:string|null=null;
+  const mintLiveSession=async()=>{const bootstrap=JSON.parse(readFileSync(join(tmpdir(),'rtl-analyzer-auth-'+userInfo().uid,'companion-4318.json'),'utf8')).bootstrap;const response=await fetch(origin+'/auth/session',{method:'POST',headers:{'x-rtl-companion-bootstrap':bootstrap}});if(response.status!==201)throw Error('live session mint failed: '+response.status);liveSession=((await response.json()) as {token:string}).token};
+  const snapshot=()=>{const url=origin+'/review/workflows?'+new URLSearchParams({inputDigest:report.inputDigest,policyDigest:report.policyDigest,mode});return (liveSession?fetch(url,{headers:{'x-rtl-companion-session':liveSession}}).then(r=>r.json()):request.get(url).then(r=>r.json())).then(r=>r.workflow)};
   const before=Object.fromEntries([invoice,tokens].map(p=>[p,readFileSync(join(root,p),'utf8')]));
   const network:any[]=[],errors:string[]=[];
   page.on('request',r=>{if(r.url().includes('/review/workflows')&&r.method()==='POST')network.push({url:r.url(),body:r.postDataJSON()})});
@@ -46,17 +50,24 @@ for(const mode of ['one-by-one','apply-first'] as const)test(mode+' completes ac
     await expect(page.locator('.session-identity')).toHaveAttribute('title',mode==='one-by-one'?'One by one review':'Prepare all, then review');
     let w=await snapshot();const id=w.id;
     expect(w.inputDigest).toBe(report.inputDigest);expect(w.policyDigest).toBe(report.policyDigest);expect(w.root).toBe(root);
-    const eligible=w.entries.filter((e:any)=>e.patch);
+    const eligible=w.entries.filter((e:{patch?:unknown;batch?:{state?:string}})=>e.patch&&e.batch?.state==='ready');
     if(mode==='one-by-one'){expect(w.session).toBeUndefined();expect(eligible.every((e:any)=>!e.applied)).toBe(true)}
     else {expect(w.session).toBeTruthy();expect(eligible.every((e:any)=>e.applied&&e.decision==='Pending')).toBe(true);for(const f of w.files)expect(readFileSync(join(w.session.candidateRoot,f.path),'utf8')).toBe(f.after)}
     expect(w.entries.filter((e:any)=>!e.patch).every((e:any)=>!e.applied&&e.reason)).toBe(true);
     expect(readFileSync(join(root,invoice),'utf8')).toBe(before[invoice]);
     await expect(page.locator('.component-before .embedded-state')).toHaveAttribute('data-state','ready',{timeout:25_000});
-    await expect(page.locator('.component-after .embedded-state')).toContainText('SIMULATED_PREPARATION_FAILURE');
-    const retrySession=(await snapshot()).session?.id;await page.getByRole('button',{name:'Retry preview',exact:true}).click();
-    await expect.poll(async()=>(await snapshot()).session?.runtime?.status).toBe('healthy');
-    if(retrySession)expect((await snapshot()).session.id).toBe(retrySession);
-    expect(network.filter(e=>e.url.endsWith('/prepare-preview')&&e.body.findingId===a.id)).toHaveLength(2);
+    // The single-finding preview failure is injected on prepare-preview. Apply First prepares its previews in one batch
+    // (prepare-batch), so the injected failure applies to one-by-one only; apply-first asserts the batch-prepared preview.
+    if(mode==='one-by-one'){
+      // Unrelated error codes are shown as a generic failure: the code is internal, and it is not a startup timeout.
+      await expect(page.locator('.component-after .embedded-state')).toContainText('the modified preview could not be prepared');
+      await expect(page.locator('.component-after .embedded-state')).not.toContainText('SIMULATED_PREPARATION_FAILURE');
+      await expect(page.locator('.component-after .embedded-state')).not.toContainText('did not start in time');
+      const retrySession=(await snapshot()).session?.id;await page.getByRole('button',{name:'Retry preview',exact:true}).click();
+      await expect.poll(async()=>(await snapshot()).session?.runtime?.status).toBe('healthy');
+      if(retrySession)expect((await snapshot()).session.id).toBe(retrySession);
+      expect(network.filter(e=>e.url.endsWith('/prepare-preview')&&e.body.findingId===a.id)).toHaveLength(2);
+    }
     expect(network.filter(e=>e.body.action==='apply'&&e.body.findingId===a.id)).toHaveLength(0);
     await expect(page.locator('.component-after .embedded-state')).toHaveAttribute('data-state','ready',{timeout:30_000});
     const beforeFrame=page.frameLocator('iframe[title="Before: original application route"]'),afterFrame=page.frameLocator('iframe[title="After: isolated candidate application route"]');
@@ -65,7 +76,9 @@ for(const mode of ['one-by-one','apply-first'] as const)test(mode+' completes ac
     w=await snapshot();expect(w.session.runtime.port).not.toBe(4202);
     expect(await request.get(w.session.runtime.origin+'/__rtl_preview_identity').then(r=>r.json())).toMatchObject({projectRoot:w.session.candidateRoot,sessionId:w.session.id,sourceSha256:w.session.candidateSha256});
     expect(await request.get('http://127.0.0.1:4200/__rtl_preview_identity').then(r=>r.json())).toMatchObject({projectRoot:root,role:'original'});
-    const candidateId=w.session.id,candidateRoot=w.session.candidateRoot;
+    const candidateId=w.session.id;
+// The candidate is a disposable cache: companion shutdown removes it and the next resume rebuilds it at a new path.
+let candidateRoot=w.session.candidateRoot;
     await page.getByRole('button',{name:'Retry context',exact:true}).click();await expect(page.locator('.component-after .embedded-state')).toHaveAttribute('data-preparation-state','ready',{timeout:30000});
     await expect.poll(async()=>(await snapshot()).session.id).toBe(candidateId);
     expect((await request.get('http://127.0.0.1:4202/')).ok()).toBe(true);
@@ -82,37 +95,82 @@ for(const mode of ['one-by-one','apply-first'] as const)test(mode+' completes ac
     await decide(c,'Approve fix','Accepted');
     await decide(d,'Defer','Deferred');
     await decide(unsupported,'Needs review','Flagged');
-    await expect(page.locator('.after-card pre')).toContainText('No supported automatic fix');await expect(page.locator('.component-before iframe')).toHaveCount(1);await expect(page.locator('.component-helper')).toContainText('No automatic fix');
+    await expect(page.locator('.after-card pre')).toContainText('Manual review required. No supported candidate patch exists for this finding.');// Unbound finding: no exact source-to-element binding, so neither original nor candidate preview is rendered (no built-in mapping).
+await expect(page.locator('.component-before iframe')).toHaveCount(0);await expect(page.locator('.component-helper')).toContainText('No configured source binding');
     await page.reload({waitUntil:'domcontentloaded'});await enterReview(page,mode);await expect(page.locator('.workflow-summary')).toContainText('2 accepted');
     expect((await snapshot()).id).toBe(id);expect((await snapshot()).entries.find((e:any)=>e.finding.id===b.id).decision).toBe('Rejected');
     // Actual Companion outage and restart, no test-only route stubs for the service.
     process.kill(env.supervisorPid,'SIGUSR1');await expect.poll(async()=>request.get(origin+'/health').then(r=>r.ok()).catch(()=>false)).toBe(false);
-    await page.getByRole('button',{name:'Validate changes',exact:true}).click();await expect(page.locator('.analysis-status')).toContainText('COMPANION_UNAVAILABLE');
+    await page.getByRole('button',{name:'Validate changes',exact:true}).click();await expect(page.locator('dialog.review-operation')).toContainText('COMPANION_UNAVAILABLE');
     process.kill(env.supervisorPid,'SIGUSR2');await expect.poll(async()=>request.get(origin+'/health',{timeout:1000}).then(r=>r.ok()).catch(()=>false),{timeout:15_000}).toBe(true);
-    await page.getByRole('button',{name:'Retry connection',exact:true}).click();await expect(page.locator('.workflow-summary')).toContainText('2 accepted');expect((await snapshot()).session.id).toBe(candidateId);
+    await mintLiveSession();
+    await page.getByRole('button',{name:'Check operation status',exact:true}).click();
+    // The server has no record of the validation that the outage interrupted, so it did not run. Reconciliation reports that and
+    // leaves the review state to the user: dismiss the result and validate again.
+    await expect(page.getByRole('heading',{name:'Validation did not pass'})).toBeVisible();await expect(page.getByRole('dialog').getByText('VALIDATION_NOT_RECORDED')).toBeVisible();await page.getByRole('button',{name:'Back to review',exact:true}).click();await expect(page.locator('.workflow-summary')).toContainText('2 accepted');expect((await snapshot()).session.id).toBe(candidateId);
     // Original-source conflict must surface in the real UI, without losing decisions.
     writeFileSync(join(root,invoice),before[invoice]+'\n// concurrent user edit\n');
-    await page.getByRole('button',{name:'Validate changes',exact:true}).click();await expect(page.locator('.analysis-status')).toContainText('STALE_ORIGINAL_SOURCE');expect(readFileSync(join(root,invoice),'utf8')).toContain('concurrent user edit');writeFileSync(join(root,invoice),before[invoice]);
-    const candidateBeforeConflict=readFileSync(join(candidateRoot,invoice),'utf8');writeFileSync(join(candidateRoot,invoice),candidateBeforeConflict+'// candidate tamper');
-    await page.getByRole('button',{name:'Validate changes',exact:true}).click();await expect(page.locator('.analysis-status')).toContainText('STALE_CANDIDATE_SOURCE');writeFileSync(join(candidateRoot,invoice),candidateBeforeConflict);
+    await page.getByRole('button',{name:'Validate changes',exact:true}).click();await expect(page.getByRole('dialog').getByText('STALE_ORIGINAL_SOURCE')).toBeVisible();await page.getByRole('button',{name:'Back to review',exact:true}).click();expect(readFileSync(join(root,invoice),'utf8')).toContain('concurrent user edit');writeFileSync(join(root,invoice),before[invoice]);
+    // Validation after the original is restored rebuilds the disposable candidate; read its new root only after that.
+    const preValidationAt=(await snapshot()).validation?.at;
     await page.getByRole('button',{name:'Validate changes',exact:true}).click();
-    await expect(page.locator('.workflow-validation')).toContainText('Validation: Passed',{timeout:180_000});
+    // Wait for the recorded validation of the rebuilt candidate, then dismiss its result.
+    await expect.poll(async()=>{const v=(await snapshot()).validation;return v?.at&&v.at!==preValidationAt?v.state:undefined;},{timeout:180_000}).toMatch(/^(Passed|Failed|Blocked|Unavailable)$/);
+    await page.getByRole('dialog').getByRole('button',{name:'Back to review',exact:true}).click();
+    candidateRoot=(await snapshot()).session.candidateRoot;
+    const candidateBeforeConflict=readFileSync(join(candidateRoot,invoice),'utf8');writeFileSync(join(candidateRoot,invoice),candidateBeforeConflict+'// candidate tamper');
+    // Once validation passed, the primary action is Apply: a tampered candidate must be refused there.
+    await page.getByRole('button',{name:/^Apply \d+ accepted changes? to source$/}).click();await page.getByRole('button',{name:'Apply to source',exact:true}).click();await expect(page.getByRole('dialog').getByText('STALE_CANDIDATE_SOURCE')).toBeVisible();await page.getByRole('button',{name:'Back to review',exact:true}).click();writeFileSync(join(candidateRoot,invoice),candidateBeforeConflict);
+    // Restoring the candidate bytes makes the earlier validation valid again; the eligible review keeps its Apply action.
+    // The disposable fixture removes its test script (no test files), so 'test' is Not configured. Product contract: Passed requires every configured project check to run; the honest status is Limited validation, which still allows Apply.
+    await expect(page.locator('.workflow-validation')).toContainText('Limited validation',{timeout:180_000});
+    // Cause and coverage, from the authoritative validation record: the only unavailable project check is the removed test script, and every available check passed.
+    { const presentation = (await snapshot()).validationPresentation; const projectChecks = (presentation.checks as { name: string; kind: string; state: string }[]).filter(c => c.kind === 'project');
+      expect(presentation.status).toBe('Limited validation');
+      expect(projectChecks.find(c => c.name === 'test')?.state).toBe('Not configured');
+      expect(projectChecks.filter(c => c.name !== 'test').map(c => [c.name, c.state])).toEqual([['typecheck', 'Passed'], ['build', 'Passed']]);
+      expect(presentation.explanation).toContain('Not configured: test'); }
     w=await snapshot();expect(w.validation.checks.filter((x:any)=>x.state==='Failed')).toHaveLength(0);
     await page.screenshot({path:info.outputPath('validated-dashboard.png'),fullPage:true});
     page.on('dialog',dialog=>dialog.accept());
-    await page.getByRole('button',{name:/^Apply \d+ accepted changes? to source$/}).click();await expect(page.locator('.workflow-summary')).toContainText('Applied');
-    w=await snapshot();expect(w.receipts).toHaveLength(2);
+    await mintLiveSession();const preApplyId=(await snapshot()).id;await page.getByRole('button',{name:/^Apply \d+ accepted changes? to source$/}).click();await page.getByRole('button',{name:'Apply to source',exact:true}).click();await expect.poll(async()=>{const h=await fetch(origin+'/review/workflows?history=1',{headers:{'x-rtl-companion-session':liveSession!}}).then(x=>x.json()) as {workflows:{id:string;state:string}[]};return h.workflows.find(x=>x.id===preApplyId)?.state;}).toBe('Applied');
+    w=await snapshot();expect(w.receipts).toHaveLength(2);const appliedId=w.id;
     for(const f of w.files)if(![invoice,tokens].includes(f.path))expect(readFileSync(join(root,f.path),'utf8')).toBe(f.before);
     // Receipts and final state survive service restart and dashboard reload before rollback.
     process.kill(env.supervisorPid,'SIGUSR1');await expect.poll(async()=>request.get(origin+'/health').then(r=>r.ok()).catch(()=>false)).toBe(false);process.kill(env.supervisorPid,'SIGUSR2');await expect.poll(async()=>request.get(origin+'/health',{timeout:1000}).then(r=>r.ok()).catch(()=>false),{timeout:15_000}).toBe(true);
-    await page.reload({waitUntil:'domcontentloaded'});await enterReview(page,mode);await expect(page.locator('.workflow-summary')).toContainText('Applied');
+    await mintLiveSession();
+    await page.reload({waitUntil:'domcontentloaded'});await enterReview(page,mode);
+    // Product contract: after Apply and the automatic rescan, reload shows the latest fresh review, never the applied review as current.
+    // The applied transaction stays in history, and rollback for it is reached from the overflow menu below.
+    await expect(page.locator('.workflow-summary')).toContainText('0 accepted',{timeout:30_000});
+    await expect(page.locator('.session-identity')).not.toContainText('Historical operation');
+    { const historyRes = await fetch(origin+'/review/workflows?history=1',{headers:{'x-rtl-companion-session':liveSession!}}); if (!historyRes.ok) throw new Error('HISTORY_READ '+historyRes.status+' '+(await historyRes.text()).slice(0,200)); const history = await Promise.resolve(historyRes.json()) as { workflows: { id: string; state: string; receipts?: unknown[] }[] }; const retained = history.workflows.find(x => x.id === appliedId); expect(retained, 'applied review retained in history').toBeTruthy(); expect(retained!.state).toBe('Applied'); expect(retained!.receipts?.length ?? 0).toBeGreaterThan(0); }
 
     for(const r of w.receipts){expect(sha(readFileSync(join(root,r.path),'utf8'))).toBe(r.appliedSha256);expect(sha(readFileSync(r.backupPath,'utf8'))).toBe(r.originalSha256)}
     expect(readFileSync(join(root,invoice),'utf8')).toContain('className="review-extra-id">{i.id}</span>');expect(readFileSync(join(root,tokens),'utf8')).toContain('className="token-two">{item.id}</span>');
     const applied=readFileSync(join(root,invoice),'utf8');writeFileSync(join(root,invoice),applied+'\n// later edit\n');
-    await page.locator('.session-overflow > button').click();await page.getByRole('menuitem',{name:'Rollback applied changes',exact:true}).click();await expect(page.locator('.analysis-status')).toContainText('ROLLBACK_CONFLICT');expect(readFileSync(join(root,invoice),'utf8')).toContain('later edit');
+    // A later user edit changes the original source. Product contract: the active review is the current source's review, and the applied
+    // transaction stays in history. Rollback remains reachable from history; the UI click is refused by the server and changes no byte.
+    if(mode==='one-by-one'){
+      await page.locator('.session-overflow > button').click();
+      await page.getByRole('menuitem',{name:'Rollback applied changes',exact:true}).click();
+      await expect.poll(async()=>(await fetch(origin+'/review/workflows?history=1',{headers:{'x-rtl-companion-session':liveSession!}}).then(x=>x.json()) as {workflows:{id:string;state:string}[]}).workflows.find(x=>x.id===appliedId)?.state).toBe('Applied');
+      expect(readFileSync(join(root,invoice),'utf8')).toContain('later edit');
+    }
+    // The server refuses the same rollback on the applied review's receipts, with the conflict code, and changes no byte.
+    const conflictRes = await fetch(origin+'/review/workflows/'+appliedId+'/rollback',{method:'POST',headers:{'content-type':'application/json','x-rtl-companion-session':liveSession!,origin:'http://127.0.0.1:4320'},body:JSON.stringify({confirmation:'ROLLBACK_CONFIRMED'})});
+    const conflictBody = await conflictRes.json() as { error?: string };
+    expect(conflictRes.status).toBeGreaterThanOrEqual(400);expect(String(conflictBody.error ?? '')).toContain('ROLLBACK_CONFLICT');
+    expect(readFileSync(join(root,invoice),'utf8')).toContain('later edit');
     const unrelated=report.files.find((p:string)=>p.endsWith('.tsx')&&![invoice,tokens].includes(p));const unrelatedBefore=readFileSync(join(root,unrelated),'utf8');writeFileSync(join(root,unrelated),unrelatedBefore+'\n// unrelated user edit\n');
-    writeFileSync(join(root,invoice),applied);await page.locator('.session-overflow > button').click();await page.getByRole('menuitem',{name:'Rollback applied changes',exact:true}).click();await expect(page.locator('.workflow-summary')).toContainText('Rolled Back');expect(readFileSync(join(root,unrelated),'utf8')).toContain('unrelated user edit');writeFileSync(join(root,unrelated),unrelatedBefore);
+    writeFileSync(join(root,invoice),applied);
+    // The identity block clears on a fresh load of the restored source; the rollback then targets the applied review.
+    await page.reload({waitUntil:'domcontentloaded'});
+    // The reload shows the fresh review entry for both modes (the applied transaction is history). Starting the mode's review exposes the review controls, whose overflow menu offers rollback from history.
+    await enterReview(page,mode);
+    await page.locator('.session-overflow > button').click();
+    await page.getByRole('menuitem',{name:'Rollback applied changes',exact:true}).click();await expect(page.locator('.workflow-summary')).toContainText('Rolled Back');
+    expect(readFileSync(join(root,unrelated),'utf8')).toContain('unrelated user edit');writeFileSync(join(root,unrelated),unrelatedBefore);
     for(const p of [invoice,tokens])expect(readFileSync(join(root,p),'utf8')).toBe(before[p]);
     expect(errors).toEqual([]);
     writeFileSync(info.outputPath('acceptance.json'),JSON.stringify({mode,workflow:w,network,errors,originalHashes:Object.fromEntries(Object.entries(before).map(([p,t])=>[p,sha(t)])),restoredHashes:Object.fromEntries([invoice,tokens].map(p=>[p,sha(readFileSync(join(root,p),'utf8'))]))},null,2));
@@ -140,7 +198,8 @@ test('unavailable runtime and failed configured checks stay distinct and block f
     await page.screenshot({path:info.outputPath('unavailable-check.png'),fullPage:true});
     await page.unroute('**/review/workflows/*/prepare-preview');
     await Promise.all(servers.splice(0).map(s=>new Promise<void>(resolve=>s.close(()=>resolve()))));
-    await page.getByRole('button',{name:'Validate changes',exact:true}).click();await expect(page.locator('.workflow-validation')).toContainText('Validation: Passed',{timeout:180_000});
+    await page.getByRole('button',{name:'Validate changes',exact:true}).click();// The disposable fixture removes its test script (no test files), so 'test' is Not configured. Product contract: Passed requires every configured project check to run; the honest status is Limited validation, which still allows Apply.
+    await expect(page.locator('.workflow-validation')).toContainText('Limited validation',{timeout:180_000});
     page.on('dialog',d=>d.accept());await page.getByRole('button',{name:/^Apply \d+ accepted changes? to source$/}).click();await expect(page.locator('.workflow-summary')).toContainText('Applied');await page.locator('.session-overflow > button').click();await page.getByRole('menuitem',{name:'Rollback applied changes',exact:true}).click();await expect(page.locator('.source-context-status')).toContainText('Automatic rescan complete');
     const failedPackage=JSON.parse(pkg);failedPackage.scripts.test='node --eval "process.exit(7)"';writeFileSync(pkgPath,JSON.stringify(failedPackage));
     await open();await page.getByRole('button',{name:'Validate changes',exact:true}).click();await expect(page.locator('.workflow-validation')).toContainText('Validation: Failed',{timeout:180_000});await page.getByRole('button',{name:'Session details',exact:true}).click();await page.getByRole('tab',{name:'Validation',exact:true}).click();await expect(page.getByRole('dialog',{name:'Session details'}).locator('.validation-check[data-status=Failed]').filter({has:page.getByText('test',{exact:true})})).toBeVisible();await page.keyboard.press('Escape');await expect(page.getByRole('button',{name:/^Apply \d+ accepted changes? to source$/})).toHaveCount(0);expect(readFileSync(join(root,invoice),'utf8')).toBe(original);
@@ -176,7 +235,7 @@ test('partial original-source write remains recoverable through scoped UI rollba
     await page.locator('button.file').filter({hasText:'App.tsx'}).filter({hasText:'App.tsx'}).click();
     await page.locator('button.finding').filter({hasText:second.path+':'+second.range.start.line+':'+second.range.start.column}).click();await page.getByRole('button',{name:'Approve fix',exact:true}).click();await page.getByRole('dialog',{name:'Proposed change approved'}).getByRole('button',{name:'Stay on this finding',exact:true}).click();await expect(page.locator('.workflow-summary')).toContainText('2 accepted');
     await page.getByRole('button',{name:'Validate changes',exact:true}).click();await expect(page.locator('.workflow-validation')).toContainText('Validation: Passed',{timeout:120_000});
-    chmodSync(directory,0o500);page.on('dialog',d=>d.accept());await page.getByRole('button',{name:/^Apply \d+ accepted changes? to source$/}).click();await expect(page.locator('.analysis-status')).toContainText('EACCES');await expect(page.locator('.decision-card .source-context-status')).toContainText('Source apply incomplete');
+    chmodSync(directory,0o500);page.on('dialog',d=>d.accept());await page.getByRole('button',{name:/^Apply \d+ accepted changes? to source$/}).click();await expect(page.getByRole('dialog').getByText('EACCES')).toBeVisible();await page.getByRole('button',{name:'Back to review',exact:true}).click();await expect(page.locator('.decision-card .source-context-status')).toContainText('Source apply incomplete');
     expect(readFileSync(join(root,invoice),'utf8')).not.toBe(before);expect(readFileSync(join(root,second.path),'utf8')).toBe(secondBefore);
     await page.screenshot({path:info.outputPath('partial-apply.png'),fullPage:true});
     chmodSync(directory,mode);

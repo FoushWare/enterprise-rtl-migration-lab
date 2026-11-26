@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
+import { tmpdir, userInfo } from 'node:os';
 import { createServer } from 'node:net';
 import { join } from 'node:path';
 
@@ -63,9 +63,20 @@ function startCompanion(port, { project, state }) {
   return { child, exited, origin: `http://127.0.0.1:${port}` };
 }
 
+// Session tokens live in the companion process. Each start (including a restart) mints one from that run's owner-only
+// bootstrap file, so authorization is re-established after every restart and stale tokens are never reused.
+const sessions = new Map();
+async function mintSession(origin) {
+  const port = new URL(origin).port;
+  const bootstrap = JSON.parse(readFileSync(join(tmpdir(), 'rtl-analyzer-auth-' + userInfo().uid, `companion-${port}.json`), 'utf8')).bootstrap;
+  const response = await fetch(origin + '/auth/session', { method: 'POST', headers: { 'x-rtl-companion-bootstrap': bootstrap } });
+  if (response.status !== 201) throw new Error('SESSION_MINT_FAILED ' + response.status);
+  sessions.set(origin, (await response.json()).token);
+}
+
 async function waitHealthy(origin) {
   for (let i = 0; i < 150; i++) {
-    try { if ((await fetch(origin + '/health')).ok) return; } catch { /* not listening yet */ }
+    try { if ((await fetch(origin + '/health')).ok) { await mintSession(origin); return; } } catch { /* not listening yet */ }
     await new Promise((resolve) => setTimeout(resolve, 100));
   }
   throw new Error('COMPANION_NOT_READY');
@@ -74,7 +85,7 @@ async function waitHealthy(origin) {
 async function call(origin, method, path, body) {
   const response = await fetch(origin + path, {
     method,
-    headers: { 'content-type': 'application/json', origin: dashboardOrigin },
+    headers: { 'content-type': 'application/json', origin: dashboardOrigin, ...(sessions.has(origin) ? { 'x-rtl-companion-session': sessions.get(origin) } : {}) },
     body: body === undefined ? undefined : JSON.stringify(body),
   });
   const text = await response.text();
@@ -198,5 +209,13 @@ test('an approved change whose source changed after validation cannot be applied
   assert.equal(refused.status, 409, JSON.stringify(refused.json));
   assert.notEqual(refused.json.error, undefined);
   assert.equal(sha256(sourceFile), editedSha256, 'a stale apply must not write the source');
+  // The stale state survives a companion restart: the restarted companion still refuses the apply and writes nothing.
   await stopCompanion(companion);
+  const restarted = startCompanion(port, { project, state });
+  t.after(async () => { if (restarted.child.exitCode === null) restarted.child.kill('SIGKILL'); });
+  await waitHealthy(restarted.origin);
+  const afterRestart = await call(restarted.origin, 'POST', `/review/workflows/${workflow.id}/apply`, { confirmation: 'APPLY_CONFIRMED' });
+  assert.equal(afterRestart.status, 409, JSON.stringify(afterRestart.json));
+  assert.equal(sha256(sourceFile), editedSha256, 'a restarted companion must not write the stale source');
+  await stopCompanion(restarted);
 });

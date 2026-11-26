@@ -5,7 +5,7 @@ import { dirname, join } from 'node:path';
 import { createHash } from 'node:crypto';
 import { tmpdir } from 'node:os';
 import { createServer } from 'node:net';
-import { dashboard as baselineDashboard, project, repo, state } from './portable-fixture.mjs';
+import { RUNTIME_DIR, dashboard as baselineDashboard, project, repo, state } from './portable-fixture.mjs';
 import { writePreviewRuntimeConfig } from '../../dist/tools/rtl-scanner/preview-runtime.js';
 
 const dashboard=join(dirname(baselineDashboard),'workflow-dashboard');mkdirSync(dashboard);
@@ -14,6 +14,22 @@ const sourcePath = join(project, 'apps/invoicing/src/components/InvoiceTable.tsx
 if(!process.env.RTL_CONTEXTUAL_BASELINE){
 writeFileSync(sourcePath, readFileSync(sourcePath, 'utf8').replace('import { useLocale }', 'import { ReviewTokens } from "./ReviewTokens";\nimport { useLocale }').replace('              {i.id}\n', '              {i.id}<span className="review-extra-id">{i.id}</span><ReviewTokens item={i} />\n'));
 writeFileSync(join(project, 'apps/invoicing/src/components/ReviewTokens.tsx'), 'export function ReviewTokens({item}:{item:{id:string}}){return <><span className="token-one">{item.id}</span><span className="token-two">{item.id}</span></>}\n');
+}
+// Review-workflow bindings: explicit JSX source-element bindings, replacing the portable fixture's context-only InvoiceTable mapping.
+// Each binding covers only the expressions inside the named rendered element, so other findings in the same file stay unbound.
+// ReviewTokens.tsx exists only in the modified source, so its bindings are written only when the fixture was applied.
+{
+ const configPath = join(project, 'rtl-preview.config.json');
+ const reviewConfig = JSON.parse(readFileSync(configPath, 'utf8'));
+ const reviewRoutes = reviewConfig.mappings[0]?.routes ?? [];
+ reviewConfig.mappings = [
+  { source: 'apps/invoicing/src/components/InvoiceTable.tsx', sourceSelector: '.invoice-link', targetSelector: 'tbody tr:first-child .invoice-link', routes: reviewRoutes },
+  ...(process.env.RTL_CONTEXTUAL_BASELINE ? [] : [
+   { source: 'apps/invoicing/src/components/ReviewTokens.tsx', sourceSelector: '.token-one', targetSelector: 'tbody tr:first-child .token-one', routes: reviewRoutes },
+   { source: 'apps/invoicing/src/components/ReviewTokens.tsx', sourceSelector: '.token-two', targetSelector: 'tbody tr:first-child .token-two', routes: reviewRoutes },
+  ]),
+ ];
+ writeFileSync(configPath, JSON.stringify(reviewConfig, null, 2));
 }
 // Opt-in spacing fixtures exercise analyzer dispatch on arbitrary filenames; app sources in checkout stay untouched.
 if(process.env.RTL_SPACING_FIXTURE){
@@ -43,14 +59,14 @@ if(process.env.RTL_EXPANSION_FIXTURE){
 for(const name of ['tests','tools','.storybook']) if(existsSync(join(repo,name))) cpSync(join(repo,name),join(project,name),{recursive:true});
 for(const name of readdirSync(repo).filter(name=>/^(tsconfig.*\.json|(?:vite|vitest|playwright|eslint)(?:\.[\w-]+)*\.config\.[cm]?[jt]s|package-lock\.json)$/.test(name))) cpSync(join(repo,name),join(project,name));
 // Publish a new report directory after adding only disposable source findings.
-execFileSync(process.execPath,[join(repo,'dist/tools/rtl-scanner/cli.js'),'--root',project,'--format','dashboard','--embed-source-snippets','--output-dir',dashboard],{cwd:repo,stdio:['ignore','ignore','inherit']});
+execFileSync(process.execPath,[join(RUNTIME_DIR,'cli.js'),'--root',project,'--format','dashboard','--embed-source-snippets','--output-dir',dashboard],{cwd:repo,stdio:['ignore','ignore','inherit']});
 for (const port of [4200,4201,4318,4320]) await new Promise((resolve,reject)=>{const probe=createServer();probe.once('error',()=>reject(Error('Port '+port+' occupied; no unrelated process was stopped.')));probe.listen(port,'127.0.0.1',()=>probe.close(resolve))});
-const originalConfig=await writePreviewRuntimeConfig(project,{role:'original',sessionId:'original',sourceSha256:createHash('sha256').update(readFileSync(sourcePath)).digest('hex')});
+await writePreviewRuntimeConfig(project,{role:'original',sessionId:'original',sourceSha256:createHash('sha256').update(readFileSync(sourcePath)).digest('hex')});
 const procurementConfig=await writePreviewRuntimeConfig(project,{role:'original',sessionId:'original',sourceSha256:createHash('sha256').update(readFileSync(join(project,'apps/procurement/src/App.tsx'))).digest('hex')},{application:'procurement'});
 const env={...process.env,RTL_PROJECT_ROOT:project,RTL_REVIEW_STORE_PATH:join(state,'review-records-v1.json'),RTL_EVIDENCE_STORE_PATH:join(state,'review-evidence-v1.json'),RTL_MANUAL_CHANGE_STORE_PATH:join(state,'manual-changes-v1.json'),RTL_SCAN_MANIFEST_STORE_PATH:join(state,'scan-manifests-v1.json'),RTL_AUDIT_STORE_PATH:join(state,'apply-audit-v1.json'),RTL_APPLY_BACKUP_ROOT:join(state,'backups')};
 let companion;
-const startCompanion=()=>companion=spawn(process.execPath,[join(repo,'dist/tools/rtl-scanner/preview-companion.js')],{cwd:repo,env,stdio:'inherit'});
-const children=[startCompanion(),spawn(process.execPath,[join(repo,'node_modules/vite/bin/vite.js'),'--config',originalConfig,'--host','127.0.0.1','--port','4200','--strictPort'],{cwd:project,stdio:'inherit'}),spawn(process.execPath,[join(repo,'node_modules/vite/bin/vite.js'),'--config',procurementConfig,'--host','127.0.0.1','--port','4201','--strictPort'],{cwd:project,stdio:'inherit'}),spawn('python3',['-m','http.server','4320','--bind','127.0.0.1'],{cwd:dashboard,stdio:'inherit'})];
+const startCompanion=()=>companion=spawn(process.execPath,[join(RUNTIME_DIR,'preview-companion.js')],{cwd:repo,env:{...env,RTL_PREVIEW_OWNER_PID:String(process.pid)},stdio:'inherit'});
+const children=[startCompanion(),spawn(process.execPath,[join(repo,'node_modules/vite/bin/vite.js'),'--config',procurementConfig,'--host','127.0.0.1','--port','4201','--strictPort'],{cwd:project,env:{...process.env,RTL_RUNTIME_OWNER_PID:String(process.pid)},stdio:'inherit'}),spawn(process.execPath,[join(repo,'tests/e2e/dashboard-session-server.mjs'),dashboard],{cwd:dashboard,env:{...process.env,RTL_HARNESS_OWNER_PID:String(process.pid),RTL_E2E_RUNTIME:RUNTIME_DIR},stdio:'inherit'})];
 const identity={supervisorPid:process.pid,project,dashboard,state,children:children.map(c=>c.pid),dashboardUrl:'http://127.0.0.1:4320/rtl-report-dashboard.html'};
 const environmentPath=join(dirname(project),'environment.json');
 const publish=()=>writeFileSync(environmentPath,JSON.stringify({...identity,companionPid:companion.pid},null,2));publish();console.log('REVIEW_WORKFLOWS_ENVIRONMENT',environmentPath,JSON.stringify(identity));

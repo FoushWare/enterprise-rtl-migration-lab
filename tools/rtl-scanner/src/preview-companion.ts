@@ -1,4 +1,5 @@
 import { PreviewSupersession } from './preview-supersession.js';
+import { COMPANION_BOOTSTRAP_HEADER, COMPANION_SESSION_HEADER, CompanionSessions, isAllowedLoopbackHost, projectRootDigest, redactAbsolutePaths, removeCompanionBootstrap, secretsEqual, writeCompanionBootstrap } from './companion-auth.js';
 import { sweepOrphanedReviewWorkspaces } from './review-session.js';
 import { killOwnedGroupsSync, markOwnedShutdownStarted, removeOwnManifest, sweepOwnedManifests, terminateOwnedGroups, COMPANION_SHUTDOWN_DEADLINE_MS } from './owned-processes.js';
 import { initializeOriginalPreview, hasOriginalLease, leaseOriginalPreview, originalLeaseCount, OriginalPreviewStartupError, releaseOriginalPreview } from './original-preview-runtime.js';
@@ -18,8 +19,8 @@ import { createHash } from 'node:crypto';
 import { lstat, readFile } from 'node:fs/promises';
 import { PREVIEW_COMPANION_ORIGIN, previewManifest, validatedPreviewRoute } from './preview-manifest.js';
 import { applyReviewPatch, createReviewSession, disposeReviewSession, reviewSessionComparison, reviewSessionDiff, startCandidateRuntime, stopCandidateRuntime, validateProjectSourcePath, validateReviewIdentity, CANDIDATE_ORIGIN, REVIEW_SOURCE, type PatchRequest, type ReviewIdentity, type ReviewRecord, type ReviewSession } from './review-session.js';
-import { DEFAULT_REVIEW_STORE_PATH, ReviewRecordStore, type MigrationDecision } from './review-store.js';
-import { DEFAULT_EVIDENCE_STORE_PATH, EvidenceSnapshotStore } from './evidence-store.js';
+import { ReviewRecordStore, type MigrationDecision } from './review-store.js';
+import { EvidenceSnapshotStore } from './evidence-store.js';
 import { ApplyAuditStore, ControlledApplyService } from './controlled-apply.js';
 import { DASHBOARD_ORIGIN, isAllowedDashboardOrigin } from './companion-security.js';
 import { analyzeBidiIsolation } from './codemod.js';
@@ -31,7 +32,12 @@ import { ManualChangeStore } from './manual-change-store.js';
 import { ScanManifestStore } from './scan-manifest-store.js';
 import type { ScanManifest } from './scan-history.js';
 import { resolveTrustedProjectRoot } from './project-root.js';
-const host = '127.0.0.1'; const port = Number(process.env.RTL_PREVIEW_PORT ?? 4318); const applicationOrigin = 'http://127.0.0.1:4200';
+const host = '127.0.0.1'; const port = Number(process.env.RTL_PREVIEW_PORT ?? 4318);
+// Session tokens for dashboard pages (idle and absolute lifetimes) and the per-run bootstrap secret held by the CLI.
+const companionSessions = new CompanionSessions(Number(process.env.RTL_PREVIEW_SESSION_IDLE_MS ?? 20 * 60_000), Number(process.env.RTL_PREVIEW_SESSION_MAX_MS ?? 8 * 60 * 60_000));
+let bootstrapSecret = '';
+const hasBootstrap = (request: IncomingMessage): boolean => secretsEqual(request.headers[COMPANION_BOOTSTRAP_HEADER], bootstrapSecret);
+const hasSession = (request: IncomingMessage): boolean => companionSessions.validate(request.headers[COMPANION_SESSION_HEADER]); const applicationOrigin = 'http://127.0.0.1:4200';
 const sessions = new Map<string, ReviewSession>();
 const reviewStore = new ReviewRecordStore();
 await reviewStore.load();
@@ -65,7 +71,7 @@ async function assertScreenshotFile(path: string, expectedDigest: string): Promi
 }
 function normalizeBidiFinding(input: Finding, source: string): Finding { if (input.id !== 'RTL.BIDI.ISOLATION:741d2ce2aec3a86cf2db37ea' || input.path !== 'apps/invoicing/src/components/InvoiceTable.tsx') throw new Error('UNSUPPORTED_FINDING_IDENTITY'); if (input.range?.start?.offset !== undefined) return input; const line = Number((input as Finding & { line?: number }).line); const column = Number((input as Finding & { column?: number }).column); if (!Number.isInteger(line) || !Number.isInteger(column) || line < 1 || column < 1) throw new Error('INVALID_FINDING_RANGE'); const lines = source.split(/\r?\n/); const offset = lines.slice(0, line - 1).reduce((n, value) => n + value.length + 1, 0) + column - 1; if (source.slice(offset, offset + 6) !== '{i.id}') throw new Error('SOURCE_RANGE_MISMATCH'); return { ...input, range: { start: { offset, line, column }, end: { offset: offset + 6, line, column: column + 6 } }, original: '{i.id}' } as Finding; }
 async function previewCapabilities(){try{const configuration=await loadPreviewConfiguration(projectRoot),configured=Object.keys(configuration.applications),applications=configured.length?configured:['invoicing','procurement'];return {application:applications[0],applications,applicationOrigin:configuration.applications[applications[0]]?.originalOrigin??applicationOrigin,previewConfigurationError:null};}catch(error){return {application:null,applications:[],applicationOrigin:null,previewConfigurationError:error instanceof Error?error.message:'PREVIEW_CONFIGURATION_INVALID'};}}
-function send(response: ServerResponse, status: number, body: unknown): void { response.writeHead(status, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', 'access-control-allow-origin': DASHBOARD_ORIGIN, 'vary': 'Origin' }); response.end(JSON.stringify(body)); }
+function send(response: ServerResponse, status: number, body: unknown): void { const payload = typeof body === 'object' && body !== null && typeof (body as { error?: unknown }).error === 'string' ? { ...body, error: redactAbsolutePaths((body as { error: string }).error) } : body; response.writeHead(status, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', 'access-control-allow-origin': DASHBOARD_ORIGIN, 'vary': 'Origin' }); response.end(JSON.stringify(payload)); }
 async function body(request: IncomingMessage): Promise<any> { let value=''; for await (const chunk of request) value += chunk; if (value.length > 100_000) throw new Error('REQUEST_TOO_LARGE'); return JSON.parse(value || '{}'); }
 function requestUrl(request: IncomingMessage): URL { return new URL(request.url ?? '/', PREVIEW_COMPANION_ORIGIN); }
 // A companion started by the CLI (RTL_PREVIEW_EXIT_WHEN_IDLE=1) exits after it holds no session lease for a grace period.
@@ -108,8 +114,13 @@ const server = createServer(async (request, response) => {
   response.once('close', () => { requestsInFlight--; armIdleExit(); });
   if (idleExitEnabled && originalLeaseCount() === 0) armIdleExit();
   const url = requestUrl(request);
+  if (!isAllowedLoopbackHost(request.headers.host, port)) return send(response, 403, { error: 'HOST_NOT_ALLOWED' });
   if(shuttingDown)return send(response,503,{error:'COMPANION_SHUTTING_DOWN'});
-  if (request.method === 'OPTIONS') { if (!isAllowedDashboardOrigin(request.headers.origin)) return send(response, 403, { error: 'ORIGIN_NOT_ALLOWED' }); response.writeHead(204, { 'access-control-allow-origin': DASHBOARD_ORIGIN, 'access-control-allow-methods': 'GET,POST,OPTIONS', 'access-control-allow-headers': 'content-type', 'access-control-max-age': '300', vary: 'Origin' }); return response.end(); }
+  if (request.method === 'OPTIONS') { if (!isAllowedDashboardOrigin(request.headers.origin)) return send(response, 403, { error: 'ORIGIN_NOT_ALLOWED' }); response.writeHead(204, { 'access-control-allow-origin': DASHBOARD_ORIGIN, 'access-control-allow-methods': 'GET,POST,OPTIONS', 'access-control-allow-headers': 'content-type, ' + COMPANION_SESSION_HEADER, 'access-control-max-age': '300', vary: 'Origin' }); return response.end(); }
+  // Session-scoped authorization: the CLI (bootstrap secret) mints page sessions; every other route except /health needs a live token.
+  if (url.pathname === '/auth/session' && request.method === 'POST') { if (!hasBootstrap(request)) return send(response, 401, { error: 'COMPANION_AUTH_REQUIRED' }); return send(response, 201, companionSessions.issue()); }
+  if (url.pathname === '/auth/revoke' && request.method === 'POST') { if (!hasBootstrap(request)) return send(response, 401, { error: 'COMPANION_AUTH_REQUIRED' }); const input = await body(request).catch(() => ({})); return send(response, 200, { revoked: companionSessions.revoke(input?.token) }); }
+  if (url.pathname !== '/health' && !hasBootstrap(request) && !hasSession(request)) return send(response, 401, { error: 'COMPANION_AUTH_REQUIRED' });
   const isReviewWrite = url.pathname === '/dashboard/heartbeat' || url.pathname === '/contextual-preview/original' || url.pathname === '/contextual-preview/original/release' || url.pathname.startsWith('/review/workflows') || url.pathname === '/review/sessions' || url.pathname === '/review/records' || url.pathname === '/review/decisions' || url.pathname === '/review/evidence' || url.pathname === '/review/manual-changes' || url.pathname === '/review/rescan' || url.pathname === '/review/apply' || url.pathname === '/review/rollback' || url.pathname === '/review/codemod/analyze' || /^\/review\/sessions\/[^/]+\/(patch|cleanup|runtime\/(start|stop)|codemod\/apply|validate|validation\/archive)$/.test(url.pathname);
   const dashboardRequest = isAllowedDashboardOrigin(request.headers.origin) || (!request.headers.origin && request.headers.referer?.startsWith(`${DASHBOARD_ORIGIN}/`));
   if (isReviewWrite && request.method === 'POST' && !dashboardRequest) return send(response, 403, { error: 'ORIGIN_NOT_ALLOWED' });
@@ -127,6 +138,12 @@ const server = createServer(async (request, response) => {
         const workflow=url.searchParams.get('workflowId')?workflowStore.get(url.searchParams.get('workflowId')!):workflowStore.find(input,policy,url.searchParams.get('mode')||'one-by-one');
         if(workflow&&(workflow.inputDigest!==input||workflow.policyDigest!==policy))throw Error('DASHBOARD_SOURCE_IDENTITY_MISMATCH');
         const closed=workflow&&['Applied','Rolled Back'].includes(workflow.state);
+        if(closed&&workflow.state==='Applied'){
+          // Authoritative source wins: once Apply has changed the source, the applied transaction is history (kept with its receipts and rollback),
+          // and the current scan is the active review. A stale embedded digest must not restore it as the active review.
+          const current=await scan(projectRoot);
+          if(current.inputDigest!==workflow.inputDigest||current.policyDigest!==workflow.policyDigest)return {data:toDashboardData(toSchemaV2Presentation(current),await extractSourceSnippets(projectRoot,current.findings)),transition:null};
+        }
         const report=closed?await verifiedSourceTransition(projectRoot,workflow):await scan(projectRoot);
         if(!closed&&(report.inputDigest!==input||report.policyDigest!==policy))throw Error('DASHBOARD_SOURCE_IDENTITY_MISMATCH');
         if(closed)await reconcileSourceRuntimes(projectRoot);
@@ -220,7 +237,7 @@ const server = createServer(async (request, response) => {
     } catch (error) { return send(response, 409, { error: error instanceof Error ? error.message : 'WORKFLOW_FAILED' }); }
   }
   if (url.pathname === '/review/apply/eligibility' && request.method === 'GET') { try { const identity = { findingId: url.searchParams.get('findingId') ?? '', sourcePath: url.searchParams.get('sourcePath') ?? '', inputDigest: url.searchParams.get('inputDigest') ?? '', policyDigest: url.searchParams.get('policyDigest') ?? '', schemaVersion: Number(url.searchParams.get('schemaVersion') ?? '') } as ReviewIdentity; validateReviewIdentity(identity); const record = reviewStore.get(identity); const evidence = evidenceStore.list(identity).find(x => (x.decision === 'Approved' || x.decision === 'Ready for Review') && !!x.patch && !x.scannerAfter.findingPresent); const currentSourceSha256 = createHash('sha256').update(await readFile(await validateProjectSourcePath(cwd(), identity.sourcePath))).digest('hex'); const stale = !!evidence && currentSourceSha256 !== evidence.originalSourceSha256 && currentSourceSha256 !== evidence.candidateSourceSha256; const ready = !!record && record.status === 'Approved' && !!evidence && !stale; return send(response, 200, { ready, reason: stale ? 'STALE_SOURCE' : ready ? null : 'APPROVED_REVIEW_REQUIRED', findingId: identity.findingId, sourcePath: identity.sourcePath, reviewStatus: record?.status ?? null, currentSourceSha256, evidence: evidence ? { snapshotId: evidence.snapshotId, originalSourceSha256: evidence.originalSourceSha256, candidateSourceSha256: evidence.candidateSourceSha256, codeDiff: evidence.codeDiff, patch: evidence.patch } : null }); } catch (error) { return send(response, 400, { error: error instanceof Error ? error.message : 'APPLY_ELIGIBILITY_FAILED' }); } }
-  if (url.pathname === '/health') return send(response, 200, { ok: true, service: 'rtl-preview-companion', projectRoot, activeOriginalLeases: originalLeaseCount(), manifestVersion: previewManifest.version, ...await previewCapabilities(), contextualPreviewVersion:2, configuredMappingVersion:1, reviewPersistence: { available: !reviewStore.loadError, path: DEFAULT_REVIEW_STORE_PATH }, evidencePersistence: { available: !evidenceStore.loadError, path: DEFAULT_EVIDENCE_STORE_PATH } });
+  if (url.pathname === '/health') return send(response, 200, { ok: true, service: 'rtl-preview-companion', projectRootDigest: projectRootDigest(projectRoot), activeOriginalLeases: originalLeaseCount(), manifestVersion: previewManifest.version, ...await previewCapabilities(), contextualPreviewVersion:2, configuredMappingVersion:1, reviewPersistence: { available: !reviewStore.loadError }, evidencePersistence: { available: !evidenceStore.loadError } });
   if (url.pathname === '/capabilities') return send(response, 200, { manifestVersion: previewManifest.version, ...await previewCapabilities(), contextualPreviewVersion:2,configuredMappingVersion:1,modes: ['ltr', 'rtl'], mappingLookup: true });
   if (url.pathname === '/review/sessions' && request.method === 'POST') { try { const session = await createReviewSession(cwd()); sessions.set(session.id, session); return send(response, 201, { id: session.id, state: session.state, classification: session.classification, source: session.sourcePath, originalSha256: session.originalSha256, candidateOrigin: null }); } catch (error) { return send(response, 400, { error: error instanceof Error ? error.message : 'REVIEW_SESSION_FAILED' }); } }
   if (url.pathname === '/review/codemod/analyze' && request.method === 'POST') { try { const input = await body(request) as { finding: Finding; sourceSha256?: string }; const source = await readFile(await validateProjectSourcePath(cwd(), input.finding.path), 'utf8'); const finding = normalizeBidiFinding(input.finding, source); const digest = createHash('sha256').update(source).digest('hex'); if (input.sourceSha256 && input.sourceSha256 !== digest) return send(response, 409, { error: 'STALE_SOURCE' }); const proposal = analyzeBidiIsolation(finding, source); return send(response, 200, { analyzed: true, sourceSha256: digest, transformationId: proposal.transformationId, reason: proposal.reason, patch: proposal.patch }); } catch (error) { return send(response, 400, { error: error instanceof Error ? error.message : 'CODEMOD_ANALYSIS_FAILED' }); } }
@@ -253,15 +270,20 @@ let shuttingDown = false;
   // (candidate runtimes, original runtime, validation commands) by group; persist workflow state; dispose session
   // workspaces; exit. Each step has its own deadline, and a hard deadline (ref'd, so it always fires) SIGKILLs the owned
   // groups and then this process if anything is still stuck.
-  const shutdown = async () => {
+  const shutdown = async (reason: string = 'unknown') => {
     if (shuttingDown) return; shuttingDown = true;
+    const shutdownStartedAt = Date.now();
+    console.error(`RTL preview companion: shutdown started pid=${process.pid} owner=${Number.isInteger(ownerPid) && ownerPid > 0 ? ownerPid : 'none'} reason=${reason}`);
     markOwnedShutdownStarted();
+    companionSessions.clear();
+    removeCompanionBootstrap(port);
     const hard = setTimeout(() => { killOwnedGroupsSync(); process.kill(process.pid, 'SIGKILL'); }, COMPANION_SHUTDOWN_DEADLINE_MS);
     const failures: string[] = [];
     const bounded = async (name: string, work: () => Promise<unknown>, ms: number) => {
       let timer: NodeJS.Timeout | undefined;
-      try { await Promise.race([work(), new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('deadline exceeded')), ms); })]); }
-      catch (error) { failures.push(`${name}: ${error instanceof Error ? error.message : String(error)}`); }
+      const began = Date.now();
+      try { await Promise.race([work(), new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('deadline exceeded')), ms); })]); console.error(`RTL preview companion: shutdown step ${name} ok in ${Date.now() - began}ms`); }
+      catch (error) { failures.push(`${name}: ${error instanceof Error ? error.message : String(error)}`); console.error(`RTL preview companion: shutdown step ${name} failed after ${Date.now() - began}ms`); }
       finally { if (timer) clearTimeout(timer); }
     };
     server.closeAllConnections(); server.close();
@@ -271,18 +293,19 @@ let shuttingDown = false;
     await bounded('owned-manifest', removeOwnManifest, 500);
     for (const failure of failures) console.error(`RTL preview companion: shutdown step failed: ${failure}`);
     clearTimeout(hard);
+    console.error(`RTL preview companion: shutdown finished pid=${process.pid} in ${Date.now() - shutdownStartedAt}ms failures=${failures.length}`);
     process.exit(failures.length ? 1 : 0);
   };
-  for (const signal of ['SIGTERM', 'SIGINT', 'SIGHUP'] as const) process.on(signal, shutdown);
+  for (const signal of ['SIGTERM', 'SIGINT', 'SIGHUP'] as const) process.on(signal, () => { void shutdown(signal); });
 // The CLI that started this companion owns it. When that process is gone, the companion runs its normal shutdown (which
 // disposes its candidate workspaces), even while an open dashboard tab keeps sending heartbeats.
 const ownerPid = Number(process.env.RTL_PREVIEW_OWNER_PID ?? '');
 if (Number.isInteger(ownerPid) && ownerPid > 0) {
   const ownerWatch = setInterval(() => {
     try { process.kill(ownerPid, 0); }
-    catch (error) { if ((error as NodeJS.ErrnoException).code !== 'EPERM') { clearInterval(ownerWatch); void shutdown(); } }
+    catch (error) { if ((error as NodeJS.ErrnoException).code !== 'EPERM') { clearInterval(ownerWatch); void shutdown('owner-gone'); } }
   }, 2000);
   ownerWatch.unref();
 }
   // Last resort for any exit path: never leave an owned runtime process group behind.
-  process.on('exit', () => { killOwnedGroupsSync(); }); server.listen(port, host, () => { console.log(`RTL preview companion listening on ${host}:${port}`); armIdleExit(); void sweepStartupOrphans(); });
+  process.on('exit', () => { killOwnedGroupsSync(); removeCompanionBootstrap(port); }); server.listen(port, host, () => { bootstrapSecret = writeCompanionBootstrap(port, projectRoot); console.log(`RTL preview companion listening on ${host}:${port} pid=${process.pid} owner=${Number.isInteger(ownerPid) && ownerPid > 0 ? ownerPid : 'none'}`); armIdleExit(); void sweepStartupOrphans(); });

@@ -21,7 +21,7 @@ export const operationFlowClientSource=String.raw`
     if(applied){
       opButton(dialog,'View applied changes / operation details',()=>{dismissOperation();document.querySelector('[data-review-details]')?.click()});
       opButton(dialog,'Start review of remaining findings',()=>{dismissOperation();startRemainingReview()});
-      if(workflow.receipts?.length)opButton(dialog,'Rollback applied changes',()=>{dismissOperation();operate(rollback,'Rollback applied changes')});
+      if(workflow.receipts?.length)opButton(dialog,'Rollback applied changes',()=>{dismissOperation();operate(()=>rollback(workflow.continuedFrom||workflow.id),'Rollback applied changes')});
     }else if(passed)opButton(dialog,'Apply '+op.count+' changes…',()=>{dismissOperation();applyConfirmation()});
     else if(op.state==='Failed'&&workflow.state==='Reviewing')opButton(dialog,'Retry',()=>{dismissOperation();runDashboardOperation(op.kind)});
     else if(op.state==='Uncertain'||op.state==='Running')opButton(dialog,'Check operation status',()=>reconcileOperation(op));
@@ -29,7 +29,7 @@ export const operationFlowClientSource=String.raw`
   }
   async function reconcileOperation(pending){
     busy=true;busyLabel='Checking operation status';operationWindow('Checking operation status','The previous request may have executed. Checking the authoritative server record…',true);
-    try{const result=await api(endpoint+'/'+pending.workflowId),next=result.workflow;if(next?.id!==pending.workflowId)throw Error('OPERATION_SESSION_IDENTITY_MISMATCH');workflow=next;const op=next.operations?.find(o=>o.id===pending.id&&o.kind===pending.kind);if(!op)throw Error('Operation is not yet confirmed by the server. Retry status check; no duplicate mutation was submitted.');uncertainOperation=['Uncertain','Running'].includes(op.state)?pending:null;busy=false;if(op.kind==='apply'&&next.state==='Applied'&&op.state==='Succeeded'){reloadTransition(next);return}if(!uncertainOperation)sessionStorage.removeItem(operationKey);render();operationResult(op);}
+    try{const result=await api(endpoint+'/'+pending.workflowId),next=result.workflow;if(next?.id!==pending.workflowId)throw Error('OPERATION_SESSION_IDENTITY_MISMATCH');workflow=next;const op=next.operations?.find(o=>o.id===pending.id&&o.kind===pending.kind);if(!op&&pending.kind==='validate'){uncertainOperation=null;busy=false;sessionStorage.removeItem(operationKey);render();operationResult({...pending,state:'Failed',error:'VALIDATION_NOT_RECORDED: the server has no record of this validation, so it did not run. Original source has not changed.'});return}if(!op)throw Error('Operation is not yet confirmed by the server. Retry status check; no duplicate mutation was submitted.');uncertainOperation=['Uncertain','Running'].includes(op.state)?pending:null;busy=false;if(op.kind==='apply'&&next.state==='Applied'&&op.state==='Succeeded'){reloadTransition(next);return}if(!uncertainOperation)sessionStorage.removeItem(operationKey);render();operationResult(op);}
     catch(e){uncertainOperation=pending;busy=false;render();operationResult({...pending,state:'Uncertain',error:e.message+' The request may have executed; source state is not assumed.'});}
   }
   async function runDashboardOperation(kind){

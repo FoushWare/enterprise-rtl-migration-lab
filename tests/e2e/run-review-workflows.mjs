@@ -8,7 +8,7 @@ try{
   server=spawn(process.execPath,['tests/e2e/serve-review-workflows.mjs'],{stdio:['ignore','pipe','inherit']});
   const environment=await new Promise((resolveEnv,reject)=>{let output='';server.stdout.on('data',chunk=>{process.stdout.write(chunk);output+=chunk.toString();const match=output.match(/REVIEW_WORKFLOWS_ENVIRONMENT (.+?) \{/);if(match)resolveEnv(match[1])});server.once('exit',code=>reject(Error('Disposable services failed to start: '+code)))});
   // Wait for all services using actual health/route endpoints.
-  for(const url of ['http://127.0.0.1:4318/health','http://127.0.0.1:4200/invoices','http://127.0.0.1:4201/','http://127.0.0.1:4320/rtl-report-dashboard.html']){
+  for(const url of ['http://127.0.0.1:4318/health','http://127.0.0.1:4201/','http://127.0.0.1:4320/rtl-report-dashboard.html']){
     let ready=false;for(let attempt=0;attempt<100;attempt++){try{if((await fetch(url)).ok){ready=true;break}}catch{}await new Promise(r=>setTimeout(r,100))}if(!ready)throw Error('Service unavailable: '+url);
   }
   const output=resolve('test-results/review-workflows-'+new Date().toISOString().replaceAll(':','-'));

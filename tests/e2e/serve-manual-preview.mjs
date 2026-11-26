@@ -5,7 +5,7 @@ import { dirname, join } from 'node:path';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { writePreviewRuntimeConfig } from '../../dist/tools/rtl-scanner/preview-runtime.js';
-import { dashboard, project, repo, state } from './portable-fixture.mjs';
+import { RUNTIME_DIR, dashboard, project, repo, state } from './portable-fixture.mjs';
 
 const originalConfig = await writePreviewRuntimeConfig(project, { role: 'original', sessionId: 'original', sourceSha256: createHash('sha256').update(readFileSync(join(project, 'apps/invoicing/src/components/InvoiceTable.tsx'))).digest('hex') });
 
@@ -16,9 +16,9 @@ const env = { ...process.env, RTL_PROJECT_ROOT: project,
   RTL_SCAN_MANIFEST_STORE_PATH: join(state, 'scan-manifests-v1.json'),
   RTL_AUDIT_STORE_PATH: join(state, 'apply-audit-v1.json'), RTL_APPLY_BACKUP_ROOT: join(state, 'backups') };
 const children = [
-  spawn(process.execPath, [join(repo, 'dist/tools/rtl-scanner/preview-companion.js')], { cwd: repo, env, stdio: 'inherit' }),
-  spawn(process.execPath, [join(repo, 'node_modules/vite/bin/vite.js'), '--config', originalConfig, '--host', '127.0.0.1', '--port', '4200', '--strictPort'], { cwd: project, stdio: 'inherit' }),
-  spawn('python3', ['-m', 'http.server', '4320', '--bind', '127.0.0.1'], { cwd: dashboard, stdio: 'inherit' }),
+  spawn(process.execPath, [join(RUNTIME_DIR, 'preview-companion.js')], { cwd: repo, env: { ...env, RTL_PREVIEW_OWNER_PID: String(process.pid) }, stdio: 'inherit' }),
+  spawn(process.execPath, [join(repo, 'node_modules/vite/bin/vite.js'), '--config', originalConfig, '--host', '127.0.0.1', '--port', '4200', '--strictPort'], { cwd: project, env: { ...process.env, RTL_RUNTIME_OWNER_PID: String(process.pid) }, stdio: 'inherit' }),
+  spawn(process.execPath, [join(repo, 'tests/e2e/dashboard-session-server.mjs'), dashboard], { cwd: dashboard, env: { ...process.env, RTL_HARNESS_OWNER_PID: String(process.pid), RTL_E2E_RUNTIME: RUNTIME_DIR }, stdio: 'inherit' }),
 ];
 const identity = { supervisorPid: process.pid, project, dashboard, state, children: children.map(p => p.pid), dashboardUrl: 'http://127.0.0.1:4320/rtl-report-dashboard.html' };
 writeFileSync(join(dirname(project), 'environment.json'), JSON.stringify(identity, null, 2));
