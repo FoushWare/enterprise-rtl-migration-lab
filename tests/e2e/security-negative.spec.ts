@@ -17,7 +17,7 @@ const sha = (text: string) => createHash('sha256').update(text).digest('hex');
 const REQUEST_TIMEOUT_MS = 15_000;
 // Authorized by default: every call carries the companion session minted for this run. Negative authorization tests override it.
 let runSession: string | undefined;
-const call = (path: string, body?: unknown, options: { session?: string | null; origin?: string | null } = {}) => new Promise<{ status: number; json: any }>((resolve, reject) => {
+const call = (path: string, body?: unknown, options: { session?: string | null; origin?: string | null } = {}) => new Promise<{ status: number; json: Record<string, unknown> }>((resolve, reject) => {
   const method = body === undefined ? 'GET' : 'POST';
   const session = options.session === undefined ? runSession : options.session;
   const origin = options.origin === undefined ? 'http://127.0.0.1:4320' : options.origin;
@@ -58,7 +58,7 @@ const withCompanion = async (run: (f: ReturnType<typeof fixture>) => Promise<voi
     if (!ready) throw new Error('OWNED_COMPANION_IDENTITY_UNAVAILABLE');
     // Mint this run's session with the companion's bootstrap (owner-only file). Negative tests can still send no session.
     const bootstrap = JSON.parse(readFileSync(join(tmpdir(), 'rtl-analyzer-auth-' + userInfo().uid, `companion-${port}.json`), 'utf8')).bootstrap as string;
-    const issued = await new Promise<{ status: number; json: any }>((resolve, reject) => { const req = request({ host: '127.0.0.1', port, path: '/auth/session', method: 'POST', headers: { 'x-rtl-companion-bootstrap': bootstrap } }, res => { let text = ''; res.on('data', x => text += x); res.on('end', () => resolve({ status: res.statusCode ?? 0, json: JSON.parse(text || '{}') })); }); req.on('error', reject); req.end(); });
+    const issued = await new Promise<{ status: number; json: Record<string, unknown> }>((resolve, reject) => { const req = request({ host: '127.0.0.1', port, path: '/auth/session', method: 'POST', headers: { 'x-rtl-companion-bootstrap': bootstrap } }, res => { let text = ''; res.on('data', x => text += x); res.on('end', () => resolve({ status: res.statusCode ?? 0, json: JSON.parse(text || '{}') })); }); req.on('error', reject); req.end(); });
     expect(issued.status).toBe(201);
     runSession = issued.json.token as string;
     await run(f);
@@ -99,7 +99,7 @@ test('forged credentials are rejected with 401', async () => withCompanion(async
   expect(readFileSync(f.source, 'utf8')).toBe(before);
 }));
 
-test('revoked credentials are rejected with 401', async () => withCompanion(async f => {
+test('revoked credentials are rejected with 401', async () => withCompanion(async () => {
   const bootstrap = JSON.parse(readFileSync(join(tmpdir(), 'rtl-analyzer-auth-' + userInfo().uid, `companion-${port}.json`), 'utf8')).bootstrap as string;
   const token = runSession!;
   const revoked = await new Promise<number>((resolve, reject) => { const req = request({ host: '127.0.0.1', port, path: '/auth/revoke', method: 'POST', headers: { 'content-type': 'application/json', 'x-rtl-companion-bootstrap': bootstrap } }, res => { res.resume(); res.on('end', () => resolve(res.statusCode ?? 0)); }); req.on('error', reject); req.end(JSON.stringify({ token })); });

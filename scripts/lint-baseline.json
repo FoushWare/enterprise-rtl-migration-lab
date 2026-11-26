@@ -1,6 +1,6 @@
 {
   "description": "Inherited lint violations tracked by scripts/lint-ratchet.mjs. Shrink only; see the technical-debt issue.",
-  "count": 331,
+  "count": 330,
   "entries": [
     {
       "file": "tests/e2e/automatic-after-reproduce.spec.ts",
@@ -1627,12 +1627,6 @@
       "rule": "@typescript-eslint/no-explicit-any",
       "text": "await expect(page.locator('.component-before .embedded-state')).toHaveAttribute('data-context-status','verified',{timeout:30000});await expect(page.locator('.component-after .embedded-state')).toHaveA",
       "occurrence": 2
-    },
-    {
-      "file": "tests/e2e/security-negative.spec.ts",
-      "rule": "@typescript-eslint/no-explicit-any",
-      "text": "const call = (path: string, body?: unknown) => new Promise<{ status: number; json: any }>((resolve, reject) => {",
-      "occurrence": 1
     },
     {
       "file": "tests/e2e/security-negative.spec.ts",
