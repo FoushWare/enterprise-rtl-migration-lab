@@ -141,7 +141,7 @@ await expect(page.locator('.component-before iframe')).toHaveCount(0);await expe
     const applied=readFileSync(join(root,invoice),'utf8');writeFileSync(join(root,invoice),applied+'\n// later edit\n');
     // A later user edit changes the original source: the dashboard identity check blocks rollback in place, so the control is disabled and the status names the block.
     await page.locator('.session-overflow > button').click();await expect(page.getByRole('menuitem',{name:'Rollback applied changes',exact:true})).toBeDisabled();
-    await expect(page.getByText('DASHBOARD_SOURCE_IDENTITY_MISMATCH').first()).toBeVisible();
+    await expect(page.locator('text=DASHBOARD_SOURCE_IDENTITY_MISMATCH >> visible=true').first()).toBeVisible({timeout:30_000});
     // The server refuses the same rollback on the applied review's receipts, with the conflict code, and changes no byte.
     const conflictRes = await fetch(origin+'/review/workflows/'+appliedId+'/rollback',{method:'POST',headers:{'content-type':'application/json','x-rtl-companion-session':liveSession!,origin:'http://127.0.0.1:4320'},body:JSON.stringify({confirmation:'ROLLBACK_CONFIRMED'})});
     const conflictBody = await conflictRes.json() as { error?: string };

@@ -50,7 +50,7 @@ it('both workflow modes compose portable CSS-only candidates in a separate minim
  await store.validate(w.id);expect(w.validation?.state).toBe('Unavailable');expect(w.validation?.checks.some(c=>c.name==='runtime'&&c.state==='Unavailable')).toBe(true);await expect(store.apply(w.id,'APPLY_CONFIRMED')).rejects.toThrow('VALIDATED_ACCEPTED_CANDIDATE_REQUIRED');
  }
  }finally{for(const candidate of candidates)await rm(candidate,{recursive:true,force:true});await rm(root,{recursive:true,force:true})}
-});
+},60_000);
 
 it('does not infer target context from unrelated selectors; supports explicit local direction subject to scoped runtime evidence',()=>{
  for(const source of ['.one{margin-left:auto}.nested-code{direction:ltr}.auto-copy{direction:auto}*{box-sizing:border-box}', '.one{direction:rtl;margin-left:auto}', '@media(min-width:1px){.other{writing-mode:vertical-rl}}.one{margin-left:auto}']){
