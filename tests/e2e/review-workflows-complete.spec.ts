@@ -52,7 +52,10 @@ for(const mode of ['one-by-one','apply-first'] as const)test(mode+' completes ac
     expect(w.entries.filter((e:any)=>!e.patch).every((e:any)=>!e.applied&&e.reason)).toBe(true);
     expect(readFileSync(join(root,invoice),'utf8')).toBe(before[invoice]);
     await expect(page.locator('.component-before .embedded-state')).toHaveAttribute('data-state','ready',{timeout:25_000});
-    await expect(page.locator('.component-after .embedded-state')).toContainText('SIMULATED_PREPARATION_FAILURE');
+    // Unrelated error codes are shown as a generic failure: the code is internal, and it is not a startup timeout.
+    await expect(page.locator('.component-after .embedded-state')).toContainText('the modified preview could not be prepared');
+    await expect(page.locator('.component-after .embedded-state')).not.toContainText('SIMULATED_PREPARATION_FAILURE');
+    await expect(page.locator('.component-after .embedded-state')).not.toContainText('did not start in time');
     const retrySession=(await snapshot()).session?.id;await page.getByRole('button',{name:'Retry preview',exact:true}).click();
     await expect.poll(async()=>(await snapshot()).session?.runtime?.status).toBe('healthy');
     if(retrySession)expect((await snapshot()).session.id).toBe(retrySession);
