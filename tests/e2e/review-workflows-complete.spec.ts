@@ -72,7 +72,9 @@ for(const mode of ['one-by-one','apply-first'] as const)test(mode+' completes ac
     w=await snapshot();expect(w.session.runtime.port).not.toBe(4202);
     expect(await request.get(w.session.runtime.origin+'/__rtl_preview_identity').then(r=>r.json())).toMatchObject({projectRoot:w.session.candidateRoot,sessionId:w.session.id,sourceSha256:w.session.candidateSha256});
     expect(await request.get('http://127.0.0.1:4200/__rtl_preview_identity').then(r=>r.json())).toMatchObject({projectRoot:root,role:'original'});
-    const candidateId=w.session.id,candidateRoot=w.session.candidateRoot;
+    const candidateId=w.session.id;
+// The candidate is a disposable cache: companion shutdown removes it and the next resume rebuilds it at a new path.
+let candidateRoot=w.session.candidateRoot;
     await page.getByRole('button',{name:'Retry context',exact:true}).click();await expect(page.locator('.component-after .embedded-state')).toHaveAttribute('data-preparation-state','ready',{timeout:30000});
     await expect.poll(async()=>(await snapshot()).session.id).toBe(candidateId);
     expect((await request.get('http://127.0.0.1:4202/')).ok()).toBe(true);
@@ -105,10 +107,21 @@ await expect(page.locator('.component-before iframe')).toHaveCount(0);await expe
     // Original-source conflict must surface in the real UI, without losing decisions.
     writeFileSync(join(root,invoice),before[invoice]+'\n// concurrent user edit\n');
     await page.getByRole('button',{name:'Validate changes',exact:true}).click();await expect(page.getByRole('dialog').getByText('STALE_ORIGINAL_SOURCE')).toBeVisible();await page.getByRole('button',{name:'Back to review',exact:true}).click();expect(readFileSync(join(root,invoice),'utf8')).toContain('concurrent user edit');writeFileSync(join(root,invoice),before[invoice]);
+    // Validation after the original is restored rebuilds the disposable candidate; read its new root only after that.
+    await page.getByRole('button',{name:'Validate changes',exact:true}).click();await expect(page.getByRole('dialog').getByText('Validation passed')).toBeVisible({timeout:180_000});await page.getByRole('button',{name:'Back to review',exact:true}).click();
+    candidateRoot=(await snapshot()).session.candidateRoot;
     const candidateBeforeConflict=readFileSync(join(candidateRoot,invoice),'utf8');writeFileSync(join(candidateRoot,invoice),candidateBeforeConflict+'// candidate tamper');
-    await page.getByRole('button',{name:'Validate changes',exact:true}).click();await expect(page.getByRole('dialog').getByText('STALE_CANDIDATE_SOURCE')).toBeVisible();await page.getByRole('button',{name:'Back to review',exact:true}).click();writeFileSync(join(candidateRoot,invoice),candidateBeforeConflict);
-    await page.getByRole('button',{name:'Validate changes',exact:true}).click();
-    await expect(page.locator('.workflow-validation')).toContainText('Validation: Passed',{timeout:180_000});
+    // Once validation passed, the primary action is Apply: a tampered candidate must be refused there.
+    await page.getByRole('button',{name:/^Apply \d+ accepted changes? to source$/}).click();await page.getByRole('button',{name:'Apply to source',exact:true}).click();await expect(page.getByRole('dialog').getByText('STALE_CANDIDATE_SOURCE')).toBeVisible();await page.getByRole('button',{name:'Back to review',exact:true}).click();writeFileSync(join(candidateRoot,invoice),candidateBeforeConflict);
+    // Restoring the candidate bytes makes the earlier validation valid again; the eligible review keeps its Apply action.
+    // The disposable fixture removes its test script (no test files), so 'test' is Not configured. Product contract: Passed requires every configured project check to run; the honest status is Limited validation, which still allows Apply.
+    await expect(page.locator('.workflow-validation')).toContainText('Limited validation',{timeout:180_000});
+    // Cause and coverage, from the authoritative validation record: the only unavailable project check is the removed test script, and every available check passed.
+    { const presentation = (await snapshot()).validationPresentation; const projectChecks = (presentation.checks as { name: string; kind: string; state: string }[]).filter(c => c.kind === 'project');
+      expect(presentation.status).toBe('Limited validation');
+      expect(projectChecks.find(c => c.name === 'test')?.state).toBe('Not configured');
+      expect(projectChecks.filter(c => c.name !== 'test').map(c => [c.name, c.state])).toEqual([['typecheck', 'Passed'], ['build', 'Passed']]);
+      expect(presentation.explanation).toContain('Not configured: test'); }
     w=await snapshot();expect(w.validation.checks.filter((x:any)=>x.state==='Failed')).toHaveLength(0);
     await page.screenshot({path:info.outputPath('validated-dashboard.png'),fullPage:true});
     page.on('dialog',dialog=>dialog.accept());
@@ -152,7 +165,8 @@ test('unavailable runtime and failed configured checks stay distinct and block f
     await page.screenshot({path:info.outputPath('unavailable-check.png'),fullPage:true});
     await page.unroute('**/review/workflows/*/prepare-preview');
     await Promise.all(servers.splice(0).map(s=>new Promise<void>(resolve=>s.close(()=>resolve()))));
-    await page.getByRole('button',{name:'Validate changes',exact:true}).click();await expect(page.locator('.workflow-validation')).toContainText('Validation: Passed',{timeout:180_000});
+    await page.getByRole('button',{name:'Validate changes',exact:true}).click();// The disposable fixture removes its test script (no test files), so 'test' is Not configured. Product contract: Passed requires every configured project check to run; the honest status is Limited validation, which still allows Apply.
+    await expect(page.locator('.workflow-validation')).toContainText('Limited validation',{timeout:180_000});
     page.on('dialog',d=>d.accept());await page.getByRole('button',{name:/^Apply \d+ accepted changes? to source$/}).click();await expect(page.locator('.workflow-summary')).toContainText('Applied');await page.locator('.session-overflow > button').click();await page.getByRole('menuitem',{name:'Rollback applied changes',exact:true}).click();await expect(page.locator('.source-context-status')).toContainText('Automatic rescan complete');
     const failedPackage=JSON.parse(pkg);failedPackage.scripts.test='node --eval "process.exit(7)"';writeFileSync(pkgPath,JSON.stringify(failedPackage));
     await open();await page.getByRole('button',{name:'Validate changes',exact:true}).click();await expect(page.locator('.workflow-validation')).toContainText('Validation: Failed',{timeout:180_000});await page.getByRole('button',{name:'Session details',exact:true}).click();await page.getByRole('tab',{name:'Validation',exact:true}).click();await expect(page.getByRole('dialog',{name:'Session details'}).locator('.validation-check[data-status=Failed]').filter({has:page.getByText('test',{exact:true})})).toBeVisible();await page.keyboard.press('Escape');await expect(page.getByRole('button',{name:/^Apply \d+ accepted changes? to source$/})).toHaveCount(0);expect(readFileSync(join(root,invoice),'utf8')).toBe(original);
