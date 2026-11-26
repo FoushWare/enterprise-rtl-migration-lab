@@ -139,9 +139,18 @@ await expect(page.locator('.component-before iframe')).toHaveCount(0);await expe
     for(const r of w.receipts){expect(sha(readFileSync(join(root,r.path),'utf8'))).toBe(r.appliedSha256);expect(sha(readFileSync(r.backupPath,'utf8'))).toBe(r.originalSha256)}
     expect(readFileSync(join(root,invoice),'utf8')).toContain('className="review-extra-id">{i.id}</span>');expect(readFileSync(join(root,tokens),'utf8')).toContain('className="token-two">{item.id}</span>');
     const applied=readFileSync(join(root,invoice),'utf8');writeFileSync(join(root,invoice),applied+'\n// later edit\n');
-    await page.locator('.session-overflow > button').click();await page.getByRole('menuitem',{name:'Rollback applied changes',exact:true}).click();await expect(page.getByRole('dialog').getByText('ROLLBACK_CONFLICT')).toBeVisible();await page.getByRole('button',{name:'Back to review',exact:true}).click();expect(readFileSync(join(root,invoice),'utf8')).toContain('later edit');
+    // A later user edit changes the original source: the dashboard identity check blocks rollback in place, so the control is disabled and the status names the block.
+    await page.locator('.session-overflow > button').click();await expect(page.getByRole('menuitem',{name:'Rollback applied changes',exact:true})).toBeDisabled();
+    await expect(page.getByText('DASHBOARD_SOURCE_IDENTITY_MISMATCH').first()).toBeVisible();
+    // The server refuses the same rollback on the applied review's receipts, with the conflict code, and changes no byte.
+    const conflictRes = await fetch(origin+'/review/workflows/'+appliedId+'/rollback',{method:'POST',headers:{'content-type':'application/json','x-rtl-companion-session':liveSession!,origin:'http://127.0.0.1:4320'},body:JSON.stringify({confirmation:'ROLLBACK_CONFIRMED'})});
+    const conflictBody = await conflictRes.json() as { error?: string };
+    expect(conflictRes.status).toBeGreaterThanOrEqual(400);expect(String(conflictBody.error ?? '')).toContain('ROLLBACK_CONFLICT');
+    expect(readFileSync(join(root,invoice),'utf8')).toContain('later edit');
     const unrelated=report.files.find((p:string)=>p.endsWith('.tsx')&&![invoice,tokens].includes(p));const unrelatedBefore=readFileSync(join(root,unrelated),'utf8');writeFileSync(join(root,unrelated),unrelatedBefore+'\n// unrelated user edit\n');
-    writeFileSync(join(root,invoice),applied);await page.locator('.session-overflow > button').click();await page.getByRole('menuitem',{name:'Rollback applied changes',exact:true}).click();await expect(page.locator('.workflow-summary')).toContainText('Rolled Back');expect(readFileSync(join(root,unrelated),'utf8')).toContain('unrelated user edit');writeFileSync(join(root,unrelated),unrelatedBefore);
+    writeFileSync(join(root,invoice),applied);
+    // The identity block clears on a fresh load of the restored source; the rollback then targets the applied review.
+    await page.reload({waitUntil:'domcontentloaded'});await enterReview(page,mode);await page.locator('.session-overflow > button').click();await page.getByRole('menuitem',{name:'Rollback applied changes',exact:true}).click();await expect(page.locator('.workflow-summary')).toContainText('Rolled Back');expect(readFileSync(join(root,unrelated),'utf8')).toContain('unrelated user edit');writeFileSync(join(root,unrelated),unrelatedBefore);
     for(const p of [invoice,tokens])expect(readFileSync(join(root,p),'utf8')).toBe(before[p]);
     expect(errors).toEqual([]);
     writeFileSync(info.outputPath('acceptance.json'),JSON.stringify({mode,workflow:w,network,errors,originalHashes:Object.fromEntries(Object.entries(before).map(([p,t])=>[p,sha(t)])),restoredHashes:Object.fromEntries([invoice,tokens].map(p=>[p,sha(readFileSync(join(root,p),'utf8'))]))},null,2));
