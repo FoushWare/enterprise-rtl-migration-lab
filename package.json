@@ -12,8 +12,8 @@
     "test": "vitest run",
     "test:e2e": "playwright test",
     "test:e2e:workflows": "npm run rtl:scan:build && node tests/e2e/run-review-workflows.mjs",
-    "test:e2e:workflow-lifecycle": "playwright test --config=playwright.workflow-lifecycle.config.ts tests/e2e/workflow-approved-stale.spec.ts && playwright test --config=playwright.workflow-lifecycle.config.ts tests/e2e/workflow-failed-lifecycle.spec.ts && playwright test --config=playwright.workflow-lifecycle.config.ts tests/e2e/workflow-stale-lifecycle.spec.ts",
-    "test:e2e:regression": "playwright test --config=playwright.apply-rollback.config.ts tests/e2e/apply-rollback-disposable.spec.ts && playwright test --config=playwright.phase5.config.ts tests/e2e/phase5-progress.spec.ts && playwright test --config=playwright.manual-regression.config.ts tests/e2e/security-negative.spec.ts tests/e2e/restart-infrastructure.spec.ts tests/e2e/stale-lifecycle.spec.ts tests/e2e/failed-lifecycle.spec.ts",
+    "test:e2e:workflow-lifecycle": "node scripts/e2e-required.mjs workflow-approved-stale -- --config=playwright.workflow-lifecycle.config.ts tests/e2e/workflow-approved-stale.spec.ts && node scripts/e2e-required.mjs workflow-failed-lifecycle -- --config=playwright.workflow-lifecycle.config.ts tests/e2e/workflow-failed-lifecycle.spec.ts && node scripts/e2e-required.mjs workflow-stale-lifecycle -- --config=playwright.workflow-lifecycle.config.ts tests/e2e/workflow-stale-lifecycle.spec.ts",
+    "test:e2e:regression": "node scripts/e2e-required.mjs apply-rollback -- --config=playwright.apply-rollback.config.ts tests/e2e/apply-rollback-disposable.spec.ts && node scripts/e2e-required.mjs phase5-progress -- --config=playwright.phase5.config.ts tests/e2e/phase5-progress.spec.ts && node scripts/e2e-required.mjs manual-regression -- --config=playwright.manual-regression.config.ts tests/e2e/security-negative.spec.ts tests/e2e/restart-infrastructure.spec.ts",
     "test:visual": "playwright test --grep visual",
     "storybook": "storybook dev -p 6006",
     "rtl:scan": "node dist/tools/rtl-scanner/cli.js",
@@ -22,7 +22,8 @@
     "rtl:scan:build": "tsc -p tools/rtl-scanner/tsconfig.json",
     "rtl:preview": "node dist/tools/rtl-scanner/preview-companion.js",
     "test:e2e:journey": "playwright test --config=playwright.journey.config.ts",
-    "test:e2e:native": "playwright test --config=playwright.native.config.ts"
+    "test:e2e:native": "node scripts/e2e-required.mjs native -- --config=playwright.native.config.ts",
+    "test:e2e:lifecycle-node": "node scripts/e2e-required.mjs lifecycle-node --tap -- node --test tests/e2e/workflow-lifecycle.e2e.mjs"
   },
   "dependencies": {
     "@emotion/cache": "11.14.0",

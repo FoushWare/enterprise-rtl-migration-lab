@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { readFileSync, writeFileSync } from 'node:fs';
-import { expect, test } from '@playwright/test';
+import { expect, test } from './companion-test';
 
 // Migrated from the retired codemod panel. The reviewer approves and validates a change in the current workflow, the source
 // then changes, and the authoritative workflow Apply must refuse it: no source write, no APPLIED audit record.

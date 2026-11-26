@@ -1,36 +1,54 @@
 # CI test ownership and coverage mapping (v0.6.3)
 
-Each required test has one CI owner. Suites that need the wrapper runtime (DashboardSession, the served review dashboard,
-the companion-authorized preview) are owned by the wrapper CI job `e2e-overlay`, not silently excluded. The implementation
-CI runs what this repository can execute on its own build.
+The implementation repository is the canonical source for every review and workflow E2E suite. The wrapper keeps the
+packaging, overlay, and provenance checks, and it runs the canonical implementation suites against the provenance-verified
+wrapper runtime. There are no independently maintained duplicate E2E specs.
 
-## Implementation CI (`.github/workflows/ci.yml`, this repository)
+Every E2E step runs through `scripts/e2e-required.mjs`. It fails unless the step discovers and executes at least one test
+with no failures and no flaky results, so a path filter that matches nothing cannot produce a false green.
 
-| Check | Command | Covers |
+## Commands and what they execute
+
+| Owner | Command | Suites executed (expected count at this revision) |
 |---|---|---|
-| lint | `npm run lint:ratchet` | ESLint with the unchanged rules; fails on any violation not in `scripts/lint-baseline.json` (331 inherited, see the technical-debt issue) |
-| typecheck | `npm run typecheck` | all TypeScript |
-| build | `npm run build` | standalone build (`dist/`) |
-| unit | `npm test` | unit tests |
-| E2E native | `npm run test:e2e:native` (`playwright.native.config.ts`) | `tests/e2e/security-negative.spec.ts`: companion authorization, guards, invalid operations, path and symlink refusal |
-| lifecycle | `node --test tests/e2e/workflow-lifecycle.e2e.mjs` | workflow lifecycle through the companion |
-| equivalence | `node tests/e2e/runtime-reuse-equivalence.mjs` | runtime reuse equivalence |
+| implementation CI `lint` | `npm run lint:ratchet` | ESLint against the baseline; no new violations |
+| implementation CI `verify` | `npm run typecheck`, `npm run build`, `npm test` | typecheck, build, unit tests |
+| implementation CI `verify` | `npm run test:e2e:native` | `tests/e2e/security-negative.spec.ts` (19): authorization negatives (401, 403), guards, path and symlink refusal, stale source hash |
+| implementation CI `verify` | `npm run test:e2e:lifecycle-node` | `tests/e2e/workflow-lifecycle.e2e.mjs` (3): prepare, accept, validate, apply, restart, rollback; a stale validated change is refused before and after restart; rollback is refused after a later edit |
+| implementation CI `verify` | `node tests/e2e/runtime-reuse-equivalence.mjs` | runtime reuse equivalence with authorized companion calls |
+| wrapper CI `e2e-overlay` (ubuntu) | `npm run test:e2e:regression` (root; runs the provenance build and verification, then `npm --prefix implementation run test:e2e:regression`) | `apply-rollback-disposable.spec.ts` (2): one-by-one Apply and Rollback with exact SHA-256 restoration; validation persists through reload without changing the original source. `phase5-progress.spec.ts` (2): progress after rescan and after reload. `manual-regression` (20): `security-negative.spec.ts` (19) and `restart-infrastructure.spec.ts` (1, owned companion reconnects) |
+| wrapper CI `e2e-overlay` | `npm run test:e2e:workflow-lifecycle` (root; delegates to implementation) | `workflow-approved-stale.spec.ts` (1), `workflow-failed-lifecycle.spec.ts` (1), `workflow-stale-lifecycle.spec.ts` (1) |
+| wrapper CI `e2e-overlay` | `npm run test:e2e:lifecycle-node` (root; delegates to implementation) | `workflow-lifecycle.e2e.mjs` (3) |
+| wrapper CI `e2e-overlay` | `node tests/e2e/run-review-workflows.mjs` in `implementation/` (default `review-workflows-complete.spec.ts`) | Review One-by-One and Apply First through the served dashboard: approval, validation, Apply, rollback after reload, conflict refusal, restart recovery, End Review |
+| wrapper CI `e2e-overlay` | `RTL_REVIEW_SPECS=tests/e2e/api-companion-lifecycle.spec.ts node tests/e2e/run-review-workflows.mjs` in `implementation/` | companion API lifecycle (9): authorization, Origin and approval gates, unbound finding without automatic preview, preview contracts |
+| wrapper CI `ci` (ubuntu, windows) | `npm run rtl:overlay:test`, `npm run rtl:cli:package:smoke`, `npm run rtl:scan:test` | overlay unit and security tests (27 in `security-hardening.test.ts`), packaged consumer smoke |
 
-## Wrapper CI (`.github/workflows/ci.yml`, rtl-analyzer wrapper)
+## Retired wrapper duplicates and where their coverage now lives
 
-| Job | Suites | Covers |
-|---|---|---|
-| `ci` (ubuntu, windows) | `rtl:scan:test`, `rtl:overlay:test` (incl. `security-hardening.test.ts`), `rtl:cli:package:smoke` | overlay unit and security tests, companion-auth mirror, packaged consumer smoke |
-| `e2e-overlay` (ubuntu) | `npm run test:e2e:regression` (provenance build and verification first): `apply-rollback-disposable`, `phase5-progress`, `restart-infrastructure`, `stale-lifecycle`, `failed-lifecycle` | Apply, Rollback (SHA-256 exact restoration), automatic rescan, progress, restart recovery, stale and failed lifecycle |
-| `e2e-overlay` | `workflow-approved-stale`, `workflow-failed-lifecycle`, `workflow-stale-lifecycle` (workflow-lifecycle config) | approval and stale-state gates |
-| `e2e-overlay` | `implementation/tests/e2e/run-review-workflows.mjs` (default `review-workflows-complete.spec.ts`) | Review One-by-One and Apply First through the served dashboard, original and candidate preview, LTR/RTL validation, approval and confirmation, Apply, Rollback after reload, rollback conflict refusal, restart recovery, End Review |
-| `e2e-overlay` | `RTL_REVIEW_SPECS=tests/e2e/api-companion-lifecycle.spec.ts node implementation/tests/e2e/run-review-workflows.mjs` | companion API: authorization, Origin and approval gates, unbound finding has no automatic preview, preview contracts |
+The wrapper's independently maintained copies were removed after each unique assertion was ported or mapped.
+
+- `apply-rollback-disposable` "persists through reload" used the legacy Codemod panel. It is ported to the canonical
+  suite as a workflow test: the recorded validation survives a reload and the original source is unchanged.
+- `phase5-progress` "recovers ... after companion restart" read the same progress after a reload, which the canonical
+  "recovers ... after a reload of the dashboard" covers. It did not restart the companion, so there is no restart coverage lost.
+- `restart-infrastructure` "same records survive an owned companion restart" used the legacy Codemod panel and the legacy
+  records endpoints. Its workflow equivalents are the lifecycle restart in `workflow-lifecycle.e2e.mjs` (receipts, history
+  and the stale refusal survive a restart) and the restart step in `review-workflows-complete.spec.ts`. The legacy record
+  endpoints are still served but are not part of the supported workflow.
+- `security-negative` "approved stale source rejects authoritative apply" used the legacy panel. It is covered by
+  `workflow-stale-lifecycle.spec.ts` (a stale validated change is blocked on reload and cannot be applied) and by
+  `workflow-lifecycle.e2e.mjs` (refused before and after a restart).
+- `failed-lifecycle` "persisted rollback conflict projects Failed" is covered by `workflow-failed-lifecycle.spec.ts` and by
+  the lifecycle test that refuses rollback after a later source edit.
+- `stale-lifecycle` "survives reload and restart" is covered by `workflow-stale-lifecycle.spec.ts` (reload) and by the
+  lifecycle test's restart step (restart).
+- `portable-fixture.mjs` and `phase5-fixture.mjs`: the implementation copies are canonical.
 
 ## Not required by any CI job
 
-These files remain in the repository as diagnostics or earlier-release fixtures. The former `e2e-default-debt` job ran them
-through `playwright test` with no environment and was red. It has been removed; nothing in CI claims them. Each needs its own
-owner before it counts as release coverage.
+These files remain in `tests/e2e` as diagnostics or superseded fixtures. No CI job claims them. The former
+`e2e-default-debt` job ran them through a bare `playwright test` and was red, so it is removed. Each needs an owner before
+it counts as release coverage.
 
 `automatic-after*.spec.ts`, `batch-theme-review.spec.ts`, `brand-direction.spec.ts`, `chart-direction.spec.ts`,
 `contextual-review-preview.spec.ts`, `cross-file-review.spec.ts`, `css-spacing-workflows.spec.ts`,
@@ -43,9 +61,3 @@ owner before it counts as release coverage.
 `preview-status.spec.ts`, `preview-ui-reproduce.spec.ts`, `preview-ui-state.spec.ts`, `review-mode-entry.spec.ts`,
 `review-one-by-one-analysis.spec.ts`, `review-one-by-one-preview.spec.ts`, `review-ui-refinement.spec.ts`,
 `review-workspace.spec.ts`, `rollback-review-resumption.spec.ts`, `sidebar-navigation-arrow.spec.ts`, `baseline.spec.ts`.
-
-Their helpers and runners (`*.mjs`, `*.ts` fixtures) are used by the owned suites above or by these diagnostics.
-
-## Verification that moved suites execute
-
-Playwright exits 0 when a path filter matches no file, so a green step alone does not prove a suite ran. The wrapper job prints each step's pass counts in its log; a suite with zero passes is a coverage gap. Check the `e2e-overlay` log for a non-zero pass count per listed command.

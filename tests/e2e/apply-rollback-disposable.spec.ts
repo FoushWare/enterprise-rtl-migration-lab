@@ -67,7 +67,6 @@ test('disposable candidate validation persists through reload without changing t
   expect(validatedHash).toBe(originalSha256);
 
   await page.reload({ waitUntil: 'domcontentloaded' });
-  await enterReview(page, 'one-by-one');
   // The recorded validation survives the reload: the status is the record's, never "Not run".
   await expect(page.locator('.workflow-validation')).toContainText(/Validation: (Passed|Limited validation)/, { timeout: 30_000 });
   await expect(page.locator('.workflow-validation')).not.toContainText('Not run');

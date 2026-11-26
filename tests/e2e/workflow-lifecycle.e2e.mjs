@@ -209,5 +209,13 @@ test('an approved change whose source changed after validation cannot be applied
   assert.equal(refused.status, 409, JSON.stringify(refused.json));
   assert.notEqual(refused.json.error, undefined);
   assert.equal(sha256(sourceFile), editedSha256, 'a stale apply must not write the source');
+  // The stale state survives a companion restart: the restarted companion still refuses the apply and writes nothing.
   await stopCompanion(companion);
+  const restarted = startCompanion(port, { project, state });
+  t.after(async () => { if (restarted.child.exitCode === null) restarted.child.kill('SIGKILL'); });
+  await waitHealthy(restarted.origin);
+  const afterRestart = await call(restarted.origin, 'POST', `/review/workflows/${workflow.id}/apply`, { confirmation: 'APPLY_CONFIRMED' });
+  assert.equal(afterRestart.status, 409, JSON.stringify(afterRestart.json));
+  assert.equal(sha256(sourceFile), editedSha256, 'a restarted companion must not write the stale source');
+  await stopCompanion(restarted);
 });

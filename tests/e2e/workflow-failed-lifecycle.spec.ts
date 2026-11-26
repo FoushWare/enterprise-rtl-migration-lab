@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { readFileSync, writeFileSync } from 'node:fs';
-import { expect, test } from '@playwright/test';
+import { expect, test } from './companion-test';
 
 // Migrated from the retired controlled-apply panel. An applied change is followed by a source edit, and the authorized
 // rollback from the workflow is refused as a source integrity conflict. The refusal writes nothing, keeps the applied state
