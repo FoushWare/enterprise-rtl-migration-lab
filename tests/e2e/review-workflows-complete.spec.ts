@@ -125,12 +125,16 @@ await expect(page.locator('.component-before iframe')).toHaveCount(0);await expe
     w=await snapshot();expect(w.validation.checks.filter((x:any)=>x.state==='Failed')).toHaveLength(0);
     await page.screenshot({path:info.outputPath('validated-dashboard.png'),fullPage:true});
     page.on('dialog',dialog=>dialog.accept());
-    await page.getByRole('button',{name:/^Apply \d+ accepted changes? to source$/}).click();await expect(page.locator('.workflow-summary')).toContainText('Applied');
-    w=await snapshot();expect(w.receipts).toHaveLength(2);
+    await page.getByRole('button',{name:/^Apply \d+ accepted changes? to source$/}).click();await page.getByRole('button',{name:'Apply to source',exact:true}).click();await expect(page.locator('.workflow-summary')).toContainText('Applied');
+    w=await snapshot();expect(w.receipts).toHaveLength(2);const appliedId=w.id;
     for(const f of w.files)if(![invoice,tokens].includes(f.path))expect(readFileSync(join(root,f.path),'utf8')).toBe(f.before);
     // Receipts and final state survive service restart and dashboard reload before rollback.
     process.kill(env.supervisorPid,'SIGUSR1');await expect.poll(async()=>request.get(origin+'/health').then(r=>r.ok()).catch(()=>false)).toBe(false);process.kill(env.supervisorPid,'SIGUSR2');await expect.poll(async()=>request.get(origin+'/health',{timeout:1000}).then(r=>r.ok()).catch(()=>false),{timeout:15_000}).toBe(true);
-    await page.reload({waitUntil:'domcontentloaded'});await enterReview(page,mode);await expect(page.locator('.workflow-summary')).toContainText('Applied');
+    await mintLiveSession();
+    await page.reload({waitUntil:'domcontentloaded'});await enterReview(page,mode);
+    // The applied review is retained with its receipts; the page then shows the automatic rescan's fresh review (no accepted changes yet).
+    await expect(page.locator('.workflow-summary')).toContainText('0 accepted',{timeout:30_000});
+    { const historyRes = await fetch(origin+'/review/workflows?history=1',{headers:{'x-rtl-companion-session':liveSession!}}); if (!historyRes.ok) throw new Error('HISTORY_READ '+historyRes.status+' '+(await historyRes.text()).slice(0,200)); const history = await Promise.resolve(historyRes.json()) as { workflows: { id: string; state: string; receipts?: unknown[] }[] }; const retained = history.workflows.find(x => x.id === appliedId); expect(retained, 'applied review retained in history').toBeTruthy(); expect(retained!.state).toBe('Applied'); expect(retained!.receipts?.length ?? 0).toBeGreaterThan(0); }
 
     for(const r of w.receipts){expect(sha(readFileSync(join(root,r.path),'utf8'))).toBe(r.appliedSha256);expect(sha(readFileSync(r.backupPath,'utf8'))).toBe(r.originalSha256)}
     expect(readFileSync(join(root,invoice),'utf8')).toContain('className="review-extra-id">{i.id}</span>');expect(readFileSync(join(root,tokens),'utf8')).toContain('className="token-two">{item.id}</span>');
