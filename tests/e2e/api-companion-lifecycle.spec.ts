@@ -15,7 +15,7 @@ const environment = (): { dashboard: string } => {
   if (!file) throw new Error('RTL_MANUAL_ENVIRONMENT is not set: run this spec with the manual-preview runner (see header)');
   return JSON.parse(readFileSync(file, 'utf8')) as { dashboard: string };
 };
-const report = (): { inputDigest: string; policyDigest: string; findings: { id: string; path: string }[] } => {
+const report = (): { inputDigest: string; policyDigest: string; findings: { id: string; path: string; original: string }[] } => {
   const path = join(environment().dashboard, 'rtl-report.json');
   if (!existsSync(path)) throw new Error('fixture report missing: ' + path);
   return JSON.parse(readFileSync(path, 'utf8'));
@@ -104,6 +104,23 @@ test.describe('original and candidate preview contracts', () => {
       const body = await response.json();
       expect(body.route, `route for ${mode}`).toBeTruthy();
     }
+  });
+
+  test('a finding without an exact source-to-element binding has no automatic preview route', async () => {
+    // Regression: bindings are explicit per source element. A finding outside every bound element must stay unsupported
+    // (manual review), with no original or candidate preview, instead of inheriting a neighbouring binding.
+    const token = await mintSession();
+    const current = report();
+    const unbound = current.findings.find(f => f.path.endsWith('InvoiceTable.tsx') && f.original === '{c.name}');
+    expect(unbound, 'fixture finding {c.name} is present').toBeTruthy();
+    const query = new URLSearchParams({ findingId: unbound!.id, inputDigest: current.inputDigest, policyDigest: current.policyDigest, mode: 'ltr' });
+    const response = await fetch(origin + '/contextual-preview?' + query, { headers: { 'x-rtl-companion-session': token } });
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(body.route).toBeNull();
+    expect(body.original.available).toBe(false);
+    expect(body.original.state).toBe('mapping-missing');
+    expect(body.candidate.available).toBe(false);
   });
 
   test('the preview contract refuses a mismatched finding digest without leaking source', async () => {

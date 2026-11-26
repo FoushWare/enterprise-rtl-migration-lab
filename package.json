@@ -8,6 +8,7 @@
     "build": "nx run-many -t build",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
+    "lint:ratchet": "node scripts/lint-ratchet.mjs",
     "test": "vitest run",
     "test:e2e": "playwright test",
     "test:e2e:workflows": "npm run rtl:scan:build && node tests/e2e/run-review-workflows.mjs",

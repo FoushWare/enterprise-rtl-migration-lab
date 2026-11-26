@@ -1,0 +1,1992 @@
+{
+  "description": "Inherited lint violations tracked by scripts/lint-ratchet.mjs. Shrink only; see the technical-debt issue.",
+  "count": 331,
+  "entries": [
+    {
+      "file": "tests/e2e/automatic-after-reproduce.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "test.setTimeout(60000);const env=JSON.parse(readFileSync(process.env.RTL_MANUAL_ENVIRONMENT!,'utf8'));if(!env.project.includes('rtl-independent-onboarding-'))throw Error('DISPOSABLE_ONLY');const repor",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/automatic-after-reproduce.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "test.setTimeout(60000);const env=JSON.parse(readFileSync(process.env.RTL_MANUAL_ENVIRONMENT!,'utf8'));if(!env.project.includes('rtl-independent-onboarding-'))throw Error('DISPOSABLE_ONLY');const repor",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/automatic-after.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "function environment(){const e=JSON.parse(readFileSync(process.env.RTL_MANUAL_ENVIRONMENT!,'utf8'));if(!e.project.includes('rtl-independent-onboarding-'))throw Error('DISPOSABLE_ONLY');const report=JS",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/automatic-after.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "function sourceIdentity(env:any){return Object.fromEntries(env.report.files.map((p:string)=>[p,sha(readFileSync(join(env.project,p),'utf8'))]));}",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/automatic-after.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "async function select(page:Page,f:any){await page.locator('button.file[data-source-path=\"'+f.path+'\"]').click();await page.locator('button.finding').filter({hasText:f.path+':'+f.range.start.line+':'+f",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/automatic-after.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "async function ready(page:Page,f:any){await expect(page.locator('.component-before .embedded-state')).toHaveAttribute('data-context-status','verified',{timeout:30000});await expect(page.locator('.comp",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/automatic-after.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const posts=(page:Page)=>{const list:any[]=[];page.on('request',r=>{if(r.method()==='POST')list.push({url:r.url(),body:r.postDataJSON()})});return list;};",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/automatic-after.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const active=(request:any,env:any,mode='one-by-one')=>request.get(origin+'/review/workflows?'+new URLSearchParams({inputDigest:env.report.inputDigest,policyDigest:env.report.policyDigest,mode})).then(",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/automatic-after.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const active=(request:any,env:any,mode='one-by-one')=>request.get(origin+'/review/workflows?'+new URLSearchParams({inputDigest:env.report.inputDigest,policyDigest:env.report.policyDigest,mode})).then(",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/automatic-after.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const active=(request:any,env:any,mode='one-by-one')=>request.get(origin+'/review/workflows?'+new URLSearchParams({inputDigest:env.report.inputDigest,policyDigest:env.report.policyDigest,mode})).then(",
+      "occurrence": 3
+    },
+    {
+      "file": "tests/e2e/automatic-after.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const active=(request:any,env:any,mode='one-by-one')=>request.get(origin+'/review/workflows?'+new URLSearchParams({inputDigest:env.report.inputDigest,policyDigest:env.report.policyDigest,mode})).then(",
+      "occurrence": 4
+    },
+    {
+      "file": "tests/e2e/automatic-after.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const env=environment(),f=env.find('.contact-card'),before=sourceIdentity(env),events=posts(page);let releaseDescriptor!:()=>void,descriptorHeld=false;const descriptorGate=new Promise<void>(r=>release",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/automatic-after.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await page.goto('?finding='+encodeURIComponent(f.id),{waitUntil:'domcontentloaded'});await enterReview(page);await expect(page.locator('.component-after .embedded-state')).toHaveAttribute('data-prepar",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/automatic-after.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const env=environment(),f=env.find('.unmapped'),before=sourceIdentity(env),events=posts(page);await page.goto('?finding='+encodeURIComponent(f.id),{waitUntil:'domcontentloaded'});await enterReview(pag",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/automatic-after.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "test.setTimeout(180000);const env=environment(),f=env.find('.contact-card'),before=sourceIdentity(env),events=posts(page);page.on('dialog',d=>d.accept());await page.goto('?finding='+encodeURIComponent",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/automatic-after.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "test.setTimeout(180000);const env=environment(),f=env.find('.contact-card'),before=sourceIdentity(env),events=posts(page);page.on('dialog',d=>d.accept());await page.goto('?finding='+encodeURIComponent",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/automatic-after.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "test.setTimeout(180000);const env=environment(),f=env.find('.contact-card'),before=sourceIdentity(env),events=posts(page);page.on('dialog',d=>d.accept());await page.goto('?finding='+encodeURIComponent",
+      "occurrence": 3
+    },
+    {
+      "file": "tests/e2e/automatic-before-details.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const report=JSON.parse(readFileSync(join(env.dashboard,'rtl-report.json'),'utf8'));const f=report.findings.find((f:any)=>f.path.endsWith('odd-edges.css')&&f.original==='text-align: left;'),other=repo",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/automatic-before-details.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const report=JSON.parse(readFileSync(join(env.dashboard,'rtl-report.json'),'utf8'));const f=report.findings.find((f:any)=>f.path.endsWith('odd-edges.css')&&f.original==='text-align: left;'),other=repo",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/automatic-before-details.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const events:any[]=[],errors:string[]=[];page.on('request',r=>{if(r.method()==='POST')events.push({url:r.url(),body:r.postData()})});page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/automatic-before-details.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "async function pick(f:any){await page.locator('button.file[data-source-path=\"'+f.path+'\"]').click();await page.locator('button.finding').filter({hasText:f.path+':'+f.range.start.line+':'+f.range.start",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/automatic-before-details.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await dialog.getByRole('button',{name:'History',exact:true}).click();const currentReview=await snapshot(),historicalRecords=await request.get('http://127.0.0.1:4318/review/workflows?history=1').then(r",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/automatic-before-details.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await page.locator('.workflow-notes summary').click();await page.getByRole('textbox',{name:'Review note'}).fill('Reading edge confirmed');await page.getByRole('button',{name:'Save note',exact:true}).c",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/automatic-before-details.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await expect(before).toHaveAttribute('data-context-status','verified',{timeout:30000});await expect(page.locator('.after-card pre')).toHaveText('text-align: start;');await expect(page.locator('.workfl",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/batch-theme-review.spec.ts",
+      "rule": "@typescript-eslint/no-unused-vars",
+      "text": "async function batch(page:any){await page.goto('');await page.getByRole('button',{name:'Prepare all & review',exact:true}).click();await expect(page.locator('.batch-review')).toBeVisible({timeout:1800",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/batch-theme-review.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "async function batch(page:any){await page.goto('');await page.getByRole('button',{name:'Prepare all & review',exact:true}).click();await expect(page.locator('.batch-review')).toBeVisible({timeout:1800",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/batch-theme-review.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "test.setTimeout(600000);page.setDefaultTimeout(20000);const env=environment();if(!env.project.includes('rtl-independent-onboarding-batch-'))throw Error('DISPOSABLE_ONLY');const report=JSON.parse(readF",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/batch-theme-review.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "test.setTimeout(600000);page.setDefaultTimeout(20000);const env=environment();if(!env.project.includes('rtl-independent-onboarding-batch-'))throw Error('DISPOSABLE_ONLY');const report=JSON.parse(readF",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/batch-theme-review.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const w=await active();expect(w.entries.filter((e:any)=>e.batch?.state==='ready')).toHaveLength(7);expect(w.entries.find((e:any)=>e.finding.context==='stylesheet/.unmapped').batch.state).toBe('blocked",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/batch-theme-review.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const w=await active();expect(w.entries.filter((e:any)=>e.batch?.state==='ready')).toHaveLength(7);expect(w.entries.find((e:any)=>e.finding.context==='stylesheet/.unmapped').batch.state).toBe('blocked",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/batch-theme-review.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const w=await active();expect(w.entries.filter((e:any)=>e.batch?.state==='ready')).toHaveLength(7);expect(w.entries.find((e:any)=>e.finding.context==='stylesheet/.unmapped').batch.state).toBe('blocked",
+      "occurrence": 3
+    },
+    {
+      "file": "tests/e2e/batch-theme-review.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const w=await active();expect(w.entries.filter((e:any)=>e.batch?.state==='ready')).toHaveLength(7);expect(w.entries.find((e:any)=>e.finding.context==='stylesheet/.unmapped').batch.state).toBe('blocked",
+      "occurrence": 4
+    },
+    {
+      "file": "tests/e2e/batch-theme-review.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "for(const f of [padding,name])await page.locator('input[data-batch-id=\"'+f.id+'\"]').check();await expect(page.locator('.batch-selection-count')).toHaveText('2 selected');const wrap=page.locator('.batc",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/batch-theme-review.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "for(const f of [padding,name])await page.locator('input[data-batch-id=\"'+f.id+'\"]').check();await expect(page.locator('.batch-selection-count')).toHaveText('2 selected');const wrap=page.locator('.batc",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/batch-theme-review.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await page.getByRole('button',{name:'Back to batch',exact:true}).click();await expect(page.locator('.batch-selection-count')).toHaveText('2 selected');expect(await page.locator('.batch-table-wrap').ev",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/batch-theme-review.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await page.getByRole('button',{name:'Back to batch',exact:true}).click();await expect(page.locator('.batch-selection-count')).toHaveText('2 selected');expect(await page.locator('.batch-table-wrap').ev",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/batch-theme-review.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await page.reload();await page.getByRole('button',{name:'View completed review',exact:true}).click();await expect(page.getByRole('dialog',{name:'Changes applied',exact:true})).toBeVisible();await page",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/batch-theme-review.spec.ts",
+      "rule": "@typescript-eslint/no-unused-vars",
+      "text": "const trigger=page.getByRole('button',{name:'Color theme',exact:true}),menu=page.getByRole('menu',{name:'Color theme',exact:true});await trigger.click();await page.getByRole('menuitemradio',{name:'Dra",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/batch-theme-review.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const metrics=[];for(const [name,id] of [['Studio Dark','studio'],['Dracula','dracula'],['Nord','nord'],['Solarized Light','solarized'],['GitHub Light','github']]){await trigger.click();await page.get",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/batch-theme-review.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const metrics=[];for(const [name,id] of [['Studio Dark','studio'],['Dracula','dracula'],['Nord','nord'],['Solarized Light','solarized'],['GitHub Light','github']]){await trigger.click();await page.get",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/batch-theme-review.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "try{const noMapping=JSON.parse(config);noMapping.mappings=[];writeFileSync(configPath,JSON.stringify(noMapping,null,2));const output=mkdtempSync(join(env.dashboard,'zero-'));const scan=execFileSync(en",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const errors:string[]=[],posts:string[]=[],coverage:any[]=[];page.on('pageerror',e=>errors.push(e.stack||e.message));",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const first=report.findings.find((f:any)=>f.path.endsWith('/InvoiceTable.tsx')&&f.original==='{i.id}');",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const all=process.env.RTL_CONTEXT_FINDING_IDS?report.findings.filter((f:any)=>process.env.RTL_CONTEXT_FINDING_IDS!.split(',').includes(f.id)):process.env.RTL_CONTEXT_SMOKE?report.findings.filter((f:an",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const all=process.env.RTL_CONTEXT_FINDING_IDS?report.findings.filter((f:any)=>process.env.RTL_CONTEXT_FINDING_IDS!.split(',').includes(f.id)):process.env.RTL_CONTEXT_SMOKE?report.findings.filter((f:an",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "expect(context.mapping.routes.some((r:any)=>r.application===application&&r.path===route)).toBe(true);",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const variants:any[]=[];",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "async function expectExpanded(page:any,info:any){",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "async function expectExpanded(page:any,info:any){",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const detail=await workspace.evaluate((node:any)=>{const r=node.getBoundingClientRect(),s=getComputedStyle(node);return {box:{x:r.x,y:r.y,width:r.width,height:r.height},style:node.style.cssText,positi",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "async function enter(page:any){",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const first=report.findings.find((f:any)=>f.path.endsWith('/InvoiceTable.tsx')&&f.original==='{i.id}');",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await page.addInitScript(()=>{(window as any).__contextMessages=[];(window as any).__contextNavigations=[];window.addEventListener('message',e=>{if(e.data?.type==='rtl-context-status')(window as any).",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await page.addInitScript(()=>{(window as any).__contextMessages=[];(window as any).__contextNavigations=[];window.addEventListener('message',e=>{if(e.data?.type==='rtl-context-status')(window as any).",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await page.addInitScript(()=>{(window as any).__contextMessages=[];(window as any).__contextNavigations=[];window.addEventListener('message',e=>{if(e.data?.type==='rtl-context-status')(window as any).",
+      "occurrence": 3
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await page.addInitScript(()=>{(window as any).__contextMessages=[];(window as any).__contextNavigations=[];window.addEventListener('message',e=>{if(e.data?.type==='rtl-context-status')(window as any).",
+      "occurrence": 4
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "async function choose(page:any,report:any,id:string){",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "async function choose(page:any,report:any,id:string){",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const f=report.findings.find((f:any)=>f.id===id);expect(f,'finding exists').toBeTruthy();",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const originalFrame=(page:any)=>page.frameLocator('iframe[title=\"Before: original application route\"]');",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const candidateFrame=(page:any)=>page.frameLocator('iframe[title=\"After: isolated candidate application route\"]');",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const latest=(page:any,id:string,role='original')=>page.evaluate(({id,role}:any)=>(window as any).__contextMessages.filter((m:any)=>m.findingId===id&&m.role===role).at(-1),{id,role});",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const latest=(page:any,id:string,role='original')=>page.evaluate(({id,role}:any)=>(window as any).__contextMessages.filter((m:any)=>m.findingId===id&&m.role===role).at(-1),{id,role});",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const latest=(page:any,id:string,role='original')=>page.evaluate(({id,role}:any)=>(window as any).__contextMessages.filter((m:any)=>m.findingId===id&&m.role===role).at(-1),{id,role});",
+      "occurrence": 3
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const latest=(page:any,id:string,role='original')=>page.evaluate(({id,role}:any)=>(window as any).__contextMessages.filter((m:any)=>m.findingId===id&&m.role===role).at(-1),{id,role});",
+      "occurrence": 4
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await frame.locator('#context-test-override').evaluate((n:any)=>n.remove());await expect(state).toContainText('contributing');",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const last=frame.locator('tbody td').last(),before=await last.evaluate((n:any)=>({html:n.outerHTML,width:n.getBoundingClientRect().width,height:n.getBoundingClientRect().height}));",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "expect(await last.evaluate((n:any)=>({html:n.outerHTML,width:n.getBoundingClientRect().width,height:n.getBoundingClientRect().height}))).toEqual(before);",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await expect.poll(()=>last.evaluate((n:any)=>{const r=n.getBoundingClientRect();return r.bottom>0&&r.top<innerHeight})).toBe(true);",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const geometry=report.findings.find((f:any)=>f.ruleId==='RTL.GEOMETRY.ORDER'&&f.original.includes('translateX(-100%)'));await choose(page,report,geometry.id);",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const valid=await latest(page,shared);await frame.locator('body').evaluate((_:any,p:any)=>{for(const altered of [{nonce:'stale'},{sessionId:'wrong'},{application:'procurement'},{findingId:'wrong'},{so",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const valid=await latest(page,shared);await frame.locator('body').evaluate((_:any,p:any)=>{for(const altered of [{nonce:'stale'},{sessionId:'wrong'},{application:'procurement'},{findingId:'wrong'},{so",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const f=await choose(page,report,id);await page.getByRole('button',{name:'Expand original preview',exact:true}).click();await expectExpanded(page,info);await expect.poll(()=>originalFrame(page).locato",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "let owned=false;await new Promise<void>((resolve,reject)=>{blocker.once('error',(e:any)=>e.code==='EADDRINUSE'?resolve():reject(e));blocker.listen(4202,'127.0.0.1',()=>{owned=true;resolve()})});",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await page.getByRole('button',{name:initial.entries.find((e:any)=>e.finding.id===first.id).applied?'Open candidate application':'Apply & Preview',exact:true}).click();",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const data=async(frame:any)=>frame.locator('body').evaluate(()=>({key:(window as any).__rtlPreviewStorageKey,rows:JSON.parse(localStorage.getItem((window as any).__rtlPreviewStorageKey)!),ordinary:loc",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const data=async(frame:any)=>frame.locator('body').evaluate(()=>({key:(window as any).__rtlPreviewStorageKey,rows:JSON.parse(localStorage.getItem((window as any).__rtlPreviewStorageKey)!),ordinary:loc",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const data=async(frame:any)=>frame.locator('body').evaluate(()=>({key:(window as any).__rtlPreviewStorageKey,rows:JSON.parse(localStorage.getItem((window as any).__rtlPreviewStorageKey)!),ordinary:loc",
+      "occurrence": 3
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await before.locator('.app-link').click();await expect.poll(()=>page.evaluate(()=>(window as any).__contextNavigations.at(-1)?.sessionId)).toBe(invoiceSession.id);expect(await before.locator('body').e",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const customer=report.findings.find((f:any)=>f.path.endsWith('/Customers.tsx')&&f.original==='{c.name}');await choose(page,report,customer.id);expect((await data(before)).rows).toHaveLength(25);await ",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const order=report.findings.find((f:any)=>f.path==='apps/procurement/src/App.tsx'&&f.original==='{o.id}');await choose(page,report,order.id);await page.getByRole('button',{name:'Apply & Preview',exact",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const orderDetail=report.findings.find((f:any)=>f.path==='apps/procurement/src/App.tsx'&&f.original==='{order.id}');await choose(page,report,orderDetail.id);await page.getByRole('button',{name:'Apply ",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const amount=report.findings.find((f:any)=>f.path==='apps/procurement/src/App.tsx'&&f.context==='Orders'&&f.original.includes('money('));await choose(page,report,amount.id);await expect(page.locator('",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "expect((await snapshot()).entries.map((e:any)=>({id:e.finding.id,applied:e.applied,decision:e.decision}))).toEqual(stable.entries.map((e:any)=>({id:e.finding.id,applied:e.applied,decision:e.decision})",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "expect((await snapshot()).entries.map((e:any)=>({id:e.finding.id,applied:e.applied,decision:e.decision}))).toEqual(stable.entries.map((e:any)=>({id:e.finding.id,applied:e.applied,decision:e.decision})",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "expect(sourceHashes()).toEqual(sources);expect((await snapshot()).entries.map((e:any)=>e.decision)).toEqual(initial.entries.map((e:any)=>e.decision));",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "expect(sourceHashes()).toEqual(sources);expect((await snapshot()).entries.map((e:any)=>e.decision)).toEqual(initial.entries.map((e:any)=>e.decision));",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "writeFileSync(info.outputPath('candidate-data.json'),JSON.stringify({workflowId:stable.id,sessionId:invoiceSession.id,sourceHashes:sources,sourcePreserved:true,initialRows:24,interactionRows:25,resetR",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/contextual-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "writeFileSync(info.outputPath('candidate-data.json'),JSON.stringify({workflowId:stable.id,sessionId:invoiceSession.id,sourceHashes:sources,sourcePreserved:true,initialRows:24,interactionRows:25,resetR",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/cross-file-review.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const report=JSON.parse(readFileSync(join(env.dashboard,'rtl-report.json'),'utf8')),name=report.findings.find((f:any)=>f.original==='{person.name}'),email=report.findings.find((f:any)=>f.original==='{",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/cross-file-review.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const report=JSON.parse(readFileSync(join(env.dashboard,'rtl-report.json'),'utf8')),name=report.findings.find((f:any)=>f.original==='{person.name}'),email=report.findings.find((f:any)=>f.original==='{",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/cross-file-review.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const report=JSON.parse(readFileSync(join(env.dashboard,'rtl-report.json'),'utf8')),name=report.findings.find((f:any)=>f.original==='{person.name}'),email=report.findings.find((f:any)=>f.original==='{",
+      "occurrence": 3
+    },
+    {
+      "file": "tests/e2e/cross-file-review.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const pick=async(f:any)=>{await page.locator('button.file[data-source-path=\"'+f.path+'\"]').click();await page.locator('button.finding[data-finding-id=\"'+f.id+'\"]').click()};",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/cross-file-review.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await pick(name);await expect(page.getByRole('textbox',{name:'Review note',exact:true})).toHaveValue('Cross-file draft');await page.reload();await enterReview(page);await ready();await expect(page.get",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/cross-file-review.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "for(let i=0;i<css.length;i++){await pick(css[i]);await page.getByRole('button',{name:i===1?'Defer':i===2?'Needs review':'Reject fix',exact:true}).click();await expect.poll(async()=>(await active()).en",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/css-spacing-workflows.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const fs=report.findings.filter((f:any)=>f.path.endsWith('arbitrary-spacing.css')||f.path.endsWith('unrelated-name.css'));",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/css-spacing-workflows.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const a=fs.find((f:any)=>f.original.startsWith('margin-left: 12px')),b=fs.find((f:any)=>f.original.startsWith('padding-right: 8px')),c=fs.find((f:any)=>f.original.startsWith('margin-right: 20px')),d=f",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/css-spacing-workflows.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const a=fs.find((f:any)=>f.original.startsWith('margin-left: 12px')),b=fs.find((f:any)=>f.original.startsWith('padding-right: 8px')),c=fs.find((f:any)=>f.original.startsWith('margin-right: 20px')),d=f",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/css-spacing-workflows.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const a=fs.find((f:any)=>f.original.startsWith('margin-left: 12px')),b=fs.find((f:any)=>f.original.startsWith('padding-right: 8px')),c=fs.find((f:any)=>f.original.startsWith('margin-right: 20px')),d=f",
+      "occurrence": 3
+    },
+    {
+      "file": "tests/e2e/css-spacing-workflows.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const a=fs.find((f:any)=>f.original.startsWith('margin-left: 12px')),b=fs.find((f:any)=>f.original.startsWith('padding-right: 8px')),c=fs.find((f:any)=>f.original.startsWith('margin-right: 20px')),d=f",
+      "occurrence": 4
+    },
+    {
+      "file": "tests/e2e/css-spacing-workflows.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const originals=Object.fromEntries([...new Set(fs.map((f:any)=>f.path))].map((p:any)=>[p,readFileSync(join(env.project,p),'utf8')]));",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/css-spacing-workflows.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const originals=Object.fromEntries([...new Set(fs.map((f:any)=>f.path))].map((p:any)=>[p,readFileSync(join(env.project,p),'utf8')]));",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/css-spacing-workflows.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const events:any[]=[],errors:string[]=[];page.on('request',r=>{if(r.method()==='POST')events.push({url:r.url(),body:r.postDataJSON()})});page.on('pageerror',e=>errors.push(e.message));page.on('dialog'",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/css-spacing-workflows.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "for(const f of [a,b,c,d]){const e=w.entries.find((e:any)=>e.finding.id===f.id);expect(e.patch.replacement).toMatch(/^(margin|padding)-inline-(start|end)\\s*:/);expect(e.reason).toContain('css-spacing-l",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/css-spacing-workflows.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "for(const f of fs.filter((f:any)=>![a,b,c,d].includes(f))){const e=w.entries.find((e:any)=>e.finding.id===f.id);expect(e.patch).toBeUndefined();expect(e.reason).toContain('CSS_SPACING_')}",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/css-spacing-workflows.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "for(const f of fs.filter((f:any)=>![a,b,c,d].includes(f))){const e=w.entries.find((e:any)=>e.finding.id===f.id);expect(e.patch).toBeUndefined();expect(e.reason).toContain('CSS_SPACING_')}",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/css-spacing-workflows.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "async function select(f:any){await page.locator('button.file[data-source-path=\"'+f.path+'\"]').click();await page.locator('button.finding').filter({hasText:f.path+':'+f.range.start.line+':'+f.range.sta",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/css-spacing-workflows.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "for(const f of [a,b,c,d]){await select(f);if(mode==='one-by-one'){await page.getByRole('button',{name:'Prepare candidate',exact:true}).click();await expect.poll(async()=>(await snapshot()).entries.fin",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/css-spacing-workflows.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const mapped=report.findings.find((f:any)=>f.path.endsWith('InvoiceTable.tsx')&&f.ruleId==='RTL.BIDI.ISOLATION');await select(mapped);await expect(page.locator('.component-before .embedded-state')).to",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/css-spacing-workflows.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const application=await browser.newPage();const rendering:any[]=[];await application.goto('http://127.0.0.1:4200/invoices?demo=unmigrated-rtl&lang=ar',{waitUntil:'domcontentloaded'});await expect(appl",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/css-spacing-workflows.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "for(const [f,label,decision] of [[a,'Approve fix','Accepted'],[b,'Reject fix','Rejected'],[c,'Defer','Deferred'],[d,'Approve fix','Accepted']] as const){await select(f);await page.getByRole('button',{",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/dashboard-usability.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const f=report.findings.find((x:any)=>x.context==='stylesheet/.contact-card');",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/dashboard-usability.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const errors:string[]=[],failures:any[]=[],sourceResponses:any[]=[],posts:any[]=[];",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/dashboard-usability.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const errors:string[]=[],failures:any[]=[],sourceResponses:any[]=[],posts:any[]=[];",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/dashboard-usability.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const errors:string[]=[],failures:any[]=[],sourceResponses:any[]=[],posts:any[]=[];",
+      "occurrence": 3
+    },
+    {
+      "file": "tests/e2e/dashboard-usability.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const visible=()=>page.evaluate(()=>(window as any).rtlDashboardVisibleFindings().map((x:any)=>x.id));",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/dashboard-usability.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const visible=()=>page.evaluate(()=>(window as any).rtlDashboardVisibleFindings().map((x:any)=>x.id));",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/dashboard-usability.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const select=async(id:string)=>{const x=report.findings.find((x:any)=>x.id===id);await page.locator('button.file[data-source-path=\"'+x.path+'\"]').click();await page.locator('button.finding[data-findin",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/dashboard-usability.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await page.waitForFunction(()=>typeof (window as any).rtlDashboardVisibleFindings==='function');",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/dashboard-usability.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const priorId=(await active()).id;await page.getByRole('button',{name:'Review actions',exact:true}).click();await page.getByRole('menuitem',{name:'Start new review',exact:true}).click();await expect.p",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/dashboard-usability.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await approval().click();await expect(page.locator('.analysis-status')).toHaveText('Blocked: TEST_APPROVAL_FAILURE');await expect(page.getByRole('dialog',{name:'Proposed change approved'})).toHaveCoun",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/dashboard-usability.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "expect((await active()).entries.find((e:any)=>e.finding.id===f.id).decision).toBe('Accepted');await expect(page.getByRole('dialog',{name:'Proposed change approved'})).toHaveCount(0);await expect(appro",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/dashboard-usability.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const informational=report.findings.filter((x:any)=>x.category==='INFORMATIONAL');expect(informational).toHaveLength(2);expect(informational.every((x:any)=>!ids.includes(x.id))).toBe(true);expect((awa",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/dashboard-usability.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const informational=report.findings.filter((x:any)=>x.category==='INFORMATIONAL');expect(informational).toHaveLength(2);expect(informational.every((x:any)=>!ids.includes(x.id))).toBe(true);expect((awa",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/dashboard-usability.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const informational=report.findings.filter((x:any)=>x.category==='INFORMATIONAL');expect(informational).toHaveLength(2);expect(informational.every((x:any)=>!ids.includes(x.id))).toBe(true);expect((awa",
+      "occurrence": 3
+    },
+    {
+      "file": "tests/e2e/dashboard-usability.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await page.goto('?finding='+encodeURIComponent(informational[0].id));await page.waitForFunction(()=>typeof (window as any).rtlDashboardVisibleFindings==='function');expect(informational.map((x:any)=>x",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/dashboard-usability.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await page.goto('?finding='+encodeURIComponent(informational[0].id));await page.waitForFunction(()=>typeof (window as any).rtlDashboardVisibleFindings==='function');expect(informational.map((x:any)=>x",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/dashboard-usability.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await page.goto('?finding='+encodeURIComponent(informational[0].id));await page.waitForFunction(()=>typeof (window as any).rtlDashboardVisibleFindings==='function');expect(informational.map((x:any)=>x",
+      "occurrence": 3
+    },
+    {
+      "file": "tests/e2e/dashboard-usability.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await page.goto('?finding='+encodeURIComponent(informational[0].id));await page.waitForFunction(()=>typeof (window as any).rtlDashboardVisibleFindings==='function');expect(informational.map((x:any)=>x",
+      "occurrence": 4
+    },
+    {
+      "file": "tests/e2e/dashboard-usability.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const measurements:any[]=[];",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/directional-expansion-workflows.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const findings=report.findings.filter((f:any)=>files.some(name=>f.path.endsWith(name)));",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/directional-expansion-workflows.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const originals=Object.fromEntries([...new Set(findings.map((f:any)=>f.path))].map((p:any)=>[p,readFileSync(join(env.project,p),'utf8')]));",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/directional-expansion-workflows.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const originals=Object.fromEntries([...new Set(findings.map((f:any)=>f.path))].map((p:any)=>[p,readFileSync(join(env.project,p),'utf8')]));",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/directional-expansion-workflows.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const first=findings.find((f:any)=>f.original.startsWith('text-align: left'));expect(first).toBeTruthy();",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/directional-expansion-workflows.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const entries=w.entries.filter((e:any)=>files.some(name=>e.finding.path.endsWith(name))&&e.patch);expect(entries).toHaveLength(13);",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/directional-expansion-workflows.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "expect(entries.every((e:any)=>e.decision==='Pending'&&e.reason.includes('Requires semantic review'))).toBe(true);",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/directional-expansion-workflows.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "expect(w.entries.filter((e:any)=>e.finding.path.endsWith('odd-edges.css')&&!e.patch).map((e:any)=>e.reason).join(' ')).toContain('CASCADE_DECLARATION');",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/directional-expansion-workflows.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "expect(w.entries.filter((e:any)=>e.finding.path.endsWith('odd-edges.css')&&!e.patch).map((e:any)=>e.reason).join(' ')).toContain('CASCADE_DECLARATION');",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/directional-expansion-workflows.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const utility=w.entries.find((e:any)=>e.finding.ruleId==='RTL.UTILITY.PHYSICAL');expect(utility.patch).toBeUndefined();expect(utility.reason).toContain('UTILITY_COMPILER_VERSION');",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/directional-expansion-workflows.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "async function select(f:any){await page.locator('button.file[data-source-path=\"'+f.path+'\"]').click();await page.locator('button.finding').filter({hasText:f.path+':'+f.range.start.line+':'+f.range.sta",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/directional-expansion-workflows.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "for(const e of entries){await select(e.finding);await expect(page.locator('.before-card pre')).toHaveText(e.finding.original);await expect(page.locator('.after-card pre')).toHaveText(e.patch.replaceme",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/directional-expansion-workflows.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const renders:any[]=[];",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/directional-expansion-workflows.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const rejected=entries.find((e:any)=>e.finding.original==='marginLeft:11'),deferred=entries.find((e:any)=>e.finding.path.endsWith('another-random-name.css')&&e.finding.original.startsWith('text-align:",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/directional-expansion-workflows.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const rejected=entries.find((e:any)=>e.finding.original==='marginLeft:11'),deferred=entries.find((e:any)=>e.finding.path.endsWith('another-random-name.css')&&e.finding.original.startsWith('text-align:",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/directional-expansion-workflows.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "for(const e of entries){const label=e===rejected?'Reject fix':e===deferred?'Defer':'Approve fix';await select(e.finding);await page.getByRole('button',{name:label,exact:true}).click();if(label==='Appr",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/directional-expansion-workflows.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const table=report.findings.find((f:any)=>f.path.endsWith('InvoiceTable.tsx')&&f.ruleId==='RTL.BIDI.ISOLATION');await select(table);await expect(page.locator('.component-before .embedded-state')).toHa",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/directional-expansion-workflows.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "writeFileSync(info.outputPath('mixed-family-acceptance.json'),JSON.stringify({mode,workflowId,baseline,renders,applied,rolledBack,entries:entries.map((e:any)=>({before:e.finding.original,after:e.patch",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/embedded-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const events: any[] = [], errors: string[] = [], logs: string[] = [], pending: Promise<void>[] = [];",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/embedded-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const entry=events.find(e=>e.url.endsWith('/review/workflows')&&e.method==='POST').response.workflow.entries.find((e:any)=>e.finding.id===findingId);",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/fullscreen-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const finding = report.findings.find((f: any) => f.path.endsWith('/InvoiceTable.tsx') && f.original === '{i.id}');",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/fullscreen-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await original.evaluate(n => { (window as any).__previewOriginal = n; });",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/fullscreen-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await candidate.evaluate(n => { (window as any).__previewCandidate = n; });",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/fullscreen-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await expect(dialog.locator('.component-after h3')).toContainText(initial.entries.find((e: any) => e.finding.id === finding.id).decision);",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/fullscreen-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "expect(await original.evaluate(n => n === (window as any).__previewOriginal)).toBe(true);",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/fullscreen-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "expect(await candidate.evaluate(n => n === (window as any).__previewCandidate)).toBe(true);",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/fullscreen-review-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const second = report.findings.find((f: any) => f.path === finding.path && f.id !== finding.id && f.original === '{i.id}');",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/guided-operation-flow.spec.ts",
+      "rule": "@typescript-eslint/no-unused-vars",
+      "text": "import {test,expect} from '@playwright/test';import {readFileSync,writeFileSync} from 'node:fs';import {join} from 'node:path';import {createHash} from 'node:crypto';import {enterReview} from './enter",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/guided-operation-flow.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "test.setTimeout(240000);page.setDefaultTimeout(15000);const env=JSON.parse(readFileSync(process.env.RTL_MANUAL_ENVIRONMENT!,'utf8'));if(!env.project.includes('rtl-independent-onboarding-'))throw Error",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/guided-operation-flow.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const chooser=page.locator('.workflow-screen'),ready=()=>expect(page.locator('.component-after .embedded-state')).toHaveAttribute('data-context-status','verified',{timeout:30000}),pick=async(f:any)=>{",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/guided-operation-flow.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await pick(css[3]);await page.locator('.workflow-notes summary').click();await page.getByRole('textbox',{name:'Review note',exact:true}).fill('Deferred unchanged source');await page.getByRole('button'",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/guided-operation-flow.spec.ts",
+      "rule": "@typescript-eslint/no-unused-vars",
+      "text": "let applyRelease!:()=>void;const applyHold=new Promise<void>(r=>applyRelease=r);await page.route('**/review/workflows/*/apply',async route=>{const response=await route.fetch();await applyHold;await ro",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/guided-operation-flow.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const fresh=await request.get('http://127.0.0.1:4318/review/workflows?history=1').then(r=>r.json()).then(r=>r.workflows.find((x:any)=>x.continuedFrom===id));expect(fresh).toBeTruthy();const deferred=f",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/guided-operation-flow.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const fresh=await request.get('http://127.0.0.1:4318/review/workflows?history=1').then(r=>r.json()).then(r=>r.workflows.find((x:any)=>x.continuedFrom===id));expect(fresh).toBeTruthy();const deferred=f",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/guided-operation-flow.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const fresh=await request.get('http://127.0.0.1:4318/review/workflows?history=1').then(r=>r.json()).then(r=>r.workflows.find((x:any)=>x.continuedFrom===id));expect(fresh).toBeTruthy();const deferred=f",
+      "occurrence": 3
+    },
+    {
+      "file": "tests/e2e/guided-operation-flow.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const fresh=await request.get('http://127.0.0.1:4318/review/workflows?history=1').then(r=>r.json()).then(r=>r.workflows.find((x:any)=>x.continuedFrom===id));expect(fresh).toBeTruthy();const deferred=f",
+      "occurrence": 4
+    },
+    {
+      "file": "tests/e2e/independent-expansion.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const report=JSON.parse(readFileSync(join(env.dashboard,'rtl-report.json'),'utf8')),first=report.findings.find((f:any)=>f.original.startsWith('margin-left:12px'));",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/independent-expansion.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "let w=await snapshot();const supported=w.entries.filter((e:any)=>e.patch);expect(supported).toHaveLength(10);const overlap=w.entries.filter((e:any)=>e.finding.context==='stylesheet/.overlap');expect(o",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/independent-expansion.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "let w=await snapshot();const supported=w.entries.filter((e:any)=>e.patch);expect(supported).toHaveLength(10);const overlap=w.entries.filter((e:any)=>e.finding.context==='stylesheet/.overlap');expect(o",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/independent-expansion.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "let w=await snapshot();const supported=w.entries.filter((e:any)=>e.patch);expect(supported).toHaveLength(10);const overlap=w.entries.filter((e:any)=>e.finding.context==='stylesheet/.overlap');expect(o",
+      "occurrence": 3
+    },
+    {
+      "file": "tests/e2e/independent-expansion.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "for(const e of supported){await page.locator('button.file[data-source-path=\"'+e.finding.path+'\"]').click();await page.locator('button.finding').filter({hasText:e.finding.path+':'+e.finding.range.start",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/independent-expansion.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "for(const e of supported){await page.locator('button.file[data-source-path=\"'+e.finding.path+'\"]').click();await page.locator('button.finding').filter({hasText:e.finding.path+':'+e.finding.range.start",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/independent-expansion.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "w=await snapshot();expect(w.root).toBe(env.project);expect(w.session.sourcePath).not.toContain('InvoiceTable');expect(w.entries.every((e:any)=>e.decision==='Pending'||e.decision==='Accepted')).toBe(tr",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/independent-expansion.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const runtime=spawn(process.execPath,[join(process.cwd(),'node_modules/vite/bin/vite.js'),'--config',join(w.session.candidateRoot,'apps/lab/vite.config.ts'),'--host','127.0.0.1','--port','4215','--str",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/independent-expansion.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await page.getByRole('button',{name:'Validate changes',exact:true}).click();await expect(page.locator('.workflow-validation')).toContainText('Validation: Unavailable',{timeout:45000});w=await snapshot",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/independent-expansion.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await page.getByRole('button',{name:'Validate changes',exact:true}).click();await expect(page.locator('.workflow-validation')).toContainText('Validation: Unavailable',{timeout:45000});w=await snapshot",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/independent-expansion.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await page.getByRole('button',{name:'Validate changes',exact:true}).click();await expect(page.locator('.workflow-validation')).toContainText('Validation: Unavailable',{timeout:45000});w=await snapshot",
+      "occurrence": 3
+    },
+    {
+      "file": "tests/e2e/independent-onboarding.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const css=report.findings.filter((f:any)=>f.path===path),find=(selector:string)=>css.find((f:any)=>f.context==='stylesheet/'+selector),spacing=find('.contact-card'),alignment=find('.contact-name'),bor",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/independent-onboarding.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const css=report.findings.filter((f:any)=>f.path===path),find=(selector:string)=>css.find((f:any)=>f.context==='stylesheet/'+selector),spacing=find('.contact-card'),alignment=find('.contact-name'),bor",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/independent-onboarding.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const requests:any[]=[],errors:string[]=[];page.on('request',r=>{if(r.method()==='POST')requests.push({url:r.url(),body:r.postDataJSON()})});page.on('pageerror',e=>errors.push(e.message));page.on('dia",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/independent-onboarding.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "async function pick(f:any){await page.locator('button.file[data-source-path=\"'+f.path+'\"]').click();await page.locator('button.finding[data-finding-id=\"'+f.id+'\"]').click()}",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/independent-onboarding.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "let w=await snapshot();let initial=w;expect(requests.filter(e=>/\\/(change|patch|sessions|runtime)$/.test(e.url))).toHaveLength(0);await expect(after).toHaveAttribute('data-preparation-state','ready',{",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/independent-onboarding.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const measurements:any[]=[];for(const dir of ['LTR','RTL']){await page.locator('.component-toolbar').getByRole('button',{name:dir,exact:true}).click();await expect(page.frameLocator('.component-after ",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/independent-onboarding.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "for(const f of [spacing,alignment,border]){await pick(f);await expect(before).toHaveAttribute('data-context-status','verified');await expect(after).toHaveAttribute('data-preparation-state','ready',{ti",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/independent-onboarding.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await pick(rejected);if(mode==='one-by-one'){await expect(after).toHaveAttribute('data-preparation-state','ready',{timeout:30000});await expect(after).toHaveAttribute('data-context-status','verified',",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/independent-onboarding.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await page.getByRole('button',{name:'Validate changes',exact:true}).click();await page.getByRole('dialog',{name:'Validation passed',exact:true}).getByRole('button',{name:'Back to review',exact:true}).",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/independent-onboarding.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await page.getByRole('button',{name:'Validate changes',exact:true}).click();await page.getByRole('dialog',{name:'Validation passed',exact:true}).getByRole('button',{name:'Back to review',exact:true}).",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/independent-onboarding.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const fullCandidateMeasurements:any[]=[];for(const dir of ['LTR','RTL']){await page.locator('.component-toolbar').getByRole('button',{name:dir,exact:true}).click();await expect(page.frameLocator('.com",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/independent-onboarding.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await page.locator('.session-overflow > button').click();await page.getByRole('menuitem',{name:'Rollback applied changes',exact:true}).click();await expect(before).toHaveAttribute('data-context-status",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/independent-onboarding.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await page.locator('.session-overflow > button').click();await page.getByRole('menuitem',{name:'Rollback applied changes',exact:true}).click();await expect(before).toHaveAttribute('data-context-status",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/manual-review-after-pane.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const find=(selector:string)=>{const f=report.findings.find((x:any)=>typeof x.context==='string'&&x.context.endsWith('/'+selector)&&x.path==='src/lab.css');if(!f)throw Error('FINDING_NOT_FOUND '+selec",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/manual-review-after-pane.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const accepted=async()=>{const r=await request.get(origin+'/review/workflows?'+new URLSearchParams({inputDigest:report.inputDigest,policyDigest:report.policyDigest,mode:'one-by-one'})).then(r=>r.json(",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/manual-review-after-pane.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const open=async(f:any)=>{await page.goto('?finding='+encodeURIComponent(f.id),{waitUntil:'domcontentloaded'});await page.waitForFunction(()=>typeof (window as any).rtlDashboardVisibleFindings==='func",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/manual-review-after-pane.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const open=async(f:any)=>{await page.goto('?finding='+encodeURIComponent(f.id),{waitUntil:'domcontentloaded'});await page.waitForFunction(()=>typeof (window as any).rtlDashboardVisibleFindings==='func",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/manual-review-after-pane.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const reasonOf=(f:any)=>String(f.rationale).slice(0,40);",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/phase4-rescan.spec.ts",
+      "rule": "@typescript-eslint/no-unused-vars",
+      "text": "const incomplete = manifest([finding('new')], false, '00000000-0000-4000-8000-000000000003');",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/post-apply-context.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const a=report.findings.find((f:any)=>f.path===invoice&&f.original==='{i.id}');",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/post-apply-context.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const events:any[]=[],evidence:any[]=[],errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/post-apply-context.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const events:any[]=[],evidence:any[]=[],errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/post-apply-context.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "async function capture(stage:string){const w=await snapshot();const runtimes:any={};for(const origin of ['http://127.0.0.1:4200',w?.session?.runtime?.origin].filter(Boolean)){try{runtimes[origin]=awai",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/post-apply-context.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const select=async(original:string)=>{await page.locator('button.file').filter({hasText:'InvoiceTable.tsx'}).click();const current=await page.evaluate(()=>JSON.parse(document.getElementById('rtl-dashb",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/post-apply-context.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const select=async(original:string)=>{await page.locator('button.file').filter({hasText:'InvoiceTable.tsx'}).click();const current=await page.evaluate(()=>JSON.parse(document.getElementById('rtl-dashb",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/post-apply-context.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const select=async(original:string)=>{await page.locator('button.file').filter({hasText:'InvoiceTable.tsx'}).click();const current=await page.evaluate(()=>JSON.parse(document.getElementById('rtl-dashb",
+      "occurrence": 3
+    },
+    {
+      "file": "tests/e2e/post-apply-context.spec.ts",
+      "rule": "@typescript-eslint/no-unused-vars",
+      "text": "const unsupported=await select('{money(total(i), i.currency)}');await expect(page.locator('.after-card pre')).toContainText('AMBIGUOUS_TOKEN_EXPRESSION');",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/post-apply-context.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const active=await page.evaluate(()=>JSON.parse(document.getElementById('rtl-dashboard-data')!.textContent!));const procurement=Object.values(active.queue).flat().find((f:any)=>f.path==='apps/procurem",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/post-apply-context.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const active=await page.evaluate(()=>JSON.parse(document.getElementById('rtl-dashboard-data')!.textContent!));const procurement=Object.values(active.queue).flat().find((f:any)=>f.path==='apps/procurem",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/preview-binding.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const find=(name:string,original?:string)=>report.findings.find((f:any)=>f.path.endsWith(name)&&(!original||f.original.startsWith(original))),mapped=find('strange-name.css','text-align'),second=find('",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/preview-binding.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const originals=Object.fromEntries([mapped,unused,missing,unbound].map(f=>[f.path,readFileSync(join(env.project,f.path),'utf8')]));const errors:string[]=[],writes:any[]=[];page.on('pageerror',e=>error",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/preview-binding.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await page.getByRole('button',{name:'Prepare candidate',exact:true}).click();await expect.poll(async()=>(await snapshot()).entries.find((e:any)=>e.finding.id===unbound.id).applied).toBe(true);expect(w",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/preview-binding.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "async function select(f:any){await page.locator('button.file[data-source-path=\"'+f.path+'\"]').click();await page.locator('button.finding').filter({hasText:f.path+':'+f.range.start.line+':'+f.range.sta",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/preview-binding.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const measure=async(frame:any)=>frame.locator('.read-edge').evaluate((n:Element)=>{const box=n.getBoundingClientRect(),label=n.querySelector('span')!.getBoundingClientRect();return {align:getComputedS",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/preview-binding.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await page.reload({waitUntil:'domcontentloaded'});await enterReview(page,mode);w=await snapshot();expect(w.session.id).toBe(session);expect(w.entries.every((e:any)=>e.decision==='Pending')).toBe(true)",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/preview-status.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "test.setTimeout(180000);page.setDefaultTimeout(15000);const env=JSON.parse(readFileSync(process.env.RTL_MANUAL_ENVIRONMENT!,'utf8'));if(!env.project.includes('rtl-independent-onboarding-'))throw Error",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/preview-status.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "test.setTimeout(180000);page.setDefaultTimeout(15000);const env=JSON.parse(readFileSync(process.env.RTL_MANUAL_ENVIRONMENT!,'utf8'));if(!env.project.includes('rtl-independent-onboarding-'))throw Error",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/preview-status.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "test.setTimeout(180000);page.setDefaultTimeout(15000);const env=JSON.parse(readFileSync(process.env.RTL_MANUAL_ENVIRONMENT!,'utf8'));if(!env.project.includes('rtl-independent-onboarding-'))throw Error",
+      "occurrence": 3
+    },
+    {
+      "file": "tests/e2e/preview-status.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "test.setTimeout(180000);page.setDefaultTimeout(15000);const env=JSON.parse(readFileSync(process.env.RTL_MANUAL_ENVIRONMENT!,'utf8'));if(!env.project.includes('rtl-independent-onboarding-'))throw Error",
+      "occurrence": 4
+    },
+    {
+      "file": "tests/e2e/preview-status.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const icon=(f:any)=>page.locator('button.finding[data-finding-id=\"'+f.id+'\"] .finding-decision');",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/preview-status.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const pick=async(f:any)=>{await page.locator('button.file[data-source-path=\"'+f.path+'\"]').click();await page.locator('button.finding[data-finding-id=\"'+f.id+'\"]').click();for(const id of await page.l",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/preview-status.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const ready=async(f:any)=>{await expect(page.locator('.component-before .embedded-state')).toHaveAttribute('data-context-status','verified',{timeout:30000});await expect(page.locator('.component-after",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/preview-ui-reproduce.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const report=JSON.parse(readFileSync(join(env.dashboard,'rtl-report.json'),'utf8')),f=report.findings.find((f:any)=>f.context==='stylesheet/.contact-card');",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/preview-ui-state.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const report=JSON.parse(readFileSync(join(env.dashboard,'rtl-report.json'),'utf8')),f=report.findings.find((f:any)=>f.context==='stylesheet/.contact-card'),other=report.findings.find((f:any)=>f.contex",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/preview-ui-state.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const report=JSON.parse(readFileSync(join(env.dashboard,'rtl-report.json'),'utf8')),f=report.findings.find((f:any)=>f.context==='stylesheet/.contact-card'),other=report.findings.find((f:any)=>f.contex",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/preview-ui-state.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const hashes=()=>Object.fromEntries(report.files.map((p:string)=>[p,createHash('sha256').update(readFileSync(join(env.project,p))).digest('hex')]));const source=hashes(),errors:string[]=[],posts:any[]",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/preview-ui-state.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const pick=async(f:any)=>{await page.locator('button.file[data-source-path=\"'+f.path+'\"]').click();await page.locator('button.finding').filter({hasText:f.path+':'+f.range.start.line+':'+f.range.start.",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/preview-ui-state.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await page.goto('?finding='+encodeURIComponent(f.id));await enterReview(page,mode);await ready();const initial=await active();expect(initial.entries.every((e:any)=>e.decision==='Pending')).toBe(true);",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/preview-ui-state.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await page.locator('.workflow-notes summary').click();await page.getByRole('textbox',{name:'Review note'}).fill('Both rendered contacts reviewed');await page.getByRole('button',{name:'Save note',exact",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/preview-ui-state.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await page.locator('.session-overflow > button').click();await page.getByRole('menuitem',{name:'Rollback applied changes',exact:true}).click();await ready();const fresh=await active();expect(fresh.ses",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/restart-infrastructure.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "function getHealth(): Promise<any> {",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/restart-infrastructure.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "async function waitForHealth(): Promise<any> {",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/review-mode-entry.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "test.setTimeout(180000);page.setDefaultTimeout(15000);const env=JSON.parse(readFileSync(process.env.RTL_MANUAL_ENVIRONMENT!,'utf8'));if(!env.project.includes('rtl-independent-onboarding-'))throw Error",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/review-mode-entry.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "test.setTimeout(180000);page.setDefaultTimeout(15000);const env=JSON.parse(readFileSync(process.env.RTL_MANUAL_ENVIRONMENT!,'utf8'));if(!env.project.includes('rtl-independent-onboarding-'))throw Error",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/review-mode-entry.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "test.setTimeout(180000);page.setDefaultTimeout(15000);const env=JSON.parse(readFileSync(process.env.RTL_MANUAL_ENVIRONMENT!,'utf8'));if(!env.project.includes('rtl-independent-onboarding-'))throw Error",
+      "occurrence": 3
+    },
+    {
+      "file": "tests/e2e/review-mode-entry.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const pick=async(f:any)=>{await page.locator('button.file[data-source-path=\"'+f.path+'\"]').click();await page.locator('button.finding[data-finding-id=\"'+f.id+'\"]').click()};",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/review-mode-entry.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await chooser.getByRole('button',{name:mode==='one-by-one'?'Start manual review':'Prepare all & review',exact:true}).click();if(mode==='apply-first'){await expect(page.locator('.batch-review')).toBeVi",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/review-mode-entry.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await chooser.getByRole('button',{name:mode==='one-by-one'?'Start manual review':'Prepare all & review',exact:true}).click();if(mode==='apply-first'){await expect(page.locator('.batch-review')).toBeVi",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/review-mode-entry.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "for(const mode of ['one-by-one','apply-first']){await modeButton.click();await chooser.getByRole('button',{name:mode==='one-by-one'?'Start manual review':'Prepare all & review',exact:true}).click();if",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/review-one-by-one-analysis.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const writes:{url:string;body:any}[]=[];page.on('request',r=>{if(r.method()==='POST')writes.push({url:r.url(),body:r.postDataJSON()})});",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/review-one-by-one-analysis.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const data=await page.locator('#rtl-dashboard-data').textContent().then(s=>JSON.parse(s!));const response=await page.request.get('http://127.0.0.1:4318/review/workflows?'+new URLSearchParams({mode:'on",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/review-one-by-one-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const root=info.config.metadata.portableFixtureRoot as string;if(!root?.includes('rtl-analyzer-e2e-'))throw Error('DISPOSABLE_FIXTURE_REQUIRED');const original=readFileSync(join(root,sourcePath),'utf8",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/review-one-by-one-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const snippet=data.sourceSnippets.findings.find((s:any)=>s.findingId===findingId);expect(snippet.available).toBe(true);const window=data.sourceSnippets.sources.find((s:any)=>s.id===snippet.sourceId);e",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/review-one-by-one-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const snippet=data.sourceSnippets.findings.find((s:any)=>s.findingId===findingId);expect(snippet.available).toBe(true);const window=data.sourceSnippets.sources.find((s:any)=>s.id===snippet.sourceId);e",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/review-one-by-one-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const before=await snapshot(),entry=before.entries.find((e:any)=>e.finding.id===findingId),patch=entry.patch;expect(before.session).toBeUndefined();expect(patch.expectedSha256).toBe(hash(original.slic",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/review-one-by-one-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const before=await snapshot(),entry=before.entries.find((e:any)=>e.finding.id===findingId),patch=entry.patch;expect(before.session).toBeUndefined();expect(patch.expectedSha256).toBe(hash(original.slic",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/review-one-by-one-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await page.getByRole('button',{name:'Apply & Preview',exact:true}).click();await expect(page.locator('.component-after .embedded-state')).toHaveAttribute('data-state','ready',{timeout:30000});const w=",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/review-one-by-one-preview.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const expected=original.slice(0,patch.startOffset)+replacement+original.slice(patch.endOffset);const file=w.files.find((f:any)=>f.path===sourcePath);expect(file.before).toBe(original);expect(file.afte",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/review-workflows-complete.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const network:any[]=[],errors:string[]=[];",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/review-workflows-complete.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const invoiceFindings=report.findings.filter((f:any)=>f.path===invoice&&f.original==='{i.id}');",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/review-workflows-complete.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const tokenFindings=report.findings.filter((f:any)=>f.path===tokens&&f.original==='{item.id}');",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/review-workflows-complete.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const unsupported=report.findings.find((f:any)=>f.path===invoice&&f.original==='{money(total(i), i.currency)}');",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/review-workflows-complete.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "async function select(f:any){",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/review-workflows-complete.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const waitSaved=(findingId:string,decision:string)=>expect.poll(async()=>{const w=await snapshot();return w?.entries.find((e:any)=>e.finding.id===findingId).decision}).toBe(decision);",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/review-workflows-complete.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const selectAndApply=async(f:any)=>{await select(f);await expect(page.locator('.component-after .embedded-state')).toHaveAttribute('data-preparation-state','ready',{timeout:30000});await expect.poll(a",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/review-workflows-complete.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const selectAndApply=async(f:any)=>{await select(f);await expect(page.locator('.component-after .embedded-state')).toHaveAttribute('data-preparation-state','ready',{timeout:30000});await expect.poll(a",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/review-workflows-complete.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const decide=async(f:any,label:string,decision:string)=>{await select(f);await page.getByRole('button',{name:label,exact:true}).click();if(decision==='Accepted')await page.getByRole('dialog',{name:'Pr",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/review-workflows-complete.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const eligible=w.entries.filter((e:any)=>e.patch);",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/review-workflows-complete.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "if(mode==='one-by-one'){expect(w.session).toBeUndefined();expect(eligible.every((e:any)=>!e.applied)).toBe(true)}",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/review-workflows-complete.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "else {expect(w.session).toBeTruthy();expect(eligible.every((e:any)=>e.applied&&e.decision==='Pending')).toBe(true);for(const f of w.files)expect(readFileSync(join(w.session.candidateRoot,f.path),'utf8",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/review-workflows-complete.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "expect(w.entries.filter((e:any)=>!e.patch).every((e:any)=>!e.applied&&e.reason)).toBe(true);",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/review-workflows-complete.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "expect(w.entries.filter((e:any)=>!e.patch).every((e:any)=>!e.applied&&e.reason)).toBe(true);",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/review-workflows-complete.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "expect((await snapshot()).id).toBe(id);expect((await snapshot()).entries.find((e:any)=>e.finding.id===b.id).decision).toBe('Rejected');",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/review-workflows-complete.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "w=await snapshot();expect(w.validation.checks.filter((x:any)=>x.state==='Failed')).toHaveLength(0);",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/review-workflows-complete.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const f=report.findings.find((f:any)=>f.path===invoice&&f.original==='{i.id}');",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/review-workflows-complete.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const first=report.findings.find((f:any)=>f.path===invoice&&f.original==='{i.id}'),second=report.findings.find((f:any)=>f.path==='apps/procurement/src/App.tsx'&&f.original==='{o.id}');",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/review-workflows-complete.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const first=report.findings.find((f:any)=>f.path===invoice&&f.original==='{i.id}'),second=report.findings.find((f:any)=>f.path==='apps/procurement/src/App.tsx'&&f.original==='{o.id}');",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/rollback-review-resumption.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const report=JSON.parse(readFileSync(join(env.dashboard,'rtl-report.json'),'utf8')),finding=report.findings.find((f:any)=>f.path===source&&f.original==='{i.id}'),original=readFileSync(join(env.project",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/rollback-review-resumption.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const events:any[]=[],errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(r.method()==='POST')events.push({url:r.url(),body:r.postDataJSON()})});page.on('dialog'",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/rollback-review-resumption.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "let failRescan=mode==='apply-first',held=false,releaseLate!:()=>void,latePayload:any;",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/rollback-review-resumption.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "expect(fresh.id).not.toBe(historical.id);expect(fresh.resumedFrom).toBe(historical.id);expect(fresh.state).toBe('Reviewing');expect(fresh.session.id).not.toBe(historical.session.id);expect(fresh.valid",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/rollback-review-resumption.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "expect(fresh.entries.filter((e:any)=>e.applied).map((e:any)=>e.finding.id)).toEqual([finding.id]);const rollbackIndex=events.findIndex(e=>e.url.endsWith('/rollback'));expect(events.slice(rollbackIndex",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/rollback-review-resumption.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "expect(fresh.entries.filter((e:any)=>e.applied).map((e:any)=>e.finding.id)).toEqual([finding.id]);const rollbackIndex=events.findIndex(e=>e.url.endsWith('/rollback'));expect(events.slice(rollbackIndex",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/rollback-review-resumption.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await expect(page.locator('.component-before .embedded-state')).toHaveAttribute('data-context-status','verified',{timeout:30000});await expect(page.locator('.component-after .embedded-state')).toHaveA",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/rollback-review-resumption.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "await expect(page.locator('.component-before .embedded-state')).toHaveAttribute('data-context-status','verified',{timeout:30000});await expect(page.locator('.component-after .embedded-state')).toHaveA",
+      "occurrence": 2
+    },
+    {
+      "file": "tests/e2e/security-negative.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const call = (path: string, body?: unknown) => new Promise<{ status: number; json: any }>((resolve, reject) => {",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/security-negative.spec.ts",
+      "rule": "@typescript-eslint/no-unused-vars",
+      "text": "test('codemod analysis rejects an invalid source path before reading', async () => withCompanion(async f => { const result = await call('/review/codemod/analyze', { finding: { id: identity.findingId, ",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/security-negative.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "test('lifecycle rejects an invalid source path before reading', async () => withCompanion(async () => { const result = await call('/review/lifecycle?' + new URLSearchParams({ ...identity, sourcePath: ",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/security-negative.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "test('review decisions reject an invalid source path before reading', async () => withCompanion(async () => { const result = await call('/review/decisions?' + new URLSearchParams({ ...identity, source",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/security-negative.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "test('apply eligibility rejects an invalid source path', async () => withCompanion(async () => { const result = await call('/review/apply/eligibility?' + new URLSearchParams({ ...identity, sourcePath:",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/security-negative.spec.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "test('apply eligibility returns a handled error when the source is missing', async () => withCompanion(async f => { renameSync(f.source, f.source + '.missing'); const result = await call('/review/appl",
+      "occurrence": 1
+    },
+    {
+      "file": "tests/e2e/serve-independent-onboarding.mjs",
+      "rule": "@typescript-eslint/no-unused-expressions",
+      "text": "packageBin?execFileSync(packageBin,['--root',project,'--format','dashboard','--embed-source-snippets','--output-dir',dashboard],{cwd:project,stdio:['ignore','ignore','inherit']}):execFileSync(process.",
+      "occurrence": 1
+    },
+    {
+      "file": "tools/rtl-scanner/src/cli.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "export interface CliDependencies { scan:(root:string)=>Promise<any>; json:(report:any)=>string; markdown:(report:any)=>string; publishReports:(root:string,dir:string,json:string,markdown:string)=>Prom",
+      "occurrence": 1
+    },
+    {
+      "file": "tools/rtl-scanner/src/cli.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "export interface CliDependencies { scan:(root:string)=>Promise<any>; json:(report:any)=>string; markdown:(report:any)=>string; publishReports:(root:string,dir:string,json:string,markdown:string)=>Prom",
+      "occurrence": 2
+    },
+    {
+      "file": "tools/rtl-scanner/src/cli.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "export interface CliDependencies { scan:(root:string)=>Promise<any>; json:(report:any)=>string; markdown:(report:any)=>string; publishReports:(root:string,dir:string,json:string,markdown:string)=>Prom",
+      "occurrence": 3
+    },
+    {
+      "file": "tools/rtl-scanner/src/cli.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "export interface CliDependencies { scan:(root:string)=>Promise<any>; json:(report:any)=>string; markdown:(report:any)=>string; publishReports:(root:string,dir:string,json:string,markdown:string)=>Prom",
+      "occurrence": 4
+    },
+    {
+      "file": "tools/rtl-scanner/src/cli.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "try {const args=argv.filter(a=>{if(a==='--fail-on-findings'){gate=true;return false;}return true;});for(let i=0;i<args.length;i+=2){const key=args[i],value=args[i+1];if(key==='--embed-source-snippets'",
+      "occurrence": 1
+    },
+    {
+      "file": "tools/rtl-scanner/src/controlled-apply.ts",
+      "rule": "@typescript-eslint/no-unused-vars",
+      "text": "try { const stat = await lstat(path); if (!stat.isFile()) throw new Error('APPLY_SOURCE_NOT_REGULAR_FILE'); const original = await readNoFollow(path); const originalSha256 = sha(original); if (origina",
+      "occurrence": 1
+    },
+    {
+      "file": "tools/rtl-scanner/src/dashboard-data.ts",
+      "rule": "@typescript-eslint/no-unused-vars",
+      "text": "import { approvedPreviewForSource, PREVIEW_COMPANION_ORIGIN, PREVIEW_MANIFEST_VERSION } from './preview-manifest.js';",
+      "occurrence": 1
+    },
+    {
+      "file": "tools/rtl-scanner/src/dashboard-data.ts",
+      "rule": "@typescript-eslint/no-unused-vars",
+      "text": "import { approvedPreviewForSource, PREVIEW_COMPANION_ORIGIN, PREVIEW_MANIFEST_VERSION } from './preview-manifest.js';",
+      "occurrence": 2
+    },
+    {
+      "file": "tools/rtl-scanner/src/dashboard-data.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "export function toDashboardData(report:SchemaV2PresentationReport,snippets?:SourceSnippetResult):DashboardData{const refs=new Map(report.evidenceReferences.map(ref=>[ref.findingId,ref]));const reporte",
+      "occurrence": 1
+    },
+    {
+      "file": "tools/rtl-scanner/src/dashboard-data.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "export function toDashboardData(report:SchemaV2PresentationReport,snippets?:SourceSnippetResult):DashboardData{const refs=new Map(report.evidenceReferences.map(ref=>[ref.findingId,ref]));const reporte",
+      "occurrence": 2
+    },
+    {
+      "file": "tools/rtl-scanner/src/evidence-store.ts",
+      "rule": "@typescript-eslint/no-unused-vars",
+      "text": "const immutablePayload = (snapshot: Omit<EvidenceSnapshot, 'integritySha256'> | EvidenceSnapshot) => { const { integritySha256: _ignored, ...payload } = snapshot as EvidenceSnapshot; return payload; }",
+      "occurrence": 1
+    },
+    {
+      "file": "tools/rtl-scanner/src/evidence-store.ts",
+      "rule": "@typescript-eslint/no-unused-vars",
+      "text": "async appendApproval(snapshotId: string): Promise<EvidenceSnapshot> { const source = this.snapshots.get(snapshotId); if (!source) throw new Error('EVIDENCE_SNAPSHOT_NOT_FOUND'); if (source.decision ==",
+      "occurrence": 1
+    },
+    {
+      "file": "tools/rtl-scanner/src/evidence-store.ts",
+      "rule": "@typescript-eslint/no-unused-vars",
+      "text": "async appendApproval(snapshotId: string): Promise<EvidenceSnapshot> { const source = this.snapshots.get(snapshotId); if (!source) throw new Error('EVIDENCE_SNAPSHOT_NOT_FOUND'); if (source.decision ==",
+      "occurrence": 2
+    },
+    {
+      "file": "tools/rtl-scanner/src/preview-companion.ts",
+      "rule": "@typescript-eslint/no-unused-vars",
+      "text": "import { applyReviewPatch, createReviewSession, disposeReviewSession, reviewSessionComparison, reviewSessionDiff, startCandidateRuntime, stopCandidateRuntime, validateProjectSourcePath, validateReview",
+      "occurrence": 1
+    },
+    {
+      "file": "tools/rtl-scanner/src/preview-companion.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "async function body(request: IncomingMessage): Promise<any> { let value=''; for await (const chunk of request) value += chunk; if (value.length > 100_000) throw new Error('REQUEST_TOO_LARGE'); return ",
+      "occurrence": 1
+    },
+    {
+      "file": "tools/rtl-scanner/src/report-publisher.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "export interface PublisherFs { lstat(path:string):Promise<any>; open(path:string, flags:string, mode:number):Promise<FileHandle>; link(from:string,to:string):Promise<void>; unlink(path:string):Promise",
+      "occurrence": 1
+    },
+    {
+      "file": "tools/rtl-scanner/src/review-session.ts",
+      "rule": "@typescript-eslint/no-unused-vars",
+      "text": "const source = sourcePath===REVIEW_SOURCE?validateReviewPath(root,sourcePath):await validateProjectSourcePath(root,sourcePath);",
+      "occurrence": 1
+    },
+    {
+      "file": "tools/rtl-scanner/src/review-workflow.ts",
+      "rule": "@typescript-eslint/no-unused-vars",
+      "text": "import {previewConfigurationDigest,PREVIEW_CONFIGURATION,loadPreviewConfiguration,configuredMapping,routeUrl} from './preview-configuration.js';",
+      "occurrence": 1
+    },
+    {
+      "file": "tools/rtl-scanner/src/review-workflow.ts",
+      "rule": "@typescript-eslint/no-unused-vars",
+      "text": "const { baseline, sourcePaths: _paths, ...rest } = w;",
+      "occurrence": 1
+    },
+    {
+      "file": "tools/rtl-scanner/src/scan-manifest-store.ts",
+      "rule": "@typescript-eslint/no-unused-vars",
+      "text": "import { homedir } from 'node:os';",
+      "occurrence": 1
+    },
+    {
+      "file": "tools/rtl-scanner/tests/cli-regression.test.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const report:any={complete, files:['a.css'], findings:Array.from({length:findings},()=>({category:'MANUAL_REVIEW'})), evidence:[], diagnostics:[], skipped:[], metrics:{byCategory:{},bySeverity:{},byCo",
+      "occurrence": 1
+    },
+    {
+      "file": "tools/rtl-scanner/tests/contextual-preview.test.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "let listener:(event:any)=>Promise<void>=async()=>{};let writes=0;const messages:any[]=[];",
+      "occurrence": 1
+    },
+    {
+      "file": "tools/rtl-scanner/tests/contextual-preview.test.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "let listener:(event:any)=>Promise<void>=async()=>{};let writes=0;const messages:any[]=[];",
+      "occurrence": 2
+    },
+    {
+      "file": "tools/rtl-scanner/tests/contextual-preview.test.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const parent={postMessage:(value:any)=>messages.push(value)};",
+      "occurrence": 1
+    },
+    {
+      "file": "tools/rtl-scanner/tests/contextual-preview.test.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const context={setInterval:()=>0,MutationObserver:class{observe(){}},document:{addEventListener:()=>undefined},window:{parent,name:'rtl-preview:12345678-1234-1234-1234-123456789012',addEventListener:(",
+      "occurrence": 1
+    },
+    {
+      "file": "tools/rtl-scanner/tests/controlled-apply.test.ts",
+      "rule": "@typescript-eslint/no-unused-vars",
+      "text": "it('accepts validated Ready for Review evidence only with an Approved review record', async () => { const f = await buildFixture(); try { const readyEvidence = { ...f.evidence, decision: 'Ready for Re",
+      "occurrence": 1
+    },
+    {
+      "file": "tools/rtl-scanner/tests/migration-lifecycle.test.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const evidence = [{ decision: 'Approved', scannerAfter: { findingPresent: false }, originalSourceSha256: 'original', candidateSourceSha256: 'candidate' }] as any;",
+      "occurrence": 1
+    },
+    {
+      "file": "tools/rtl-scanner/tests/migration-lifecycle.test.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const base = { evidence, decision: null, review: null } as any;",
+      "occurrence": 1
+    },
+    {
+      "file": "tools/rtl-scanner/tests/preview-configuration.test.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "['invalid startup script',(c:any)=>c.applications.demo.startupScript='dev && other'],['external origin',(c:any)=>c.applications.demo.originalOrigin='https://example.com'],['escaped route',(c:any)=>c.a",
+      "occurrence": 1
+    },
+    {
+      "file": "tools/rtl-scanner/tests/preview-configuration.test.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "['invalid startup script',(c:any)=>c.applications.demo.startupScript='dev && other'],['external origin',(c:any)=>c.applications.demo.originalOrigin='https://example.com'],['escaped route',(c:any)=>c.a",
+      "occurrence": 2
+    },
+    {
+      "file": "tools/rtl-scanner/tests/preview-configuration.test.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "['invalid startup script',(c:any)=>c.applications.demo.startupScript='dev && other'],['external origin',(c:any)=>c.applications.demo.originalOrigin='https://example.com'],['escaped route',(c:any)=>c.a",
+      "occurrence": 3
+    },
+    {
+      "file": "tools/rtl-scanner/tests/preview-configuration.test.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "['invalid startup script',(c:any)=>c.applications.demo.startupScript='dev && other'],['external origin',(c:any)=>c.applications.demo.originalOrigin='https://example.com'],['escaped route',(c:any)=>c.a",
+      "occurrence": 4
+    },
+    {
+      "file": "tools/rtl-scanner/tests/preview-configuration.test.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "['invalid startup script',(c:any)=>c.applications.demo.startupScript='dev && other'],['external origin',(c:any)=>c.applications.demo.originalOrigin='https://example.com'],['escaped route',(c:any)=>c.a",
+      "occurrence": 5
+    },
+    {
+      "file": "tools/rtl-scanner/tests/preview-configuration.test.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "['invalid startup script',(c:any)=>c.applications.demo.startupScript='dev && other'],['external origin',(c:any)=>c.applications.demo.originalOrigin='https://example.com'],['escaped route',(c:any)=>c.a",
+      "occurrence": 6
+    },
+    {
+      "file": "tools/rtl-scanner/tests/preview-configuration.test.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "['invalid startup script',(c:any)=>c.applications.demo.startupScript='dev && other'],['external origin',(c:any)=>c.applications.demo.originalOrigin='https://example.com'],['escaped route',(c:any)=>c.a",
+      "occurrence": 7
+    },
+    {
+      "file": "tools/rtl-scanner/tests/preview-configuration.test.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "['invalid startup script',(c:any)=>c.applications.demo.startupScript='dev && other'],['external origin',(c:any)=>c.applications.demo.originalOrigin='https://example.com'],['escaped route',(c:any)=>c.a",
+      "occurrence": 8
+    },
+    {
+      "file": "tools/rtl-scanner/tests/preview-configuration.test.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "it('reports overlapping source bindings as ambiguous instead of choosing one mapping',async()=>{const root=await fixture();try{const c=configuration();c.mappings.push({...c.mappings[0],...{context:'st",
+      "occurrence": 1
+    },
+    {
+      "file": "tools/rtl-scanner/tests/project-configuration.test.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "for(const [label,mutate] of [['traversal',(c:any)=>c.scanRoots=['../outside']],['dependency scan',(c:any)=>c.scanRoots=['node_modules']],['uncopied source',(c:any)=>c.copyPaths=['tests']],['unknown ma",
+      "occurrence": 1
+    },
+    {
+      "file": "tools/rtl-scanner/tests/project-configuration.test.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "for(const [label,mutate] of [['traversal',(c:any)=>c.scanRoots=['../outside']],['dependency scan',(c:any)=>c.scanRoots=['node_modules']],['uncopied source',(c:any)=>c.copyPaths=['tests']],['unknown ma",
+      "occurrence": 2
+    },
+    {
+      "file": "tools/rtl-scanner/tests/project-configuration.test.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "for(const [label,mutate] of [['traversal',(c:any)=>c.scanRoots=['../outside']],['dependency scan',(c:any)=>c.scanRoots=['node_modules']],['uncopied source',(c:any)=>c.copyPaths=['tests']],['unknown ma",
+      "occurrence": 3
+    },
+    {
+      "file": "tools/rtl-scanner/tests/project-configuration.test.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "for(const [label,mutate] of [['traversal',(c:any)=>c.scanRoots=['../outside']],['dependency scan',(c:any)=>c.scanRoots=['node_modules']],['uncopied source',(c:any)=>c.copyPaths=['tests']],['unknown ma",
+      "occurrence": 4
+    },
+    {
+      "file": "tools/rtl-scanner/tests/project-configuration.test.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "for(const [label,mutate] of [['traversal',(c:any)=>c.scanRoots=['../outside']],['dependency scan',(c:any)=>c.scanRoots=['node_modules']],['uncopied source',(c:any)=>c.copyPaths=['tests']],['unknown ma",
+      "occurrence": 5
+    },
+    {
+      "file": "tools/rtl-scanner/tests/project-configuration.test.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "for(const [label,mutate] of [['traversal',(c:any)=>c.scanRoots=['../outside']],['dependency scan',(c:any)=>c.scanRoots=['node_modules']],['uncopied source',(c:any)=>c.copyPaths=['tests']],['unknown ma",
+      "occurrence": 6
+    },
+    {
+      "file": "tools/rtl-scanner/tests/project-configuration.test.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "for(const [label,mutate] of [['traversal',(c:any)=>c.scanRoots=['../outside']],['dependency scan',(c:any)=>c.scanRoots=['node_modules']],['uncopied source',(c:any)=>c.copyPaths=['tests']],['unknown ma",
+      "occurrence": 7
+    },
+    {
+      "file": "tools/rtl-scanner/tests/project-configuration.test.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "for(const [label,mutate] of [['traversal',(c:any)=>c.scanRoots=['../outside']],['dependency scan',(c:any)=>c.scanRoots=['node_modules']],['uncopied source',(c:any)=>c.copyPaths=['tests']],['unknown ma",
+      "occurrence": 8
+    },
+    {
+      "file": "tools/rtl-scanner/tests/project-configuration.test.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "for(const [label,mutate] of [['traversal',(c:any)=>c.scanRoots=['../outside']],['dependency scan',(c:any)=>c.scanRoots=['node_modules']],['uncopied source',(c:any)=>c.copyPaths=['tests']],['unknown ma",
+      "occurrence": 9
+    },
+    {
+      "file": "tools/rtl-scanner/tests/rollback-recovery.test.ts",
+      "rule": "@typescript-eslint/no-unused-vars",
+      "text": "import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';",
+      "occurrence": 1
+    },
+    {
+      "file": "tools/rtl-scanner/tests/rollback-recovery.test.ts",
+      "rule": "@typescript-eslint/no-unused-vars",
+      "text": "import { describe, expect, it } from 'vitest';",
+      "occurrence": 1
+    },
+    {
+      "file": "tools/rtl-scanner/tests/scoped-direction-evidence.test.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "it('requires the exact server-captured scope and runtime state when rechecking evidence',()=>{const original=evidence();expect(sameScopedDirectionEvidence(original,structuredClone(original))).toBe(tru",
+      "occurrence": 1
+    },
+    {
+      "file": "tools/rtl-scanner/tests/scoped-direction-evidence.test.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "it('requires the exact server-captured scope and runtime state when rechecking evidence',()=>{const original=evidence();expect(sameScopedDirectionEvidence(original,structuredClone(original))).toBe(tru",
+      "occurrence": 2
+    },
+    {
+      "file": "tools/rtl-scanner/tests/scoped-direction-evidence.test.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "it('requires the exact server-captured scope and runtime state when rechecking evidence',()=>{const original=evidence();expect(sameScopedDirectionEvidence(original,structuredClone(original))).toBe(tru",
+      "occurrence": 3
+    },
+    {
+      "file": "tools/rtl-scanner/tests/scoped-direction-evidence.test.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "it('requires the exact server-captured scope and runtime state when rechecking evidence',()=>{const original=evidence();expect(sameScopedDirectionEvidence(original,structuredClone(original))).toBe(tru",
+      "occurrence": 4
+    },
+    {
+      "file": "tools/rtl-scanner/tests/structured-markdown.test.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "text": "const report=(order:boolean):Report=>{const finding:any={id:'f1',ruleId:'R2',ruleVersion:1,category:'MANUAL_REVIEW',severity:'Major',confidence:'High',title:'Risk | title',sourceMechanism:'css',applic",
+      "occurrence": 1
+    }
+  ]
+}

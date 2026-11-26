@@ -15,6 +15,22 @@ if(!process.env.RTL_CONTEXTUAL_BASELINE){
 writeFileSync(sourcePath, readFileSync(sourcePath, 'utf8').replace('import { useLocale }', 'import { ReviewTokens } from "./ReviewTokens";\nimport { useLocale }').replace('              {i.id}\n', '              {i.id}<span className="review-extra-id">{i.id}</span><ReviewTokens item={i} />\n'));
 writeFileSync(join(project, 'apps/invoicing/src/components/ReviewTokens.tsx'), 'export function ReviewTokens({item}:{item:{id:string}}){return <><span className="token-one">{item.id}</span><span className="token-two">{item.id}</span></>}\n');
 }
+// Review-workflow bindings: explicit JSX source-element bindings, replacing the portable fixture's context-only InvoiceTable mapping.
+// Each binding covers only the expressions inside the named rendered element, so other findings in the same file stay unbound.
+// ReviewTokens.tsx exists only in the modified source, so its bindings are written only when the fixture was applied.
+{
+ const configPath = join(project, 'rtl-preview.config.json');
+ const reviewConfig = JSON.parse(readFileSync(configPath, 'utf8'));
+ const reviewRoutes = reviewConfig.mappings[0]?.routes ?? [];
+ reviewConfig.mappings = [
+  { source: 'apps/invoicing/src/components/InvoiceTable.tsx', sourceSelector: '.invoice-link', targetSelector: '.invoice-link', routes: reviewRoutes },
+  ...(process.env.RTL_CONTEXTUAL_BASELINE ? [] : [
+   { source: 'apps/invoicing/src/components/ReviewTokens.tsx', sourceSelector: '.token-one', targetSelector: '.token-one', routes: reviewRoutes },
+   { source: 'apps/invoicing/src/components/ReviewTokens.tsx', sourceSelector: '.token-two', targetSelector: '.token-two', routes: reviewRoutes },
+  ]),
+ ];
+ writeFileSync(configPath, JSON.stringify(reviewConfig, null, 2));
+}
 // Opt-in spacing fixtures exercise analyzer dispatch on arbitrary filenames; app sources in checkout stay untouched.
 if(process.env.RTL_SPACING_FIXTURE){
  const dir=join(project,'apps/invoicing/src');
