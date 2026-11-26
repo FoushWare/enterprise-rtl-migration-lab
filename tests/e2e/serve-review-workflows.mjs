@@ -23,10 +23,10 @@ writeFileSync(join(project, 'apps/invoicing/src/components/ReviewTokens.tsx'), '
  const reviewConfig = JSON.parse(readFileSync(configPath, 'utf8'));
  const reviewRoutes = reviewConfig.mappings[0]?.routes ?? [];
  reviewConfig.mappings = [
-  { source: 'apps/invoicing/src/components/InvoiceTable.tsx', sourceSelector: '.invoice-link', targetSelector: '.invoice-link', routes: reviewRoutes },
+  { source: 'apps/invoicing/src/components/InvoiceTable.tsx', sourceSelector: '.invoice-link', targetSelector: 'tbody tr:first-child .invoice-link', routes: reviewRoutes },
   ...(process.env.RTL_CONTEXTUAL_BASELINE ? [] : [
-   { source: 'apps/invoicing/src/components/ReviewTokens.tsx', sourceSelector: '.token-one', targetSelector: '.token-one', routes: reviewRoutes },
-   { source: 'apps/invoicing/src/components/ReviewTokens.tsx', sourceSelector: '.token-two', targetSelector: '.token-two', routes: reviewRoutes },
+   { source: 'apps/invoicing/src/components/ReviewTokens.tsx', sourceSelector: '.token-one', targetSelector: 'tbody tr:first-child .token-one', routes: reviewRoutes },
+   { source: 'apps/invoicing/src/components/ReviewTokens.tsx', sourceSelector: '.token-two', targetSelector: 'tbody tr:first-child .token-two', routes: reviewRoutes },
   ]),
  ];
  writeFileSync(configPath, JSON.stringify(reviewConfig, null, 2));
@@ -66,7 +66,7 @@ const procurementConfig=await writePreviewRuntimeConfig(project,{role:'original'
 const env={...process.env,RTL_PROJECT_ROOT:project,RTL_REVIEW_STORE_PATH:join(state,'review-records-v1.json'),RTL_EVIDENCE_STORE_PATH:join(state,'review-evidence-v1.json'),RTL_MANUAL_CHANGE_STORE_PATH:join(state,'manual-changes-v1.json'),RTL_SCAN_MANIFEST_STORE_PATH:join(state,'scan-manifests-v1.json'),RTL_AUDIT_STORE_PATH:join(state,'apply-audit-v1.json'),RTL_APPLY_BACKUP_ROOT:join(state,'backups')};
 let companion;
 const startCompanion=()=>companion=spawn(process.execPath,[join(RUNTIME_DIR,'preview-companion.js')],{cwd:repo,env:{...env,RTL_PREVIEW_OWNER_PID:String(process.pid)},stdio:'inherit'});
-const children=[startCompanion(),spawn(process.execPath,[join(repo,'node_modules/vite/bin/vite.js'),'--config',originalConfig,'--host','127.0.0.1','--port','4200','--strictPort'],{cwd:project,env:{...process.env,RTL_RUNTIME_OWNER_PID:String(process.pid)},stdio:'inherit'}),spawn(process.execPath,[join(repo,'node_modules/vite/bin/vite.js'),'--config',procurementConfig,'--host','127.0.0.1','--port','4201','--strictPort'],{cwd:project,env:{...process.env,RTL_RUNTIME_OWNER_PID:String(process.pid)},stdio:'inherit'}),spawn(process.execPath,[join(repo,'tests/e2e/dashboard-session-server.mjs'),dashboard],{cwd:dashboard,env:{...process.env,RTL_HARNESS_OWNER_PID:String(process.pid),RTL_E2E_RUNTIME:RUNTIME_DIR},stdio:'inherit'})];
+const children=[startCompanion(),spawn(process.execPath,[join(repo,'node_modules/vite/bin/vite.js'),'--config',procurementConfig,'--host','127.0.0.1','--port','4201','--strictPort'],{cwd:project,env:{...process.env,RTL_RUNTIME_OWNER_PID:String(process.pid)},stdio:'inherit'}),spawn(process.execPath,[join(repo,'tests/e2e/dashboard-session-server.mjs'),dashboard],{cwd:dashboard,env:{...process.env,RTL_HARNESS_OWNER_PID:String(process.pid),RTL_E2E_RUNTIME:RUNTIME_DIR},stdio:'inherit'})];
 const identity={supervisorPid:process.pid,project,dashboard,state,children:children.map(c=>c.pid),dashboardUrl:'http://127.0.0.1:4320/rtl-report-dashboard.html'};
 const environmentPath=join(dirname(project),'environment.json');
 const publish=()=>writeFileSync(environmentPath,JSON.stringify({...identity,companionPid:companion.pid},null,2));publish();console.log('REVIEW_WORKFLOWS_ENVIRONMENT',environmentPath,JSON.stringify(identity));

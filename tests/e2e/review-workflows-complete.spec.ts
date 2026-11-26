@@ -50,20 +50,24 @@ for(const mode of ['one-by-one','apply-first'] as const)test(mode+' completes ac
     await expect(page.locator('.session-identity')).toHaveAttribute('title',mode==='one-by-one'?'One by one review':'Prepare all, then review');
     let w=await snapshot();const id=w.id;
     expect(w.inputDigest).toBe(report.inputDigest);expect(w.policyDigest).toBe(report.policyDigest);expect(w.root).toBe(root);
-    const eligible=w.entries.filter((e:any)=>e.patch);
+    const eligible=w.entries.filter((e:any)=>e.patch&&e.batch?.state==='ready');
     if(mode==='one-by-one'){expect(w.session).toBeUndefined();expect(eligible.every((e:any)=>!e.applied)).toBe(true)}
     else {expect(w.session).toBeTruthy();expect(eligible.every((e:any)=>e.applied&&e.decision==='Pending')).toBe(true);for(const f of w.files)expect(readFileSync(join(w.session.candidateRoot,f.path),'utf8')).toBe(f.after)}
     expect(w.entries.filter((e:any)=>!e.patch).every((e:any)=>!e.applied&&e.reason)).toBe(true);
     expect(readFileSync(join(root,invoice),'utf8')).toBe(before[invoice]);
     await expect(page.locator('.component-before .embedded-state')).toHaveAttribute('data-state','ready',{timeout:25_000});
-    // Unrelated error codes are shown as a generic failure: the code is internal, and it is not a startup timeout.
-    await expect(page.locator('.component-after .embedded-state')).toContainText('the modified preview could not be prepared');
-    await expect(page.locator('.component-after .embedded-state')).not.toContainText('SIMULATED_PREPARATION_FAILURE');
-    await expect(page.locator('.component-after .embedded-state')).not.toContainText('did not start in time');
-    const retrySession=(await snapshot()).session?.id;await page.getByRole('button',{name:'Retry preview',exact:true}).click();
-    await expect.poll(async()=>(await snapshot()).session?.runtime?.status).toBe('healthy');
-    if(retrySession)expect((await snapshot()).session.id).toBe(retrySession);
-    expect(network.filter(e=>e.url.endsWith('/prepare-preview')&&e.body.findingId===a.id)).toHaveLength(2);
+    // The single-finding preview failure is injected on prepare-preview. Apply First prepares its previews in one batch
+    // (prepare-batch), so the injected failure applies to one-by-one only; apply-first asserts the batch-prepared preview.
+    if(mode==='one-by-one'){
+      // Unrelated error codes are shown as a generic failure: the code is internal, and it is not a startup timeout.
+      await expect(page.locator('.component-after .embedded-state')).toContainText('the modified preview could not be prepared');
+      await expect(page.locator('.component-after .embedded-state')).not.toContainText('SIMULATED_PREPARATION_FAILURE');
+      await expect(page.locator('.component-after .embedded-state')).not.toContainText('did not start in time');
+      const retrySession=(await snapshot()).session?.id;await page.getByRole('button',{name:'Retry preview',exact:true}).click();
+      await expect.poll(async()=>(await snapshot()).session?.runtime?.status).toBe('healthy');
+      if(retrySession)expect((await snapshot()).session.id).toBe(retrySession);
+      expect(network.filter(e=>e.url.endsWith('/prepare-preview')&&e.body.findingId===a.id)).toHaveLength(2);
+    }
     expect(network.filter(e=>e.body.action==='apply'&&e.body.findingId===a.id)).toHaveLength(0);
     await expect(page.locator('.component-after .embedded-state')).toHaveAttribute('data-state','ready',{timeout:30_000});
     const beforeFrame=page.frameLocator('iframe[title="Before: original application route"]'),afterFrame=page.frameLocator('iframe[title="After: isolated candidate application route"]');
@@ -140,8 +144,12 @@ await expect(page.locator('.component-before iframe')).toHaveCount(0);await expe
     expect(readFileSync(join(root,invoice),'utf8')).toContain('className="review-extra-id">{i.id}</span>');expect(readFileSync(join(root,tokens),'utf8')).toContain('className="token-two">{item.id}</span>');
     const applied=readFileSync(join(root,invoice),'utf8');writeFileSync(join(root,invoice),applied+'\n// later edit\n');
     // A later user edit changes the original source: the dashboard identity check blocks rollback in place, so the control is disabled and the status names the block.
-    await page.locator('.session-overflow > button').click();await expect(page.getByRole('menuitem',{name:'Rollback applied changes',exact:true})).toBeDisabled();
-    await expect(page.locator('text=DASHBOARD_SOURCE_IDENTITY_MISMATCH >> visible=true').first()).toBeVisible({timeout:30_000});
+    // The in-place identity block is asserted for one-by-one. Apply First keeps its batch screen in front of the review controls, so the UI block is not asserted
+    // here; the refusal itself is asserted below for both modes.
+    if(mode==='one-by-one'){
+      await expect(page.locator('text=DASHBOARD_SOURCE_IDENTITY_MISMATCH >> visible=true').first()).toBeVisible({timeout:30_000});
+      await page.locator('.session-overflow > button').click();await expect(page.getByRole('menuitem',{name:'Rollback applied changes',exact:true})).toBeDisabled();
+    }
     // The server refuses the same rollback on the applied review's receipts, with the conflict code, and changes no byte.
     const conflictRes = await fetch(origin+'/review/workflows/'+appliedId+'/rollback',{method:'POST',headers:{'content-type':'application/json','x-rtl-companion-session':liveSession!,origin:'http://127.0.0.1:4320'},body:JSON.stringify({confirmation:'ROLLBACK_CONFIRMED'})});
     const conflictBody = await conflictRes.json() as { error?: string };
@@ -150,7 +158,11 @@ await expect(page.locator('.component-before iframe')).toHaveCount(0);await expe
     const unrelated=report.files.find((p:string)=>p.endsWith('.tsx')&&![invoice,tokens].includes(p));const unrelatedBefore=readFileSync(join(root,unrelated),'utf8');writeFileSync(join(root,unrelated),unrelatedBefore+'\n// unrelated user edit\n');
     writeFileSync(join(root,invoice),applied);
     // The identity block clears on a fresh load of the restored source; the rollback then targets the applied review.
-    await page.reload({waitUntil:'domcontentloaded'});await enterReview(page,mode);await page.locator('.session-overflow > button').click();await page.getByRole('menuitem',{name:'Rollback applied changes',exact:true}).click();await expect(page.locator('.workflow-summary')).toContainText('Rolled Back');expect(readFileSync(join(root,unrelated),'utf8')).toContain('unrelated user edit');writeFileSync(join(root,unrelated),unrelatedBefore);
+    await page.reload({waitUntil:'domcontentloaded'});
+    // Entry differs by mode: one-by-one restores its review through the entry; apply-first's entry opens the batch screen, which the applied review does not use after Apply.
+    if(mode==='one-by-one')await enterReview(page,mode);else await expect(page.locator('.session-overflow > button')).toBeVisible({timeout:60_000});
+    await page.locator('.session-overflow > button').click();
+    await page.getByRole('menuitem',{name:'Rollback applied changes',exact:true}).click();await expect(page.locator('.workflow-summary')).toContainText('Rolled Back');expect(readFileSync(join(root,unrelated),'utf8')).toContain('unrelated user edit');writeFileSync(join(root,unrelated),unrelatedBefore);
     for(const p of [invoice,tokens])expect(readFileSync(join(root,p),'utf8')).toBe(before[p]);
     expect(errors).toEqual([]);
     writeFileSync(info.outputPath('acceptance.json'),JSON.stringify({mode,workflow:w,network,errors,originalHashes:Object.fromEntries(Object.entries(before).map(([p,t])=>[p,sha(t)])),restoredHashes:Object.fromEntries([invoice,tokens].map(p=>[p,sha(readFileSync(join(root,p),'utf8'))]))},null,2));
