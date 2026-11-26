@@ -1,6 +1,6 @@
 {
   "description": "Inherited lint violations tracked by scripts/lint-ratchet.mjs. Shrink only; see the technical-debt issue.",
-  "count": 330,
+  "count": 329,
   "entries": [
     {
       "file": "tests/e2e/automatic-after-reproduce.spec.ts",
@@ -1518,12 +1518,6 @@
       "file": "tests/e2e/review-workflows-complete.spec.ts",
       "rule": "@typescript-eslint/no-explicit-any",
       "text": "const decide=async(f:any,label:string,decision:string)=>{await select(f);await page.getByRole('button',{name:label,exact:true}).click();if(decision==='Accepted')await page.getByRole('dialog',{name:'Pr",
-      "occurrence": 1
-    },
-    {
-      "file": "tests/e2e/review-workflows-complete.spec.ts",
-      "rule": "@typescript-eslint/no-explicit-any",
-      "text": "const eligible=w.entries.filter((e:any)=>e.patch);",
       "occurrence": 1
     },
     {

@@ -31,6 +31,8 @@ const reviewDetails=(()=>{
       const warning=el('div','','history-warning');
       warning.append(glyph('warning','history-warn-icon'),document.createTextNode('\u00a0Historical results do not validate the current review.'));
       body.append(warning);
+      // An applied review in history offers its rollback here, through the same rollback as the review controls (confirmation and server checks apply).
+      if(w.state==='Applied'&&w.receipts?.length){const rollbackButton=el('button','Rollback applied changes');rollbackButton.type='button';rollbackButton.className='review-btn-secondary';rollbackButton.onclick=()=>{close();window.rtlRollbackReview?.(w.id)};body.append(rollbackButton);}
     }
     if(tab==='Activity'){
       const events=[{at:w.createdAt,label:'Review started',detail:w.mode==='one-by-one'?'One by one review':'Prepare all, then review',icon:'start',tone:'neutral'}];

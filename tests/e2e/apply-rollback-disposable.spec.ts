@@ -1,7 +1,6 @@
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
-import { enterReview } from './enter-review';
 
 // Current workflow path: Start manual review -> select finding -> Approve fix -> Validate changes -> Apply -> Rollback.
 // The legacy codemod and controlled-apply panels are hidden for workflow-owned findings, so this spec drives the workflow.

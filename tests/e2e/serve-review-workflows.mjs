@@ -61,7 +61,7 @@ for(const name of readdirSync(repo).filter(name=>/^(tsconfig.*\.json|(?:vite|vit
 // Publish a new report directory after adding only disposable source findings.
 execFileSync(process.execPath,[join(RUNTIME_DIR,'cli.js'),'--root',project,'--format','dashboard','--embed-source-snippets','--output-dir',dashboard],{cwd:repo,stdio:['ignore','ignore','inherit']});
 for (const port of [4200,4201,4318,4320]) await new Promise((resolve,reject)=>{const probe=createServer();probe.once('error',()=>reject(Error('Port '+port+' occupied; no unrelated process was stopped.')));probe.listen(port,'127.0.0.1',()=>probe.close(resolve))});
-const originalConfig=await writePreviewRuntimeConfig(project,{role:'original',sessionId:'original',sourceSha256:createHash('sha256').update(readFileSync(sourcePath)).digest('hex')});
+await writePreviewRuntimeConfig(project,{role:'original',sessionId:'original',sourceSha256:createHash('sha256').update(readFileSync(sourcePath)).digest('hex')});
 const procurementConfig=await writePreviewRuntimeConfig(project,{role:'original',sessionId:'original',sourceSha256:createHash('sha256').update(readFileSync(join(project,'apps/procurement/src/App.tsx'))).digest('hex')},{application:'procurement'});
 const env={...process.env,RTL_PROJECT_ROOT:project,RTL_REVIEW_STORE_PATH:join(state,'review-records-v1.json'),RTL_EVIDENCE_STORE_PATH:join(state,'review-evidence-v1.json'),RTL_MANUAL_CHANGE_STORE_PATH:join(state,'manual-changes-v1.json'),RTL_SCAN_MANIFEST_STORE_PATH:join(state,'scan-manifests-v1.json'),RTL_AUDIT_STORE_PATH:join(state,'apply-audit-v1.json'),RTL_APPLY_BACKUP_ROOT:join(state,'backups')};
 let companion;

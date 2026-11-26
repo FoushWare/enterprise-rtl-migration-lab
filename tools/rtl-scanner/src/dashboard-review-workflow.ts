@@ -82,6 +82,7 @@ ${batchReviewClientSource}
   }
   async function approve(f,notes){if(busy||f.id!==s.finding?.id)return;const result=await operate(()=>change(f,'Accepted',notes));if(result?.workflow?.entries?.some(e=>e.finding.id===f.id&&e.decision==='Accepted'))showApprovalConfirmation(f)}
   const rollback=(ownerId)=>{if(!ownerId)throw Error('ROLLBACK_OWNER_REQUIRED');if(!window.confirm('Rollback this applied review? Later user edits will block rollback.'))return;return api(endpoint+'/'+ownerId+'/rollback',{confirmation:'ROLLBACK_CONFIRMED'})};
+  window.rtlRollbackReview=(id)=>operate(()=>rollback(id),'Rollback applied changes');
 
   const previewAttempts=new Map();let previewFlight=null;
   const previewKey=(f,c)=>[workflow?.id,d.inputDigest,d.policyDigest,f.id,c?.application,c?.routeId,workflow?.session?.runtime?.status||'not-started',workflow?.entries.filter(e=>e.applied).map(e=>e.finding.id).join(',')].join('|');
@@ -212,6 +213,8 @@ ${batchReviewClientSource}
   }
   async function restore(create=false,mode=localStorage.getItem('rtl-review-workflow')){
     if(!mode)return;const result=await api(pendingSourceTransition?.workflowId?endpoint+'/'+pendingSourceTransition.workflowId:endpoint+'?'+new URLSearchParams({inputDigest:dashboardSnapshot.inputDigest,policyDigest:dashboardSnapshot.policyDigest,mode}));
+    // An applied transaction whose input no longer matches the authoritative snapshot is history, not the active review: it stays in history with its rollback.
+    if(result.workflow?.state==='Applied'&&(result.workflow.inputDigest!==dashboardSnapshot.inputDigest||result.workflow.policyDigest!==dashboardSnapshot.policyDigest)){pendingSourceTransition=null;try{sessionStorage.removeItem('rtl-source-transition')}catch{}result.workflow=null;history=(await api(endpoint+'?history=1')).workflows;}
     if(result.workflow&&!entryRestart){restored=true;workflow=result.workflow;history=(await api(endpoint+'?history=1')).workflows.filter(w=>w.id!==workflow.id);scope=workflow.scope;if(!sourceContextError&&workflow.state==='Rolled Back'){history=[workflow,...history.filter(w=>w.id!==workflow.id)];const next=await api(endpoint+'/'+workflow.id+'/resume',{});workflow=next.workflow;pendingSourceTransition=null;return next;}if(!sourceContextError)pendingSourceTransition=null;return result;}
     if(create){restored=false;const next=await api(endpoint,{inputDigest:d.inputDigest,policyDigest:d.policyDigest,mode,scope,restart:!!entryRestart});workflow=next.workflow;history=(await api(endpoint+'?history=1')).workflows.filter(w=>w.id!==workflow.id);return next;}
     if(!sourceContextError)showWorkflowScreen();

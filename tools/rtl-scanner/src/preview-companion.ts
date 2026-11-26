@@ -138,6 +138,12 @@ const server = createServer(async (request, response) => {
         const workflow=url.searchParams.get('workflowId')?workflowStore.get(url.searchParams.get('workflowId')!):workflowStore.find(input,policy,url.searchParams.get('mode')||'one-by-one');
         if(workflow&&(workflow.inputDigest!==input||workflow.policyDigest!==policy))throw Error('DASHBOARD_SOURCE_IDENTITY_MISMATCH');
         const closed=workflow&&['Applied','Rolled Back'].includes(workflow.state);
+        if(closed&&workflow.state==='Applied'){
+          // Authoritative source wins: once Apply has changed the source, the applied transaction is history (kept with its receipts and rollback),
+          // and the current scan is the active review. A stale embedded digest must not restore it as the active review.
+          const current=await scan(projectRoot);
+          if(current.inputDigest!==workflow.inputDigest||current.policyDigest!==workflow.policyDigest)return {data:toDashboardData(toSchemaV2Presentation(current),await extractSourceSnippets(projectRoot,current.findings)),transition:null};
+        }
         const report=closed?await verifiedSourceTransition(projectRoot,workflow):await scan(projectRoot);
         if(!closed&&(report.inputDigest!==input||report.policyDigest!==policy))throw Error('DASHBOARD_SOURCE_IDENTITY_MISMATCH');
         if(closed)await reconcileSourceRuntimes(projectRoot);
