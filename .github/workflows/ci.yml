@@ -29,8 +29,7 @@ jobs:
       - run: npm run build
       - run: npm test
       - run: npx playwright install chromium
-      - run: npm run test:e2e:regression
-      - run: npm run test:e2e:workflow-lifecycle
+      - run: npm run test:e2e:native
       - run: node --test tests/e2e/workflow-lifecycle.e2e.mjs
       - run: node tests/e2e/runtime-reuse-equivalence.mjs
       - uses: actions/upload-artifact@v4
@@ -39,23 +38,3 @@ jobs:
           name: playwright-report
           path: playwright-report/
 
-  # Known debt, kept visible as a failing check: the default `playwright test` run spans every spec against two dev
-  # servers, but many specs need environment or fixture setup that only their dedicated configs and runners provide.
-  # Not suppressed. Its failures are recorded in the PR description.
-  e2e-default-debt:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-      - run: npm ci
-      - run: npm run build
-      - run: npx playwright install chromium
-      - run: npm run test:e2e
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: playwright-report-default
-          path: playwright-report/

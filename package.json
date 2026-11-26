@@ -22,7 +22,8 @@
     "rtl:scan:build": "tsc -p tools/rtl-scanner/tsconfig.json",
     "rtl:preview": "node dist/tools/rtl-scanner/preview-companion.js",
     "test:e2e:journey": "playwright test --config=playwright.journey.config.ts",
-    "test:e2e:lifecycle-node": "node --test tests/e2e/workflow-lifecycle.e2e.mjs"
+    "test:e2e:lifecycle-node": "node --test tests/e2e/workflow-lifecycle.e2e.mjs",
+    "test:e2e:native": "playwright test --config=playwright.native.config.ts"
   },
   "dependencies": {
     "@emotion/cache": "11.14.0",
