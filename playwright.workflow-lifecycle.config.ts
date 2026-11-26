@@ -1,9 +1,11 @@
 import { defineConfig } from '@playwright/test';
+import { fileURLToPath } from 'node:url';
 import { dashboard, originalRuntimeConfig, project, repo, state } from './tests/e2e/portable-fixture.mjs';
+const dashboardServer = fileURLToPath(new URL('./tests/e2e/dashboard-session-server.mjs', import.meta.url));
 // Each workflow lifecycle spec must run in its own invocation (npm run test:e2e:workflow-lifecycle): every invocation gets a
 // fresh fixture and companion, so one scenario's applied or edited workflow never changes the next scenario's starting state.
 export default defineConfig({ testDir: './tests/e2e', testMatch: /workflow-(approved-stale|failed-lifecycle|stale-lifecycle)\.spec\.ts$/, metadata: { portableFixtureRoot: project }, fullyParallel: false, workers: 1, timeout: 240_000, use: { browserName: 'chromium', viewport: { width: 1440, height: 1000 } }, webServer: [
   { command: `RTL_PROJECT_ROOT="${project}" RTL_REVIEW_STORE_PATH="${state}/review-records-v1.json" RTL_EVIDENCE_STORE_PATH="${state}/review-evidence-v1.json" RTL_MANUAL_CHANGE_STORE_PATH="${state}/manual-changes-v1.json" RTL_SCAN_MANIFEST_STORE_PATH="${state}/scan-manifests-v1.json" RTL_AUDIT_STORE_PATH="${state}/apply-audit-v1.json" RTL_APPLY_BACKUP_ROOT="${state}/backups" RTL_PREVIEW_OWNER_PID="${process.pid}" exec node "${repo}/dist/tools/rtl-scanner/preview-companion.js"`, url: 'http://127.0.0.1:4318/health', gracefulShutdown: { signal: 'SIGTERM', timeout: 15_000 }, reuseExistingServer: false, timeout: 30_000 },
   { command: `node "${repo}/node_modules/vite/bin/vite.js" --config "${originalRuntimeConfig}" --host 127.0.0.1 --port 4200 --strictPort`, cwd: project, url: 'http://127.0.0.1:4200/invoices', reuseExistingServer: false, timeout: 30_000 },
-  { command: 'node tools/rtl-scanner/tests/serve-dashboard-harness.mjs', cwd: repo, env: { ...process.env, RTL_E2E_DASHBOARD: dashboard, RTL_E2E_COMPANION_PORT: '4318' }, url: 'http://127.0.0.1:4320/rtl-report-dashboard.html', reuseExistingServer: false, timeout: 30_000 },
+  { command: `node "${dashboardServer}" "${dashboard}"`, cwd: repo, url: 'http://127.0.0.1:4320/rtl-report-dashboard.html', reuseExistingServer: false, timeout: 30_000 },
 ] });

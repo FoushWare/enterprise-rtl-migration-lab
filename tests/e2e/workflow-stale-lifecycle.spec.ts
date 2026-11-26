@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { readFileSync, writeFileSync } from 'node:fs';
-import { expect, test } from '@playwright/test';
+import { expect, test } from './companion-test';
 
 // Migrated from the retired lifecycle panel. A validated change whose source changes before Apply is shown as blocked in the
 // reviewer's workflow, and the authoritative Apply refuses it with STALE_ORIGINAL_SOURCE without writing the source.
