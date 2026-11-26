@@ -12,7 +12,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm run lint
+      - run: npm run lint:ratchet
 
   # Supported checks for this release: typecheck, build, unit tests, and the dedicated E2E suites that run their own
   # servers, state and cleanup (regression, workflow lifecycle, Node lifecycle, runtime-reuse equivalence).
