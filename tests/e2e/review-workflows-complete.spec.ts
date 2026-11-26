@@ -1,5 +1,5 @@
 import {enterReview} from './enter-review';
-import { test, expect } from '@playwright/test';
+import { test, expect } from './companion-test';
 import { readFileSync, writeFileSync, chmodSync, statSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { createServer } from 'node:http';
