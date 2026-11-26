@@ -21,7 +21,7 @@ export const operationFlowClientSource=String.raw`
     if(applied){
       opButton(dialog,'View applied changes / operation details',()=>{dismissOperation();document.querySelector('[data-review-details]')?.click()});
       opButton(dialog,'Start review of remaining findings',()=>{dismissOperation();startRemainingReview()});
-      if(workflow.receipts?.length)opButton(dialog,'Rollback applied changes',()=>{dismissOperation();operate(rollback,'Rollback applied changes')});
+      if(workflow.receipts?.length)opButton(dialog,'Rollback applied changes',()=>{dismissOperation();operate(()=>rollback(workflow.continuedFrom||workflow.id),'Rollback applied changes')});
     }else if(passed)opButton(dialog,'Apply '+op.count+' changes…',()=>{dismissOperation();applyConfirmation()});
     else if(op.state==='Failed'&&workflow.state==='Reviewing')opButton(dialog,'Retry',()=>{dismissOperation();runDashboardOperation(op.kind)});
     else if(op.state==='Uncertain'||op.state==='Running')opButton(dialog,'Check operation status',()=>reconcileOperation(op));
