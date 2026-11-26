@@ -1,5 +1,5 @@
 import {enterReview} from './enter-review';
-import { test, expect } from '@playwright/test';
+import { test, expect } from './companion-test';
 import { readFileSync, writeFileSync, chmodSync, statSync } from 'node:fs';
 import { tmpdir, userInfo } from 'node:os';
 import { dirname, join } from 'node:path';
@@ -98,12 +98,15 @@ await expect(page.locator('.component-before iframe')).toHaveCount(0);await expe
     await page.getByRole('button',{name:'Validate changes',exact:true}).click();await expect(page.locator('dialog.review-operation')).toContainText('COMPANION_UNAVAILABLE');
     process.kill(env.supervisorPid,'SIGUSR2');await expect.poll(async()=>request.get(origin+'/health',{timeout:1000}).then(r=>r.ok()).catch(()=>false),{timeout:15_000}).toBe(true);
     await mintLiveSession();
-    await page.getByRole('button',{name:'Check operation status',exact:true}).click();await expect(page.locator('.workflow-summary')).toContainText('2 accepted');expect((await snapshot()).session.id).toBe(candidateId);
+    await page.getByRole('button',{name:'Check operation status',exact:true}).click();
+    // The server has no record of the validation that the outage interrupted, so it did not run. Reconciliation reports that and
+    // leaves the review state to the user: dismiss the result and validate again.
+    await expect(page.getByRole('heading',{name:'Validation did not pass'})).toBeVisible();await expect(page.getByRole('dialog').getByText('VALIDATION_NOT_RECORDED')).toBeVisible();await page.getByRole('button',{name:'Back to review',exact:true}).click();await expect(page.locator('.workflow-summary')).toContainText('2 accepted');expect((await snapshot()).session.id).toBe(candidateId);
     // Original-source conflict must surface in the real UI, without losing decisions.
     writeFileSync(join(root,invoice),before[invoice]+'\n// concurrent user edit\n');
-    await page.getByRole('button',{name:'Validate changes',exact:true}).click();await expect(page.locator('.code-diff-card .analysis-status')).toContainText('STALE_ORIGINAL_SOURCE');expect(readFileSync(join(root,invoice),'utf8')).toContain('concurrent user edit');writeFileSync(join(root,invoice),before[invoice]);
+    await page.getByRole('button',{name:'Validate changes',exact:true}).click();await expect(page.getByRole('dialog').getByText('STALE_ORIGINAL_SOURCE')).toBeVisible();await page.getByRole('button',{name:'Back to review',exact:true}).click();expect(readFileSync(join(root,invoice),'utf8')).toContain('concurrent user edit');writeFileSync(join(root,invoice),before[invoice]);
     const candidateBeforeConflict=readFileSync(join(candidateRoot,invoice),'utf8');writeFileSync(join(candidateRoot,invoice),candidateBeforeConflict+'// candidate tamper');
-    await page.getByRole('button',{name:'Validate changes',exact:true}).click();await expect(page.locator('.code-diff-card .analysis-status')).toContainText('STALE_CANDIDATE_SOURCE');writeFileSync(join(candidateRoot,invoice),candidateBeforeConflict);
+    await page.getByRole('button',{name:'Validate changes',exact:true}).click();await expect(page.getByRole('dialog').getByText('STALE_CANDIDATE_SOURCE')).toBeVisible();await page.getByRole('button',{name:'Back to review',exact:true}).click();writeFileSync(join(candidateRoot,invoice),candidateBeforeConflict);
     await page.getByRole('button',{name:'Validate changes',exact:true}).click();
     await expect(page.locator('.workflow-validation')).toContainText('Validation: Passed',{timeout:180_000});
     w=await snapshot();expect(w.validation.checks.filter((x:any)=>x.state==='Failed')).toHaveLength(0);
@@ -119,7 +122,7 @@ await expect(page.locator('.component-before iframe')).toHaveCount(0);await expe
     for(const r of w.receipts){expect(sha(readFileSync(join(root,r.path),'utf8'))).toBe(r.appliedSha256);expect(sha(readFileSync(r.backupPath,'utf8'))).toBe(r.originalSha256)}
     expect(readFileSync(join(root,invoice),'utf8')).toContain('className="review-extra-id">{i.id}</span>');expect(readFileSync(join(root,tokens),'utf8')).toContain('className="token-two">{item.id}</span>');
     const applied=readFileSync(join(root,invoice),'utf8');writeFileSync(join(root,invoice),applied+'\n// later edit\n');
-    await page.locator('.session-overflow > button').click();await page.getByRole('menuitem',{name:'Rollback applied changes',exact:true}).click();await expect(page.locator('.code-diff-card .analysis-status')).toContainText('ROLLBACK_CONFLICT');expect(readFileSync(join(root,invoice),'utf8')).toContain('later edit');
+    await page.locator('.session-overflow > button').click();await page.getByRole('menuitem',{name:'Rollback applied changes',exact:true}).click();await expect(page.getByRole('dialog').getByText('ROLLBACK_CONFLICT')).toBeVisible();await page.getByRole('button',{name:'Back to review',exact:true}).click();expect(readFileSync(join(root,invoice),'utf8')).toContain('later edit');
     const unrelated=report.files.find((p:string)=>p.endsWith('.tsx')&&![invoice,tokens].includes(p));const unrelatedBefore=readFileSync(join(root,unrelated),'utf8');writeFileSync(join(root,unrelated),unrelatedBefore+'\n// unrelated user edit\n');
     writeFileSync(join(root,invoice),applied);await page.locator('.session-overflow > button').click();await page.getByRole('menuitem',{name:'Rollback applied changes',exact:true}).click();await expect(page.locator('.workflow-summary')).toContainText('Rolled Back');expect(readFileSync(join(root,unrelated),'utf8')).toContain('unrelated user edit');writeFileSync(join(root,unrelated),unrelatedBefore);
     for(const p of [invoice,tokens])expect(readFileSync(join(root,p),'utf8')).toBe(before[p]);
@@ -185,7 +188,7 @@ test('partial original-source write remains recoverable through scoped UI rollba
     await page.locator('button.file').filter({hasText:'App.tsx'}).filter({hasText:'App.tsx'}).click();
     await page.locator('button.finding').filter({hasText:second.path+':'+second.range.start.line+':'+second.range.start.column}).click();await page.getByRole('button',{name:'Approve fix',exact:true}).click();await page.getByRole('dialog',{name:'Proposed change approved'}).getByRole('button',{name:'Stay on this finding',exact:true}).click();await expect(page.locator('.workflow-summary')).toContainText('2 accepted');
     await page.getByRole('button',{name:'Validate changes',exact:true}).click();await expect(page.locator('.workflow-validation')).toContainText('Validation: Passed',{timeout:120_000});
-    chmodSync(directory,0o500);page.on('dialog',d=>d.accept());await page.getByRole('button',{name:/^Apply \d+ accepted changes? to source$/}).click();await expect(page.locator('.code-diff-card .analysis-status')).toContainText('EACCES');await expect(page.locator('.decision-card .source-context-status')).toContainText('Source apply incomplete');
+    chmodSync(directory,0o500);page.on('dialog',d=>d.accept());await page.getByRole('button',{name:/^Apply \d+ accepted changes? to source$/}).click();await expect(page.getByRole('dialog').getByText('EACCES')).toBeVisible();await page.getByRole('button',{name:'Back to review',exact:true}).click();await expect(page.locator('.decision-card .source-context-status')).toContainText('Source apply incomplete');
     expect(readFileSync(join(root,invoice),'utf8')).not.toBe(before);expect(readFileSync(join(root,second.path),'utf8')).toBe(secondBefore);
     await page.screenshot({path:info.outputPath('partial-apply.png'),fullPage:true});
     chmodSync(directory,mode);
